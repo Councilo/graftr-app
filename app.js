@@ -156,6 +156,8 @@ const state = {
   activeOrderId: '#4822',
   showAddressModal: false,
   showCheckoutModal: false,
+  scannerStatus: null,
+  manualBarcodeInput: '',
   aiChatOpen: false,
   aiMessages: [
     { role: 'bot', text: "👋 Hi! I'm your Graftr AI Shopping Assistant. Ask me to find items, recommend groceries, or add products directly to your basket!" }
@@ -543,134 +545,149 @@ function renderShopperInbox() {
 let mediaStreamInstance = null;
 let barcodeDetectorInstance = null;
 let zxingReaderInstance = null;
-let scanCanvasElement = null;
+let scannerStartedForIndex = null;
+
+function scannerStatusMessage(status) {
+  switch (status) {
+    case 'starting': return 'Starting camera…';
+    case 'active': return 'Scanning — point the camera at a barcode';
+    case 'permission-denied': return 'Camera permission denied — allow access in your browser, or type the code below';
+    case 'no-camera': return "Couldn't access a camera — type the code below instead";
+    case 'no-support': return "Barcode scanning isn't supported in this browser — type the code below instead";
+    default: return '';
+  }
+}
+
+function compareScannedBarcode(itemIndex, scannedVal) {
+  const item = state.packItems ? state.packItems[itemIndex] : null;
+  if (!item || !scannedVal) return false;
+  const scanned = String(scannedVal).trim();
+  const expected = String(item.barcode).trim();
+  return scanned === expected || scanned.includes(expected) || expected.includes(scanned);
+}
+
+let lastHandledScan = { itemIndex: null, value: null, time: 0 };
+
+function handleDecodedBarcode(itemIndex, scannedVal) {
+  const now = Date.now();
+  if (lastHandledScan.itemIndex === itemIndex && lastHandledScan.value === scannedVal && now - lastHandledScan.time < 1800) {
+    return;
+  }
+  lastHandledScan = { itemIndex, value: scannedVal, time: now };
+  const isMatch = compareScannedBarcode(itemIndex, scannedVal);
+  actions.processBarcodeScanned(itemIndex, isMatch, scannedVal);
+}
 
 async function startCameraScanner(itemIndex) {
   const video = document.getElementById('barcode-scanner-video');
   if (!video) return;
 
-  try {
-    stopCameraScanner();
+  stopCameraScanner();
+  state.scannerStatus = 'starting';
+  render();
 
-    // 1. ZXing JS Barcode Reader Engine (Industry standard 100% JS Barcode Decoder)
-    if (typeof ZXing !== 'undefined') {
-      try {
-        zxingReaderInstance = new ZXing.BrowserMultiFormatReader();
-        zxingReaderInstance.decodeFromVideoDevice(null, video, (result, err) => {
-          if (result && state.scanningBarcodeIndex === itemIndex) {
-            const scannedVal = result.getText();
-            const item = state.packItems ? state.packItems[itemIndex] : null;
-            const isMatch = (item && (scannedVal === item.barcode || scannedVal.includes(item.barcode) || item.barcode.includes(scannedVal)));
-            actions.processBarcodeScanned(itemIndex, isMatch);
-          }
-        });
-        return;
-      } catch(e){}
+  let fallbackStatus = 'no-support';
+
+  // 1. ZXing JS Barcode Reader Engine — real decode of whatever the camera sees
+  if (typeof ZXing !== 'undefined') {
+    try {
+      zxingReaderInstance = new ZXing.BrowserMultiFormatReader();
+      await zxingReaderInstance.decodeFromVideoDevice(null, video, (result) => {
+        if (result && state.scanningBarcodeIndex === itemIndex) {
+          handleDecodedBarcode(itemIndex, result.getText());
+        }
+      });
+      state.scannerStatus = 'active';
+      render();
+      return;
+    } catch (err) {
+      zxingReaderInstance = null;
+      fallbackStatus = err && err.name === 'NotAllowedError' ? 'permission-denied' : 'no-camera';
     }
+  }
 
-    // 2. WebRTC getUserMedia fallback stream
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  // 2. Native Browser BarcodeDetector fallback (Chrome/Edge on Android, some desktop builds)
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && 'BarcodeDetector' in window) {
+    try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } }
       });
       mediaStreamInstance = stream;
       video.srcObject = stream;
       await video.play();
-
-      if ('BarcodeDetector' in window) {
-        try {
-          barcodeDetectorInstance = new BarcodeDetector({
-            formats: ['ean_13', 'ean_8', 'code_128', 'qr_code', 'upc_a']
-          });
-        } catch(e){}
-      }
-
-      if (!scanCanvasElement) {
-        scanCanvasElement = document.createElement('canvas');
-        scanCanvasElement.width = 160;
-        scanCanvasElement.height = 120;
-      }
-
+      barcodeDetectorInstance = new BarcodeDetector({
+        formats: ['ean_13', 'ean_8', 'code_128', 'qr_code', 'upc_a']
+      });
+      state.scannerStatus = 'active';
+      render();
       detectBarcodeLoop(video, itemIndex);
+      return;
+    } catch (err) {
+      fallbackStatus = err && err.name === 'NotAllowedError' ? 'permission-denied' : 'no-camera';
     }
-  } catch (err) {
-    console.warn('Camera scanner error:', err.message);
   }
+
+  // 3. Nothing decoded a real barcode — surface the most specific reason we found
+  state.scannerStatus = fallbackStatus;
+  render();
 }
 
 function stopCameraScanner() {
   if (zxingReaderInstance) {
-    try { zxingReaderInstance.reset(); } catch(e){}
+    try { zxingReaderInstance.reset(); } catch (e) { /* already stopped */ }
     zxingReaderInstance = null;
   }
   if (mediaStreamInstance) {
-    mediaStreamInstance.getTracks().forEach(track => track.stop());
+    mediaStreamInstance.getTracks().forEach((track) => track.stop());
     mediaStreamInstance = null;
   }
   barcodeDetectorInstance = null;
+  state.scannerStatus = null;
+  scannerStartedForIndex = null;
 }
-
-let lastFrameDataHash = 0;
-let lastAutoScanTime = 0;
 
 async function detectBarcodeLoop(videoElement, itemIndex) {
   if (!mediaStreamInstance || state.scanningBarcodeIndex !== itemIndex) return;
 
-  const item = state.packItems ? state.packItems[itemIndex] : null;
-
-  // 1. Try Native Browser BarcodeDetector
   if (barcodeDetectorInstance) {
     try {
       const barcodes = await barcodeDetectorInstance.detect(videoElement);
       if (barcodes && barcodes.length > 0) {
-        const scannedVal = barcodes[0].rawValue;
-        const isMatch = (item && (scannedVal === item.barcode || scannedVal.includes(item.barcode)));
-        actions.processBarcodeScanned(itemIndex, isMatch);
-        if (isMatch) return;
+        handleDecodedBarcode(itemIndex, barcodes[0].rawValue);
       }
-    } catch(e){}
-  }
-
-  // 2. Camera Frame Contrast & Motion Analyzer Fallback
-  if (scanCanvasElement && videoElement.readyState === 4 && (Date.now() - lastAutoScanTime > 2200)) {
-    try {
-      const ctx = scanCanvasElement.getContext('2d');
-      ctx.drawImage(videoElement, 0, 0, 160, 120);
-      const frameData = ctx.getImageData(40, 40, 80, 40).data;
-      
-      let contrastSum = 0;
-      for (let i = 0; i < frameData.length; i += 8) {
-        contrastSum += Math.abs(frameData[i] - frameData[i + 4]);
-      }
-      
-      if (contrastSum > 12000 && Math.abs(contrastSum - lastFrameDataHash) > 1500) {
-        lastFrameDataHash = contrastSum;
-        lastAutoScanTime = Date.now();
-        // Camera detected barcode pattern in reticle box
-        actions.processBarcodeScanned(itemIndex, true);
-        return;
-      }
-      lastFrameDataHash = contrastSum;
-    } catch(e){}
+    } catch (e) { /* keep trying next frame */ }
   }
 
   requestAnimationFrame(() => detectBarcodeLoop(videoElement, itemIndex));
 }
 
-function playScanBeepSound() {
+function playTone(frequency, duration, type) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(1800, ctx.currentTime);
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(frequency, ctx.currentTime);
     gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start();
-    osc.stop(ctx.currentTime + 0.15);
-  } catch(e){}
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) { /* audio not available */ }
+}
+
+function playScanBeepSound() {
+  playTone(1800, 0.15, 'sine');
+}
+
+function playMatchSound() {
+  playTone(1200, 0.12, 'sine');
+  setTimeout(() => playTone(1800, 0.15, 'sine'), 110);
+}
+
+function playMismatchSound() {
+  playTone(220, 0.35, 'square');
 }
 
 function renderCourierPack() {
@@ -686,7 +703,7 @@ function renderCourierPack() {
     ]
   };
 
-  if (!state.packItems || state.packItems.length === 0 || state.activeOrderId !== state.lastPackedOrderId) {
+  if (!state.packItems || state.packItems.length === 0 || activeOrder.id !== state.lastPackedOrderId) {
     state.packItems = activeOrder.items.map((it, idx) => {
       const prod = PRODUCTS.find(p => p.name.toLowerCase() === it.name.toLowerCase() || it.name.toLowerCase().includes(p.name.toLowerCase()));
       return {
@@ -738,12 +755,19 @@ function renderCourierPack() {
           <div style="position:absolute;left:5%;right:5%;height:3px;background:${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ef4444'};box-shadow:0 0 12px ${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ef4444'};top:10%;animation:laserScan 1.4s infinite alternate ease-in-out"></div>
         </div>
 
+        <div style="font-size:11.5px;opacity:0.7;min-height:14px">${scannerStatusMessage(state.scannerStatus)}</div>
+
+        <div style="display:flex;gap:8px;width:100%">
+          <input id="manual-barcode-input" data-bind="manualBarcodeInput" value="${escapeHtml(state.manualBarcodeInput || '')}" placeholder="Or type the barcode number" style="flex:1;min-width:0;border:1.5px solid #3f3f46;background:#1f1f23;color:#fff;border-radius:12px;padding:10px 12px;font-size:12.5px;font-family:monospace;outline:none" />
+          <button type="button" data-action="submitManualBarcode" data-arg="${state.scanningBarcodeIndex}" style="background:#ffcbe1;color:#141414;border:none;padding:0 16px;border-radius:12px;font-size:12.5px;font-weight:800;cursor:pointer">Check</button>
+        </div>
+
         <div style="display:flex;flex-direction:column;gap:8px;width:100%">
           <button type="button" data-action="testScanMatch" data-arg="${state.scanningBarcodeIndex}" style="width:100%;background:#10b981;color:#fff;border:none;padding:12px;border-radius:14px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,129,0.3)">
-            ✅ Scan Correct Item (Match ✓)
+            ✅ Simulate Match
           </button>
           <button type="button" data-action="testScanMismatch" data-arg="${state.scanningBarcodeIndex}" style="width:100%;background:#ef4444;color:#fff;border:none;padding:12px;border-radius:14px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(239,68,68,0.3)">
-            ⚠️ Scan Wrong Item (Mismatch ✕)
+            ⚠️ Simulate Mismatch
           </button>
         </div>
       </div>
@@ -1907,8 +1931,11 @@ function render() {
   `;
 
   if (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) {
-    setTimeout(() => startCameraScanner(state.scanningBarcodeIndex), 80);
-  } else {
+    if (scannerStartedForIndex !== state.scanningBarcodeIndex) {
+      scannerStartedForIndex = state.scanningBarcodeIndex;
+      setTimeout(() => startCameraScanner(state.scanningBarcodeIndex), 80);
+    }
+  } else if (scannerStartedForIndex !== null) {
     stopCameraScanner();
   }
 
@@ -2117,6 +2144,7 @@ const actions = {
   },
   openScanner: (index) => {
     state.scanFeedback = null;
+    state.manualBarcodeInput = '';
     state.scanningBarcodeIndex = index;
     render();
   },
@@ -2127,12 +2155,19 @@ const actions = {
     render();
   },
   testScanMatch: (index) => {
-    actions.processBarcodeScanned(index, true);
+    actions.processBarcodeScanned(index, true, state.packItems[index] ? state.packItems[index].barcode : null);
   },
   testScanMismatch: (index) => {
-    actions.processBarcodeScanned(index, false);
+    actions.processBarcodeScanned(index, false, '0000000000000');
   },
-  processBarcodeScanned: (index, isMatch) => {
+  submitManualBarcode: (index) => {
+    const value = (state.manualBarcodeInput || '').trim();
+    if (!value) return;
+    const isMatch = compareScannedBarcode(index, value);
+    state.manualBarcodeInput = '';
+    actions.processBarcodeScanned(index, isMatch, value);
+  },
+  processBarcodeScanned: (index, isMatch, scannedVal) => {
     const item = state.packItems ? state.packItems[index] : null;
     if (!item) return;
 
@@ -2149,7 +2184,8 @@ const actions = {
       }, 1100);
     } else {
       playMismatchSound();
-      state.scanFeedback = { type: 'mismatch', message: `⚠️ WRONG PRODUCT! Incorrect item scanned.` };
+      const scannedNote = scannedVal ? ` (scanned ${scannedVal}, expected ${item.barcode})` : '';
+      state.scanFeedback = { type: 'mismatch', message: `⚠️ WRONG PRODUCT!${scannedNote}` };
       render();
     }
   },
@@ -2257,6 +2293,10 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       actions.submitAiMessage();
     }
+    if (e.key === 'Enter' && e.target.id === 'manual-barcode-input' && typeof state.scanningBarcodeIndex === 'number') {
+      e.preventDefault();
+      actions.submitManualBarcode(state.scanningBarcodeIndex);
+    }
   });
   root.addEventListener('input', (e) => {
     const el = e.target.closest('[data-bind]');
@@ -2266,6 +2306,8 @@ document.addEventListener('DOMContentLoaded', () => {
       state.searchQuery = el.value;
     } else if (path === 'aiInput') {
       state.aiInput = el.value;
+    } else if (path === 'manualBarcodeInput') {
+      state.manualBarcodeInput = el.value;
     } else if (path.startsWith('profile.')) {
       const field = path.replace('profile.', '');
       state.userProfile[field] = el.value;
