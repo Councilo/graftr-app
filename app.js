@@ -540,46 +540,181 @@ function renderShopperInbox() {
   </div>`;
 }
 
-function renderCourierPack() {
-  const job = JOBS[state.jobIndex];
-  const packedCount = state.packItems.filter((i) => i.checked).length;
-  const totalPack = state.packItems.length;
-  const allPacked = packedCount === totalPack;
+let mediaStreamInstance = null;
+let barcodeDetectorInstance = null;
 
-  const itemsHtml = state.packItems.map((item, i) => {
-    const boxBg = item.checked ? '#141414' : '#fff';
-    const textStyle = `flex:1 1 0%;font-size:13.5px;font-weight:${item.checked ? 400 : 600};opacity:${item.checked ? 0.5 : 1};text-decoration:${item.checked ? 'line-through' : 'none'}`;
-    return `<div data-action="togglePackItem" data-arg="${i}" style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(20,20,20,0.08);cursor:pointer">
-      <span style="width:18px;height:18px;min-width:18px;border-radius:5px;border:2px solid #141414;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;background:${boxBg}">${item.checked ? '✓' : ''}</span>
-      <span style="${textStyle}">${item.name}</span>
-      <span style="font-size:12px;opacity:0.5">x${item.qty}</span>
-    </div>`;
-  }).join('');
-
-  let footer;
-  if (state.packDone) {
-    footer = `<div style="border:1.5px solid oklch(56% 0.17 258);color:oklch(42% 0.17 258);background:oklch(97% 0.02 258);border-radius:20px;padding:13px;text-align:center;font-weight:700;font-size:14px">✓ Order packed — courier notified</div>`;
-  } else if (allPacked) {
-    footer = `<div class="press" data-action="completePacking" style="background:#141414;color:#fff;border-radius:20px;padding:13px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">Complete packing</div>`;
-  } else {
-    footer = `<div style="background:rgba(20,20,20,0.07);color:rgba(20,20,20,0.35);border-radius:20px;padding:13px;text-align:center;font-weight:700;font-size:14px">Complete packing</div>`;
+async function startCameraScanner(itemIndex) {
+  const video = document.getElementById('barcode-scanner-video');
+  if (!video || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    console.warn('Camera access API not supported in this environment.');
+    return;
   }
 
-  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:20px;font-weight:700">Pick &amp; Pack — ${job.id}</div>
-    <div class="press" data-action="simulateScan" style="border:1.5px dashed rgba(20,20,20,0.3);border-radius:16px;padding:20px;text-align:center;cursor:pointer">
-      <div style="display:flex;justify-content:center;gap:3px;margin-bottom:8px">
-        <div style="width:3px;height:30px;background:#141414"></div><div style="width:2px;height:30px;background:#141414"></div><div style="width:4px;height:30px;background:#141414"></div><div style="width:2px;height:30px;background:#141414"></div><div style="width:3px;height:30px;background:#141414"></div><div style="width:5px;height:30px;background:#141414"></div><div style="width:2px;height:30px;background:#141414"></div>
+  try {
+    stopCameraScanner();
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } }
+    });
+    mediaStreamInstance = stream;
+    video.srcObject = stream;
+    await video.play();
+
+    if ('BarcodeDetector' in window) {
+      try {
+        barcodeDetectorInstance = new BarcodeDetector({
+          formats: ['ean_13', 'ean_8', 'code_128', 'qr_code', 'upc_a']
+        });
+        detectBarcodeLoop(video, itemIndex);
+      } catch(e){}
+    }
+  } catch (err) {
+    console.warn('Camera access error or permission denied:', err.message);
+  }
+}
+
+function stopCameraScanner() {
+  if (mediaStreamInstance) {
+    mediaStreamInstance.getTracks().forEach(track => track.stop());
+    mediaStreamInstance = null;
+  }
+  barcodeDetectorInstance = null;
+}
+
+async function detectBarcodeLoop(videoElement, itemIndex) {
+  if (!barcodeDetectorInstance || !mediaStreamInstance || state.scanningBarcodeIndex !== itemIndex) return;
+  try {
+    const barcodes = await barcodeDetectorInstance.detect(videoElement);
+    if (barcodes && barcodes.length > 0) {
+      actions.confirmScan(itemIndex);
+      return;
+    }
+  } catch(e){}
+  requestAnimationFrame(() => detectBarcodeLoop(videoElement, itemIndex));
+}
+
+function playScanBeepSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1800, ctx.currentTime);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch(e){}
+}
+
+function renderCourierPack() {
+  const activeOrder = state.orders.find(o => o.status !== 'Cancelled' && o.status !== 'Delivered') || {
+    id: '#4824',
+    merchant: 'Morrisons Daily',
+    address: `${state.userProfile.address}, ${state.userProfile.postcode}`,
+    items: [
+      { name: 'Warburtons Toastie Thick White Bread', qty: 1 },
+      { name: 'Morrisons Fresh Semi-Skimmed Milk 2L', qty: 1 },
+      { name: 'Morrisons Free Range Eggs 6-pack', qty: 1 },
+      { name: 'Cadbury Dairy Milk Chocolate 110g', qty: 1 }
+    ]
+  };
+
+  if (!state.packItems || state.packItems.length === 0 || state.activeOrderId !== state.lastPackedOrderId) {
+    state.packItems = activeOrder.items.map((it, idx) => ({
+      name: it.name,
+      qty: it.qty || 1,
+      barcode: `5000119${1000 + idx * 42}`,
+      checked: false
+    }));
+    state.lastPackedOrderId = activeOrder.id;
+  }
+
+  const packedCount = state.packItems.filter(i => i.checked).length;
+  const totalPack = state.packItems.length;
+  const progressPercent = totalPack > 0 ? Math.round((packedCount / totalPack) * 100) : 0;
+  const allPacked = packedCount === totalPack && totalPack > 0;
+
+  const scannerOverlay = (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) ? `
+    <div class="graftr-modal-overlay" style="z-index:99999;background:rgba(0,0,0,0.92)">
+      <div style="width:100%;max-width:360px;background:#141414;color:#fff;border-radius:24px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;box-shadow:0 12px 32px rgba(0,0,0,0.5)">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div style="font-size:16px;font-weight:800;color:#ffcbe1">📷 Live Camera Barcode Scanner</div>
+          <button type="button" data-action="closeScanner" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer">✕</button>
+        </div>
+
+        <div style="font-size:13px;opacity:0.8">Align device camera with barcode on<br><b style="color:#fff">${escapeHtml(state.packItems[state.scanningBarcodeIndex].name)}</b></div>
+
+        <!-- Live WebRTC Camera Stream Viewfinder -->
+        <div style="width:260px;height:190px;border:2px solid #ffcbe1;border-radius:18px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
+          <video id="barcode-scanner-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
+          <!-- Animated Laser Line -->
+          <div style="position:absolute;left:5%;right:5%;height:3px;background:#ef4444;box-shadow:0 0 12px #ef4444;top:10%;animation:laserScan 1.4s infinite alternate ease-in-out"></div>
+        </div>
+
+        <div style="font-size:12px;font-family:monospace;color:#a1a1aa">Target EAN Barcode: ${state.packItems[state.scanningBarcodeIndex].barcode}</div>
+
+        <button type="button" data-action="confirmScan" data-arg="${state.scanningBarcodeIndex}" style="width:100%;background:#10b981;color:#fff;border:none;padding:14px;border-radius:16px;font-size:14.5px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(16,185,129,0.3)">
+          ⚡ Trigger Scan Match (BEEP ✓)
+        </button>
       </div>
-      <div style="font-size:13px;opacity:0.6">Tap to scan barcode or QR</div>
     </div>
-    <div style="height:8px;border:1.5px solid rgba(20,20,20,0.15);border-radius:6px;overflow:hidden;background:#fff"><div style="height:100%;background:oklch(56% 0.17 258);width:${Math.round((packedCount / totalPack) * 100)}%"></div></div>
-    <div style="font-size:12px;opacity:0.55">${packedCount} of ${totalPack} items packed</div>
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;padding:6px 14px;display:flex;flex-direction:column">
-      ${itemsHtml}
+  ` : '';
+
+  const itemsHtml = state.packItems.map((item, i) => {
+    const isChecked = item.checked;
+    return `
+      <div style="background:${isChecked ? '#f0fdf4' : '#fff'};border:1.5px solid ${isChecked ? '#86efac' : 'rgba(20,20,20,0.12)'};border-radius:16px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+          <div style="width:28px;height:28px;border-radius:50%;background:${isChecked ? '#10b981' : '#f1f5f9'};color:${isChecked ? '#fff' : '#64748b'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">
+            ${isChecked ? '✓' : i + 1}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${isChecked ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(item.name)}</div>
+            <div style="font-size:11.5px;opacity:0.5;font-family:monospace;margin-top:2px">EAN: ${item.barcode} · Qty: ${item.qty}</div>
+          </div>
+        </div>
+        <button type="button" data-action="openScanner" data-arg="${i}" style="background:${isChecked ? '#dcfce7' : '#141414'};color:${isChecked ? '#15803d' : '#fff'};border:none;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
+          ${isChecked ? 'Scanned ✓' : '📷 Scan Barcode'}
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:22px;font-weight:800">Pick &amp; Pack Scanner</div>
+          <div style="font-size:12.5px;opacity:0.65">Order ${activeOrder.id} · Morrisons Daily</div>
+        </div>
+        <span style="background:#ffcbe1;color:#141414;font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">${progressPercent}% Done</span>
+      </div>
+
+      <!-- Live Progress Bar -->
+      <div style="height:10px;background:#e2e8f0;border-radius:10px;overflow:hidden">
+        <div style="height:100%;background:#10b981;width:${progressPercent}%;transition:width 0.3s ease"></div>
+      </div>
+      <div style="font-size:12.5px;opacity:0.6;text-align:right">${packedCount} of ${totalPack} items verified</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${itemsHtml}
+      </div>
+
+      ${allPacked ? `
+        <button type="button" data-action="completePackingJob" style="background:#10b981;color:#fff;border:none;padding:16px;border-radius:18px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;box-shadow:0 8px 24px rgba(16,185,129,0.3)">
+          📦 All Items Verified — Complete Packing & Start Delivery
+        </button>
+      ` : `
+        <button type="button" data-action="simulateScanNext" style="background:#141414;color:#fff;border:none;padding:14px;border-radius:16px;font-size:13.5px;font-weight:700;cursor:pointer;margin-top:4px">
+          ⚡ Auto-Scan Next Unscanned Item
+        </button>
+      `}
+
+      ${scannerOverlay}
     </div>
-    ${footer}
-  </div>`;
+  `;
 }
 
 function renderCourierAccount() {
@@ -1685,6 +1820,12 @@ function render() {
     ${checkoutModal}
   `;
 
+  if (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) {
+    setTimeout(() => startCameraScanner(state.scanningBarcodeIndex), 80);
+  } else {
+    stopCameraScanner();
+  }
+
   if (state.screen === 'shopper-track') {
     setTimeout(initGraftrLiveMap, 50);
   } else if (state.screen === 'shopper-basket') {
@@ -1888,13 +2029,45 @@ const actions = {
     state.delivered = false;
     render();
   },
-  togglePackItem: (i) => { state.packItems[i].checked = !state.packItems[i].checked; render(); },
-  simulateScan: () => {
-    const idx = state.packItems.findIndex((it) => !it.checked);
-    if (idx >= 0) state.packItems[idx].checked = true;
+  openScanner: (index) => {
+    state.scanningBarcodeIndex = index;
     render();
   },
-  completePacking: () => { state.packDone = true; render(); },
+  closeScanner: () => {
+    state.scanningBarcodeIndex = null;
+    render();
+  },
+  confirmScan: (index) => {
+    playScanBeepSound();
+    if (state.packItems && state.packItems[index]) {
+      state.packItems[index].checked = true;
+    }
+    state.scanningBarcodeIndex = null;
+    render();
+  },
+  simulateScanNext: () => {
+    if (!state.packItems) return;
+    const idx = state.packItems.findIndex((it) => !it.checked);
+    if (idx >= 0) {
+      actions.confirmScan(idx);
+    }
+  },
+  completePackingJob: () => {
+    const activeOrder = state.orders.find(o => o.status !== 'Cancelled' && o.status !== 'Delivered');
+    if (activeOrder) {
+      activeOrder.status = 'Out for Delivery';
+      activeOrder.courier = 'Alex (E-bike)';
+      saveLoggedOrders();
+      state.shopperInbox.unshift({
+        tag: 'Courier Alert',
+        text: `Courier Alex finished packing your items at Morrisons Daily! Out for delivery now.`,
+        time: 'Just now',
+        read: false
+      });
+    }
+    state.screen = 'courier-activity';
+    render();
+  },
   cashOut: () => { state.cashedOut = true; render(); },
   toggleDeliveryLater: () => { state.deliveryLater = !state.deliveryLater; render(); },
   toggleCourierRead: (i) => { state.courierInbox[i].read = !state.courierInbox[i].read; render(); },
