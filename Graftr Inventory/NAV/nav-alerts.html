@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Utravel — Alerts</title>
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="nav">
+
+<main class="canvas">
+  <div class="mhead">
+    <a class="backlink" href="navigation.html">
+      <span data-icon="chevron" data-size="16" class="backlink__arrow"></span>Navigation
+    </a>
+  </div>
+
+  <div class="page">
+    <div class="page__inner">
+
+      <a class="backlink backlink--wide" href="navigation.html">
+        <span data-icon="chevron" data-size="16" class="backlink__arrow"></span>Navigation
+      </a>
+
+      <div class="sbar">
+        <label class="sbar__field">
+          <span data-icon="nav" data-size="19"></span>
+          <span>
+            <span class="sbar__label">Route</span>
+            <span class="sbar__value">All my routes</span>
+          </span>
+        </label>
+        <label class="sbar__field">
+          <span data-icon="clock" data-size="19"></span>
+          <span>
+            <span class="sbar__label">When</span>
+            <span class="sbar__value">Today</span>
+          </span>
+        </label>
+        <label class="sbar__field">
+          <span data-icon="bell" data-size="19"></span>
+          <span>
+            <span class="sbar__label">Severity</span>
+            <span class="sbar__value">Any severity</span>
+          </span>
+        </label>
+        <button class="sbar__go"><span data-icon="search" data-size="19"></span>Search</button>
+      </div>
+
+      <div class="chips" style="margin-top:14px">
+        <button class="chip" data-toggle="tick" aria-pressed="true">Severe</button>
+        <button class="chip" data-toggle="tick" aria-pressed="true">Delays</button>
+        <button class="chip" data-toggle="tick" aria-pressed="false">Notices</button>
+        <button class="chip" data-toggle="tick" aria-pressed="true">My saved routes</button>
+        <button class="chip" data-toggle="tick" aria-pressed="false">Today only</button>
+      </div>
+
+      <div class="rhead">
+        <div>
+          <div class="rhead__count">5 alerts on your routes</div>
+          <div class="page__sub">Updated 2 min ago</div>
+        </div>
+        <div class="rhead__tools">
+          <button class="btn btn--sm fbtn" data-opens=".filters">
+            <span data-icon="sliders" data-size="16"></span>Filters
+          </button>
+          <button class="btn btn--sm">
+            <span data-icon="arrow" data-size="16"></span>Sort: Recommended
+          </button>
+        </div>
+      </div>
+
+      <div class="rbody">
+        <aside class="filters" aria-label="Filter results">
+          <div class="filters__head">
+            <span class="section__title">Filters</span>
+            <button class="section__link">Clear all</button>
+            <button class="section__link fbtn" data-opens=".filters">Done</button>
+          </div>
+          <details class="fgroup" open>
+            <summary>Severity</summary>
+            <div class="fgroup__body">
+              <button class="fopt" data-toggle="tick" aria-pressed="true">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                Severe <span class="fopt__n">1</span>
+              </button>
+              <button class="fopt" data-toggle="tick" aria-pressed="true">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                Delays <span class="fopt__n">2</span>
+              </button>
+              <button class="fopt" data-toggle="tick" aria-pressed="false">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                Notice <span class="fopt__n">2</span>
+              </button>
+            </div>
+          </details>
+          <details class="fgroup" open>
+            <summary>Transport type</summary>
+            <div class="fgroup__body">
+              <button class="fopt" data-toggle="tick" aria-pressed="true">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                Rail &amp; Bus <span class="fopt__n">3</span>
+              </button>
+              <button class="fopt" data-toggle="tick" aria-pressed="false">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                Flights <span class="fopt__n">0</span>
+              </button>
+              <button class="fopt" data-toggle="tick" aria-pressed="false">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                Roads <span class="fopt__n">1</span>
+              </button>
+              <button class="fopt" data-toggle="tick" aria-pressed="false">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                Local <span class="fopt__n">1</span>
+              </button>
+            </div>
+          </details>
+          <details class="fgroup">
+            <summary>Affects</summary>
+            <div class="fgroup__body">
+              <button class="fopt" data-toggle="tick" aria-pressed="true">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                My saved routes only <span class="fopt__n">5</span>
+              </button>
+            </div>
+          </details>
+          <details class="fgroup">
+            <summary>Time</summary>
+            <div class="fgroup__body">
+              <button class="fopt" data-toggle="tick" aria-pressed="true">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                Today <span class="fopt__n">3</span>
+              </button>
+              <button class="fopt" data-toggle="tick" aria-pressed="false">
+                <span class="fopt__box" data-icon="check" data-size="12"></span>
+                This week <span class="fopt__n">5</span>
+              </button>
+            </div>
+          </details>
+        </aside>
+
+        <div class="rlist">
+          <article class="alert alert--crit">
+            <div class="alert__top">
+              <span class="alert__badge">Severe</span>
+              <span class="alert__when">Now</span>
+            </div>
+            <div class="alert__title">Bus 8 &mdash; part suspended</div>
+            <div class="alert__text">Roadworks on Park Street. Diverting via Queens Road, adding 12 min.</div>
+            <div class="alert__act">See alternative route</div>
+          </article>
+
+          <article class="alert alert--warn">
+            <div class="alert__top">
+              <span class="alert__badge">Delays</span>
+              <span class="alert__when">14 min ago</span>
+            </div>
+            <div class="alert__title">Temple Meads &mdash; platform change</div>
+            <div class="alert__text">10:24 to Edinburgh now departs platform 5.</div>
+            <div class="alert__act">View station</div>
+          </article>
+
+          <article class="alert alert--warn">
+            <div class="alert__top">
+              <span class="alert__badge">Delays</span>
+              <span class="alert__when">40 min ago</span>
+            </div>
+            <div class="alert__title">A38 closed northbound</div>
+            <div class="alert__text">Diversion via A46 in place. Adds around 18 minutes.</div>
+            <div class="alert__act">See alternative route</div>
+          </article>
+
+          <article class="alert alert--info">
+            <div class="alert__top">
+              <span class="alert__badge">Notice</span>
+              <span class="alert__when">Today</span>
+            </div>
+            <div class="alert__title">Engineering works this Sunday</div>
+            <div class="alert__text">Replacement buses between Bath Spa and Chippenham all day.</div>
+            <div class="alert__act">Plan around it</div>
+          </article>
+
+          <article class="alert alert--info">
+            <div class="alert__top">
+              <span class="alert__badge">Notice</span>
+              <span class="alert__when">This week</span>
+            </div>
+            <div class="alert__title">Rail strike notice</div>
+            <div class="alert__text">Reduced ScotRail service expected on Friday. Check before you travel.</div>
+            <div class="alert__act">Check your route</div>
+          </article>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script src="assets/photos.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

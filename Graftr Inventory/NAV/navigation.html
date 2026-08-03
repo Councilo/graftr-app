@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Utravel — Navigation</title>
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="nav">
+
+<main class="canvas">
+
+  <!-- ============ THE MAP (full bleed, sits under everything) ============ -->
+  <div class="map" data-map></div>
+
+  <!-- map controls, top-right, floating -->
+  <div class="map__controls">
+    <button class="map__ctl" aria-label="Recentre on my location" data-icon="loc" data-size="19"></button>
+    <button class="map__ctl" aria-label="Map layers" data-icon="layers" data-size="19"></button>
+    <a class="map__info" href="discover-weather.html" aria-label="Weather, 14 degrees, light rain">
+      <span data-icon="weather" data-size="17"></span>14&deg;
+    </a>
+    <a class="map__info map__info--alert" href="nav-alerts.html" aria-label="2 alerts on your routes">
+      <span data-icon="bell" data-size="17"></span>2
+    </a>
+  </div>
+
+  <!-- route callouts drawn on the map itself, Apple Maps style -->
+  <div class="callout callout--active" style="left:47%;top:44%">21 min<small>Your route</small></div>
+  <div class="callout" style="left:63%;top:57%">28 min<small>Fewer changes</small></div>
+
+  <!-- ============ THE SHEET ============
+       Desktop: floating panel, top-left over the map.
+       Mobile:  bottom sheet with a grab handle. Same markup either way. -->
+  <section class="sheet" aria-label="Route planner">
+    <div class="sheet__grab"></div>
+
+    <div class="sheet__head">
+      <div class="sheet__title">
+        <h2>Directions</h2>
+        <button class="sheet__close" aria-label="Close" data-icon="close" data-size="16"></button>
+      </div>
+
+      <!-- from / to -->
+      <div class="waypoints">
+        <div class="waypoint">
+          <span class="waypoint__dot waypoint__dot--from"><i></i></span>
+          <input value="My location" aria-label="Start point">
+          <span class="waypoint__grip" data-icon="grip" data-size="18"></span>
+        </div>
+        <div class="waypoint">
+          <span class="waypoint__dot waypoint__dot--to"><i></i></span>
+          <input value="Bristol Temple Meads" aria-label="Destination">
+          <span class="waypoint__grip" data-icon="grip" data-size="18"></span>
+        </div>
+      </div>
+      <button class="addstop"><span data-icon="plus" data-size="17"></span>Add stop</button>
+    </div>
+
+    <div class="sheet__body">
+
+      <!-- ==== MODE SELECTOR ==== swipe to reveal every travel method ==== -->
+      <div class="swipe-wrap">
+        <div class="modebar" id="modes">
+          <button class="modebar__btn" data-group="travelmode" aria-pressed="false">
+            <span data-icon="walk" data-size="20"></span>Walk
+          </button>
+          <button class="modebar__btn" data-group="travelmode" aria-pressed="false">
+            <span data-icon="bike" data-size="20"></span>Cycle
+          </button>
+          <button class="modebar__btn" data-group="travelmode" aria-pressed="false">
+            <span data-icon="car" data-size="20"></span>Drive
+          </button>
+          <button class="modebar__btn" data-group="travelmode" aria-pressed="true">
+            <span data-icon="train" data-size="20"></span>Rail &amp; Bus
+          </button>
+          <button class="modebar__btn" data-group="travelmode" aria-pressed="false">
+            <span data-icon="plane" data-size="20"></span>Flights
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ ROUTE OPTIONS ============ -->
+      <div class="section" style="margin-top:18px">
+        <div class="section__head"><h3 class="section__title">Routes</h3></div>
+
+        <button class="route" data-group="route" aria-pressed="true">
+          <span class="mode mode--bus" data-icon="bus" data-size="19"></span>
+          <span class="route__main">
+            <span class="route__tag">Suggested</span>
+            <span class="route__time">21 min</span>
+            <span class="route__meta">Bus 8 → walk · £2.80 · leaves 10:04</span>
+          </span>
+        </button>
+
+        <button class="route" data-group="route" aria-pressed="false">
+          <span class="mode mode--bus" data-icon="train" data-size="19"></span>
+          <span class="route__main">
+            <span class="route__time">28 min</span>
+            <span class="route__meta">Train from Lawrence Hill · £3.40 · no changes</span>
+          </span>
+        </button>
+
+        <button class="route" data-group="route" aria-pressed="false">
+          <span class="mode mode--walk" data-icon="walk" data-size="19"></span>
+          <span class="route__main">
+            <span class="route__time">46 min</span>
+            <span class="route__meta">Walk · 3.7 km · free</span>
+          </span>
+        </button>
+      </div>
+
+      <!-- ============ SUMMARY: time | distance | cost ============ -->
+      <div class="section">
+        <div class="section__head"><h3 class="section__title">Summary</h3></div>
+        <div class="summary">
+          <div><b>21 min</b><span>Time</span></div>
+          <div><b>3.7 km</b><span>Distance</span></div>
+          <div><b>£2.80</b><span>Est. cost</span></div>
+        </div>
+      </div>
+
+      <!-- ============ STEP LIST ============ -->
+      <div class="section">
+        <div class="section__head"><h3 class="section__title">Steps</h3></div>
+        <ol class="steps">
+          <li class="step">
+            <div class="step__rail">
+              <span class="step__glyph" data-icon="walk" data-size="17"></span>
+              <span class="step__line"></span>
+            </div>
+            <div class="step__body">
+              <div class="step__title">Walk to Park Street (Stop C)</div>
+              <div class="step__meta">4 min · 300 m</div>
+            </div>
+          </li>
+          <li class="step">
+            <div class="step__rail">
+              <span class="step__glyph" data-icon="bus" data-size="17"></span>
+              <span class="step__line"></span>
+            </div>
+            <div class="step__body">
+              <div class="step__title">Bus 8 towards Temple Meads</div>
+              <div class="step__meta">11 min · 6 stops · departs 10:04</div>
+            </div>
+          </li>
+          <li class="step">
+            <div class="step__rail">
+              <span class="step__glyph" data-icon="turn" data-size="17"></span>
+              <span class="step__line"></span>
+            </div>
+            <div class="step__body">
+              <div class="step__title">Get off at Redcliffe Way</div>
+              <div class="step__meta">Turn right onto Temple Gate</div>
+            </div>
+          </li>
+          <li class="step">
+            <div class="step__rail">
+              <span class="step__glyph" data-icon="flag" data-size="17"></span>
+            </div>
+            <div class="step__body">
+              <div class="step__title">Arrive — Bristol Temple Meads</div>
+              <div class="step__meta">6 min walk · arrives 10:25</div>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- ============ SAT-NAV ============ -->
+      <div class="section" id="satnav">
+        <div class="section__head"><h3 class="section__title">Sat-Nav</h3></div>
+        <div class="card" style="padding:4px 14px">
+          <div class="rows">
+            <button class="setting">
+              <span class="setting__glyph" style="background:var(--brand)" data-icon="nav" data-size="18"></span>
+              <span class="setting__body">
+                <span class="setting__title">Turn-by-turn guidance</span>
+                <span class="setting__meta">Full-screen, spoken directions</span>
+              </span>
+              <span class="switch" data-toggle="switch" aria-pressed="true" role="switch"></span>
+            </button>
+            <button class="setting">
+              <span class="setting__glyph" style="background:var(--muted)" data-icon="mic" data-size="18"></span>
+              <span class="setting__body">
+                <span class="setting__title">Voice</span>
+                <span class="setting__meta">Announce street names</span>
+              </span>
+              <span class="setting__value">English (UK)
+                <span data-icon="chevron" data-size="15"></span></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==== MORE — each opens its own page ==== -->
+      <div class="section" id="more">
+        <div class="section__head"><h3 class="section__title">More</h3></div>
+        <div class="card" style="padding:4px 14px">
+          <div class="rows">
+            <a class="setting" href="nav-alerts.html">
+              <span class="setting__glyph" style="background:var(--sem-crit)" data-icon="bell" data-size="18"></span>
+              <span class="setting__body">
+                <span class="setting__title">Alerts</span>
+                <span class="setting__meta">Bus 8 part suspended &middot; platform change</span>
+              </span>
+              <span class="setting__value"><span data-icon="chevron" data-size="15"></span></span>
+            </a>
+            <a class="setting" href="nav-local.html">
+              <span class="setting__glyph" style="background:var(--muted)" data-icon="loc" data-size="18"></span>
+              <span class="setting__body">
+                <span class="setting__title">Local Essentials</span>
+                <span class="setting__meta">Cash points, pharmacy, toilets, wi-fi</span>
+              </span>
+              <span class="setting__value"><span data-icon="chevron" data-size="15"></span></span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============ STICKY FOOTER: ETA + GO ============ -->
+    <div class="sheet__foot">
+      <div>
+        <div style="font-size:17px;font-weight:700;letter-spacing:-.01em">21 min</div>
+        <div style="font-size:13px;color:var(--muted)">10:25 arrival · 3.7 km</div>
+      </div>
+      <button class="btn btn--go">GO</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="assets/photos.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
