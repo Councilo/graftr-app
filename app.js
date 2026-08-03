@@ -542,46 +542,67 @@ function renderShopperInbox() {
 
 let mediaStreamInstance = null;
 let barcodeDetectorInstance = null;
+let zxingReaderInstance = null;
 let scanCanvasElement = null;
 
 async function startCameraScanner(itemIndex) {
   const video = document.getElementById('barcode-scanner-video');
-  if (!video || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    console.warn('Camera access API not supported in this environment.');
-    return;
-  }
+  if (!video) return;
 
   try {
     stopCameraScanner();
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } }
-    });
-    mediaStreamInstance = stream;
-    video.srcObject = stream;
-    await video.play();
 
-    if ('BarcodeDetector' in window) {
+    // 1. ZXing JS Barcode Reader Engine (Industry standard 100% JS Barcode Decoder)
+    if (typeof ZXing !== 'undefined') {
       try {
-        barcodeDetectorInstance = new BarcodeDetector({
-          formats: ['ean_13', 'ean_8', 'code_128', 'qr_code', 'upc_a']
+        zxingReaderInstance = new ZXing.BrowserMultiFormatReader();
+        zxingReaderInstance.decodeFromVideoDevice(null, video, (result, err) => {
+          if (result && state.scanningBarcodeIndex === itemIndex) {
+            const scannedVal = result.getText();
+            const item = state.packItems ? state.packItems[itemIndex] : null;
+            const isMatch = (item && (scannedVal === item.barcode || scannedVal.includes(item.barcode) || item.barcode.includes(scannedVal)));
+            actions.processBarcodeScanned(itemIndex, isMatch);
+          }
         });
+        return;
       } catch(e){}
     }
 
-    // Offscreen canvas for frame contrast & motion analysis
-    if (!scanCanvasElement) {
-      scanCanvasElement = document.createElement('canvas');
-      scanCanvasElement.width = 160;
-      scanCanvasElement.height = 120;
-    }
+    // 2. WebRTC getUserMedia fallback stream
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } }
+      });
+      mediaStreamInstance = stream;
+      video.srcObject = stream;
+      await video.play();
 
-    detectBarcodeLoop(video, itemIndex);
+      if ('BarcodeDetector' in window) {
+        try {
+          barcodeDetectorInstance = new BarcodeDetector({
+            formats: ['ean_13', 'ean_8', 'code_128', 'qr_code', 'upc_a']
+          });
+        } catch(e){}
+      }
+
+      if (!scanCanvasElement) {
+        scanCanvasElement = document.createElement('canvas');
+        scanCanvasElement.width = 160;
+        scanCanvasElement.height = 120;
+      }
+
+      detectBarcodeLoop(video, itemIndex);
+    }
   } catch (err) {
-    console.warn('Camera access error or permission denied:', err.message);
+    console.warn('Camera scanner error:', err.message);
   }
 }
 
 function stopCameraScanner() {
+  if (zxingReaderInstance) {
+    try { zxingReaderInstance.reset(); } catch(e){}
+    zxingReaderInstance = null;
+  }
   if (mediaStreamInstance) {
     mediaStreamInstance.getTracks().forEach(track => track.stop());
     mediaStreamInstance = null;
