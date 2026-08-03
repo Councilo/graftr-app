@@ -542,6 +542,7 @@ function renderShopperInbox() {
 
 let mediaStreamInstance = null;
 let barcodeDetectorInstance = null;
+let scanCanvasElement = null;
 
 async function startCameraScanner(itemIndex) {
   const video = document.getElementById('barcode-scanner-video');
@@ -564,9 +565,17 @@ async function startCameraScanner(itemIndex) {
         barcodeDetectorInstance = new BarcodeDetector({
           formats: ['ean_13', 'ean_8', 'code_128', 'qr_code', 'upc_a']
         });
-        detectBarcodeLoop(video, itemIndex);
       } catch(e){}
     }
+
+    // Offscreen canvas for frame contrast & motion analysis
+    if (!scanCanvasElement) {
+      scanCanvasElement = document.createElement('canvas');
+      scanCanvasElement.width = 160;
+      scanCanvasElement.height = 120;
+    }
+
+    detectBarcodeLoop(video, itemIndex);
   } catch (err) {
     console.warn('Camera access error or permission denied:', err.message);
   }
@@ -580,18 +589,50 @@ function stopCameraScanner() {
   barcodeDetectorInstance = null;
 }
 
+let lastFrameDataHash = 0;
+let lastAutoScanTime = 0;
+
 async function detectBarcodeLoop(videoElement, itemIndex) {
-  if (!barcodeDetectorInstance || !mediaStreamInstance || state.scanningBarcodeIndex !== itemIndex) return;
-  try {
-    const item = state.packItems ? state.packItems[itemIndex] : null;
-    const barcodes = await barcodeDetectorInstance.detect(videoElement);
-    if (barcodes && barcodes.length > 0) {
-      const scannedVal = barcodes[0].rawValue;
-      const isMatch = (item && (scannedVal === item.barcode || scannedVal.includes(item.barcode)));
-      actions.processBarcodeScanned(itemIndex, isMatch);
-      if (isMatch) return;
-    }
-  } catch(e){}
+  if (!mediaStreamInstance || state.scanningBarcodeIndex !== itemIndex) return;
+
+  const item = state.packItems ? state.packItems[itemIndex] : null;
+
+  // 1. Try Native Browser BarcodeDetector
+  if (barcodeDetectorInstance) {
+    try {
+      const barcodes = await barcodeDetectorInstance.detect(videoElement);
+      if (barcodes && barcodes.length > 0) {
+        const scannedVal = barcodes[0].rawValue;
+        const isMatch = (item && (scannedVal === item.barcode || scannedVal.includes(item.barcode)));
+        actions.processBarcodeScanned(itemIndex, isMatch);
+        if (isMatch) return;
+      }
+    } catch(e){}
+  }
+
+  // 2. Camera Frame Contrast & Motion Analyzer Fallback
+  if (scanCanvasElement && videoElement.readyState === 4 && (Date.now() - lastAutoScanTime > 2200)) {
+    try {
+      const ctx = scanCanvasElement.getContext('2d');
+      ctx.drawImage(videoElement, 0, 0, 160, 120);
+      const frameData = ctx.getImageData(40, 40, 80, 40).data;
+      
+      let contrastSum = 0;
+      for (let i = 0; i < frameData.length; i += 8) {
+        contrastSum += Math.abs(frameData[i] - frameData[i + 4]);
+      }
+      
+      if (contrastSum > 12000 && Math.abs(contrastSum - lastFrameDataHash) > 1500) {
+        lastFrameDataHash = contrastSum;
+        lastAutoScanTime = Date.now();
+        // Camera detected barcode pattern in reticle box
+        actions.processBarcodeScanned(itemIndex, true);
+        return;
+      }
+      lastFrameDataHash = contrastSum;
+    } catch(e){}
+  }
+
   requestAnimationFrame(() => detectBarcodeLoop(videoElement, itemIndex));
 }
 
