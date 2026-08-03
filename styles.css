@@ -44,11 +44,6 @@ body::-webkit-scrollbar {
   transition: transform 0.08s ease;
 }
 
-@keyframes laserScan {
-  0% { top: 10%; }
-  100% { top: 85%; }
-}
-
 .press:active {
   transform: scale(0.97);
 }

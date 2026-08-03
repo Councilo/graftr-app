@@ -578,13 +578,44 @@ function handleDecodedBarcode(itemIndex, scannedVal) {
   actions.processBarcodeScanned(itemIndex, isMatch, scannedVal);
 }
 
+// Updates the scanner status text in place, without a full render() —
+// a full render() replaces the <video> element and orphans the live camera stream,
+// which is what caused the black/white flashing.
+function setScannerStatus(status) {
+  state.scannerStatus = status;
+  const el = document.getElementById('scanner-status-text');
+  if (el) el.textContent = scannerStatusMessage(status);
+}
+
+// Same idea: update the match/mismatch banner and viewfinder border in place,
+// so the live camera preview is never torn down mid-scan.
+function updateScanFeedbackUI(feedback) {
+  state.scanFeedback = feedback;
+  const banner = document.getElementById('scan-feedback-banner');
+  const viewfinder = document.getElementById('scanner-viewfinder');
+  if (banner) {
+    if (feedback) {
+      banner.style.display = 'flex';
+      banner.style.background = feedback.type === 'match' ? '#dcfce7' : '#fee2e2';
+      banner.style.color = feedback.type === 'match' ? '#15803d' : '#b91c1c';
+      banner.style.border = `1.5px solid ${feedback.type === 'match' ? '#86efac' : '#fca5a5'}`;
+      banner.textContent = feedback.message;
+    } else {
+      banner.style.display = 'none';
+      banner.textContent = '';
+    }
+  }
+  if (viewfinder) {
+    viewfinder.style.borderColor = feedback ? (feedback.type === 'match' ? '#10b981' : '#ef4444') : '#ffcbe1';
+  }
+}
+
 async function startCameraScanner(itemIndex) {
   const video = document.getElementById('barcode-scanner-video');
   if (!video) return;
 
   stopCameraScanner();
-  state.scannerStatus = 'starting';
-  render();
+  setScannerStatus('starting');
 
   let fallbackStatus = 'no-support';
 
@@ -597,8 +628,7 @@ async function startCameraScanner(itemIndex) {
           handleDecodedBarcode(itemIndex, result.getText());
         }
       });
-      state.scannerStatus = 'active';
-      render();
+      setScannerStatus('active');
       return;
     } catch (err) {
       zxingReaderInstance = null;
@@ -618,8 +648,7 @@ async function startCameraScanner(itemIndex) {
       barcodeDetectorInstance = new BarcodeDetector({
         formats: ['ean_13', 'ean_8', 'code_128', 'qr_code', 'upc_a']
       });
-      state.scannerStatus = 'active';
-      render();
+      setScannerStatus('active');
       detectBarcodeLoop(video, itemIndex);
       return;
     } catch (err) {
@@ -643,7 +672,6 @@ function stopCameraScanner() {
   }
   barcodeDetectorInstance = null;
   state.scannerStatus = null;
-  scannerStartedForIndex = null;
 }
 
 async function detectBarcodeLoop(videoElement, itemIndex) {
@@ -725,12 +753,6 @@ function renderCourierPack() {
   const currentScanItem = (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) ? state.packItems[state.scanningBarcodeIndex] : null;
   const nextUnscannedIndex = state.packItems.findIndex((it) => !it.checked);
 
-  const feedbackBannerHtml = state.scanFeedback ? `
-    <div style="width:100%;padding:12px;border-radius:14px;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;background:${state.scanFeedback.type === 'match' ? '#dcfce7' : '#fee2e2'};color:${state.scanFeedback.type === 'match' ? '#15803d' : '#b91c1c'};border:1.5px solid ${state.scanFeedback.type === 'match' ? '#86efac' : '#fca5a5'};box-shadow:0 4px 12px rgba(0,0,0,0.15)">
-      ${escapeHtml(state.scanFeedback.message)}
-    </div>
-  ` : '';
-
   const showManualFallback = state.scannerStatus === 'permission-denied' || state.scannerStatus === 'no-camera' || state.scannerStatus === 'no-support';
 
   const scannerOverlay = currentScanItem ? `
@@ -741,22 +763,19 @@ function renderCourierPack() {
           <button type="button" data-action="closeScanner" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;flex:none">✕</button>
         </div>
 
-        ${feedbackBannerHtml}
+        <div id="scan-feedback-banner" style="width:100%;padding:12px;border-radius:14px;font-size:13px;font-weight:800;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);${state.scanFeedback ? '' : 'display:none;'}background:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#dcfce7' : '#fee2e2'};color:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#15803d' : '#b91c1c'};border:1.5px solid ${state.scanFeedback && state.scanFeedback.type === 'match' ? '#86efac' : '#fca5a5'}">${state.scanFeedback ? escapeHtml(state.scanFeedback.message) : ''}</div>
 
         <!-- Live WebRTC Camera Stream Viewfinder -->
-        <div style="width:260px;height:200px;border:2px solid ${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ffcbe1'};border-radius:18px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
+        <div id="scanner-viewfinder" style="width:260px;height:200px;border:2px solid #ffcbe1;border-radius:18px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
           <video id="barcode-scanner-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
-          <!-- Animated Laser Line -->
-          <div style="position:absolute;left:5%;right:5%;height:3px;background:${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ef4444'};box-shadow:0 0 12px ${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ef4444'};top:10%;animation:laserScan 1.4s infinite alternate ease-in-out"></div>
         </div>
 
-        <div style="font-size:11.5px;opacity:0.7;min-height:14px">${scannerStatusMessage(state.scannerStatus)}</div>
+        <div id="scanner-status-text" style="font-size:11.5px;opacity:0.7;min-height:14px">${scannerStatusMessage(state.scannerStatus)}</div>
 
-        ${showManualFallback ? `
-        <div style="display:flex;gap:8px;width:100%">
+        <div id="manual-barcode-fallback" style="display:${showManualFallback ? 'flex' : 'none'};gap:8px;width:100%">
           <input id="manual-barcode-input" data-bind="manualBarcodeInput" value="${escapeHtml(state.manualBarcodeInput || '')}" placeholder="Or type the barcode number" style="flex:1;min-width:0;border:1.5px solid #3f3f46;background:#1f1f23;color:#fff;border-radius:12px;padding:10px 12px;font-size:12.5px;font-family:monospace;outline:none" />
           <button type="button" data-action="submitManualBarcode" data-arg="${state.scanningBarcodeIndex}" style="background:#ffcbe1;color:#141414;border:none;padding:0 16px;border-radius:12px;font-size:12.5px;font-weight:800;cursor:pointer">Check</button>
-        </div>` : ''}
+        </div>
       </div>
     </div>
   ` : '';
@@ -1921,6 +1940,7 @@ function render() {
       setTimeout(() => startCameraScanner(state.scanningBarcodeIndex), 80);
     }
   } else if (scannerStartedForIndex !== null) {
+    scannerStartedForIndex = null;
     stopCameraScanner();
   }
 
@@ -2152,9 +2172,8 @@ const actions = {
 
     if (isMatch) {
       playMatchSound();
-      state.scanFeedback = { type: 'match', message: `✅ MATCH VERIFIED! ${item.name}` };
       item.checked = true;
-      render();
+      updateScanFeedbackUI({ type: 'match', message: `✅ MATCH VERIFIED! ${item.name}` });
       setTimeout(() => {
         stopCameraScanner();
         state.scanFeedback = null;
@@ -2164,8 +2183,7 @@ const actions = {
     } else {
       playMismatchSound();
       const scannedNote = scannedVal ? ` (scanned ${scannedVal}, expected ${item.barcode})` : '';
-      state.scanFeedback = { type: 'mismatch', message: `⚠️ WRONG PRODUCT!${scannedNote}` };
-      render();
+      updateScanFeedbackUI({ type: 'mismatch', message: `⚠️ WRONG PRODUCT!${scannedNote}` });
     }
   },
   completePackingJob: () => {
