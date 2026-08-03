@@ -755,30 +755,34 @@ function renderCourierPack() {
 
   const showManualFallback = state.scannerStatus === 'permission-denied' || state.scannerStatus === 'no-camera' || state.scannerStatus === 'no-support';
 
-  const scannerOverlay = currentScanItem ? `
-    <div class="graftr-modal-overlay" style="z-index:99999;background:rgba(0,0,0,0.92)">
-      <div style="width:100%;max-width:360px;background:#141414;color:#fff;border-radius:24px;padding:22px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,0.5)">
-        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-          <div style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(currentScanItem.name)}</div>
-          <button type="button" data-action="closeScanner" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;flex:none">✕</button>
-        </div>
+  const scannerBox = currentScanItem ? `
+    <div style="background:#141414;color:#fff;border-radius:20px;padding:18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+        <div style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(currentScanItem.name)}</div>
+        <button type="button" data-action="closeScanner" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;flex:none;line-height:1">✕</button>
+      </div>
 
-        <div id="scan-feedback-banner" style="width:100%;padding:12px;border-radius:14px;font-size:13px;font-weight:800;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);${state.scanFeedback ? '' : 'display:none;'}background:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#dcfce7' : '#fee2e2'};color:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#15803d' : '#b91c1c'};border:1.5px solid ${state.scanFeedback && state.scanFeedback.type === 'match' ? '#86efac' : '#fca5a5'}">${state.scanFeedback ? escapeHtml(state.scanFeedback.message) : ''}</div>
+      <div id="scan-feedback-banner" style="width:100%;padding:12px;border-radius:14px;font-size:13px;font-weight:800;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);${state.scanFeedback ? '' : 'display:none;'}background:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#dcfce7' : '#fee2e2'};color:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#15803d' : '#b91c1c'};border:1.5px solid ${state.scanFeedback && state.scanFeedback.type === 'match' ? '#86efac' : '#fca5a5'}">${state.scanFeedback ? escapeHtml(state.scanFeedback.message) : ''}</div>
 
-        <!-- Live WebRTC Camera Stream Viewfinder -->
-        <div id="scanner-viewfinder" style="width:260px;height:200px;border:2px solid #ffcbe1;border-radius:18px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
-          <video id="barcode-scanner-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
-        </div>
+      <!-- Live WebRTC Camera Stream Viewfinder -->
+      <div id="scanner-viewfinder" style="width:100%;max-width:280px;height:190px;border:2px solid #ffcbe1;border-radius:16px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
+        <video id="barcode-scanner-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
+      </div>
 
-        <div id="scanner-status-text" style="font-size:11.5px;opacity:0.7;min-height:14px">${scannerStatusMessage(state.scannerStatus)}</div>
+      <div id="scanner-status-text" style="font-size:11.5px;opacity:0.7;min-height:14px">${scannerStatusMessage(state.scannerStatus)}</div>
 
-        <div id="manual-barcode-fallback" style="display:${showManualFallback ? 'flex' : 'none'};gap:8px;width:100%">
-          <input id="manual-barcode-input" data-bind="manualBarcodeInput" value="${escapeHtml(state.manualBarcodeInput || '')}" placeholder="Or type the barcode number" style="flex:1;min-width:0;border:1.5px solid #3f3f46;background:#1f1f23;color:#fff;border-radius:12px;padding:10px 12px;font-size:12.5px;font-family:monospace;outline:none" />
-          <button type="button" data-action="submitManualBarcode" data-arg="${state.scanningBarcodeIndex}" style="background:#ffcbe1;color:#141414;border:none;padding:0 16px;border-radius:12px;font-size:12.5px;font-weight:800;cursor:pointer">Check</button>
-        </div>
+      <div id="manual-barcode-fallback" style="display:${showManualFallback ? 'flex' : 'none'};gap:8px;width:100%">
+        <input id="manual-barcode-input" data-bind="manualBarcodeInput" value="${escapeHtml(state.manualBarcodeInput || '')}" placeholder="Or type the barcode number" style="flex:1;min-width:0;border:1.5px solid #3f3f46;background:#1f1f23;color:#fff;border-radius:12px;padding:10px 12px;font-size:12.5px;font-family:monospace;outline:none" />
+        <button type="button" data-action="submitManualBarcode" data-arg="${state.scanningBarcodeIndex}" style="background:#ffcbe1;color:#141414;border:none;padding:0 16px;border-radius:12px;font-size:12.5px;font-weight:800;cursor:pointer">Check</button>
       </div>
     </div>
-  ` : '';
+  ` : (allPacked ? '' : `
+    <div class="press" data-action="openScanner" data-arg="${nextUnscannedIndex}" style="border:1.5px dashed rgba(20,20,20,0.3);border-radius:20px;padding:26px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;cursor:pointer">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="1.6"><rect x="2" y="6" width="2" height="12"/><rect x="6" y="6" width="1" height="12"/><rect x="9" y="6" width="2" height="12"/><rect x="13" y="6" width="1" height="12"/><rect x="16" y="6" width="2" height="12"/><rect x="20" y="6" width="2" height="12"/></svg>
+      <div style="font-size:13.5px;font-weight:700">Tap to scan barcode or QR</div>
+      <div style="font-size:12px;opacity:0.55">Next: ${escapeHtml(state.packItems[nextUnscannedIndex].name)}</div>
+    </div>
+  `);
 
   const itemsHtml = state.packItems.map((item) => {
     const isChecked = item.checked;
@@ -812,6 +816,8 @@ function renderCourierPack() {
       </div>
       <div style="font-size:12.5px;opacity:0.6;text-align:right">${packedCount} of ${totalPack} items verified</div>
 
+      ${scannerBox}
+
       <div style="display:flex;flex-direction:column;gap:10px">
         ${itemsHtml}
       </div>
@@ -820,13 +826,7 @@ function renderCourierPack() {
         <button type="button" data-action="completePackingJob" style="background:#10b981;color:#fff;border:none;padding:16px;border-radius:18px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;box-shadow:0 8px 24px rgba(16,185,129,0.3)">
           📦 All Items Verified — Complete Packing & Start Delivery
         </button>
-      ` : `
-        <button type="button" data-action="openScanner" data-arg="${nextUnscannedIndex}" style="background:#141414;color:#fff;border:none;padding:14px;border-radius:16px;font-size:13.5px;font-weight:700;cursor:pointer;margin-top:4px">
-          📷 Scan Item
-        </button>
-      `}
-
-      ${scannerOverlay}
+      ` : ''}
     </div>
   `;
 }
