@@ -723,6 +723,7 @@ function renderCourierPack() {
   const allPacked = packedCount === totalPack && totalPack > 0;
 
   const currentScanItem = (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) ? state.packItems[state.scanningBarcodeIndex] : null;
+  const nextUnscannedIndex = state.packItems.findIndex((it) => !it.checked);
 
   const feedbackBannerHtml = state.scanFeedback ? `
     <div style="width:100%;padding:12px;border-radius:14px;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;background:${state.scanFeedback.type === 'match' ? '#dcfce7' : '#fee2e2'};color:${state.scanFeedback.type === 'match' ? '#15803d' : '#b91c1c'};border:1.5px solid ${state.scanFeedback.type === 'match' ? '#86efac' : '#fca5a5'};box-shadow:0 4px 12px rgba(0,0,0,0.15)">
@@ -730,26 +731,20 @@ function renderCourierPack() {
     </div>
   ` : '';
 
+  const showManualFallback = state.scannerStatus === 'permission-denied' || state.scannerStatus === 'no-camera' || state.scannerStatus === 'no-support';
+
   const scannerOverlay = currentScanItem ? `
     <div class="graftr-modal-overlay" style="z-index:99999;background:rgba(0,0,0,0.92)">
       <div style="width:100%;max-width:360px;background:#141414;color:#fff;border-radius:24px;padding:22px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,0.5)">
         <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-          <div style="font-size:15px;font-weight:800;color:#ffcbe1">📷 Live Barcode Match Scanner</div>
-          <button type="button" data-action="closeScanner" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer">✕</button>
-        </div>
-
-        <div style="display:flex;align-items:center;gap:12px;background:#262626;padding:8px 14px;border-radius:14px;width:100%;text-align:left">
-          <img src="${currentScanItem.image}" style="width:44px;height:44px;object-fit:contain;background:#fff;border-radius:8px;padding:2px" alt="${escapeHtml(currentScanItem.name)}" />
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(currentScanItem.name)}</div>
-            <div style="font-size:11px;color:#a1a1aa;font-family:monospace">Expected EAN: ${currentScanItem.barcode}</div>
-          </div>
+          <div style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(currentScanItem.name)}</div>
+          <button type="button" data-action="closeScanner" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;flex:none">✕</button>
         </div>
 
         ${feedbackBannerHtml}
 
         <!-- Live WebRTC Camera Stream Viewfinder -->
-        <div style="width:260px;height:170px;border:2px solid ${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ffcbe1'};border-radius:18px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
+        <div style="width:260px;height:200px;border:2px solid ${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ffcbe1'};border-radius:18px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
           <video id="barcode-scanner-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
           <!-- Animated Laser Line -->
           <div style="position:absolute;left:5%;right:5%;height:3px;background:${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ef4444'};box-shadow:0 0 12px ${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ef4444'};top:10%;animation:laserScan 1.4s infinite alternate ease-in-out"></div>
@@ -757,24 +752,16 @@ function renderCourierPack() {
 
         <div style="font-size:11.5px;opacity:0.7;min-height:14px">${scannerStatusMessage(state.scannerStatus)}</div>
 
+        ${showManualFallback ? `
         <div style="display:flex;gap:8px;width:100%">
           <input id="manual-barcode-input" data-bind="manualBarcodeInput" value="${escapeHtml(state.manualBarcodeInput || '')}" placeholder="Or type the barcode number" style="flex:1;min-width:0;border:1.5px solid #3f3f46;background:#1f1f23;color:#fff;border-radius:12px;padding:10px 12px;font-size:12.5px;font-family:monospace;outline:none" />
           <button type="button" data-action="submitManualBarcode" data-arg="${state.scanningBarcodeIndex}" style="background:#ffcbe1;color:#141414;border:none;padding:0 16px;border-radius:12px;font-size:12.5px;font-weight:800;cursor:pointer">Check</button>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-          <button type="button" data-action="testScanMatch" data-arg="${state.scanningBarcodeIndex}" style="width:100%;background:#10b981;color:#fff;border:none;padding:12px;border-radius:14px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,129,0.3)">
-            ✅ Simulate Match
-          </button>
-          <button type="button" data-action="testScanMismatch" data-arg="${state.scanningBarcodeIndex}" style="width:100%;background:#ef4444;color:#fff;border:none;padding:12px;border-radius:14px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(239,68,68,0.3)">
-            ⚠️ Simulate Mismatch
-          </button>
-        </div>
+        </div>` : ''}
       </div>
     </div>
   ` : '';
 
-  const itemsHtml = state.packItems.map((item, i) => {
+  const itemsHtml = state.packItems.map((item) => {
     const isChecked = item.checked;
     return `
       <div style="background:${isChecked ? '#f0fdf4' : '#fff'};border:1.5px solid ${isChecked ? '#86efac' : 'rgba(20,20,20,0.12)'};border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
@@ -782,12 +769,10 @@ function renderCourierPack() {
           <img src="${item.image}" style="width:42px;height:42px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:2px;border:1px solid #e2e8f0" alt="${escapeHtml(item.name)}" />
           <div style="flex:1;min-width:0">
             <div style="font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${isChecked ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(item.name)}</div>
-            <div style="font-size:11px;opacity:0.55;font-family:monospace;margin-top:2px">EAN: ${item.barcode} · Qty: ${item.qty}</div>
+            <div style="font-size:11px;opacity:0.55;margin-top:2px">Qty: ${item.qty}</div>
           </div>
         </div>
-        <button type="button" data-action="openScanner" data-arg="${i}" style="background:${isChecked ? '#dcfce7' : '#141414'};color:${isChecked ? '#15803d' : '#fff'};border:none;padding:8px 12px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer">
-          ${isChecked ? 'Ticked ✓' : '📷 Scan'}
-        </button>
+        <span title="${isChecked ? 'Scanned' : 'Not scanned yet'}" style="width:16px;height:16px;min-width:16px;border-radius:50%;background:${isChecked ? '#10b981' : '#ef4444'};box-shadow:0 0 0 3px ${isChecked ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}"></span>
       </div>
     `;
   }).join('');
@@ -817,8 +802,8 @@ function renderCourierPack() {
           📦 All Items Verified — Complete Packing & Start Delivery
         </button>
       ` : `
-        <button type="button" data-action="simulateScanNext" style="background:#141414;color:#fff;border:none;padding:14px;border-radius:16px;font-size:13.5px;font-weight:700;cursor:pointer;margin-top:4px">
-          ⚡ Auto-Scan Next Unscanned Item
+        <button type="button" data-action="openScanner" data-arg="${nextUnscannedIndex}" style="background:#141414;color:#fff;border:none;padding:14px;border-radius:16px;font-size:13.5px;font-weight:700;cursor:pointer;margin-top:4px">
+          📷 Scan Item
         </button>
       `}
 
@@ -2154,12 +2139,6 @@ const actions = {
     state.scanningBarcodeIndex = null;
     render();
   },
-  testScanMatch: (index) => {
-    actions.processBarcodeScanned(index, true, state.packItems[index] ? state.packItems[index].barcode : null);
-  },
-  testScanMismatch: (index) => {
-    actions.processBarcodeScanned(index, false, '0000000000000');
-  },
   submitManualBarcode: (index) => {
     const value = (state.manualBarcodeInput || '').trim();
     if (!value) return;
@@ -2187,16 +2166,6 @@ const actions = {
       const scannedNote = scannedVal ? ` (scanned ${scannedVal}, expected ${item.barcode})` : '';
       state.scanFeedback = { type: 'mismatch', message: `⚠️ WRONG PRODUCT!${scannedNote}` };
       render();
-    }
-  },
-  confirmScan: (index) => {
-    actions.testScanMatch(index);
-  },
-  simulateScanNext: () => {
-    if (!state.packItems) return;
-    const idx = state.packItems.findIndex((it) => !it.checked);
-    if (idx >= 0) {
-      actions.testScanMatch(idx);
     }
   },
   completePackingJob: () => {
