@@ -583,10 +583,13 @@ function stopCameraScanner() {
 async function detectBarcodeLoop(videoElement, itemIndex) {
   if (!barcodeDetectorInstance || !mediaStreamInstance || state.scanningBarcodeIndex !== itemIndex) return;
   try {
+    const item = state.packItems ? state.packItems[itemIndex] : null;
     const barcodes = await barcodeDetectorInstance.detect(videoElement);
     if (barcodes && barcodes.length > 0) {
-      actions.confirmScan(itemIndex);
-      return;
+      const scannedVal = barcodes[0].rawValue;
+      const isMatch = (item && (scannedVal === item.barcode || scannedVal.includes(item.barcode)));
+      actions.processBarcodeScanned(itemIndex, isMatch);
+      if (isMatch) return;
     }
   } catch(e){}
   requestAnimationFrame(() => detectBarcodeLoop(videoElement, itemIndex));
@@ -615,19 +618,23 @@ function renderCourierPack() {
     address: `${state.userProfile.address}, ${state.userProfile.postcode}`,
     items: [
       { name: 'Warburtons Toastie Thick White Bread', qty: 1 },
-      { name: 'Morrisons Fresh Semi-Skimmed Milk 2L', qty: 1 },
-      { name: 'Morrisons Free Range Eggs 6-pack', qty: 1 },
-      { name: 'Cadbury Dairy Milk Chocolate 110g', qty: 1 }
+      { name: 'Morrisons Fresh Semi-Skimmed Milk', qty: 1 },
+      { name: 'Morrisons Free Range Medium Eggs', qty: 1 },
+      { name: 'Cadbury Dairy Milk Chocolate Bar', qty: 1 }
     ]
   };
 
   if (!state.packItems || state.packItems.length === 0 || state.activeOrderId !== state.lastPackedOrderId) {
-    state.packItems = activeOrder.items.map((it, idx) => ({
-      name: it.name,
-      qty: it.qty || 1,
-      barcode: `5000119${1000 + idx * 42}`,
-      checked: false
-    }));
+    state.packItems = activeOrder.items.map((it, idx) => {
+      const prod = PRODUCTS.find(p => p.name.toLowerCase() === it.name.toLowerCase() || it.name.toLowerCase().includes(p.name.toLowerCase()));
+      return {
+        name: it.name,
+        qty: it.qty || 1,
+        image: prod ? prod.image : 'assets/products/product_1.png',
+        barcode: prod ? `500011900${prod.id < 10 ? '0' + prod.id : prod.id}` : `5000119${1000 + idx * 42}`,
+        checked: false
+      };
+    });
     state.lastPackedOrderId = activeOrder.id;
   }
 
@@ -636,28 +643,47 @@ function renderCourierPack() {
   const progressPercent = totalPack > 0 ? Math.round((packedCount / totalPack) * 100) : 0;
   const allPacked = packedCount === totalPack && totalPack > 0;
 
-  const scannerOverlay = (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) ? `
+  const currentScanItem = (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) ? state.packItems[state.scanningBarcodeIndex] : null;
+
+  const feedbackBannerHtml = state.scanFeedback ? `
+    <div style="width:100%;padding:12px;border-radius:14px;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;background:${state.scanFeedback.type === 'match' ? '#dcfce7' : '#fee2e2'};color:${state.scanFeedback.type === 'match' ? '#15803d' : '#b91c1c'};border:1.5px solid ${state.scanFeedback.type === 'match' ? '#86efac' : '#fca5a5'};box-shadow:0 4px 12px rgba(0,0,0,0.15)">
+      ${escapeHtml(state.scanFeedback.message)}
+    </div>
+  ` : '';
+
+  const scannerOverlay = currentScanItem ? `
     <div class="graftr-modal-overlay" style="z-index:99999;background:rgba(0,0,0,0.92)">
-      <div style="width:100%;max-width:360px;background:#141414;color:#fff;border-radius:24px;padding:24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;box-shadow:0 12px 32px rgba(0,0,0,0.5)">
+      <div style="width:100%;max-width:360px;background:#141414;color:#fff;border-radius:24px;padding:22px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;box-shadow:0 12px 32px rgba(0,0,0,0.5)">
         <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-          <div style="font-size:16px;font-weight:800;color:#ffcbe1">📷 Live Camera Barcode Scanner</div>
+          <div style="font-size:15px;font-weight:800;color:#ffcbe1">📷 Live Barcode Match Scanner</div>
           <button type="button" data-action="closeScanner" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer">✕</button>
         </div>
 
-        <div style="font-size:13px;opacity:0.8">Align device camera with barcode on<br><b style="color:#fff">${escapeHtml(state.packItems[state.scanningBarcodeIndex].name)}</b></div>
-
-        <!-- Live WebRTC Camera Stream Viewfinder -->
-        <div style="width:260px;height:190px;border:2px solid #ffcbe1;border-radius:18px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
-          <video id="barcode-scanner-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
-          <!-- Animated Laser Line -->
-          <div style="position:absolute;left:5%;right:5%;height:3px;background:#ef4444;box-shadow:0 0 12px #ef4444;top:10%;animation:laserScan 1.4s infinite alternate ease-in-out"></div>
+        <div style="display:flex;align-items:center;gap:12px;background:#262626;padding:8px 14px;border-radius:14px;width:100%;text-align:left">
+          <img src="${currentScanItem.image}" style="width:44px;height:44px;object-fit:contain;background:#fff;border-radius:8px;padding:2px" alt="${escapeHtml(currentScanItem.name)}" />
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(currentScanItem.name)}</div>
+            <div style="font-size:11px;color:#a1a1aa;font-family:monospace">Expected EAN: ${currentScanItem.barcode}</div>
+          </div>
         </div>
 
-        <div style="font-size:12px;font-family:monospace;color:#a1a1aa">Target EAN Barcode: ${state.packItems[state.scanningBarcodeIndex].barcode}</div>
+        ${feedbackBannerHtml}
 
-        <button type="button" data-action="confirmScan" data-arg="${state.scanningBarcodeIndex}" style="width:100%;background:#10b981;color:#fff;border:none;padding:14px;border-radius:16px;font-size:14.5px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(16,185,129,0.3)">
-          ⚡ Trigger Scan Match (BEEP ✓)
-        </button>
+        <!-- Live WebRTC Camera Stream Viewfinder -->
+        <div style="width:260px;height:170px;border:2px solid ${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ffcbe1'};border-radius:18px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
+          <video id="barcode-scanner-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
+          <!-- Animated Laser Line -->
+          <div style="position:absolute;left:5%;right:5%;height:3px;background:${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ef4444'};box-shadow:0 0 12px ${state.scanFeedback ? (state.scanFeedback.type === 'match' ? '#10b981' : '#ef4444') : '#ef4444'};top:10%;animation:laserScan 1.4s infinite alternate ease-in-out"></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+          <button type="button" data-action="testScanMatch" data-arg="${state.scanningBarcodeIndex}" style="width:100%;background:#10b981;color:#fff;border:none;padding:12px;border-radius:14px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,129,0.3)">
+            ✅ Scan Correct Item (Match ✓)
+          </button>
+          <button type="button" data-action="testScanMismatch" data-arg="${state.scanningBarcodeIndex}" style="width:100%;background:#ef4444;color:#fff;border:none;padding:12px;border-radius:14px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(239,68,68,0.3)">
+            ⚠️ Scan Wrong Item (Mismatch ✕)
+          </button>
+        </div>
       </div>
     </div>
   ` : '';
@@ -665,18 +691,16 @@ function renderCourierPack() {
   const itemsHtml = state.packItems.map((item, i) => {
     const isChecked = item.checked;
     return `
-      <div style="background:${isChecked ? '#f0fdf4' : '#fff'};border:1.5px solid ${isChecked ? '#86efac' : 'rgba(20,20,20,0.12)'};border-radius:16px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div style="background:${isChecked ? '#f0fdf4' : '#fff'};border:1.5px solid ${isChecked ? '#86efac' : 'rgba(20,20,20,0.12)'};border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
         <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
-          <div style="width:28px;height:28px;border-radius:50%;background:${isChecked ? '#10b981' : '#f1f5f9'};color:${isChecked ? '#fff' : '#64748b'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px">
-            ${isChecked ? '✓' : i + 1}
-          </div>
+          <img src="${item.image}" style="width:42px;height:42px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:2px;border:1px solid #e2e8f0" alt="${escapeHtml(item.name)}" />
           <div style="flex:1;min-width:0">
-            <div style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${isChecked ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(item.name)}</div>
-            <div style="font-size:11.5px;opacity:0.5;font-family:monospace;margin-top:2px">EAN: ${item.barcode} · Qty: ${item.qty}</div>
+            <div style="font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${isChecked ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(item.name)}</div>
+            <div style="font-size:11px;opacity:0.55;font-family:monospace;margin-top:2px">EAN: ${item.barcode} · Qty: ${item.qty}</div>
           </div>
         </div>
-        <button type="button" data-action="openScanner" data-arg="${i}" style="background:${isChecked ? '#dcfce7' : '#141414'};color:${isChecked ? '#15803d' : '#fff'};border:none;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
-          ${isChecked ? 'Scanned ✓' : '📷 Scan Barcode'}
+        <button type="button" data-action="openScanner" data-arg="${i}" style="background:${isChecked ? '#dcfce7' : '#141414'};color:${isChecked ? '#15803d' : '#fff'};border:none;padding:8px 12px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer">
+          ${isChecked ? 'Ticked ✓' : '📷 Scan'}
         </button>
       </div>
     `;
@@ -689,7 +713,7 @@ function renderCourierPack() {
           <div style="font-size:22px;font-weight:800">Pick &amp; Pack Scanner</div>
           <div style="font-size:12.5px;opacity:0.65">Order ${activeOrder.id} · Morrisons Daily</div>
         </div>
-        <span style="background:#ffcbe1;color:#141414;font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">${progressPercent}% Done</span>
+        <span style="background:${allPacked ? '#dcfce7' : '#ffcbe1'};color:${allPacked ? '#15803d' : '#141414'};font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">${progressPercent}% Done</span>
       </div>
 
       <!-- Live Progress Bar -->
@@ -2030,26 +2054,51 @@ const actions = {
     render();
   },
   openScanner: (index) => {
+    state.scanFeedback = null;
     state.scanningBarcodeIndex = index;
     render();
   },
   closeScanner: () => {
+    stopCameraScanner();
+    state.scanFeedback = null;
     state.scanningBarcodeIndex = null;
     render();
   },
-  confirmScan: (index) => {
-    playScanBeepSound();
-    if (state.packItems && state.packItems[index]) {
-      state.packItems[index].checked = true;
+  testScanMatch: (index) => {
+    actions.processBarcodeScanned(index, true);
+  },
+  testScanMismatch: (index) => {
+    actions.processBarcodeScanned(index, false);
+  },
+  processBarcodeScanned: (index, isMatch) => {
+    const item = state.packItems ? state.packItems[index] : null;
+    if (!item) return;
+
+    if (isMatch) {
+      playMatchSound();
+      state.scanFeedback = { type: 'match', message: `✅ MATCH VERIFIED! ${item.name}` };
+      item.checked = true;
+      render();
+      setTimeout(() => {
+        stopCameraScanner();
+        state.scanFeedback = null;
+        state.scanningBarcodeIndex = null;
+        render();
+      }, 1100);
+    } else {
+      playMismatchSound();
+      state.scanFeedback = { type: 'mismatch', message: `⚠️ WRONG PRODUCT! Incorrect item scanned.` };
+      render();
     }
-    state.scanningBarcodeIndex = null;
-    render();
+  },
+  confirmScan: (index) => {
+    actions.testScanMatch(index);
   },
   simulateScanNext: () => {
     if (!state.packItems) return;
     const idx = state.packItems.findIndex((it) => !it.checked);
     if (idx >= 0) {
-      actions.confirmScan(idx);
+      actions.testScanMatch(idx);
     }
   },
   completePackingJob: () => {
