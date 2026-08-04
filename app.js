@@ -370,6 +370,7 @@ const state = {
   liveEtaMinutes: null,
   liveEtaUpdatedAt: null,
   shopperInboxScrollTop: null,
+  courierInboxScrollTop: null,
   packItems: [
     { name: 'Semi-skimmed milk 2L', qty: 1, checked: true },
     { name: 'Free range eggs x6', qty: 1, checked: true },
@@ -776,9 +777,28 @@ function renderCourierActivity() {
     </div>`;
   }
 
+  const trackingCard = `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
+      <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
+        <span style="font-size:15.5px;font-weight:700">🚴 Deliveries</span>
+        ${inner}
+      </div>
+    </div>`;
+
+  const messagesCard = `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
+      <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+        ${renderInboxHeader(state.courierInbox, 'markAllCourierRead', '💬 Messages & Updates', '15.5px')}
+        <div id="courier-inbox-messages" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:2px">
+          ${renderInboxList(state.courierInbox, 'toggleCourierRead')}
+        </div>
+      </div>
+    </div>`;
+
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
     <div style="font-size:25px;font-weight:700">Activity</div>
-    ${inner}
+    ${trackingCard}
+    ${messagesCard}
   </div>`;
 }
 
@@ -1100,12 +1120,6 @@ function renderInboxHeader(list, markAllAction, title, size) {
   </div>`;
 }
 
-function renderCourierInbox() {
-  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:10px">
-    ${renderInboxHeader(state.courierInbox, 'markAllCourierRead', 'Inbox')}
-    ${renderInboxList(state.courierInbox, 'toggleCourierRead')}
-  </div>`;
-}
 
 let mediaStreamInstance = null;
 let barcodeDetectorInstance = null;
@@ -2031,19 +2045,15 @@ function tabStyle(key) {
 function renderCourierTabs() {
   return `<div style="flex:none;display:flex;border-top:1px solid rgba(20,20,20,0.1);padding:10px 4px 22px;justify-content:space-around;background:#fff">
     <div data-action="goActivity" style="${tabStyle('courier-activity')}">
-      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2c-3 0-5.5 2.4-5.5 5.5C4.5 11 10 18 10 18s5.5-7 5.5-10.5C15.5 4.4 13 2 10 2z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="7.5" r="2" fill="currentColor"/></svg>
+      <span style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2c-3 0-5.5 2.4-5.5 5.5C4.5 11 10 18 10 18s5.5-7 5.5-10.5C15.5 4.4 13 2 10 2z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="7.5" r="2" fill="currentColor"/></svg>
+        ${state.courierInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
+      </span>
       Activity
     </div>
     <div data-action="goEarnings" style="${tabStyle('courier-earnings')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="5" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2 9h16" stroke="currentColor" stroke-width="1.6"/><circle cx="14" cy="12.5" r="1.2" fill="currentColor"/></svg>
       Earnings
-    </div>
-    <div data-action="goCourierInbox" style="${tabStyle('courier-inbox')}">
-      <span style="position:relative">
-        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v7a2 2 0 01-2 2H9l-4 3v-3H5a2 2 0 01-2-2V5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-        ${state.courierInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
-      </span>
-      Inbox
     </div>
     <div data-action="goPack" style="${tabStyle('courier-pack')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2l7 3.5v9L10 18l-7-3.5v-9L10 2z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 5.5L10 9l6.5-3.5M10 9v9" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
@@ -2069,10 +2079,10 @@ function renderShopperTabs() {
     </div>
     <div class="press floating-tab" data-action="goShopperInbox" style="${tabStyle('shopper-inbox')}">
       <span style="position:relative">
-        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v7a2 2 0 01-2 2H9l-4 3v-3H5a2 2 0 01-2-2V5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2c-3 0-5.5 2.4-5.5 5.5C4.5 11 10 18 10 18s5.5-7 5.5-10.5C15.5 4.4 13 2 10 2z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="7.5" r="2" fill="currentColor"/></svg>
         ${state.shopperInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
       </span>
-      Inbox
+      Activity
     </div>
     <div class="press floating-tab" data-action="goShopperAccount" style="${tabStyle('shopper-account')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="6.5" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 17c1-3.5 4-5 6.5-5s5.5 1.5 6.5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
@@ -2490,15 +2500,28 @@ function renderShopperInbox() {
     </div>
   `;
 
-  return `<div style="padding:0 18px 12px;display:flex;flex-direction:column;gap:12px">
-    <div style="font-size:25px;font-weight:700">Inbox</div>
-    ${trackingHtml}
-    <div style="border-top:1.5px solid rgba(20,20,20,0.08);padding-top:12px;display:flex;flex-direction:column;gap:10px">
-      ${renderInboxHeader(state.shopperInbox, 'markAllShopperRead', 'Messages & Updates', '15px')}
-      <div id="shopper-inbox-messages" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:2px">
-        ${renderInboxList(state.shopperInbox, 'toggleShopperRead')}
+  const trackingCard = `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
+      <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
+        <span style="font-size:15.5px;font-weight:700">📦 Order Tracking</span>
+        ${trackingHtml}
       </div>
-    </div>
+    </div>`;
+
+  const messagesCard = `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
+      <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+        ${renderInboxHeader(state.shopperInbox, 'markAllShopperRead', '💬 Messages & Updates', '15.5px')}
+        <div id="shopper-inbox-messages" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:2px">
+          ${renderInboxList(state.shopperInbox, 'toggleShopperRead')}
+        </div>
+      </div>
+    </div>`;
+
+  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+    <div style="font-size:25px;font-weight:700">Activity</div>
+    ${trackingCard}
+    ${messagesCard}
   </div>`;
 }
 
@@ -2718,7 +2741,6 @@ const screenRenderers = {
   login: renderLogin,
   'courier-activity': renderCourierActivity,
   'courier-earnings': renderCourierEarnings,
-  'courier-inbox': renderCourierInbox,
   'courier-pack': renderCourierPack,
   'courier-account': renderCourierAccount,
   'shopper-shop': renderShopperShop,
@@ -2779,6 +2801,14 @@ function render() {
     if (msgBox) {
       if (typeof state.shopperInboxScrollTop === 'number') msgBox.scrollTop = state.shopperInboxScrollTop;
       msgBox.addEventListener('scroll', () => { state.shopperInboxScrollTop = msgBox.scrollTop; });
+    }
+  }
+
+  if (state.screen === 'courier-activity') {
+    const courierMsgBox = root.querySelector('#courier-inbox-messages');
+    if (courierMsgBox) {
+      if (typeof state.courierInboxScrollTop === 'number') courierMsgBox.scrollTop = state.courierInboxScrollTop;
+      courierMsgBox.addEventListener('scroll', () => { state.courierInboxScrollTop = courierMsgBox.scrollTop; });
     }
   }
 
@@ -3198,7 +3228,6 @@ const actions = {
   chooseShopper: () => { state.mode = 'shopper'; state.screen = 'shopper-shop'; render(); },
   goActivity: () => { state.screen = 'courier-activity'; render(); },
   goEarnings: () => { state.screen = 'courier-earnings'; render(); },
-  goCourierInbox: () => { state.screen = 'courier-inbox'; render(); },
   goPack: () => { state.screen = 'courier-pack'; render(); },
   goCourierAccount: () => { state.screen = 'courier-account'; render(); },
   goShop: () => { state.screen = 'shopper-shop'; render(); },
