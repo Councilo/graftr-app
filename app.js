@@ -148,6 +148,52 @@ function saveLoggedOrders() {
   try { localStorage.setItem('graftr_logged_orders', JSON.stringify(state.orders)); } catch(e){}
 }
 
+const PENDING_ORDER_KEY = 'graftr_pending_order';
+
+// Shared by both the real Stripe-paid path and the no-backend-configured fallback,
+// so an order is logged the same way regardless of how payment happened.
+function finalizeOrder(snapshot) {
+  const newId = '#' + Math.floor(4824 + Math.random() * 100);
+  const newOrder = {
+    id: newId,
+    merchant: 'Morrisons Daily',
+    timestamp: 'Just now',
+    items: snapshot.items,
+    subtotal: snapshot.subtotal,
+    deliveryFee: snapshot.deliveryFee,
+    total: snapshot.subtotal + snapshot.deliveryFee,
+    status: 'Pending Courier Acceptance',
+    address: snapshot.address,
+    courier: null,
+  };
+  state.orders.unshift(newOrder);
+  state.activeOrderId = newId;
+  state.cart = {};
+  state.showCheckoutModal = false;
+  state.mode = 'shopper';
+  saveLoggedOrders();
+  state.screen = 'shopper-track';
+  render();
+}
+
+function checkStripeRedirectResult() {
+  const params = new URLSearchParams(window.location.search);
+  const payment = params.get('payment');
+  if (!payment) return;
+
+  if (payment === 'success') {
+    const raw = localStorage.getItem(PENDING_ORDER_KEY);
+    if (raw) {
+      try {
+        finalizeOrder(JSON.parse(raw));
+      } catch (e) { /* malformed snapshot, nothing to recover */ }
+      localStorage.removeItem(PENDING_ORDER_KEY);
+    }
+  }
+  // payment === 'cancelled': nothing to finalize, just strip the query string below.
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
 const state = {
   screen: 'login',
   mode: null,
@@ -156,6 +202,7 @@ const state = {
   activeOrderId: '#4822',
   showAddressModal: false,
   showCheckoutModal: false,
+  placingOrder: false,
   scannerStatus: null,
   manualBarcodeInput: '',
   aiChatOpen: false,
@@ -1194,8 +1241,8 @@ function renderCheckoutModal() {
           </div>
         </div>
 
-        <button type="button" data-action="placeOrder" style="background:#141414;color:#fff;border:none;padding:16px;border-radius:18px;font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.25);margin-top:4px">
-          🔒 Pay &amp; Place Order (£${grandTotal.toFixed(2)})
+        <button type="button" data-action="placeOrder" ${state.placingOrder ? 'disabled' : ''} style="background:${state.placingOrder ? 'rgba(20,20,20,0.4)' : '#141414'};color:#fff;border:none;padding:16px;border-radius:18px;font-weight:800;font-size:15px;cursor:${state.placingOrder ? 'default' : 'pointer'};box-shadow:0 8px 20px rgba(0,0,0,0.25);margin-top:4px">
+          ${state.placingOrder ? 'Redirecting to secure checkout…' : `🔒 Pay &amp; Place Order (£${grandTotal.toFixed(2)})`}
         </button>
       </div>
     </div>
@@ -1980,30 +2027,44 @@ const actions = {
     render();
   },
   closeCheckoutModal: () => { state.showCheckoutModal = false; render(); },
-  placeOrder: () => {
+  placeOrder: async () => {
     const lines = cartLines();
-    if (lines.length === 0) return;
+    if (lines.length === 0 || state.placingOrder) return;
     const sub = cartTotal();
-    const newId = '#' + Math.floor(4824 + Math.random() * 100);
-    const newOrder = {
-      id: newId,
-      merchant: 'Morrisons Daily',
-      timestamp: 'Just now',
+    const deliveryFee = 1.99;
+
+    const snapshot = {
       items: lines.map(l => ({ name: l.product.name, qty: l.qty, price: l.product.estimated_price_gbp })),
       subtotal: sub,
-      deliveryFee: 1.99,
-      total: sub + 1.99,
-      status: 'Pending Courier Acceptance',
+      deliveryFee,
       address: `${state.userProfile.address}, ${state.userProfile.postcode}`,
-      courier: null
     };
-    state.orders.unshift(newOrder);
-    state.activeOrderId = newId;
-    state.cart = {};
-    state.showCheckoutModal = false;
-    saveLoggedOrders();
-    state.screen = 'shopper-track';
+
+    state.placingOrder = true;
     render();
+
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: lines.map(l => ({ name: l.product.name, qty: l.qty, unitPrice: l.product.estimated_price_gbp })),
+          deliveryFee,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) {
+        localStorage.setItem(PENDING_ORDER_KEY, JSON.stringify(snapshot));
+        window.location.href = data.url;
+        return;
+      }
+      console.warn('Stripe checkout unavailable, placing a mock order instead:', data.error);
+    } catch (err) {
+      console.warn('Stripe checkout request failed, placing a mock order instead:', err);
+    }
+
+    state.placingOrder = false;
+    finalizeOrder(snapshot);
   },
   acceptCourierJob: (orderId) => {
     const order = state.orders.find(o => o.id === orderId);
@@ -2315,5 +2376,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+  checkStripeRedirectResult();
   render();
 });
