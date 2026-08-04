@@ -695,17 +695,17 @@ function renderCourierActivity() {
   // Real Pending Jobs placed by Shopper
   const pendingOrders = state.orders.filter(o => o.status === 'Pending Courier Acceptance');
   const pendingJobsHtml = pendingOrders.length > 0 ? pendingOrders.map(o => `
-    <div style="background:#fff;border:2px solid #141414;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 20px rgba(0,0,0,0.08);margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="background:#141414;color:#ffffff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">✨ LIVE SHOPPER ORDER (${o.id})</span>
-        <span style="font-size:14px;font-weight:800;color:#141414">£${o.total ? o.total.toFixed(2) : '7.80'}</span>
+    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+        <span style="font-size:12.5px;color:#6b6b6b">New job · ${o.id}</span>
+        <span style="font-size:14px;font-weight:600;color:#141414;flex:0 0 auto">£${o.total ? o.total.toFixed(2) : '7.80'}</span>
       </div>
       <div>
-        <div style="font-size:15px;font-weight:700">${escapeHtml(o.merchant)} ➔ ${escapeHtml(o.address)}</div>
-        <div style="font-size:12.5px;opacity:0.65">${o.items ? o.items.length : 1} items · Customer: ${escapeHtml(state.userProfile.name)}</div>
+        <div style="font-size:14px;font-weight:500;line-height:1.45">${escapeHtml(o.merchant)} to ${escapeHtml(o.address)}</div>
+        <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${o.items ? o.items.length : 1} items · ${escapeHtml(state.userProfile.name)}</div>
       </div>
-      <button type="button" data-action="acceptCourierJob" data-arg="${o.id}" style="background:#141414;color:#fff;border:none;padding:12px;border-radius:14px;font-weight:800;font-size:13.5px;cursor:pointer;width:100%">
-        🚴 Accept Delivery Job (${o.id})
+      <button type="button" data-action="acceptCourierJob" data-arg="${o.id}" style="background:#141414;color:#fff;border:none;padding:11px;border-radius:12px;font-weight:600;font-size:13.5px;cursor:pointer;width:100%;font-family:inherit">
+        Accept job
       </button>
     </div>
   `).join('') : '';
@@ -717,17 +717,17 @@ function renderCourierActivity() {
   if (state.justDeliveredOrderId) {
     const deliveredOrder = state.orders.find(o => o.id === state.justDeliveredOrderId);
     inner = `
-    <div style="border:1.5px solid #141414;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:#fafafa">
-      <div style="font-size:18px;font-weight:700">Delivered! +£${deliveredOrder && deliveredOrder.total ? deliveredOrder.total.toFixed(2) : '0.00'}</div>
-      <div style="font-size:13px;opacity:0.6">Nice work on ${deliveredOrder ? deliveredOrder.id : 'that order'}. Ready for the next one?</div>
-      <div class="press" data-action="dismissDeliveryConfirmation" style="background:#141414;color:#fff;border-radius:20px;padding:11px 22px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px">Continue</div>
+    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center">
+      <div style="font-size:16px;font-weight:600">Delivered · +£${deliveredOrder && deliveredOrder.total ? deliveredOrder.total.toFixed(2) : '0.00'}</div>
+      <div style="font-size:13px;color:#6b6b6b">Nice work on ${deliveredOrder ? deliveredOrder.id : 'that order'}. Ready for the next one?</div>
+      <button type="button" data-action="dismissDeliveryConfirmation" style="background:#141414;color:#fff;border:none;border-radius:12px;padding:10px 22px;font-weight:600;font-size:13.5px;cursor:pointer;margin-top:4px;font-family:inherit">Continue</button>
     </div>`;
   } else if (!activeOrder) {
     inner = `
     ${pendingJobsHtml}
-    <div style="border:1.5px dashed rgba(20,20,20,0.25);border-radius:16px;padding:28px 20px;text-align:center;display:flex;flex-direction:column;gap:6px">
-      <div style="font-size:14px;font-weight:700">No active delivery</div>
-      <div style="font-size:12.5px;opacity:0.6">${pendingOrders.length > 0 ? 'Accept a job above to get started.' : 'New orders will appear here as soon as a shopper places one.'}</div>
+    <div style="padding:18px 0;text-align:center">
+      <div style="font-size:14px;font-weight:500;color:#141414">No active delivery</div>
+      <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">${pendingOrders.length > 0 ? 'Accept a job above to get started.' : 'New orders appear here as soon as a shopper places one.'}</div>
     </div>`;
   } else {
     const itemCount = activeOrder.items ? activeOrder.items.length : 1;
@@ -735,32 +735,32 @@ function renderCourierActivity() {
     const customerTel = (state.userProfile.phone || '').replace(/[^0-9+]/g, '');
     inner = `
     ${pendingJobsHtml}
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="background:#f2f2f2;color:#141414;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">In progress</span>
-        <span style="font-size:11px;opacity:0.5">Order ${activeOrder.id}</span>
+    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+        <span style="font-size:12.5px;color:#6b6b6b">In progress · ${activeOrder.id}</span>
+        <span style="font-size:14px;font-weight:600;flex:0 0 auto">£${activeOrder.total ? activeOrder.total.toFixed(2) : '0.00'}</span>
       </div>
-      <div style="font-size:16px;font-weight:700;margin-top:4px">${escapeHtml(activeOrder.merchant)} → ${escapeHtml(activeOrder.address)}</div>
-      <div style="font-size:13px;opacity:0.6">Deliver to ${escapeHtml(state.userProfile.name)} · ${itemCount} item${itemCount > 1 ? 's' : ''} · £${activeOrder.total ? activeOrder.total.toFixed(2) : '0.00'}</div>
+      <div style="font-size:14px;font-weight:500;margin-top:3px;line-height:1.45">${escapeHtml(activeOrder.merchant)} to ${escapeHtml(activeOrder.address)}</div>
+      <div style="font-size:12.5px;color:#6b6b6b">${escapeHtml(state.userProfile.name)} · ${itemCount} item${itemCount > 1 ? 's' : ''}</div>
     </div>
     <div style="display:flex;gap:10px">
-      <a href="${mapsUrl}" target="_blank" rel="noopener" class="press" style="flex:1;background:#141414;color:#fff;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;display:block;box-sizing:border-box">Navigate</a>
-      <a href="tel:${customerTel}" class="press" style="flex:1;background:#fff;border:1.5px solid #141414;color:#141414;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;display:block;box-sizing:border-box">Call customer</a>
+      <a href="${mapsUrl}" target="_blank" rel="noopener" class="press" style="flex:1;background:#141414;color:#fff;border-radius:12px;padding:12px;text-align:center;font-weight:600;font-size:13.5px;cursor:pointer;text-decoration:none;display:block;box-sizing:border-box">Navigate</a>
+      <a href="tel:${customerTel}" class="press" style="flex:1;background:#fff;border:1.5px solid rgba(20,20,20,0.15);color:#141414;border-radius:12px;padding:12px;text-align:center;font-weight:600;font-size:13.5px;cursor:pointer;text-decoration:none;display:block;box-sizing:border-box">Call customer</a>
     </div>
     <div style="display:flex;gap:10px">
       ${activeOrder.pickedUp
-        ? `<div style="flex:1;border:1.5px solid rgba(20,20,20,0.15);color:rgba(20,20,20,0.4);border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px">✓ Picked up</div>`
-        : `<div class="press" data-action="markPickedUp" style="flex:1;background:#fff;border:1.5px solid #141414;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">Mark picked up</div>`}
+        ? `<div style="flex:1;border:1.5px solid rgba(20,20,20,0.1);color:#9a9a9a;border-radius:12px;padding:12px;text-align:center;font-weight:500;font-size:13.5px">Picked up</div>`
+        : `<div class="press" data-action="markPickedUp" style="flex:1;background:#fff;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;padding:12px;text-align:center;font-weight:600;font-size:13.5px;cursor:pointer">Mark picked up</div>`}
       ${activeOrder.pickedUp
-        ? `<div class="press" data-action="markDelivered" style="flex:1;background:#141414;color:#fff;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">Mark delivered</div>`
-        : `<div style="flex:1;background:rgba(20,20,20,0.07);color:rgba(20,20,20,0.35);border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px">Mark delivered</div>`}
+        ? `<div class="press" data-action="markDelivered" style="flex:1;background:#141414;color:#fff;border-radius:12px;padding:12px;text-align:center;font-weight:600;font-size:13.5px;cursor:pointer">Mark delivered</div>`
+        : `<div style="flex:1;background:#f2f2f2;color:#9a9a9a;border-radius:12px;padding:12px;text-align:center;font-weight:500;font-size:13.5px">Mark delivered</div>`}
     </div>`;
   }
 
   const trackingCard = `
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
       <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
-        <span style="font-size:15.5px;font-weight:700">🚴 Deliveries</span>
+        <span style="font-size:12.5px;font-weight:600;color:#6b6b6b">Deliveries</span>
         ${inner}
       </div>
     </div>`;
@@ -768,7 +768,7 @@ function renderCourierActivity() {
   const messagesCard = `
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
       <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
-        ${renderInboxHeader(state.courierInbox, 'markAllCourierRead', '💬 Messages & Updates', '15.5px')}
+        ${renderInboxHeader(state.courierInbox, 'markAllCourierRead', 'Messages', '12.5px')}
         <div id="courier-inbox-messages" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:2px">
           ${renderInboxList(state.courierInbox, 'toggleCourierRead')}
         </div>
@@ -1069,34 +1069,32 @@ function renderCourierEarnings() {
 function renderInboxList(list, toggleAction) {
   if (!list.length) {
     return `
-    <div style="padding:48px 0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;opacity:0.5">
-      <div style="font-size:32px">📭</div>
-      <div style="font-size:13.5px;font-weight:600">No notifications yet</div>
-      <div style="font-size:12px;max-width:220px;line-height:1.4">Updates about your orders and account will show up here.</div>
+    <div style="padding:22px 0;text-align:center">
+      <div style="font-size:13.5px;font-weight:500;color:#141414">No messages yet</div>
+      <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Updates about your orders will show up here.</div>
     </div>`;
   }
+  // Rows split by hairlines instead of each sitting in its own bordered box.
   return list.map((msg, i) => {
-    const dotOpacity = msg.read ? 0 : 1;
-    const textWeight = msg.read ? 400 : 700;
-    const wrapOpacity = msg.read ? 0.55 : 1;
+    const unread = !msg.read;
     return `
-    <div class="press" data-action="${toggleAction}" data-arg="${i}" style="opacity:${wrapOpacity};border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:5px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#141414;opacity:${dotOpacity}"></span><span style="font-size:11px;border:1.5px solid rgba(20,20,20,0.2);border-radius:20px;padding:3px 8px">${msg.tag}</span></div>
-        <span style="font-size:11px;opacity:0.45">${formatRelativeTime(msg.createdAt)}</span>
+    <div data-action="${toggleAction}" data-arg="${i}" style="padding:11px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : ''}cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+        <span style="font-size:12.5px;color:#6b6b6b">${escapeHtml(msg.tag)}</span>
+        <span style="font-size:12px;color:#9a9a9a;flex:0 0 auto">${formatRelativeTime(msg.createdAt)}</span>
       </div>
-      <div style="font-size:13.5px;font-weight:${textWeight}">${msg.text}</div>
+      <div style="font-size:13.5px;font-weight:${unread ? 500 : 400};color:${unread ? '#141414' : '#6b6b6b'};margin-top:2px;line-height:1.45">${msg.text}</div>
     </div>`;
   }).join('');
 }
 
 function renderInboxHeader(list, markAllAction, title, size) {
   const unread = list.filter(m => !m.read).length;
-  const fontSize = size || '25px';
+  const fontSize = size || '12.5px';
   return `
   <div style="display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:${fontSize};font-weight:700;color:#141414">${title || 'Inbox'}${unread ? ` <span style="font-size:13px;font-weight:700;color:#fff;background:#141414;border-radius:20px;padding:2px 9px;vertical-align:middle">${unread}</span>` : ''}</div>
-    ${unread ? `<div class="press" data-action="${markAllAction}" style="font-size:12px;font-weight:700;color:#141414;cursor:pointer">Mark all read</div>` : ''}
+    <div style="font-size:${fontSize};font-weight:600;color:#6b6b6b">${title || 'Messages'}${unread ? ` (${unread})` : ''}</div>
+    ${unread ? `<button type="button" data-action="${markAllAction}" style="background:none;border:none;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit;padding:0">Mark all read</button>` : ''}
   </div>`;
 }
 
@@ -2598,42 +2596,32 @@ function renderLoggedOrdersCard() {
   if (!state.orders || state.orders.length === 0) return '';
 
   const ordersCount = state.orders.length;
-  const ordersListHtml = state.orders.map(o => {
+  const ordersListHtml = state.orders.map((o, index) => {
     const isSelected = o.id === state.activeOrderId;
     const itemCount = o.items ? o.items.reduce((s, i) => s + (i.qty || 1), 0) : 1;
     const isCancelled = o.status === 'Cancelled';
     const isDelivered = o.status === 'Delivered';
 
+    // Rows share the card and are split by hairlines rather than each being its
+    // own bordered box — the selected one is marked by weight, not a heavy border.
+    const smallBtn = 'background:none;border:none;padding:0;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit';
     return `
-      <div style="background:#ffffff;border:${isSelected ? '2px solid #141414' : '1.5px solid rgba(20,20,20,0.12)'};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:${isSelected ? '0 4px 14px rgba(20,20,20,0.14)' : 'none'}">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <span style="font-size:15px;font-weight:800;color:#141414">${escapeHtml(o.merchant)}</span>
-            <span style="font-size:11.5px;background:#f2f2f2;color:#5c5c5c;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:6px">${o.id}</span>
-          </div>
-          <div style="font-size:15px;font-weight:800;color:#141414">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
+      <div style="padding:13px 0;${index > 0 ? 'border-top:1px solid #f0f0f0;' : ''}">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <div style="font-size:14px;font-weight:${isSelected ? 600 : 500};color:#141414">${escapeHtml(o.merchant)}</div>
+          <div style="font-size:14px;font-weight:600;color:#141414;flex:0 0 auto">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
         </div>
-
-        <div style="font-size:12px;color:#6b6b6b">
-          ${itemCount} item${itemCount > 1 ? 's' : ''} · ${o.timestamp || 'Just now'}
+        <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">
+          ${o.id} · ${itemCount} item${itemCount > 1 ? 's' : ''} · ${escapeHtml(o.status)}
         </div>
-
-        <div style="font-size:12px;font-weight:700;color:${isCancelled ? '#141414' : (isDelivered ? '#141414' : '#141414')}">
-          Status: ${escapeHtml(o.status)}
-        </div>
-
-        <div style="display:flex;gap:8px;border-top:1px dashed #e5e5e5;padding-top:10px;margin-top:2px">
-          <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="flex:1.2;background:${isSelected ? '#141414' : '#f2f2f2'};color:${isSelected ? '#fff' : '#141414'};border:none;padding:10px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer">
-            ${isSelected ? 'Track Map ↗' : 'Track Order ↗'}
+        <div style="display:flex;gap:16px;margin-top:9px">
+          <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="${smallBtn};color:#141414">
+            ${isSelected ? 'Tracking' : 'Track'}
           </button>
           ${!isCancelled && !isDelivered ? `
-            <button type="button" data-action="cancelOrder" data-arg="${o.id}" style="flex:1;background:#fafafa;color:#141414;border:1px solid #e5e5e5;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
-              Cancel Order ✕
-            </button>
+            <button type="button" data-action="cancelOrder" data-arg="${o.id}" style="${smallBtn};color:#6b6b6b">Cancel</button>
           ` : ''}
-          <button type="button" data-action="deleteOrder" data-arg="${o.id}" style="flex:0.8;background:#fafafa;color:#6b6b6b;border:1px solid #e5e5e5;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
-            Remove 🗑️
-          </button>
+          <button type="button" data-action="deleteOrder" data-arg="${o.id}" style="${smallBtn};color:#6b6b6b">Remove</button>
         </div>
       </div>
     `;
@@ -2641,11 +2629,9 @@ function renderLoggedOrdersCard() {
 
   return `
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
-      <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
-        <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">LOGGED ORDERS (${ordersCount})</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          ${ordersListHtml}
-        </div>
+      <div style="padding:4px 16px 12px">
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">Orders (${ordersCount})</div>
+        ${ordersListHtml}
       </div>
     </div>`;
 }
@@ -2654,16 +2640,15 @@ function renderShopperInbox() {
   const currentOrder = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
 
   const trackingHtml = currentOrder ? renderShopperTrackingSection(currentOrder) : `
-    <div style="padding:24px 0;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center">
-      <div style="width:60px;height:60px;border-radius:50%;background:#fafafa;border:2px solid #e5e5e5;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 6px 16px rgba(0,0,0,0.06)">📦</div>
+    <div style="padding:18px 0 22px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center">
       <div>
-        <div style="font-size:16.5px;font-weight:800">No Orders Placed Yet</div>
-        <div style="font-size:12.5px;opacity:0.65;margin-top:4px;max-width:280px;line-height:1.4">
-          Place an order from Morrisons Daily to track your delivery live here.
+        <div style="font-size:15px;font-weight:600;color:#141414">No orders yet</div>
+        <div style="font-size:13px;color:#6b6b6b;margin-top:4px;max-width:280px;line-height:1.5">
+          Place an order to track your delivery here.
         </div>
       </div>
-      <button type="button" data-action="goShop" style="background:#141414;color:#fff;border:none;padding:12px 24px;border-radius:16px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.2)">
-        🛒 Start Shopping
+      <button type="button" data-action="goShop" style="background:#141414;color:#fff;border:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit">
+        Start shopping
       </button>
     </div>
   `;
@@ -2671,7 +2656,7 @@ function renderShopperInbox() {
   const trackingCard = `
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
       <div style="padding:16px;display:flex;flex-direction:column;gap:14px">
-        <span style="font-size:15.5px;font-weight:700">📦 Order Tracking</span>
+        <span style="font-size:12.5px;font-weight:600;color:#6b6b6b">Order tracking</span>
         ${trackingHtml}
       </div>
     </div>`;
@@ -2679,7 +2664,7 @@ function renderShopperInbox() {
   const messagesCard = `
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
       <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
-        ${renderInboxHeader(state.shopperInbox, 'markAllShopperRead', '💬 Messages & Updates', '15.5px')}
+        ${renderInboxHeader(state.shopperInbox, 'markAllShopperRead', 'Messages', '12.5px')}
         <div id="shopper-inbox-messages" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:2px">
           ${renderInboxList(state.shopperInbox, 'toggleShopperRead')}
         </div>
