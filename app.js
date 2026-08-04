@@ -465,37 +465,38 @@ function cardImageHtml(key, placeholderEmoji) {
 function renderLogin() {
   const isCourier = state.authRole === 'courier';
   return `
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px 36px;gap:22px;text-align:center;min-height:600px;background:#ffffff">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;gap:24px;text-align:center;min-height:580px;background:#ffffff">
     
-    <div style="width:72px;height:72px;border-radius:22px;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 12px 28px rgba(0,0,0,0.18)">
+    <!-- Hero Brand Badge -->
+    <div style="width:76px;height:76px;border-radius:24px;background:#0f172a;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 14px 30px rgba(15,23,42,0.25)">
       ${isCourier ? '🚴' : '🛍️'}
     </div>
 
     <div>
-      <div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;color:#141414">Welcome to Graftr</div>
-      <div style="font-size:14px;color:#64748b;margin-top:6px;line-height:1.4">Fast local delivery &amp; courier network in Bolton</div>
+      <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#0f172a">Welcome to Graftr</div>
+      <div style="font-size:13.5px;color:#64748b;margin-top:6px;line-height:1.45;max-width:280px">Fast local delivery &amp; courier network in Bolton</div>
     </div>
 
-    <!-- Role Selector Tabs -->
-    <div style="display:flex;background:#f1f5f9;border-radius:14px;padding:4px;width:100%;max-width:320px;gap:4px">
-      <button type="button" data-action="setAuthRole" data-arg="shopper" style="flex:1;padding:10px;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? 'transparent' : '#fff'};color:${isCourier ? '#64748b' : '#141414'};box-shadow:${isCourier ? 'none' : '0 2px 6px rgba(0,0,0,0.06)'}">
+    <!-- Role Selector Segmented Tabs -->
+    <div style="display:flex;background:#f1f5f9;border-radius:16px;padding:4px;width:100%;max-width:330px;gap:4px">
+      <button type="button" data-action="setAuthRole" data-arg="shopper" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? 'transparent' : '#ffffff'};color:${isCourier ? '#64748b' : '#0f172a'};box-shadow:${isCourier ? 'none' : '0 4px 12px rgba(0,0,0,0.06)'}">
         🛒 I'm Shopping
       </button>
-      <button type="button" data-action="setAuthRole" data-arg="courier" style="flex:1;padding:10px;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? '#fff' : 'transparent'};color:${isCourier ? '#141414' : '#64748b'};box-shadow:${isCourier ? 'none' : '0 2px 6px rgba(0,0,0,0.06)'}">
+      <button type="button" data-action="setAuthRole" data-arg="courier" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? '#ffffff' : 'transparent'};color:${isCourier ? '#0f172a' : '#64748b'};box-shadow:${isCourier ? '0 4px 12px rgba(0,0,0,0.06)' : 'none'}">
         🚴 I'm a Courier
       </button>
     </div>
 
     ${state.authNotice ? `
-      <div style="width:100%;max-width:320px;background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:14px;padding:11px 14px;font-size:12.5px;text-align:left;line-height:1.4">
+      <div style="width:100%;max-width:330px;background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:16px;padding:12px 14px;font-size:12.5px;text-align:left;line-height:1.45">
         ${escapeHtml(state.authNotice)}
       </div>
     ` : ''}
 
-    <!-- Social & Email Auth Options -->
-    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px">
-      <!-- Google Sign-In: real Google Identity Services flow once a Client ID is configured -->
-      <button type="button" data-action="loginWithGoogle" style="width:100%;background:#fff;color:#1f2937;border:1.5px solid #e5e7eb;border-radius:16px;padding:13.5px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+    <!-- Clean High-Aesthetic Authentication Buttons -->
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:330px">
+      <!-- Google Sign-In -->
+      <button type="button" data-action="loginWithGoogle" style="width:100%;background:#ffffff;color:#1e293b;border:1.5px solid #e2e8f0;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.04);transition:all 0.2s">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -506,35 +507,28 @@ function renderLogin() {
       </button>
       ${state.showGoogleFallbackButton ? `<div id="google-signin-button-container" style="display:flex;justify-content:center"></div>` : ''}
 
-      <!-- Apple Sign-In requires a paid Apple Developer account; not connected yet -->
-      <button type="button" data-action="loginWithApple" style="width:100%;background:#000;color:#fff;border:none;border-radius:16px;padding:13.5px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.15);opacity:0.85">
-        <svg width="18" height="20" fill="currentColor" viewBox="0 0 170 170">
-          <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.9.13-9.76-1.91-14.58-6.12-3.32-2.88-7.25-7.66-11.8-14.34-6.8-10.01-12.18-21.2-16.14-33.56-3.96-12.37-5.94-24.16-5.94-35.37 0-14.47 3.57-26.24 10.72-35.32 7.15-9.08 16.03-13.68 26.65-13.81 4.96.12 10.25 1.25 15.86 3.38 5.61 2.13 9.4 3.24 11.37 3.35 2.62 0 6.64-1.24 12.06-3.71 5.42-2.47 10.24-3.62 14.46-3.46 11.75.87 21.03 5.48 27.84 13.82-10.42 6.34-15.5 15.1-15.24 26.28.26 8.78 3.59 16.17 9.99 22.18 6.4 6 14.15 9.41 23.24 10.24-2.58 7.55-5.98 15.02-10.21 22.41zM119.22 31.84c0-7.07 2.58-13.83 7.74-20.28 5.16-6.45 11.66-10.45 19.51-12 0.79 7.07-1.7 13.88-7.47 20.43-5.77 6.55-12.39 10.37-19.78 11.85z"/>
-        </svg>
-        Sign in with Apple <span style="opacity:0.6;font-weight:500">(Coming soon)</span>
-      </button>
-
-      <!-- Standard Email & Password Register / Login Button -->
-      <button type="button" data-action="loginWithEmail" style="width:100%;background:#f8fafc;color:#1e293b;border:1.5px solid #cbd5e1;border-radius:16px;padding:13.5px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer">
-        ✉️ Continue with Email &amp; Password
+      <!-- Email & Password -->
+      <button type="button" data-action="loginWithEmail" style="width:100%;background:#0f172a;color:#ffffff;border:none;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 18px rgba(15,23,42,0.18)">
+        ✉️ Continue with Email
       </button>
     </div>
 
-    <!-- Fallback Guest Button -->
-    <div style="display:flex;align-items:center;gap:10px;width:100%;max-width:320px;opacity:0.6;font-size:12px;margin-top:2px">
+    <!-- Divider -->
+    <div style="display:flex;align-items:center;gap:12px;width:100%;max-width:330px;opacity:0.5;font-size:12px;margin-top:2px">
       <div style="flex:1;height:1px;background:#cbd5e1"></div>
-      <span>Or continue as guest</span>
+      <span style="font-weight:600">or continue as guest</span>
       <div style="flex:1;height:1px;background:#cbd5e1"></div>
     </div>
 
-    <div style="display:flex;gap:10px;width:100%;max-width:320px">
+    <!-- Guest Access Button -->
+    <div style="width:100%;max-width:330px">
       ${isCourier
-        ? `<div class="press" data-action="chooseCourier" style="flex:1;background:#141414;color:#fff;border-radius:14px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer">Enter Courier Mode</div>`
-        : `<div class="press" data-action="chooseShopper" style="flex:1;background:#fff;color:#141414;border:1.5px solid #141414;border-radius:14px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer">Enter Shopper Mode</div>`
+        ? `<div class="press" data-action="chooseCourier" style="background:#f8fafc;color:#334155;border:1.5px solid #cbd5e1;border-radius:16px;padding:13px;font-size:13.5px;font-weight:700;cursor:pointer">🚴 Enter Courier Guest Mode</div>`
+        : `<div class="press" data-action="chooseShopper" style="background:#f8fafc;color:#334155;border:1.5px solid #cbd5e1;border-radius:16px;padding:13.5px;font-size:13.5px;font-weight:700;cursor:pointer">🛒 Enter Shopper Guest Mode</div>`
       }
     </div>
 
-    <div style="font-size:11.5px;color:#94a3b8;max-width:260px;line-height:1.4">
+    <div style="font-size:11px;color:#94a3b8;max-width:270px;line-height:1.45">
       By continuing, you agree to Graftr's Terms of Service and Privacy Policy.
     </div>
   </div>`;
