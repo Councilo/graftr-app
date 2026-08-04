@@ -460,13 +460,12 @@ function renderLogin() {
   return `
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;gap:24px;text-align:center;min-height:580px;background:#ffffff">
     
-    <!-- Hero Brand Badge -->
-    <div style="width:76px;height:76px;border-radius:24px;background:#141414;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 14px 30px rgba(20,20,20,0.5)">
-      ${isCourier ? '🚴' : '🛍️'}
-    </div>
+    <!-- Brand wordmark. Swapping assets/brand/logo.svg changes it everywhere. -->
+    <img src="assets/brand/logo.svg" alt="Vendaru" width="200"
+         style="width:200px;max-width:62%;height:auto;display:block" />
 
     <div>
-      <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#141414">Welcome to Vendaru</div>
+      <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#141414">Welcome</div>
       <div style="font-size:13.5px;color:#6b6b6b;margin-top:6px;line-height:1.45;max-width:280px">${isCourier ? 'Courier sign-in · Bolton delivery network' : 'Fast local delivery &amp; courier network in Bolton'}</div>
     </div>
 

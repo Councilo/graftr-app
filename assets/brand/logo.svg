@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 150" role="img" aria-label="Vendaru">
+  <title>Vendaru</title>
+  <!-- STAND-IN. Replace this file with the real Vendaru logo (same path, same
+       filename) and the app picks it up with no code change. Text is drawn with a
+       generic heavy stack because an SVG loaded via <img> can't use the page's
+       webfonts; textLength forces the condensed proportions of the real mark. -->
+  <rect width="460" height="150" rx="16" fill="#f2c1d8"/>
+  <text x="230" y="112"
+        text-anchor="middle"
+        font-family="'Arial Black','Helvetica Neue',Impact,Arial,sans-serif"
+        font-weight="900"
+        font-size="104"
+        letter-spacing="-1"
+        textLength="384"
+        lengthAdjust="spacingAndGlyphs"
+        fill="#ffffff">VENDARU</text>
+</svg>
