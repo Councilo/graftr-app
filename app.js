@@ -171,6 +171,45 @@ function saveCourierStats() {
   } catch (e) { /* ignore write failure */ }
 }
 
+function loadInbox() {
+  try {
+    const saved = localStorage.getItem('graftr_inbox');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          shopperInbox: Array.isArray(parsed.shopperInbox) ? parsed.shopperInbox : [],
+          courierInbox: Array.isArray(parsed.courierInbox) ? parsed.courierInbox : [],
+        };
+      }
+    }
+  } catch (e) { /* ignore corrupt storage */ }
+  return { shopperInbox: [], courierInbox: [] };
+}
+
+function saveInbox() {
+  try {
+    localStorage.setItem('graftr_inbox', JSON.stringify({
+      shopperInbox: state.shopperInbox,
+      courierInbox: state.courierInbox,
+    }));
+  } catch (e) { /* ignore write failure */ }
+}
+
+function formatRelativeTime(ts) {
+  if (!ts) return '';
+  const diffSec = Math.floor((Date.now() - ts) / 1000);
+  if (diffSec < 60) return 'Just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay === 1) return 'Yesterday';
+  if (diffDay < 7) return `${diffDay}d`;
+  return new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
 const PENDING_ORDER_KEY = 'graftr_pending_order';
 
 // Shared by both the real Stripe-paid path and the no-backend-configured fallback,
@@ -197,6 +236,19 @@ function finalizeOrder(snapshot) {
   state.showCheckoutModal = false;
   state.mode = 'shopper';
   saveLoggedOrders();
+  state.shopperInbox.unshift({
+    tag: 'Order Alert',
+    text: `Order ${newOrder.id} confirmed — £${newOrder.total.toFixed(2)}. We're finding you a courier.`,
+    createdAt: Date.now(),
+    read: false,
+  });
+  state.courierInbox.unshift({
+    tag: 'Job alert',
+    text: `New job available: ${newOrder.merchant} → ${newOrder.address}, £${newOrder.deliveryFee.toFixed(2)}`,
+    createdAt: Date.now(),
+    read: false,
+  });
+  saveInbox();
   state.screen = 'shopper-track';
   render();
 }
@@ -252,19 +304,7 @@ const state = {
   packDone: false,
   earningsTab: 'today',
   deliveryLater: false,
-  courierInbox: [
-    { tag: 'Job alert', text: 'New job available near you — Lewisham, £7.80', time: '2m', read: false },
-    { tag: 'Support', text: 'Your document was approved ✓', time: '40m', read: false },
-    { tag: 'System', text: 'Your weekly earnings summary is ready', time: '1h', read: true },
-    { tag: 'Customer', text: 'Priya: "Leave it at the door please"', time: '3h', read: true },
-    { tag: 'Job alert', text: 'Delivery slot starting soon — 6:00–9:00pm shift', time: 'Yesterday', read: true },
-  ],
-  shopperInbox: [
-    { tag: 'Order update', text: 'Your Morrisons Daily order is on the way', time: '2m', read: false },
-    { tag: 'Courier', text: 'Alex: "Running 5 min late, sorry!"', time: '6m', read: false },
-    { tag: 'Offer', text: '20% off your next Boots order', time: '1h', read: true },
-    { tag: 'Support', text: "We've refunded £3.40 for a missing item", time: 'Yesterday', read: true },
-  ],
+  ...loadInbox(),
   basketCheckedOut: false,
   trackStep: 2,
   shopImages: { morrisons: null, track: null, offers: null, local: null },
@@ -822,6 +862,14 @@ function renderCourierEarnings() {
 }
 
 function renderInboxList(list, toggleAction) {
+  if (!list.length) {
+    return `
+    <div style="padding:48px 0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;opacity:0.5">
+      <div style="font-size:32px">📭</div>
+      <div style="font-size:13.5px;font-weight:600">No notifications yet</div>
+      <div style="font-size:12px;max-width:220px;line-height:1.4">Updates about your orders and account will show up here.</div>
+    </div>`;
+  }
   return list.map((msg, i) => {
     const dotOpacity = msg.read ? 0 : 1;
     const textWeight = msg.read ? 400 : 700;
@@ -830,23 +878,32 @@ function renderInboxList(list, toggleAction) {
     <div class="press" data-action="${toggleAction}" data-arg="${i}" style="opacity:${wrapOpacity};border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:5px">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:oklch(56% 0.17 258);opacity:${dotOpacity}"></span><span style="font-size:11px;border:1.5px solid rgba(20,20,20,0.2);border-radius:20px;padding:3px 8px">${msg.tag}</span></div>
-        <span style="font-size:11px;opacity:0.45">${msg.time}</span>
+        <span style="font-size:11px;opacity:0.45">${formatRelativeTime(msg.createdAt)}</span>
       </div>
       <div style="font-size:13.5px;font-weight:${textWeight}">${msg.text}</div>
     </div>`;
   }).join('');
 }
 
+function renderInboxHeader(list, markAllAction) {
+  const unread = list.filter(m => !m.read).length;
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:25px;font-weight:700">Inbox${unread ? ` <span style="font-size:13px;font-weight:700;color:#fff;background:oklch(56% 0.17 258);border-radius:20px;padding:2px 9px;vertical-align:middle">${unread}</span>` : ''}</div>
+    ${unread ? `<div class="press" data-action="${markAllAction}" style="font-size:12px;font-weight:700;color:oklch(56% 0.17 258);cursor:pointer">Mark all read</div>` : ''}
+  </div>`;
+}
+
 function renderCourierInbox() {
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:10px">
-    <div style="font-size:25px;font-weight:700">Inbox</div>
+    ${renderInboxHeader(state.courierInbox, 'markAllCourierRead')}
     ${renderInboxList(state.courierInbox, 'toggleCourierRead')}
   </div>`;
 }
 
 function renderShopperInbox() {
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:10px">
-    <div style="font-size:25px;font-weight:700">Inbox</div>
+    ${renderInboxHeader(state.shopperInbox, 'markAllShopperRead')}
     ${renderInboxList(state.shopperInbox, 'toggleShopperRead')}
   </div>`;
 }
@@ -1678,7 +1735,10 @@ function renderCourierTabs() {
       Earnings
     </div>
     <div data-action="goCourierInbox" style="${tabStyle('courier-inbox')}">
-      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v7a2 2 0 01-2 2H9l-4 3v-3H5a2 2 0 01-2-2V5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v7a2 2 0 01-2 2H9l-4 3v-3H5a2 2 0 01-2-2V5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        ${state.courierInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
+      </span>
       Inbox
     </div>
     <div data-action="goPack" style="${tabStyle('courier-pack')}">
@@ -1704,7 +1764,10 @@ function renderShopperTabs() {
       Basket
     </div>
     <div class="press floating-tab" data-action="goShopperInbox" style="${tabStyle('shopper-inbox')}">
-      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v7a2 2 0 01-2 2H9l-4 3v-3H5a2 2 0 01-2-2V5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5a2 2 0 012-2h10a2 2 0 012 2v7a2 2 0 01-2 2H9l-4 3v-3H5a2 2 0 01-2-2V5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        ${state.shopperInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
+      </span>
       Inbox
     </div>
     <div class="press floating-tab" data-action="goShopperAccount" style="${tabStyle('shopper-account')}">
@@ -2363,9 +2426,10 @@ const actions = {
       state.shopperInbox.unshift({
         tag: 'Courier Alert',
         text: `Courier Alex accepted your Order ${order.id}! Live GPS tracking is active.`,
-        time: 'Just now',
+        createdAt: Date.now(),
         read: false
       });
+      saveInbox();
     }
     if (!state.courierOnline) {
       state.courierOnline = true;
@@ -2380,14 +2444,24 @@ const actions = {
     const targetId = id || state.activeOrderId;
     const order = state.orders.find(o => o.id === targetId);
     if (order) {
+      const hadCourier = !!order.courier;
       order.status = 'Cancelled';
       saveLoggedOrders();
       state.shopperInbox.unshift({
         tag: 'Order Alert',
         text: `Order ${order.id} was successfully cancelled.`,
-        time: 'Just now',
+        createdAt: Date.now(),
         read: false
       });
+      if (hadCourier) {
+        state.courierInbox.unshift({
+          tag: 'Order Alert',
+          text: `Order ${order.id} was cancelled by the customer.`,
+          createdAt: Date.now(),
+          read: false
+        });
+      }
+      saveInbox();
     }
     render();
   },
@@ -2517,9 +2591,10 @@ const actions = {
       state.shopperInbox.unshift({
         tag: 'Courier Alert',
         text: `Your order ${order.id} from ${order.merchant} has been delivered! Enjoy.`,
-        time: 'Just now',
+        createdAt: Date.now(),
         read: false,
       });
+      saveInbox();
     }
     render();
   },
@@ -2533,13 +2608,13 @@ const actions = {
     order.tip = Number(amount) || 0;
     saveLoggedOrders();
     if (order.tip > 0) {
-      state.courierInbox = state.courierInbox || [];
       state.courierInbox.unshift({
         tag: 'Tip Received',
         text: `${state.userProfile.name} tipped £${order.tip.toFixed(2)} on order ${order.id}. Nice work!`,
-        time: 'Just now',
+        createdAt: Date.now(),
         read: false,
       });
+      saveInbox();
     }
     render();
   },
@@ -2591,9 +2666,10 @@ const actions = {
       state.shopperInbox.unshift({
         tag: 'Courier Alert',
         text: `Courier Alex finished packing your items at Morrisons Daily! Out for delivery now.`,
-        time: 'Just now',
+        createdAt: Date.now(),
         read: false
       });
+      saveInbox();
     }
     state.screen = 'courier-activity';
     render();
@@ -2616,18 +2692,20 @@ const actions = {
       ref: ref
     });
     saveCourierStats();
-    if (!state.courierInbox) state.courierInbox = [];
     state.courierInbox.unshift({
       tag: 'Payout Alert',
       text: `Cash out request of £${payoutAmount.toFixed(2)} sent to Barclays (****4892). Ref: ${ref}`,
-      time: 'Just now',
+      createdAt: Date.now(),
       read: false
     });
+    saveInbox();
     render();
   },
   toggleDeliveryLater: () => { state.deliveryLater = !state.deliveryLater; render(); },
-  toggleCourierRead: (i) => { state.courierInbox[i].read = !state.courierInbox[i].read; render(); },
-  toggleShopperRead: (i) => { state.shopperInbox[i].read = !state.shopperInbox[i].read; render(); },
+  toggleCourierRead: (i) => { state.courierInbox[i].read = !state.courierInbox[i].read; saveInbox(); render(); },
+  toggleShopperRead: (i) => { state.shopperInbox[i].read = !state.shopperInbox[i].read; saveInbox(); render(); },
+  markAllCourierRead: () => { state.courierInbox.forEach(m => m.read = true); saveInbox(); render(); },
+  markAllShopperRead: () => { state.shopperInbox.forEach(m => m.read = true); saveInbox(); render(); },
   newBasket: () => { state.basketCheckedOut = false; state.cart = {}; render(); },
   emptyBasket: () => { state.cart = {}; render(); },
   advanceTrack: () => { state.trackStep = Math.min(state.trackStep + 1, 3); render(); },
