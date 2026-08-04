@@ -1,9 +1,3 @@
-const JOBS = [
-  { id: '#4821', merchant: 'Morrisons Daily', address: '541 Halliwell Road, Bolton', customer: 'Priya Nair', bags: 2, distance: '1.2 mi', eta: '8 min', price: '£7.80' },
-  { id: '#4822', merchant: 'Morrisons Daily', address: '541 Halliwell Road, Bolton', customer: 'Priya Nair', bags: 1, distance: '0.8 mi', eta: '6 min', price: '£6.20' },
-  { id: '#4823', merchant: 'Morrisons Daily', address: '541 Halliwell Road, Bolton', customer: 'Priya Nair', bags: 1, distance: '1.5 mi', eta: '9 min', price: '£5.90' },
-];
-
 const PRODUCTS = [
   { id: 1, name: 'Morrisons Fresh Semi-Skimmed Milk', category: 'Dairy & Eggs', estimated_price_gbp: 1.55, weight_or_volume: '2L', image: 'assets/products/product_1.png' },
   { id: 2, name: 'Morrisons Fresh Whole Milk', category: 'Dairy & Eggs', estimated_price_gbp: 1.15, weight_or_volume: '1L', image: 'assets/products/product_2.png' },
@@ -214,10 +208,7 @@ const state = {
   aiListening: false,
   aiVoiceSupported: undefined,
   courierOnline: true,
-  jobIndex: 0,
-  nextIndex: 1,
-  pickedUp: false,
-  delivered: false,
+  justDeliveredOrderId: null,
   courierLiveGps: null,
   packItems: [
     { name: 'Semi-skimmed milk 2L', qty: 1, checked: true },
@@ -442,9 +433,6 @@ function stopCourierGpsTracking() {
 }
 
 function renderCourierActivity() {
-  const job = JOBS[state.jobIndex];
-  const nextJob = JOBS[state.nextIndex];
-
   // Real Pending Jobs placed by Shopper
   const pendingOrders = state.orders.filter(o => o.status === 'Pending Courier Acceptance');
   const pendingJobsHtml = pendingOrders.length > 0 ? pendingOrders.map(o => `
@@ -463,57 +451,50 @@ function renderCourierActivity() {
     </div>
   `).join('') : '';
 
+  const activeOrder = state.orders.find(o => o.status === 'Out for Delivery');
+
   let inner;
 
-  if (state.delivered) {
+  if (state.justDeliveredOrderId) {
+    const deliveredOrder = state.orders.find(o => o.id === state.justDeliveredOrderId);
     inner = `
     <div style="border:1.5px solid oklch(56% 0.17 258);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:oklch(97% 0.02 258)">
-      <div style="font-size:18px;font-weight:700">Delivered! +${job.price}</div>
-      <div style="font-size:13px;opacity:0.6">Nice work on ${job.id}. Ready for the next one?</div>
-      <div class="press" data-action="startNextJob" style="background:#141414;color:#fff;border-radius:20px;padding:11px 22px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px">Start next job</div>
+      <div style="font-size:18px;font-weight:700">Delivered! +£${deliveredOrder && deliveredOrder.total ? deliveredOrder.total.toFixed(2) : '0.00'}</div>
+      <div style="font-size:13px;opacity:0.6">Nice work on ${deliveredOrder ? deliveredOrder.id : 'that order'}. Ready for the next one?</div>
+      <div class="press" data-action="dismissDeliveryConfirmation" style="background:#141414;color:#fff;border-radius:20px;padding:11px 22px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px">Continue</div>
+    </div>`;
+  } else if (!activeOrder) {
+    inner = `
+    ${pendingJobsHtml}
+    <div style="border:1.5px dashed rgba(20,20,20,0.25);border-radius:16px;padding:28px 20px;text-align:center;display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:14px;font-weight:700">No active delivery</div>
+      <div style="font-size:12.5px;opacity:0.6">${pendingOrders.length > 0 ? 'Accept a job above to get started.' : 'New orders will appear here as soon as a shopper places one.'}</div>
     </div>`;
   } else {
+    const itemCount = activeOrder.items ? activeOrder.items.length : 1;
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(activeOrder.address)}`;
+    const customerTel = (state.userProfile.phone || '').replace(/[^0-9+]/g, '');
     inner = `
     ${pendingJobsHtml}
     <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span style="background:oklch(94% 0.05 258);color:oklch(42% 0.17 258);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">In progress</span>
-        <span style="font-size:11px;opacity:0.5">Job ${job.id}</span>
+        <span style="font-size:11px;opacity:0.5">Order ${activeOrder.id}</span>
       </div>
-      <div style="font-size:16px;font-weight:700;margin-top:4px">${escapeHtml(job.merchant)} → ${escapeHtml(state.userProfile.address)}, ${escapeHtml(state.userProfile.postcode)}</div>
-      <div style="font-size:13px;opacity:0.6">Deliver to ${escapeHtml(state.userProfile.name)} · ${job.bags} bags</div>
-    </div>
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;height:150px;background:#eaf1ef">
-      <svg width="100%" height="100%" viewBox="0 0 340 150" preserveAspectRatio="none">
-        <line x1="0" y1="35" x2="340" y2="22" stroke="#141414" stroke-opacity="0.15" stroke-width="4"/>
-        <line x1="60" y1="0" x2="90" y2="150" stroke="#141414" stroke-opacity="0.15" stroke-width="4"/>
-        <line x1="0" y1="110" x2="340" y2="120" stroke="#141414" stroke-opacity="0.15" stroke-width="4"/>
-        <line x1="250" y1="0" x2="220" y2="150" stroke="#141414" stroke-opacity="0.15" stroke-width="4"/>
-        <path d="M60 46 Q150 24 190 70 T290 104" fill="none" stroke="oklch(56% 0.17 258)" stroke-width="3" stroke-dasharray="7 6"/>
-        <circle cx="60" cy="46" r="6" fill="#fff" stroke="#141414" stroke-width="2.5"/>
-        <circle cx="290" cy="104" r="7" fill="#141414"/>
-      </svg>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:12.5px;opacity:0.6">
-      <span>${job.distance}</span><span>ETA ${job.eta}</span><span>En route to drop-off</span>
+      <div style="font-size:16px;font-weight:700;margin-top:4px">${escapeHtml(activeOrder.merchant)} → ${escapeHtml(activeOrder.address)}</div>
+      <div style="font-size:13px;opacity:0.6">Deliver to ${escapeHtml(state.userProfile.name)} · ${itemCount} item${itemCount > 1 ? 's' : ''} · £${activeOrder.total ? activeOrder.total.toFixed(2) : '0.00'}</div>
     </div>
     <div style="display:flex;gap:10px">
-      <div class="press" style="flex:1;background:#141414;color:#fff;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">Navigate</div>
-      <div class="press" style="flex:1;background:#fff;border:1.5px solid #141414;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">Call customer</div>
+      <a href="${mapsUrl}" target="_blank" rel="noopener" class="press" style="flex:1;background:#141414;color:#fff;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;display:block;box-sizing:border-box">Navigate</a>
+      <a href="tel:${customerTel}" class="press" style="flex:1;background:#fff;border:1.5px solid #141414;color:#141414;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;display:block;box-sizing:border-box">Call customer</a>
     </div>
     <div style="display:flex;gap:10px">
-      ${state.pickedUp
+      ${activeOrder.pickedUp
         ? `<div style="flex:1;border:1.5px solid rgba(20,20,20,0.15);color:rgba(20,20,20,0.4);border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px">✓ Picked up</div>`
         : `<div class="press" data-action="markPickedUp" style="flex:1;background:#fff;border:1.5px solid #141414;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">Mark picked up</div>`}
-      ${state.pickedUp
+      ${activeOrder.pickedUp
         ? `<div class="press" data-action="markDelivered" style="flex:1;background:#141414;color:#fff;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">Mark delivered</div>`
         : `<div style="flex:1;background:rgba(20,20,20,0.07);color:rgba(20,20,20,0.35);border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px">Mark delivered</div>`}
-    </div>
-    <div style="height:1px;background:rgba(20,20,20,0.1);margin:2px 0"></div>
-    <div style="font-size:12px;opacity:0.55">Next job queued</div>
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between">
-      <div><div style="font-size:13px;font-weight:600">${nextJob.id} · ${nextJob.merchant}</div><div style="font-size:11.5px;opacity:0.55">${nextJob.distance} away</div></div>
-      <div style="font-size:13px;font-weight:700">${nextJob.price}</div>
     </div>`;
   }
 
@@ -2199,13 +2180,32 @@ const actions = {
     }
     render();
   },
-  markPickedUp: () => { state.pickedUp = true; render(); },
-  markDelivered: () => { state.delivered = true; render(); },
-  startNextJob: () => {
-    state.jobIndex = state.nextIndex;
-    state.nextIndex = (state.nextIndex + 1) % JOBS.length;
-    state.pickedUp = false;
-    state.delivered = false;
+  markPickedUp: () => {
+    const order = state.orders.find(o => o.status === 'Out for Delivery');
+    if (order) {
+      order.pickedUp = true;
+      saveLoggedOrders();
+    }
+    render();
+  },
+  markDelivered: () => {
+    const order = state.orders.find(o => o.status === 'Out for Delivery');
+    if (order) {
+      order.status = 'Delivered';
+      order.pickedUp = false;
+      saveLoggedOrders();
+      state.justDeliveredOrderId = order.id;
+      state.shopperInbox.unshift({
+        tag: 'Courier Alert',
+        text: `Your order ${order.id} from ${order.merchant} has been delivered! Enjoy.`,
+        time: 'Just now',
+        read: false,
+      });
+    }
+    render();
+  },
+  dismissDeliveryConfirmation: () => {
+    state.justDeliveredOrderId = null;
     render();
   },
   openScanner: (index) => {
