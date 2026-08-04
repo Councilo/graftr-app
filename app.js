@@ -2914,10 +2914,10 @@ function render() {
   let bottomPad = '';
   if (state.mode === 'courier') {
     tabs = renderCourierTabs();
-    bottomPad = 'padding-bottom:110px;';
+    bottomPad = 'padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px));';
   } else if (state.mode === 'shopper') {
     tabs = renderShopperTabs();
-    bottomPad = 'padding-bottom:110px;';
+    bottomPad = 'padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px));';
   }
 
   const aiDrawer = renderAiChatDrawer();
@@ -2927,7 +2927,7 @@ function render() {
   const termsModal = renderTermsModal();
 
   root.innerHTML = `
-    <div class="app-scroll" style="flex:1;overflow:auto;padding-top:56px;${bottomPad}">${content}</div>
+    <div class="app-scroll" style="flex:1;overflow:auto;padding-top:calc(56px + env(safe-area-inset-top, 0px));${bottomPad}">${content}</div>
     ${tabs}
     ${aiDrawer}
     ${addressModal}

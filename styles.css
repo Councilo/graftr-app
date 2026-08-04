@@ -21,6 +21,7 @@ select {
 }
 
 html {
+  height: 100%;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -31,34 +32,17 @@ html::-webkit-scrollbar {
 
 body {
   margin: 0;
-  background: #eeeeee;
+  background: #ffffff;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* Stop iOS rubber-banding the whole page behind the fixed app shell. */
+  overscroll-behavior-y: none;
 }
 
 body::-webkit-scrollbar {
   display: none;
 }
 
-.frame-bg {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-}
-
-.phone {
-  width: 402px;
-  height: 874px;
-  max-width: 100%;
-  max-height: 100vh;
-  background: #fff;
-  border-radius: 44px;
-  overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25), 0 0 0 10px #111;
-  position: relative;
-}
 
 .press {
   transition: transform 0.08s ease;
@@ -145,15 +129,22 @@ body::-webkit-scrollbar {
   opacity: 1;
 }
 
+/* The app shell is the viewport now — no phone mockup wrapper.
+   100dvh tracks the real visible area as mobile browser chrome
+   shows/hides; the 100vh line is the fallback for older engines. */
 #app {
   position: relative;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
 }
 
 .floating-tabbar {
   position: absolute;
   left: 16px;
   right: 16px;
-  bottom: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   height: 62px;
   background: #fff;
   border-radius: 31px;
@@ -191,7 +182,7 @@ body::-webkit-scrollbar {
 .ai-fab {
   position: absolute;
   right: 20px;
-  bottom: 96px;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   width: 52px;
   height: 52px;
   border-radius: 50%;
