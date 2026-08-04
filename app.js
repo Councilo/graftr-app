@@ -2330,6 +2330,24 @@ function processGraftrAiQuery(rawQuery) {
   return "I can help you search for groceries, check prices, recommend items, or track your delivery! Try asking: <i>'Find fresh milk'</i> or <i>'Add chocolate to basket'</i>";
 }
 
+// Quick-add row: real products with their real photos rather than topic chips.
+// Prefers things this customer has actually ordered before, topped up with
+// staples so the row is never empty on a new account.
+const AI_QUICK_ADD_STAPLE_IDS = [1, 3, 6, 5, 25, 19, 10];
+
+function aiQuickAddProducts(limit = 8) {
+  const picked = [];
+  const seen = new Set();
+  const push = (p) => { if (p && !seen.has(p.id)) { seen.add(p.id); picked.push(p); } };
+
+  (state.orders || []).forEach(o => (o.items || []).forEach(i => {
+    push(PRODUCTS.find(p => p.name === i.name));
+  }));
+  AI_QUICK_ADD_STAPLE_IDS.forEach(id => push(PRODUCTS.find(p => p.id === id)));
+
+  return picked.slice(0, limit);
+}
+
 function renderAiChatDrawer() {
   if (!state.aiChatOpen) return '';
 
@@ -2343,14 +2361,8 @@ function renderAiChatDrawer() {
     <div class="ai-modal-overlay">
       <div class="ai-chat-sheet">
         <div class="ai-sheet-header">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:32px;height:32px;border-radius:50%;background:rgba(20,20,20,0.08);display:flex;align-items:center;justify-content:center;font-size:16px">✨</div>
-            <div>
-              <div style="font-weight:700;font-size:15px;line-height:1.2">Vendaru AI Assistant</div>
-              <div style="font-size:11px;opacity:0.75">Customer Shopping Helper</div>
-            </div>
-          </div>
-          <button data-action="toggleAiChat" style="background:none;border:none;color:#141414;font-size:20px;cursor:pointer;padding:4px 8px">✕</button>
+          <img src="assets/brand/logo.svg" alt="Vendaru" style="height:20px;width:auto;display:block" />
+          <button data-action="toggleAiChat" style="background:none;border:none;color:#ffffff;font-size:20px;cursor:pointer;padding:2px 6px;line-height:1">✕</button>
         </div>
 
         <div class="ai-chat-body" id="ai-chat-body-scroll">
@@ -2359,10 +2371,15 @@ function renderAiChatDrawer() {
         </div>
 
         <div class="ai-chip-suggestions">
-          <div class="ai-chip" data-action="sendPresetPrompt" data-arg="Find me fresh milk & bread">🥛 Milk & Bread</div>
-          <div class="ai-chip" data-action="sendPresetPrompt" data-arg="Recommend snacks">🍿 Party Snacks</div>
-          <div class="ai-chip" data-action="sendPresetPrompt" data-arg="What soft drinks do you have?">🥤 Soft Drinks</div>
-          <div class="ai-chip" data-action="sendPresetPrompt" data-arg="How fast is delivery?">⚡ Delivery Info</div>
+          ${aiQuickAddProducts().map(p => {
+            const src = state.productImages[p.id] || p.image;
+            return `
+            <button type="button" class="ai-product-chip" data-action="addToCart" data-arg="${p.id}" title="Add ${escapeHtml(p.name)} to basket">
+              <span class="ai-product-chip-img" style="background-image:url('${src}')"></span>
+              <span class="ai-product-chip-name">${escapeHtml(p.name)}</span>
+              <span class="ai-product-chip-price">£${p.estimated_price_gbp.toFixed(2)}</span>
+            </button>`;
+          }).join('')}
         </div>
 
         <div class="ai-chat-footer">

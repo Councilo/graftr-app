@@ -224,7 +224,10 @@ body::-webkit-scrollbar {
 }
 
 .ai-chat-sheet {
-  height: 84%;
+  /* Half-height sheet — leaves the page visible behind it while keeping
+     enough room for the conversation to be readable. */
+  height: 50%;
+  min-height: 280px;
   background: #ffffff;
   border-top-left-radius: 28px;
   border-top-right-radius: 28px;
@@ -236,7 +239,7 @@ body::-webkit-scrollbar {
 }
 
 .ai-sheet-header {
-  padding: 16px 20px;
+  padding: 8px 14px;
   background: #141414;
   color: #ffffff;
   display: flex;
@@ -307,9 +310,10 @@ body::-webkit-scrollbar {
 
 .ai-chip-suggestions {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   overflow-x: auto;
-  padding: 10px 16px;
+  padding: 7px 12px;
+  flex: 0 0 auto;
   background: #ffffff;
   border-top: 1px solid #f2f2f2;
   scrollbar-width: none;
@@ -318,6 +322,51 @@ body::-webkit-scrollbar {
 
 .ai-chip-suggestions::-webkit-scrollbar {
   display: none;
+}
+
+/* Quick-add product chip: the item's real photo, its name and price.
+   Laid out horizontally so the row stays short enough for the small sheet. */
+.ai-product-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 190px;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 22px;
+  padding: 4px 12px 4px 4px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, transform 0.08s ease;
+}
+.ai-product-chip:hover { border-color: #141414; }
+.ai-product-chip:active { transform: scale(0.96); }
+
+.ai-product-chip-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background-color: #f2f2f2;
+  background-size: cover;
+  background-position: center;
+}
+
+.ai-product-chip-name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #141414;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-product-chip-price {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #141414;
+  flex: 0 0 auto;
 }
 
 .ai-chip {
