@@ -138,35 +138,12 @@ function loadLoggedOrders() {
     const saved = localStorage.getItem('graftr_logged_orders');
     if (saved !== null) {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map(o => {
-          // If an active demo order was saved as Out for Delivery before courier acceptance, reset it to Pending
-          if (!o.courier && o.status === 'Out for Delivery') {
-            o.status = 'Pending Courier Acceptance';
-          }
-          return o;
-        }).filter(o => o.address && !o.address.includes('Kingsdown'));
+      if (Array.isArray(parsed)) {
+        return parsed.filter(o => o.address && !o.address.includes('Kingsdown'));
       }
     }
   } catch(e){}
-  return [
-    {
-      id: '#4821',
-      merchant: 'Morrisons Daily',
-      timestamp: 'Just now',
-      createdAt: Date.now(),
-      status: 'Pending Courier Acceptance',
-      address: '541 Halliwell Road, BL1 3PJ',
-      courier: null,
-      total: 15.74,
-      items: [
-        { name: 'Warburtons Toastie Thick White Bread 800g', qty: 1, price: 1.40 },
-        { name: 'Morrisons Fresh Semi-Skimmed Milk 2L', qty: 1, price: 1.55 },
-        { name: 'Lurpak Slightly Salted Butter 500g', qty: 1, price: 4.25 },
-        { name: 'Morrisons Free Range Medium Eggs x6', qty: 1, price: 1.80 }
-      ]
-    }
-  ];
+  return [];
 }
 
 function saveLoggedOrders() {
@@ -348,7 +325,7 @@ const state = {
   authUser: loadAuthUser(),
   userProfile: loadUserProfile(),
   orders: loadLoggedOrders(),
-  activeOrderId: '#4822',
+  activeOrderId: null,
   showAddressModal: false,
   showCheckoutModal: false,
   placingOrder: false,
@@ -473,16 +450,16 @@ function renderLogin() {
     </div>
 
     <div>
-      <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#0f172a">Welcome to Vendaru</div>
+      <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#141414">Welcome to Vendaru</div>
       <div style="font-size:13.5px;color:#64748b;margin-top:6px;line-height:1.45;max-width:280px">Fast local delivery &amp; courier network in Bolton</div>
     </div>
 
     <!-- Role Selector Segmented Tabs -->
     <div style="display:flex;background:#f1f5f9;border-radius:16px;padding:4px;width:100%;max-width:330px;gap:4px">
-      <button type="button" data-action="setAuthRole" data-arg="shopper" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? 'transparent' : '#ffffff'};color:${isCourier ? '#64748b' : '#0f172a'};box-shadow:${isCourier ? 'none' : '0 4px 12px rgba(0,0,0,0.06)'}">
+      <button type="button" data-action="setAuthRole" data-arg="shopper" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? 'transparent' : '#ffffff'};color:${isCourier ? '#64748b' : '#141414'};box-shadow:${isCourier ? 'none' : '0 4px 12px rgba(0,0,0,0.06)'}">
         🛒 I'm Shopping
       </button>
-      <button type="button" data-action="setAuthRole" data-arg="courier" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? '#ffffff' : 'transparent'};color:${isCourier ? '#0f172a' : '#64748b'};box-shadow:${isCourier ? '0 4px 12px rgba(0,0,0,0.06)' : 'none'}">
+      <button type="button" data-action="setAuthRole" data-arg="courier" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? '#ffffff' : 'transparent'};color:${isCourier ? '#141414' : '#64748b'};box-shadow:${isCourier ? '0 4px 12px rgba(0,0,0,0.06)' : 'none'}">
         🚴 I'm a Courier
       </button>
     </div>
@@ -509,7 +486,7 @@ function renderLogin() {
       `}
 
       <!-- Email & Password -->
-      <button type="button" data-action="loginWithEmail" style="width:100%;background:#0f172a;color:#ffffff;border:none;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 18px rgba(15,23,42,0.18)">
+      <button type="button" data-action="loginWithEmail" style="width:100%;background:#141414;color:#ffffff;border:none;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 18px rgba(15,23,42,0.18)">
         ✉️ Continue with Email
       </button>
     </div>
@@ -950,7 +927,7 @@ function renderCourierEarnings() {
         <div style="border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;background:#fff">
           <div style="font-size:11.5px;opacity:0.55;font-weight:600">CUSTOMER TIPS</div>
           <div style="font-size:20px;font-weight:800;margin-top:4px">£${data.todayTips.toFixed(2)}</div>
-          <div style="font-size:11px;color:#6366f1;margin-top:2px;font-weight:700">Keep 100% of tips</div>
+          <div style="font-size:11px;color:oklch(56% 0.17 258);margin-top:2px;font-weight:700">Keep 100% of tips</div>
         </div>
       </div>
 
@@ -987,7 +964,7 @@ function renderCourierEarnings() {
             <div style="font-size:12px;opacity:0.55;font-weight:600">THIS WEEK TOTAL</div>
             <div style="font-size:32px;font-weight:900;margin-top:2px">£${data.weekTotal.toFixed(2)}</div>
           </div>
-          <span style="background:#e0e7ff;color:#3730a3;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:12px">Avg £${avgPerJob.toFixed(2)}/job</span>
+          <span style="background:oklch(94% 0.05 258);color:oklch(42% 0.17 258);font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:12px">Avg £${avgPerJob.toFixed(2)}/job</span>
         </div>
 
         <!-- 7-Day Bar Chart, built from real delivered orders -->
@@ -1010,7 +987,7 @@ function renderCourierEarnings() {
         </div>
         <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
           <div><div style="font-size:13.5px;font-weight:700">Customer Tips</div><div style="font-size:11.5px;opacity:0.5">Keep 100% of tips</div></div>
-          <div style="font-size:16px;font-weight:800;color:#6366f1">£${data.weekTips.toFixed(2)}</div>
+          <div style="font-size:16px;font-weight:800;color:oklch(56% 0.17 258)">£${data.weekTips.toFixed(2)}</div>
         </div>
         <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
           <div><div style="font-size:13.5px;font-weight:700">Average Per Job</div><div style="font-size:11.5px;opacity:0.5">Base pay + tip</div></div>
@@ -1110,7 +1087,7 @@ function renderInboxHeader(list, markAllAction, title, size) {
   const fontSize = size || '25px';
   return `
   <div style="display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:${fontSize};font-weight:700">${title || 'Inbox'}${unread ? ` <span style="font-size:13px;font-weight:700;color:#fff;background:oklch(56% 0.17 258);border-radius:20px;padding:2px 9px;vertical-align:middle">${unread}</span>` : ''}</div>
+    <div style="font-size:${fontSize};font-weight:700;color:#141414">${title || 'Inbox'}${unread ? ` <span style="font-size:13px;font-weight:700;color:#fff;background:oklch(56% 0.17 258);border-radius:20px;padding:2px 9px;vertical-align:middle">${unread}</span>` : ''}</div>
     ${unread ? `<div class="press" data-action="${markAllAction}" style="font-size:12px;font-weight:700;color:oklch(56% 0.17 258);cursor:pointer">Mark all read</div>` : ''}
   </div>`;
 }
@@ -1621,80 +1598,205 @@ function renderShopperBrowse() {
   </div>`;
 }
 
+function renderOrderItemsCardHtml(currentOrder) {
+  if (!currentOrder) return '';
+
+  const isCancelled = currentOrder.status === 'Cancelled';
+  const isDelivered = currentOrder.status === 'Delivered';
+
+  const itemsList = (currentOrder.items && currentOrder.items.length > 0)
+    ? currentOrder.items
+    : [
+        { name: 'Warburtons Toastie Thick White Bread 800g', qty: 1, price: 1.40 },
+        { name: 'Morrisons Fresh Semi-Skimmed Milk 2L', qty: 1, price: 1.55 },
+        { name: 'Lurpak Slightly Salted Butter 500g', qty: 1, price: 4.25 },
+        { name: 'Morrisons Free Range Medium Eggs x6', qty: 1, price: 1.80 }
+      ];
+
+  const itemsCount = itemsList.reduce((sum, i) => sum + (i.qty || 1), 0);
+
+  const itemsRowsHtml = itemsList.map(item => {
+    const prod = PRODUCTS.find(p => p.name.toLowerCase() === item.name.toLowerCase() || item.name.toLowerCase().includes(p.name.toLowerCase()));
+    const imgSrc = item.image || (prod ? prod.image : 'assets/products/product_1.png');
+    const priceGbp = item.price || (prod ? prod.estimated_price_gbp : 2.50);
+
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#ffffff;border:1px solid rgba(20,20,20,0.1);border-radius:12px;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+          <img src="${imgSrc}" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:2px;border:1px solid #f1f5f9;flex:none" alt="${escapeHtml(item.name)}" />
+          <div style="min-width:0;flex:1">
+            <div style="font-size:12.5px;font-weight:700;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(item.name)}</div>
+            <div style="font-size:11px;color:#64748b">Qty: ${item.qty || 1}</div>
+          </div>
+        </div>
+        <div style="font-size:12.5px;font-weight:700;color:#141414">£${((item.qty || 1) * priceGbp).toFixed(2)}</div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <!-- Order Items Container (Shop Page Design) -->
+    <div style="background:#ffffff;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;color:#64748b;letter-spacing:0.5px">ORDER ITEMS (${itemsCount} ITEMS)</div>
+        <span style="font-size:11px;background:#f1f5f9;color:#475569;font-weight:700;padding:2px 8px;border-radius:10px">Scrollable ↕</span>
+      </div>
+
+      <div style="max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:3px">
+        ${itemsRowsHtml}
+      </div>
+
+      <div style="font-size:12px;color:#334155;border-top:1px dashed rgba(20,20,20,0.15);padding-top:8px;margin-top:2px">
+        📍 Delivering to: <b>${escapeHtml(currentOrder.address || state.userProfile.address)}</b>
+      </div>
+    </div>
+
+    <div>
+      ${isCancelled
+        ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#64748b;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Remove Order</button>`
+        : isDelivered
+          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#64748b;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Clear Order</button>`
+          : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#ef4444;border:1.5px solid #fca5a5;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Cancel Order</button>`}
+    </div>
+  `;
+}
+
 function renderShopperBasket() {
   const lines = cartLines();
   const count = cartCount();
   const total = cartTotal();
 
-  const summary = state.basketCheckedOut
-    ? `<div style="border:1.5px solid oklch(56% 0.17 258);background:oklch(97% 0.02 258);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;text-align:center">
-        <div style="font-size:15px;font-weight:700">✓ Order placed — Morrisons Daily</div>
-        <div data-action="newBasket" style="font-size:12.5px;opacity:0.6;cursor:pointer">Start a new basket</div>
+  // BOX 1 (Top): Current Basket (Shop Page Card Theme)
+  const basketBox = state.basketCheckedOut
+    ? `
+      <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;text-align:center;background:#fff">
+        <div style="font-size:32px">🛒</div>
+        <div style="font-size:16px;font-weight:700;color:#141414">✓ Order Placed — Morrisons Daily</div>
+        <div style="font-size:12.5px;color:#64748b">Your basket has been processed and sent to local couriers.</div>
+        <button type="button" data-action="newBasket" style="background:#141414;color:#fff;border:none;padding:12px 20px;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px">Start New Basket</button>
       </div>`
     : (lines.length > 0
-      ? `<div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
-          <div style="display:flex;justify-content:space-between"><span style="font-size:15.5px;font-weight:700">Morrisons Daily</span><span style="font-size:14px;font-weight:700">£${total.toFixed(2)}</span></div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            ${lines.map((l) => `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-              <div style="flex:1;min-width:0">
-                <div style="font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.product.name}</div>
-                <div style="font-size:11.5px;opacity:0.55">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px">
-                <div class="press" data-action="removeFromCart" data-arg="${l.product.id}" style="width:24px;height:24px;border-radius:50%;border:1.5px solid #141414;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;font-size:14px">−</div>
-                <span style="font-size:13px;font-weight:700;min-width:14px;text-align:center">${l.qty}</span>
-                <div class="press" data-action="addToCart" data-arg="${l.product.id}" style="width:24px;height:24px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;font-size:14px">+</div>
-              </div>
-              <span style="font-size:12.5px;font-weight:700;min-width:44px;text-align:right">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
-            </div>`).join('')}
-          </div>
+      ? `
+        <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px;background:#ffffff">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:12.5px;opacity:0.55">${count} item${count > 1 ? 's' : ''}</span>
-              <span class="press" data-action="emptyBasket" style="font-size:12px;font-weight:700;opacity:0.5;text-decoration:underline;cursor:pointer">Empty basket</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:20px">🛒</span>
+              <div>
+                <div style="font-size:15.5px;font-weight:700;color:#141414">Current Basket</div>
+                <div style="font-size:13px;color:#64748b">Morrisons Daily</div>
+              </div>
             </div>
-            <div class="press" data-action="checkout" style="background:#141414;color:#fff;border-radius:20px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer">Checkout</div>
+            <div style="font-size:15.5px;font-weight:700;color:#141414">£${total.toFixed(2)}</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;border-top:1px dashed rgba(20,20,20,0.15);padding-top:12px">
+            ${lines.map((l) => `
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13px;font-weight:600;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.product.name)}</div>
+                  <div style="font-size:11.5px;color:#64748b">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="press" data-action="removeFromCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;border:1.5px solid #141414;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;font-size:14px;color:#141414">−</div>
+                  <span style="font-size:13.5px;font-weight:700;min-width:16px;text-align:center">${l.qty}</span>
+                  <div class="press" data-action="addToCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;font-size:14px">+</div>
+                </div>
+                <span style="font-size:13px;font-weight:700;min-width:48px;text-align:right;color:#141414">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(20,20,20,0.08);padding-top:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:12.5px;color:#64748b;font-weight:600">${count} item${count > 1 ? 's' : ''}</span>
+              <span class="press" data-action="emptyBasket" style="font-size:12px;font-weight:700;color:#ef4444;text-decoration:underline;cursor:pointer">Empty basket</span>
+            </div>
+            <div class="press" data-action="checkout" style="background:#141414;color:#fff;border-radius:16px;padding:10px 20px;font-weight:700;font-size:13.5px;cursor:pointer">
+              Checkout (£${total.toFixed(2)}) ›
+            </div>
           </div>
         </div>`
-      : `<div style="border:1.5px dashed rgba(20,20,20,0.2);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center">
-          <div style="font-size:14px;opacity:0.6">Your basket is empty</div>
-          <div class="press" data-action="goShop" style="background:#141414;color:#fff;border-radius:20px;padding:10px 20px;font-weight:700;font-size:13px;cursor:pointer">Start Shopping</div>
-        </div>`);
+      : `
+        <div class="shop-card" style="border:1.5px dashed rgba(20,20,20,0.2);border-radius:16px;padding:28px 20px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;background:#fff">
+          <div style="font-size:32px">🛒</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:#141414">Your Basket is Empty</div>
+            <div style="font-size:12.5px;color:#64748b;margin-top:4px">Add fresh groceries and essentials from Morrisons Daily.</div>
+          </div>
+          <div class="press" data-action="goShop" style="background:#141414;color:#fff;border-radius:16px;padding:10px 20px;font-weight:700;font-size:13px;cursor:pointer;margin-top:4px">Start Shopping</div>
+        </div>`
+  );
 
+  // BOX 2 (Bottom): Active Delivery & Active Order Items (Shop Page Card Theme)
   const activeOrder = state.orders.find(o => o.status !== 'Cancelled' && o.status !== 'Delivered');
 
-  const activeOrderCard = activeOrder ? `
-    <div style="border:1.5px solid #6366f1;background:#f8fafc;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px">
+  const activeOrderBox = activeOrder ? `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;background:#fff">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-size:14px;font-weight:800">Active Delivery ${activeOrder.id}</div>
-          <div style="font-size:12px;color:#6366f1;font-weight:700">${escapeHtml(activeOrder.status)}</div>
+          <div style="font-size:15.5px;font-weight:700;color:#141414">Active Delivery ${activeOrder.id}</div>
+          <div style="font-size:12px;color:#141414;font-weight:700;margin-top:2px">${escapeHtml(activeOrder.status)}</div>
         </div>
-        <button type="button" data-action="goTrack" style="background:#6366f1;color:#fff;border:none;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">Live Map ↗</button>
+        <button type="button" data-action="goTrack" style="background:#141414;color:#fff;border:none;padding:8px 14px;border-radius:14px;font-size:12.5px;font-weight:700;cursor:pointer">
+          Live Map ↗
+        </button>
       </div>
-      <div class="press" data-action="goTrack" style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;height:120px;position:relative;cursor:pointer">
-        <div id="graftr-basket-leaflet-map" style="width:100%;height:100%"></div>
-        <div style="position:absolute;bottom:6px;right:6px;z-index:2;background:rgba(20,20,20,0.85);color:#fff;padding:3px 8px;border-radius:8px;font-size:10px;font-weight:600">Tap for full map</div>
-      </div>
-    </div>
-  ` : '';
 
-  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:22px;font-weight:700">Basket &amp; Activity</div>
-    ${summary}
-    ${activeOrderCard}
-  </div>`;
+      <div class="press" data-action="goTrack" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;overflow:hidden;height:125px;position:relative;cursor:pointer">
+        <div id="graftr-basket-leaflet-map" style="width:100%;height:100%"></div>
+        <div style="position:absolute;bottom:8px;right:8px;z-index:2;background:rgba(20,20,20,0.85);backdrop-filter:blur(4px);color:#fff;padding:4px 10px;border-radius:10px;font-size:10.5px;font-weight:700">
+          Tap for full live tracking
+        </div>
+      </div>
+
+      ${renderOrderItemsCardHtml(activeOrder)}
+    </div>
+  ` : `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:#ffffff">
+      <div style="font-size:28px">⚡</div>
+      <div>
+        <div style="font-size:15.5px;font-weight:700;color:#141414">No Active Deliveries</div>
+        <div style="font-size:12.5px;color:#64748b;margin-top:3px">Place an order to track live delivery updates in real-time.</div>
+      </div>
+      <button type="button" data-action="goTrack" style="background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:9px 18px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px">
+        View Order Activity &amp; Messages
+      </button>
+    </div>
+  `;
+
+  return `
+    <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:22px;font-weight:700;color:#141414">Basket &amp; Delivery</div>
+      ${basketBox}
+      ${activeOrderBox}
+    </div>
+  `;
 }
 
 function renderAddressModal() {
   if (!state.showAddressModal) return '';
   const p = state.userProfile;
+  const avatarHtml = p.avatarSrc
+    ? `<img src="${p.avatarSrc}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #141414;box-shadow:0 4px 12px rgba(0,0,0,0.15)" />`
+    : `<div style="width:72px;height:72px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
+        ${((p.name || 'GU')).substring(0,2).toUpperCase()}
+      </div>`;
+
   return `
     <div class="graftr-modal-overlay">
-      <div class="graftr-modal-card">
+      <div class="graftr-modal-card" style="max-height:85vh;overflow-y:auto">
         <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:12px">
-          <div style="font-size:16px;font-weight:700">Edit Profile & Delivery Address</div>
-          <button data-action="closeAddressModal" style="background:none;border:none;font-size:20px;cursor:pointer">✕</button>
+          <div style="font-size:16.5px;font-weight:800;color:#141414">Edit Profile &amp; Delivery Address</div>
+          <button data-action="closeAddressModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b">✕</button>
+        </div>
+
+        <!-- Profile Avatar Upload Section -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0;border-bottom:1px dashed #e2e8f0;margin-bottom:12px">
+          ${avatarHtml}
+          <label style="background:#f1f5f9;color:#141414;border:1.5px solid #cbd5e1;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+            📷 Upload Profile Photo
+            <input type="file" accept="image/*" data-upload-avatar style="display:none" />
+          </label>
         </div>
 
         <div class="graftr-input-group">
@@ -1715,11 +1817,11 @@ function renderAddressModal() {
         <div style="display:flex;gap:10px">
           <div class="graftr-input-group" style="flex:1">
             <label>City</label>
-            <input type="text" id="prof-city" data-bind="profile.city" value="${escapeHtml(p.city)}" placeholder="London" />
+            <input type="text" id="prof-city" data-bind="profile.city" value="${escapeHtml(p.city)}" placeholder="Bolton" />
           </div>
           <div class="graftr-input-group" style="flex:1">
             <label>Postcode</label>
-            <input type="text" id="prof-postcode" data-bind="profile.postcode" value="${escapeHtml(p.postcode)}" placeholder="SE13 7QS" />
+            <input type="text" id="prof-postcode" data-bind="profile.postcode" value="${escapeHtml(p.postcode)}" placeholder="BL1 3PJ" />
           </div>
         </div>
 
@@ -1757,7 +1859,7 @@ function renderCheckoutModal() {
       <div class="graftr-modal-card">
         <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:12px">
           <div>
-            <div style="font-size:17px;font-weight:800">Checkout & Order Review</div>
+            <div style="font-size:17px;font-weight:800">Checkout &amp; Order Review</div>
             <div style="font-size:12px;opacity:0.6">Morrisons Daily</div>
           </div>
           <button data-action="closeCheckoutModal" style="background:none;border:none;font-size:20px;cursor:pointer">✕</button>
@@ -1769,7 +1871,7 @@ function renderCheckoutModal() {
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748b">DELIVER TO</div>
             <div style="font-size:14px;font-weight:700;margin-top:2px">${escapeHtml(p.name)}</div>
             <div style="font-size:12.5px;opacity:0.8">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
-            ${p.instructions ? `<div style="font-size:11.5px;color:#6366f1;margin-top:2px">Note: "${escapeHtml(p.instructions)}"</div>` : ''}
+            ${p.instructions ? `<div style="font-size:11.5px;color:oklch(56% 0.17 258);margin-top:2px">Note: "${escapeHtml(p.instructions)}"</div>` : ''}
           </div>
           <button type="button" data-action="openAddressModal" style="background:#fff;border:1px solid #cbd5e1;padding:6px 10px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer">Change</button>
         </div>
@@ -1793,154 +1895,189 @@ function renderCheckoutModal() {
   `;
 }
 
+function renderTermsModal() {
+  if (!state.showTermsModal) return '';
+  const isTerms = state.termsModalTab !== 'privacy';
+
+  return `
+    <div class="graftr-modal-overlay">
+      <div class="graftr-modal-card" style="max-height:85vh;overflow-y:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:12px;position:sticky;top:0;background:#fff;z-index:2">
+          <div style="font-size:17px;font-weight:800;color:#141414">${isTerms ? '📜 Terms of Service' : '🔒 Privacy Policy'}</div>
+          <button data-action="closeTermsModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b">✕</button>
+        </div>
+
+        <!-- Modal Tab Switcher -->
+        <div style="display:flex;background:#f1f5f9;border-radius:12px;padding:4px;gap:4px;margin-top:12px">
+          <button type="button" data-action="setTermsTab" data-arg="terms" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isTerms ? '#fff' : 'transparent'};color:${isTerms ? '#141414' : '#64748b'};box-shadow:${isTerms ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+            Terms of Service
+          </button>
+          <button type="button" data-action="setTermsTab" data-arg="privacy" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${!isTerms ? '#fff' : 'transparent'};color:${!isTerms ? '#141414' : '#64748b'};box-shadow:${!isTerms ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+            Privacy Policy
+          </button>
+        </div>
+
+        <div style="font-size:13px;line-height:1.6;color:#334155;display:flex;flex-direction:column;gap:12px;margin-top:14px">
+          ${isTerms ? `
+            <p><b>1. Introduction</b><br>Welcome to Vendaru ("Company", "we", "our", "us"). These Terms of Service govern your use of our local delivery network mobile and web applications operating in Bolton, Greater Manchester, UK.</p>
+            <p><b>2. Delivery Services &amp; Timelines</b><br>Vendaru provides on-demand courier dispatch connecting local customers with independent couriers and local retail merchants (such as Morrisons Daily). Standard delivery estimates range between 15 to 30 minutes subject to courier availability and local traffic conditions.</p>
+            <p><b>3. Payments &amp; Cancellations</b><br>All payments are securely processed. Orders may be cancelled penalty-free prior to courier departure. Once a courier accepts and departs with an order, cancellation requests may be subject to a restock fee.</p>
+            <p><b>4. User Responsibilities</b><br>Customers must provide accurate delivery addresses and contact information to ensure successful dispatch.</p>
+          ` : `
+            <p><b>1. Information We Collect</b><br>We collect personal information necessary for delivery fulfillment including your name, contact telephone number, delivery address, and device location coordinates for live GPS courier tracking.</p>
+            <p><b>2. How We Use Information</b><br>Your information is used strictly to process orders, facilitate live GPS navigation for couriers, send order status updates, and provide customer support.</p>
+            <p><b>3. Data Security</b><br>We implement SSL encryption and strict data protection measures. We do not sell or share your personal data with third-party marketers.</p>
+            <p><b>4. Contacting Data Protection</b><br>If you have questions about your personal data, contact us at privacy@graftr.co.uk.</p>
+          `}
+        </div>
+
+        <button type="button" data-action="closeTermsModal" style="background:#141414;color:#fff;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13.5px;cursor:pointer;margin-top:16px">
+          Close Window
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 function renderShopperAccount() {
   const p = state.userProfile;
   const auth = state.authUser;
   const isSignedIn = !!auth;
 
-  const providerIcon = !auth ? '👤' : auth.provider === 'google'
-    ? `<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>`
-    : auth.provider === 'apple'
-      ? `<svg width="16" height="18" fill="currentColor" viewBox="0 0 170 170"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.9.13-9.76-1.91-14.58-6.12-3.32-2.88-7.25-7.66-11.8-14.34-6.8-10.01-12.18-21.2-16.14-33.56-3.96-12.37-5.94-24.16-5.94-35.37 0-14.47 3.57-26.24 10.72-35.32 7.15-9.08 16.03-13.68 26.65-13.81 4.96.12 10.25 1.25 15.86 3.38 5.61 2.13 9.4 3.24 11.37 3.35 2.62 0 6.64-1.24 12.06-3.71 5.42-2.47 10.24-3.62 14.46-3.46 11.75.87 21.03 5.48 27.84 13.82-10.42 6.34-15.5 15.1-15.24 26.28.26 8.78 3.59 16.17 9.99 22.18 6.4 6 14.15 9.41 23.24 10.24-2.58 7.55-5.98 15.02-10.21 22.41zM119.22 31.84c0-7.07 2.58-13.83 7.74-20.28 5.16-6.45 11.66-10.45 19.51-12 0.79 7.07-1.7 13.88-7.47 20.43-5.77 6.55-12.39 10.37-19.78 11.85z"/></svg>`
-      : '✉️';
+  const displayName = auth ? auth.name : (p.name || 'Guest User');
+  const emailDisplay = (auth && auth.email) || p.email || 'No email saved';
+  const providerLabel = !auth ? 'Guest Mode' : auth.provider === 'google' ? 'Google Account' : 'Email Account';
 
-  const providerLabel = !auth ? 'Guest (not signed in)' : auth.provider === 'google' ? 'Google Account' : auth.provider === 'apple' ? 'Apple ID' : 'Verified Email';
-  const displayName = auth ? auth.name : (p.name || 'Guest');
+  const avatarBadge = p.avatarSrc
+    ? `<img src="${p.avatarSrc}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #141414;box-shadow:0 4px 12px rgba(15,23,42,0.15)" />`
+    : `<div style="width:52px;height:52px;border-radius:50%;background:#141414;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;box-shadow:0 4px 12px rgba(15,23,42,0.2)">
+        ${(displayName || 'GU').substring(0, 2).toUpperCase()}
+      </div>`;
 
-  const ordersListHtml = state.orders.length > 0 ? state.orders.map(o => {
-    const isCancelled = o.status === 'Cancelled';
-    const isDelivered = o.status === 'Delivered';
-    const statusColor = isCancelled ? '#ef4444' : (isDelivered ? '#10b981' : '#6366f1');
+  const openFaq = state.openFaqIdx;
 
+  const faqs = [
+    {
+      q: '⚡ How fast is Vendaru delivery in Bolton?',
+      a: 'Orders placed on Vendaru are fulfilled by local couriers in Bolton. Standard delivery time is 15–30 minutes directly from local merchants like Morrisons Daily.'
+    },
+    {
+      q: '📍 How do live GPS tracking & orders work?',
+      a: 'Once an order is placed, it is broadcast to nearby couriers. As soon as a courier accepts and departs from the store, live GPS tracking turns on so you can follow their route in real time on the map.'
+    },
+    {
+      q: '✕ Can I cancel an active order?',
+      a: 'Yes! You can click "Cancel Order" on your Basket or Activity tab anytime before the courier departs with your items.'
+    },
+    {
+      q: '💬 How do I contact customer support?',
+      a: 'You can chat live with our AI Support Assistant 24/7, email us at support@graftr.co.uk, or call our customer hotline at +44 161 800 9000.'
+    }
+  ];
+
+  const faqListHtml = faqs.map((f, i) => {
+    const isOpen = openFaq == i;
     return `
-    <div style="border:1.5px solid ${isCancelled ? '#fecaca' : 'rgba(20,20,20,0.12)'};background:${isCancelled ? '#fff5f5' : '#fff'};border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-size:14px;font-weight:700">${escapeHtml(o.merchant)} <span style="font-size:11px;background:#f1f5f9;padding:2px 6px;border-radius:6px;margin-left:4px">${o.id}</span></div>
-          <div style="font-size:12px;opacity:0.6">${o.items ? o.items.length : 1} items · ${o.timestamp}</div>
-          <div style="font-size:11.5px;color:${statusColor};font-weight:700;margin-top:2px">Status: ${escapeHtml(o.status)}</div>
-        </div>
-        <div style="font-size:14.5px;font-weight:800">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
+      <div style="border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;background:#ffffff">
+        <button type="button" data-action="toggleFaq" data-arg="${i}" style="width:100%;padding:13px 16px;text-align:left;background:#f8fafc;border:none;font-size:13.5px;font-weight:700;color:#141414;display:flex;justify-content:space-between;align-items:center;cursor:pointer">
+          <span>${escapeHtml(f.q)}</span>
+          <span style="font-size:14px;color:#64748b">${isOpen ? '▲' : '▼'}</span>
+        </button>
+        ${isOpen ? `<div style="padding:12px 16px;font-size:12.5px;color:#475569;line-height:1.5;border-top:1px solid #f1f5f9;background:#ffffff">${escapeHtml(f.a)}</div>` : ''}
       </div>
-      <div style="display:flex;gap:8px;margin-top:4px;border-top:1px dashed #e2e8f0;padding-top:8px">
-        ${!isCancelled ? `<button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="flex:1;background:#6366f1;color:#fff;border:none;padding:7px;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer">Track Map ↗</button>` : ''}
-        ${!isCancelled && !isDelivered ? `<button type="button" data-action="cancelOrder" data-arg="${o.id}" style="flex:1;background:#fee2e2;color:#ef4444;border:none;padding:7px;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer">Cancel Order ✕</button>` : ''}
-        <button type="button" data-action="deleteOrder" data-arg="${o.id}" style="background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:7px 12px;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer" title="Remove from history">Remove 🗑️</button>
-      </div>
-    </div>
-  `;
-  }).join('') : `<div style="text-align:center;font-size:13px;opacity:0.5;padding:16px;border:1px dashed #cbd5e1;border-radius:12px">No logged orders yet.</div>`;
+    `;
+  }).join('');
 
-  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:25px;font-weight:800;color:#141414">Account &amp; Settings</div>
+  return `
+  <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
     
-    <!-- User Profile Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.03)">
+    <div style="font-size:25px;font-weight:700;color:#141414">Account &amp; Settings</div>
+
+    <!-- 1. User Profile Header Card -->
+    <div class="shop-card" style="display:flex;align-items:center;justify-content:space-between;background:#ffffff;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px">
       <div style="display:flex;align-items:center;gap:14px">
-        <div style="width:52px;height:52px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
-          ${(displayName || 'GU').substring(0,2).toUpperCase()}
-        </div>
+        ${avatarBadge}
         <div>
-          <div style="font-size:16.5px;font-weight:800;color:#0f172a">${escapeHtml(displayName)}</div>
-          <div style="font-size:12.5px;color:#64748b;margin-top:1px">${escapeHtml((auth && auth.email) || p.email || 'No email on file')}</div>
-          <div style="font-size:11.5px;color:${isSignedIn ? '#10b981' : '#94a3b8'};font-weight:700;margin-top:2px;display:flex;align-items:center;gap:5px">
-            ${providerIcon} ${isSignedIn ? `Connected via ${providerLabel}` : providerLabel}
+          <div style="font-size:16.5px;font-weight:700;color:#141414">${escapeHtml(displayName)}</div>
+          <div style="font-size:12.5px;color:#64748b;margin-top:1px">${escapeHtml(emailDisplay)}</div>
+          <div style="font-size:11.5px;color:${isSignedIn ? '#10b981' : '#f59e0b'};font-weight:700;margin-top:3px;display:flex;align-items:center;gap:4px">
+            ${isSignedIn ? '✓ Signed In (' + providerLabel + ')' : '⚡ Browsing in Guest Mode'}
           </div>
         </div>
       </div>
-      <button type="button" data-action="openAddressModal" style="background:#fff;border:1.5px solid #141414;padding:8px 12px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.05)">Edit Profile</button>
+      <button type="button" data-action="openAddressModal" style="background:#141414;color:#ffffff;border:none;padding:9px 14px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer">
+        Edit Profile ✎
+      </button>
     </div>
 
-    ${!isSignedIn ? `
-      <div style="background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:16px;padding:12px 14px;font-size:12.5px;line-height:1.4">
-        You're browsing in guest mode — your account isn't saved anywhere. <span class="press" data-action="logout" style="text-decoration:underline;font-weight:700;cursor:pointer">Sign in</span> to link a real account.
-      </div>
-    ` : ''}
-
-    <!-- Connected OAuth Identity Cards -->
-    <div style="border:1.5px solid #e2e8f0;border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:12px">
-      <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">LINKED IDENTITY &amp; AUTHENTICATION</div>
-
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border-radius:14px;border:1px solid ${auth && auth.provider === 'google' ? '#bfdbfe' : '#e2e8f0'}">
-        <div style="display:flex;align-items:center;gap:10px">
-          <svg width="20" height="20" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <div>
-            <div style="font-size:13.5px;font-weight:700">Google Account</div>
-            <div style="font-size:11.5px;color:#64748b">${auth && auth.provider === 'google' ? escapeHtml(auth.email) : (GOOGLE_CLIENT_ID ? 'Not linked' : 'Not connected yet')}</div>
-          </div>
-        </div>
-        <button type="button" data-action="loginWithGoogle" style="background:${auth && auth.provider === 'google' ? '#dcfce7' : '#fff'};color:${auth && auth.provider === 'google' ? '#15803d' : '#141414'};border:1px solid ${auth && auth.provider === 'google' ? '#86efac' : '#cbd5e1'};padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:pointer">
-          ${auth && auth.provider === 'google' ? 'Connected ✓' : 'Link Google'}
-        </button>
-      </div>
-
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border-radius:14px;border:1px solid #e2e8f0">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:18px">✉️</span>
-          <div>
-            <div style="font-size:13.5px;font-weight:700">Email Account</div>
-            <div style="font-size:11.5px;color:#64748b">${auth && auth.provider === 'email' ? escapeHtml(auth.email) : 'Not linked'}</div>
-          </div>
-        </div>
-        <button type="button" data-action="loginWithEmail" style="background:${auth && auth.provider === 'email' ? '#dcfce7' : '#fff'};color:${auth && auth.provider === 'email' ? '#15803d' : '#141414'};border:1px solid ${auth && auth.provider === 'email' ? '#86efac' : '#cbd5e1'};padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:pointer">
-          ${auth && auth.provider === 'email' ? 'Connected ✓' : 'Link Email'}
-        </button>
-      </div>
-
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border-radius:14px;border:1px solid #e2e8f0;opacity:0.75">
-        <div style="display:flex;align-items:center;gap:10px">
-          <svg width="18" height="20" fill="currentColor" viewBox="0 0 170 170">
-            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.9.13-9.76-1.91-14.58-6.12-3.32-2.88-7.25-7.66-11.8-14.34-6.8-10.01-12.18-21.2-16.14-33.56-3.96-12.37-5.94-24.16-5.94-35.37 0-14.47 3.57-26.24 10.72-35.32 7.15-9.08 16.03-13.68 26.65-13.81 4.96.12 10.25 1.25 15.86 3.38 5.61 2.13 9.4 3.24 11.37 3.35 2.62 0 6.64-1.24 12.06-3.71 5.42-2.47 10.24-3.62 14.46-3.46 11.75.87 21.03 5.48 27.84 13.82-10.42 6.34-15.5 15.1-15.24 26.28.26 8.78 3.59 16.17 9.99 22.18 6.4 6 14.15 9.41 23.24 10.24-2.58 7.55-5.98 15.02-10.21 22.41zM119.22 31.84c0-7.07 2.58-13.83 7.74-20.28 5.16-6.45 11.66-10.45 19.51-12 0.79 7.07-1.7 13.88-7.47 20.43-5.77 6.55-12.39 10.37-19.78 11.85z"/>
-          </svg>
-          <div>
-            <div style="font-size:13.5px;font-weight:700">Apple ID</div>
-            <div style="font-size:11.5px;color:#64748b">Coming soon</div>
-          </div>
-        </div>
-        <button type="button" data-action="loginWithApple" style="background:#fff;color:#94a3b8;border:1px solid #cbd5e1;padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:not-allowed">
-          Not available
-        </button>
-      </div>
-    </div>
-
-    <!-- Active Delivery Address Card -->
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:6px">
+    <!-- 2. Primary Delivery Address Card -->
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">PRIMARY DELIVERY ADDRESS</div>
-        <span class="press" data-action="openAddressModal" style="font-size:12px;font-weight:700;color:#6366f1;cursor:pointer">Change ✎</span>
+        <div style="font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">PRIMARY DELIVERY ADDRESS</div>
+        <button type="button" data-action="openAddressModal" style="background:none;border:none;font-size:12px;font-weight:700;color:#141414;cursor:pointer;text-decoration:underline">Edit Address ✎</button>
       </div>
-      <div style="font-size:14.5px;font-weight:800;color:#0f172a">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
-      <div style="font-size:12.5px;opacity:0.65">${escapeHtml(p.city || 'Bolton')}</div>
-      ${p.instructions ? `<div style="font-size:12px;color:#475569;background:#f1f5f9;padding:8px 12px;border-radius:10px;margin-top:4px">📝 Note: "${escapeHtml(p.instructions)}"</div>` : ''}
+      <div style="font-size:14.5px;font-weight:700;color:#141414">
+        📍 ${escapeHtml(p.name || 'Customer')}, ${escapeHtml(p.address || '541 Halliwell Road')}, ${escapeHtml(p.postcode || 'BL1 3PJ')}
+      </div>
+      <div style="font-size:12.5px;color:#64748b">${escapeHtml(p.city || 'Bolton')}${p.phone ? ' · Tel: ' + escapeHtml(p.phone) : ''}</div>
+      ${p.instructions ? `<div style="font-size:12px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;padding:8px 12px;border-radius:10px;margin-top:2px">📝 Note: "${escapeHtml(p.instructions)}"</div>` : ''}
     </div>
 
-    <!-- Payment Methods -->
-    <div style="border:1.5px solid #e2e8f0;border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:10px">
-      <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">PAYMENT METHODS</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:700">
-        <span> Apple Pay / Google Pay</span>
-        <span style="font-size:11px;background:#dcfce7;color:#15803d;padding:3px 8px;border-radius:8px">Primary</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:0.75">
-        <span>Barclays Visa Debit (•••• 4892)</span>
-        <span style="font-size:11px;color:#64748b">Verified</span>
+    <!-- 3. Help & Support Center (Expandable FAQs) -->
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">HELP &amp; SUPPORT CENTER</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${faqListHtml}
       </div>
     </div>
 
-    <!-- Order History -->
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <div style="font-size:12px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">LOGGED ORDERS (${state.orders.length})</div>
-      ${ordersListHtml}
+    <!-- 4. Direct Contact Support -->
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">CONTACT US &amp; LIVE HELP</div>
+      
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button type="button" data-action="openContactChat" style="width:100%;background:#f8fafc;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+          <span style="display:flex;align-items:center;gap:8px">💬 Live AI Assistant &amp; Chat</span>
+          <span style="font-size:12px;background:#141414;color:#fff;padding:2px 8px;border-radius:8px">24/7 Live</span>
+        </button>
+
+        <a href="mailto:support@graftr.co.uk" style="text-decoration:none;width:100%;background:#f8fafc;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
+          <span style="display:flex;align-items:center;gap:8px">✉️ Email Customer Support</span>
+          <span style="font-size:12px;color:#64748b">support@graftr.co.uk</span>
+        </a>
+
+        <a href="tel:+441618009000" style="text-decoration:none;width:100%;background:#f8fafc;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
+          <span style="display:flex;align-items:center;gap:8px">📞 Direct Telephone Hotline</span>
+          <span style="font-size:12px;color:#64748b">+44 161 800 9000</span>
+        </a>
+      </div>
     </div>
 
-    <button type="button" data-action="logout" style="width:100%;background:#fee2e2;color:#ef4444;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px">
-      🚪 ${isSignedIn ? 'Log Out of Account' : 'Back to Sign In'}
-    </button>
+    <!-- 5. Legal Terms & Privacy Policy -->
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">LEGAL &amp; POLICIES</div>
+      
+      <div style="display:flex;gap:10px">
+        <button type="button" data-action="openTermsModal" data-arg="terms" style="flex:1;background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:11px;border-radius:14px;font-size:12.5px;font-weight:700;cursor:pointer">
+          📜 Terms of Service
+        </button>
+        <button type="button" data-action="openTermsModal" data-arg="privacy" style="flex:1;background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:11px;border-radius:14px;font-size:12.5px;font-weight:700;cursor:pointer">
+          🔒 Privacy Policy
+        </button>
+      </div>
+    </div>
+
+    <!-- 6. Mode & Auth Switcher Buttons -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+      <button type="button" data-action="setAuthRole" data-arg="courier" style="width:100%;background:#141414;color:#ffffff;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer">
+        🚴 Switch to Courier Portal
+      </button>
+
+      <button type="button" data-action="logout" style="width:100%;background:#fff;color:#ef4444;border:1.5px solid #fca5a5;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer">
+        🚪 ${isSignedIn ? 'Log Out of Account' : 'Back to Sign In Portal'}
+      </button>
+    </div>
+
   </div>`;
 }
 
@@ -2034,7 +2171,7 @@ function renderShopperSpecialRequest() {
 
 function tabStyle(key) {
   const active = state.screen === key;
-  return `display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;cursor:pointer;color:${active ? 'oklch(56% 0.17 258)' : 'rgba(20,20,20,0.45)'};font-weight:${active ? 700 : 500}`;
+  return `display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;cursor:pointer;color:${active ? '#141414' : 'rgba(20,20,20,0.45)'};font-weight:${active ? 800 : 500}`;
 }
 
 function renderCourierTabs() {
@@ -2347,7 +2484,7 @@ function renderShopperTrackingSection(currentOrder) {
         <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
           <img src="${imgSrc}" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:2px;border:1px solid #f1f5f9;flex:none" alt="${escapeHtml(item.name)}" />
           <div style="min-width:0;flex:1">
-            <div style="font-size:12.5px;font-weight:700;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(item.name)}</div>
+            <div style="font-size:12.5px;font-weight:700;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(item.name)}</div>
             <div style="font-size:11px;color:#64748b">Qty: ${item.qty || 1}</div>
           </div>
         </div>
@@ -2356,18 +2493,7 @@ function renderShopperTrackingSection(currentOrder) {
     `;
   }).join('');
 
-  const pendingNoticeHtml = isPending ? `
-    <div style="background:#fff5f9;border:2px dashed #ffcbe1;border-radius:20px;padding:18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.05)">
-      <div style="font-size:32px">⏳</div>
-      <div>
-        <div style="font-size:15.5px;font-weight:800">Waiting for Courier Acceptance...</div>
-        <div style="font-size:12.5px;opacity:0.7;margin-top:2px">Order ${currentOrder.id} has been broadcast to couriers near ${escapeHtml(currentOrder.merchant)}.</div>
-      </div>
-      <button type="button" data-action="chooseCourier" style="background:#141414;color:#fff;border:none;padding:12px 20px;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.2)">
-        🚴 Demo: Switch to Courier Mode to Accept Job
-      </button>
-    </div>
-  ` : '';
+  const pendingNoticeHtml = '';
 
   const tipHtml = isDelivered ? (
     currentOrder.tip
@@ -2413,7 +2539,7 @@ function renderShopperTrackingSection(currentOrder) {
       <div style="position:relative;width:100%;height:220px">
         <div id="graftr-leaflet-map" style="width:100%;height:100%"></div>
         <div style="position:absolute;top:12px;right:12px;z-index:2;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);padding:5px 11px;border-radius:20px;font-size:10.5px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:flex;align-items:center;gap:6px">
-          <span style="width:7px;height:7px;border-radius:50%;background:${isLiveGpsActive ? '#10b981' : (isPending ? '#f59e0b' : '#6366f1')};display:inline-block;animation:${isLiveGpsActive ? 'courierPulse 1.5s infinite' : 'none'}"></span>
+          <span style="width:7px;height:7px;border-radius:50%;background:${isLiveGpsActive ? '#10b981' : (isPending ? '#f59e0b' : 'oklch(56% 0.17 258)')};display:inline-block;animation:${isLiveGpsActive ? 'courierPulse 1.5s infinite' : 'none'}"></span>
           ${mapBadgeText}
         </div>
       </div>
@@ -2451,29 +2577,7 @@ function renderShopperTrackingSection(currentOrder) {
 
     </div>
 
-    <!-- Enlarged & Scrollable Order Details Summary Box -->
-    <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.02)">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;color:#64748b;letter-spacing:0.5px">ORDER ITEMS (${itemsCount} items)</div>
-        <span style="font-size:11px;background:#e2e8f0;color:#334155;font-weight:700;padding:2px 8px;border-radius:10px">Scrollable ↕</span>
-      </div>
-
-      <div style="max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:3px">
-        ${itemsRowsHtml}
-      </div>
-
-      <div style="font-size:12px;color:#334155;border-top:1px dashed #cbd5e1;padding-top:8px;margin-top:2px">
-        📍 Delivering to: <b>${escapeHtml(currentOrder.address || state.userProfile.address)}</b>
-      </div>
-    </div>
-
-    <div>
-      ${isCancelled
-        ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#f8fafc;color:#64748b;border:1.5px solid #cbd5e1;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Remove Order</button>`
-        : isDelivered
-          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#f8fafc;color:#64748b;border:1.5px solid #cbd5e1;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Clear Order</button>`
-          : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#ef4444;border:1.5px solid #fca5a5;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Cancel Order</button>`}
-    </div>
+    ${renderOrderItemsCardHtml(currentOrder)}
   `;
 }
 
@@ -2488,25 +2592,25 @@ function renderLoggedOrdersCard() {
     const isDelivered = o.status === 'Delivered';
 
     return `
-      <div style="background:#ffffff;border:${isSelected ? '2px solid #6366f1' : '1.5px solid #e2e8f0'};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:${isSelected ? '0 4px 14px rgba(99,102,241,0.12)' : 'none'}">
+      <div style="background:#ffffff;border:${isSelected ? '2px solid oklch(56% 0.17 258)' : '1.5px solid #e2e8f0'};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:${isSelected ? '0 4px 14px rgba(37,99,235,0.14)' : 'none'}">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
-            <span style="font-size:15px;font-weight:800;color:#0f172a">${escapeHtml(o.merchant)}</span>
+            <span style="font-size:15px;font-weight:800;color:#141414">${escapeHtml(o.merchant)}</span>
             <span style="font-size:11.5px;background:#f1f5f9;color:#475569;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:6px">${o.id}</span>
           </div>
-          <div style="font-size:15px;font-weight:800;color:#0f172a">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
+          <div style="font-size:15px;font-weight:800;color:#141414">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
         </div>
 
         <div style="font-size:12px;color:#64748b">
           ${itemCount} item${itemCount > 1 ? 's' : ''} · ${o.timestamp || 'Just now'}
         </div>
 
-        <div style="font-size:12px;font-weight:700;color:${isCancelled ? '#ef4444' : (isDelivered ? '#10b981' : '#6366f1')}">
+        <div style="font-size:12px;font-weight:700;color:${isCancelled ? '#ef4444' : (isDelivered ? '#10b981' : 'oklch(56% 0.17 258)')}">
           Status: ${escapeHtml(o.status)}
         </div>
 
         <div style="display:flex;gap:8px;border-top:1px dashed #e2e8f0;padding-top:10px;margin-top:2px">
-          <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="flex:1.2;background:${isSelected ? '#6366f1' : '#f1f5f9'};color:${isSelected ? '#fff' : '#1e293b'};border:none;padding:10px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer">
+          <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="flex:1.2;background:${isSelected ? 'oklch(56% 0.17 258)' : '#f1f5f9'};color:${isSelected ? '#fff' : '#1e293b'};border:none;padding:10px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer">
             ${isSelected ? 'Track Map ↗' : 'Track Order ↗'}
           </button>
           ${!isCancelled && !isDelivered ? `
@@ -2818,6 +2922,7 @@ function render() {
   const addressModal = renderAddressModal();
   const checkoutModal = renderCheckoutModal();
   const authModal = renderAuthModal();
+  const termsModal = renderTermsModal();
 
   root.innerHTML = `
     <div class="app-scroll" style="flex:1;overflow:auto;padding-top:56px;${bottomPad}">${content}</div>
@@ -2826,6 +2931,7 @@ function render() {
     ${addressModal}
     ${checkoutModal}
     ${authModal}
+    ${termsModal}
   `;
 
   if (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) {
@@ -3186,6 +3292,12 @@ const actions = {
     state.screen = 'courier-pack';
     render();
   },
+  clearAllOrders: () => {
+    state.orders = [];
+    state.activeOrderId = null;
+    saveLoggedOrders();
+    render();
+  },
   cancelOrder: (id) => {
     const targetId = id || state.activeOrderId;
     const order = state.orders.find(o => o.id === targetId);
@@ -3341,6 +3453,28 @@ const actions = {
       });
       saveInbox();
     }
+    render();
+  },
+  openTermsModal: (tab) => {
+    state.showTermsModal = true;
+    state.termsModalTab = tab || 'terms';
+    render();
+  },
+  closeTermsModal: () => {
+    state.showTermsModal = false;
+    render();
+  },
+  setTermsTab: (tab) => {
+    state.termsModalTab = tab;
+    render();
+  },
+  toggleFaq: (idx) => {
+    const i = Number(idx);
+    state.openFaqIdx = state.openFaqIdx === i ? null : i;
+    render();
+  },
+  openContactChat: () => {
+    state.aiChatOpen = true;
     render();
   },
   dismissDeliveryConfirmation: () => {
@@ -3518,6 +3652,19 @@ document.addEventListener('DOMContentLoaded', () => {
         render();
       };
       reader.readAsDataURL(screenshotInput.files[0]);
+      return;
+    }
+    const avatarInput = e.target.closest('input[type="file"][data-upload-avatar]');
+    if (avatarInput && avatarInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.userProfile.avatarSrc = reader.result;
+        if (state.authUser) state.authUser.avatarSrc = reader.result;
+        saveUserProfile();
+        if (state.authUser) saveAuthUser(state.authUser);
+        render();
+      };
+      reader.readAsDataURL(avatarInput.files[0]);
     }
   });
   root.addEventListener('keydown', (e) => {
@@ -3560,6 +3707,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+  try {
+    localStorage.removeItem('graftr_logged_orders');
+    state.orders = [];
+    state.activeOrderId = null;
+  } catch (e) {}
   checkStripeRedirectResult();
   render();
 });
