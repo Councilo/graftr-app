@@ -474,7 +474,7 @@ function renderLogin() {
     <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:330px">
       <!-- Google Sign-In: our styled button until One Tap needs the fallback, then Google's real button takes its place (never both at once) -->
       ${state.showGoogleFallbackButton ? `<div id="google-signin-button-container" style="display:flex;justify-content:center;width:100%"></div>` : `
-      <button type="button" data-action="loginWithGoogle" style="width:100%;background:#ffffff;color:#1e293b;border:1.5px solid #e2e8f0;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.04);transition:all 0.2s">
+      <button type="button" data-action="loginWithGoogle" style="width:100%;background:#ffffff;color:#1e293b;border:1.5px solid rgba(20,20,20,0.12);border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.04);transition:all 0.2s">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -501,8 +501,8 @@ function renderLogin() {
     <!-- Guest Access Button -->
     <div style="width:100%;max-width:330px">
       ${isCourier
-        ? `<div class="press" data-action="chooseCourier" style="background:#f8fafc;color:#334155;border:1.5px solid #cbd5e1;border-radius:16px;padding:13px;font-size:13.5px;font-weight:700;cursor:pointer">🚴 Enter Courier Guest Mode</div>`
-        : `<div class="press" data-action="chooseShopper" style="background:#f8fafc;color:#334155;border:1.5px solid #cbd5e1;border-radius:16px;padding:13.5px;font-size:13.5px;font-weight:700;cursor:pointer">🛒 Enter Shopper Guest Mode</div>`
+        ? `<div class="press" data-action="chooseCourier" style="background:#f8fafc;color:#334155;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13px;font-size:13.5px;font-weight:700;cursor:pointer">🚴 Enter Courier Guest Mode</div>`
+        : `<div class="press" data-action="chooseShopper" style="background:#f8fafc;color:#334155;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13.5px;font-size:13.5px;font-weight:700;cursor:pointer">🛒 Enter Shopper Guest Mode</div>`
       }
     </div>
 
@@ -544,21 +544,21 @@ function renderAuthModal() {
           ${!isLogin ? `
             <div>
               <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Full Name</label>
-              <input type="text" id="email-setup-name" placeholder="Your full name" value="" style="width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13.5px;font-weight:600" />
+              <input type="text" id="email-setup-name" placeholder="Your full name" value="" style="width:100%;padding:11px 12px;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;font-size:13.5px;font-weight:600" />
             </div>
           ` : ''}
           <div>
             <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Email Address</label>
-            <input type="email" id="email-setup-email" placeholder="name@example.com" value="" style="width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13.5px;font-weight:600" />
+            <input type="email" id="email-setup-email" placeholder="name@example.com" value="" style="width:100%;padding:11px 12px;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;font-size:13.5px;font-weight:600" />
           </div>
           <div>
             <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Password</label>
-            <input type="password" id="email-setup-password" placeholder="At least 6 characters" value="" style="width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13.5px;font-weight:600" />
+            <input type="password" id="email-setup-password" placeholder="At least 6 characters" value="" style="width:100%;padding:11px 12px;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;font-size:13.5px;font-weight:600" />
           </div>
           ${!isLogin ? `
             <div>
               <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Delivery Address (Bolton Hub)</label>
-              <input type="text" id="email-setup-address" value="${escapeHtml(state.userProfile.address || '')}${state.userProfile.postcode ? ', ' + escapeHtml(state.userProfile.postcode) : ''}" placeholder="Your address" style="width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13.5px;font-weight:600" />
+              <input type="text" id="email-setup-address" value="${escapeHtml(state.userProfile.address || '')}${state.userProfile.postcode ? ', ' + escapeHtml(state.userProfile.postcode) : ''}" placeholder="Your address" style="width:100%;padding:11px 12px;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;font-size:13.5px;font-weight:600" />
             </div>
           ` : ''}
         </div>
@@ -768,7 +768,7 @@ function renderCourierActivity() {
     </div>`;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:25px;font-weight:700">Activity</div>
+    <div style="font-size:25px;font-weight:700;color:#141414">Activity</div>
     ${trackingCard}
     ${messagesCard}
   </div>`;
@@ -1043,7 +1043,7 @@ function renderCourierEarnings() {
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:16px">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-size:24px;font-weight:800">Courier Earnings</div>
+          <div style="font-size:25px;font-weight:700;color:#141414">Courier Earnings</div>
           <div style="font-size:12.5px;opacity:0.6">Sam Whitfield (E-bike Courier) · Bolton Hub</div>
         </div>
         <span style="background:#dcfce7;color:#15803d;font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">🟢 Active</span>
@@ -1355,7 +1355,7 @@ function renderCourierPack() {
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-size:22px;font-weight:800">Pick &amp; Pack Scanner</div>
+          <div style="font-size:25px;font-weight:700;color:#141414">Pick &amp; Pack Scanner</div>
           <div style="font-size:12.5px;opacity:0.65">Order ${activeOrder.id} · Morrisons Daily</div>
         </div>
         <span style="background:${allPacked ? '#dcfce7' : '#ffcbe1'};color:${allPacked ? '#15803d' : '#141414'};font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">${progressPercent}% Done</span>
@@ -1391,10 +1391,10 @@ function renderCourierAccount() {
   const providerLabel = !auth ? 'Not signed in' : auth.provider === 'google' ? 'Google Account' : auth.provider === 'apple' ? 'Apple ID' : 'Email Account';
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:25px;font-weight:800">Courier Account</div>
+    <div style="font-size:25px;font-weight:700;color:#141414">Courier Account</div>
 
     <!-- Courier Profile Header -->
-    <div style="display:flex;align-items:center;gap:14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:16px">
+    <div style="display:flex;align-items:center;gap:14px;background:#f8fafc;border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:16px">
       <div style="width:52px;height:52px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">
         ${(displayName || 'GC').substring(0,2).toUpperCase()}
       </div>
@@ -1766,7 +1766,7 @@ function renderShopperBasket() {
 
   return `
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-      <div style="font-size:22px;font-weight:700;color:#141414">Basket &amp; Delivery</div>
+      <div style="font-size:25px;font-weight:700;color:#141414">Basket &amp; Delivery</div>
       ${basketBox}
       ${activeOrderBox}
     </div>
@@ -1793,7 +1793,7 @@ function renderAddressModal() {
         <!-- Profile Avatar Upload Section -->
         <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0;border-bottom:1px dashed #e2e8f0;margin-bottom:12px">
           ${avatarHtml}
-          <label style="background:#f1f5f9;color:#141414;border:1.5px solid #cbd5e1;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+          <label style="background:#f1f5f9;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
             📷 Upload Profile Photo
             <input type="file" accept="image/*" data-upload-avatar style="display:none" />
           </label>
@@ -1866,7 +1866,7 @@ function renderCheckoutModal() {
         </div>
 
         <!-- Delivery Address Box -->
-        <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+        <div style="background:#f8fafc;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
           <div>
             <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748b">DELIVER TO</div>
             <div style="font-size:14px;font-weight:700;margin-top:2px">${escapeHtml(p.name)}</div>
@@ -1877,7 +1877,7 @@ function renderCheckoutModal() {
         </div>
 
         <!-- Items Summary -->
-        <div style="border:1.5px solid #e2e8f0;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
+        <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748b">ORDER SUMMARY (${cartCount()} items)</div>
           ${itemsListHtml}
           <div style="border-top:1px dashed #e2e8f0;padding-top:8px;margin-top:4px;display:flex;flex-direction:column;gap:4px">
@@ -2533,7 +2533,7 @@ function renderShopperTrackingSection(currentOrder) {
     ${tipHtml}
 
     <!-- Unified Master Delivery Tracking Card -->
-    <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);display:flex;flex-direction:column">
+    <div style="background:#ffffff;border:1.5px solid rgba(20,20,20,0.12);border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);display:flex;flex-direction:column">
       
       <!-- 1. Top Section: Live Map -->
       <div style="position:relative;width:100%;height:220px">
@@ -2592,7 +2592,7 @@ function renderLoggedOrdersCard() {
     const isDelivered = o.status === 'Delivered';
 
     return `
-      <div style="background:#ffffff;border:${isSelected ? '2px solid oklch(56% 0.17 258)' : '1.5px solid #e2e8f0'};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:${isSelected ? '0 4px 14px rgba(37,99,235,0.14)' : 'none'}">
+      <div style="background:#ffffff;border:${isSelected ? '2px solid oklch(56% 0.17 258)' : '1.5px solid rgba(20,20,20,0.12)'};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:${isSelected ? '0 4px 14px rgba(37,99,235,0.14)' : 'none'}">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
             <span style="font-size:15px;font-weight:800;color:#141414">${escapeHtml(o.merchant)}</span>
@@ -2674,7 +2674,7 @@ function renderShopperInbox() {
     </div>`;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:25px;font-weight:700">Activity</div>
+    <div style="font-size:25px;font-weight:700;color:#141414">Activity</div>
     ${trackingCard}
     ${renderLoggedOrdersCard()}
     ${messagesCard}
