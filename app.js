@@ -497,7 +497,7 @@ function renderLogin() {
 
       <!-- Email & Password — defaults to logging in; signing up is the link below. -->
       <button type="button" data-action="loginWithEmail" style="width:100%;background:#141414;color:#ffffff;border:none;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 18px rgba(20,20,20,0.18)">
-        ✉️ Log In with Email
+        Log In with Email
       </button>
     </div>
 
@@ -524,11 +524,10 @@ function renderAuthModal() {
   const roleTitle = state.authRole === 'courier' ? 'Courier' : 'Shopper';
   const isLogin = state.emailAuthMode === 'login';
   return `
-    <div class="graftr-modal-overlay" style="z-index:99999;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px)">
-      <div style="width:100%;max-width:370px;background:#ffffff;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 20px 40px rgba(0,0,0,0.3);text-align:center">
+    <div class="graftr-modal-overlay" style="z-index:99999;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);justify-content:center;align-items:center;padding:24px">
+      <div style="width:100%;max-width:370px;max-height:100%;overflow-y:auto;background:#ffffff;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 20px 40px rgba(0,0,0,0.3);text-align:center">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:20px">✉️</span>
             <span style="font-size:16px;font-weight:800;color:#141414">${isLogin ? 'Log In' : 'Create Your Account'}</span>
           </div>
           <button type="button" data-action="closeAuthModal" style="background:none;border:none;color:#6b6b6b;font-size:22px;cursor:pointer">✕</button>
