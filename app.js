@@ -1960,123 +1960,116 @@ function renderShopperAccount() {
 
   const faqs = [
     {
-      q: '⚡ How fast is Vendaru delivery in Bolton?',
-      a: 'Orders placed on Vendaru are fulfilled by local couriers in Bolton. Standard delivery time is 15–30 minutes directly from local merchants like Morrisons Daily.'
+      q: 'How fast is delivery in Bolton?',
+      a: 'Orders are fulfilled by local couriers in Bolton. Standard delivery is 15–30 minutes, direct from merchants like Morrisons Daily.'
     },
     {
-      q: '📍 How do live GPS tracking & orders work?',
-      a: 'Once an order is placed, it is broadcast to nearby couriers. As soon as a courier accepts and departs from the store, live GPS tracking turns on so you can follow their route in real time on the map.'
+      q: 'How does live tracking work?',
+      a: 'Once an order is placed it is broadcast to nearby couriers. As soon as one accepts and leaves the store, live tracking turns on so you can follow their route on the map.'
     },
     {
-      q: '✕ Can I cancel an active order?',
-      a: 'Yes! You can click "Cancel Order" on your Basket or Activity tab anytime before the courier departs with your items.'
+      q: 'Can I cancel an active order?',
+      a: 'Yes. Use Cancel Order on your Basket or Activity tab any time before the courier leaves with your items.'
     },
     {
-      q: '💬 How do I contact customer support?',
-      a: 'You can chat live with our AI Support Assistant 24/7, email us at support@graftr.co.uk, or call our customer hotline at +44 161 800 9000.'
+      q: 'How do I contact support?',
+      a: 'Chat to the assistant any time, email support@vendaru.com, or call +44 161 800 9000.'
     }
   ];
+
+  // Rows share one card and are separated by hairlines rather than each being
+  // its own bordered box — far calmer than boxes nested inside boxes.
+  const rowBase = 'width:100%;background:none;border:none;padding:13px 0;font-size:14px;color:#141414;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;text-align:left;font-family:inherit;box-sizing:border-box';
+  const divider = 'border-top:1px solid #f0f0f0';
 
   const faqListHtml = faqs.map((f, i) => {
     const isOpen = openFaq == i;
     return `
-      <div style="border:1px solid #e5e5e5;border-radius:14px;overflow:hidden;background:#ffffff">
-        <button type="button" data-action="toggleFaq" data-arg="${i}" style="width:100%;padding:13px 16px;text-align:left;background:#fafafa;border:none;font-size:13.5px;font-weight:700;color:#141414;display:flex;justify-content:space-between;align-items:center;cursor:pointer">
-          <span>${escapeHtml(f.q)}</span>
-          <span style="font-size:14px;color:#6b6b6b">${isOpen ? '▲' : '▼'}</span>
+      <div style="${i > 0 ? divider : ''}">
+        <button type="button" data-action="toggleFaq" data-arg="${i}" style="${rowBase}">
+          <span style="font-weight:500">${escapeHtml(f.q)}</span>
+          <span style="font-size:17px;color:#9a9a9a;font-weight:400;line-height:1;flex:0 0 auto">${isOpen ? '−' : '+'}</span>
         </button>
-        ${isOpen ? `<div style="padding:12px 16px;font-size:12.5px;color:#5c5c5c;line-height:1.5;border-top:1px solid #f2f2f2;background:#ffffff">${escapeHtml(f.a)}</div>` : ''}
+        ${isOpen ? `<div style="padding:0 0 13px;font-size:13px;color:#5c5c5c;line-height:1.55;max-width:92%">${escapeHtml(f.a)}</div>` : ''}
       </div>
     `;
   }).join('');
 
+  const cardStyle = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#ffffff;padding:4px 16px';
+  const sectionLabel = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 4px';
+  const linkRow = 'text-decoration:none;' + rowBase;
+  const rowValue = 'font-size:13px;color:#6b6b6b;font-weight:400;flex:0 0 auto';
+
   return `
   <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    
-    <div style="font-size:25px;font-weight:700;color:#141414">Account &amp; Settings</div>
 
-    <!-- 1. User Profile Header Card -->
-    <div class="shop-card" style="display:flex;align-items:center;justify-content:space-between;background:#ffffff;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px">
-      <div style="display:flex;align-items:center;gap:14px">
-        ${avatarBadge}
-        <div>
-          <div style="font-size:16.5px;font-weight:700;color:#141414">${escapeHtml(displayName)}</div>
-          <div style="font-size:12.5px;color:#6b6b6b;margin-top:1px">${escapeHtml(emailDisplay)}</div>
-          <div style="font-size:11.5px;color:${isSignedIn ? '#141414' : '#141414'};font-weight:700;margin-top:3px;display:flex;align-items:center;gap:4px">
-            ${isSignedIn ? '✓ Signed In (' + providerLabel + ')' : 'Not signed in'}
-          </div>
-        </div>
+    <div style="font-size:25px;font-weight:700;color:#141414">Account</div>
+
+    <!-- Profile -->
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#ffffff;padding:16px;display:flex;flex-direction:row;align-items:center;gap:14px;text-align:left">
+      ${avatarBadge}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;font-weight:600;color:#141414">${escapeHtml(displayName)}</div>
+        <div style="font-size:13px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(emailDisplay)}</div>
+        <div style="font-size:12.5px;color:#9a9a9a;margin-top:3px">${isSignedIn ? 'Signed in with ' + providerLabel : 'Not signed in'}</div>
       </div>
-      <button type="button" data-action="openAddressModal" style="background:#141414;color:#ffffff;border:none;padding:9px 14px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer">
-        Edit Profile ✎
+      <button type="button" data-action="openAddressModal" style="background:none;border:none;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;flex:0 0 auto;font-family:inherit;padding:4px">Edit</button>
+    </div>
+
+    <!-- Delivery address -->
+    <div class="shop-card" style="${cardStyle}">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;${sectionLabel}">
+        <span>Delivery address</span>
+        <button type="button" data-action="openAddressModal" style="background:none;border:none;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;font-family:inherit;padding:0">Edit</button>
+      </div>
+      <div style="padding-bottom:14px">
+        <div style="font-size:14px;color:#141414;line-height:1.5">${escapeHtml(p.address || '541 Halliwell Road')}, ${escapeHtml(p.postcode || 'BL1 3PJ')}</div>
+        <div style="font-size:13px;color:#6b6b6b;margin-top:3px">${escapeHtml(p.city || 'Bolton')}${p.phone ? ' · ' + escapeHtml(p.phone) : ''}</div>
+        ${p.instructions ? `<div style="font-size:13px;color:#6b6b6b;margin-top:6px">Note: ${escapeHtml(p.instructions)}</div>` : ''}
+      </div>
+    </div>
+
+    <!-- Help -->
+    <div class="shop-card" style="${cardStyle}">
+      <div style="${sectionLabel}">Help</div>
+      ${faqListHtml}
+    </div>
+
+    <!-- Contact -->
+    <div class="shop-card" style="${cardStyle}">
+      <div style="${sectionLabel}">Contact</div>
+      <button type="button" data-action="openContactChat" style="${rowBase}">
+        <span style="font-weight:500">Live chat</span>
+        <span style="${rowValue}">24/7</span>
+      </button>
+      <a href="mailto:support@vendaru.com" style="${linkRow};${divider}">
+        <span style="font-weight:500">Email</span>
+        <span style="${rowValue}">support@vendaru.com</span>
+      </a>
+      <a href="tel:+441618009000" style="${linkRow};${divider}">
+        <span style="font-weight:500">Phone</span>
+        <span style="${rowValue}">+44 161 800 9000</span>
+      </a>
+    </div>
+
+    <!-- Legal -->
+    <div class="shop-card" style="${cardStyle}">
+      <div style="${sectionLabel}">Legal</div>
+      <button type="button" data-action="openTermsModal" data-arg="terms" style="${rowBase}">
+        <span style="font-weight:500">Terms of Service</span>
+      </button>
+      <button type="button" data-action="openTermsModal" data-arg="privacy" style="${rowBase};${divider}">
+        <span style="font-weight:500">Privacy Policy</span>
       </button>
     </div>
 
-    <!-- 2. Primary Delivery Address Card -->
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:8px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:11.5px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.5px">PRIMARY DELIVERY ADDRESS</div>
-        <button type="button" data-action="openAddressModal" style="background:none;border:none;font-size:12px;font-weight:700;color:#141414;cursor:pointer;text-decoration:underline">Edit Address ✎</button>
-      </div>
-      <div style="font-size:14.5px;font-weight:700;color:#141414">
-        📍 ${escapeHtml(p.name || 'Customer')}, ${escapeHtml(p.address || '541 Halliwell Road')}, ${escapeHtml(p.postcode || 'BL1 3PJ')}
-      </div>
-      <div style="font-size:12.5px;color:#6b6b6b">${escapeHtml(p.city || 'Bolton')}${p.phone ? ' · Tel: ' + escapeHtml(p.phone) : ''}</div>
-      ${p.instructions ? `<div style="font-size:12px;color:#5c5c5c;background:#fafafa;border:1px solid #e5e5e5;padding:8px 12px;border-radius:10px;margin-top:2px">📝 Note: "${escapeHtml(p.instructions)}"</div>` : ''}
-    </div>
-
-    <!-- 3. Help & Support Center (Expandable FAQs) -->
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:12px">
-      <div style="font-size:11.5px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.5px">HELP &amp; SUPPORT CENTER</div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        ${faqListHtml}
-      </div>
-    </div>
-
-    <!-- 4. Direct Contact Support -->
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:12px">
-      <div style="font-size:11.5px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.5px">CONTACT US &amp; LIVE HELP</div>
-      
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button type="button" data-action="openContactChat" style="width:100%;background:#fafafa;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
-          <span style="display:flex;align-items:center;gap:8px">💬 Live AI Assistant &amp; Chat</span>
-          <span style="font-size:12px;background:#141414;color:#fff;padding:2px 8px;border-radius:8px">24/7 Live</span>
-        </button>
-
-        <a href="mailto:support@graftr.co.uk" style="text-decoration:none;width:100%;background:#fafafa;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
-          <span style="display:flex;align-items:center;gap:8px">✉️ Email Customer Support</span>
-          <span style="font-size:12px;color:#6b6b6b">support@graftr.co.uk</span>
-        </a>
-
-        <a href="tel:+441618009000" style="text-decoration:none;width:100%;background:#fafafa;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
-          <span style="display:flex;align-items:center;gap:8px">📞 Direct Telephone Hotline</span>
-          <span style="font-size:12px;color:#6b6b6b">+44 161 800 9000</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- 5. Legal Terms & Privacy Policy -->
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:10px">
-      <div style="font-size:11.5px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.5px">LEGAL &amp; POLICIES</div>
-      
-      <div style="display:flex;gap:10px">
-        <button type="button" data-action="openTermsModal" data-arg="terms" style="flex:1;background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:11px;border-radius:14px;font-size:12.5px;font-weight:700;cursor:pointer">
-          📜 Terms of Service
-        </button>
-        <button type="button" data-action="openTermsModal" data-arg="privacy" style="flex:1;background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:11px;border-radius:14px;font-size:12.5px;font-weight:700;cursor:pointer">
-          🔒 Privacy Policy
-        </button>
-      </div>
-    </div>
-
-    <!-- 6. Mode & Auth Switcher Buttons -->
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
-      <a href="${ROLE_PATH}" style="width:100%;background:#141414;color:#ffffff;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;box-sizing:border-box;display:block">
-        🚴 Switch to Courier Portal
+    <!-- Switch app / sign out -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px">
+      <a href="${ROLE_PATH}" style="width:100%;background:#ffffff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:14px;border-radius:16px;font-size:14px;font-weight:600;text-decoration:none;text-align:center;box-sizing:border-box;display:block">
+        Switch to courier app
       </a>
-
-      <button type="button" data-action="logout" style="width:100%;background:#fff;color:#141414;border:1.5px solid #d4d4d4;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer">
-        🚪 Log Out
+      <button type="button" data-action="logout" style="width:100%;background:none;border:none;padding:6px;font-size:14px;font-weight:600;color:#6b6b6b;cursor:pointer;font-family:inherit">
+        Log out
       </button>
     </div>
 
