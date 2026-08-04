@@ -32,7 +32,9 @@ html::-webkit-scrollbar {
 
 body {
   margin: 0;
-  background: #ffffff;
+  /* Backdrop either side of the app column on desktop. Never visible on a
+     phone, where the column fills the screen. */
+  background: #ebebeb;
   scrollbar-width: none;
   -ms-overflow-style: none;
   /* Stop iOS rubber-banding the whole page behind the fixed app shell. */
@@ -131,12 +133,21 @@ body::-webkit-scrollbar {
 
 /* The app shell is the viewport now — no phone mockup wrapper.
    100dvh tracks the real visible area as mobile browser chrome
-   shows/hides; the 100vh line is the fallback for older engines. */
+   shows/hides; the 100vh line is the fallback for older engines.
+
+   max-width keeps phone proportions on desktop: below 430px (any real
+   phone) it's full-bleed and this does nothing; above it, the app stays
+   a centred phone-width column instead of stretching across the monitor.
+   Everything absolutely positioned — nav pill, AI button, modals — is
+   anchored to #app, so it all stays inside the column automatically. */
 #app {
   position: relative;
   height: 100vh;
   height: 100dvh;
   width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  background: #ffffff;
   overflow: hidden;
 }
 
