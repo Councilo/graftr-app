@@ -495,7 +495,8 @@ function renderLogin() {
 
     <!-- Clean High-Aesthetic Authentication Buttons -->
     <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:330px">
-      <!-- Google Sign-In -->
+      <!-- Google Sign-In: our styled button until One Tap needs the fallback, then Google's real button takes its place (never both at once) -->
+      ${state.showGoogleFallbackButton ? `<div id="google-signin-button-container" style="display:flex;justify-content:center;width:100%"></div>` : `
       <button type="button" data-action="loginWithGoogle" style="width:100%;background:#ffffff;color:#1e293b;border:1.5px solid #e2e8f0;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.04);transition:all 0.2s">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -505,7 +506,7 @@ function renderLogin() {
         </svg>
         Continue with Google
       </button>
-      ${state.showGoogleFallbackButton ? `<div id="google-signin-button-container" style="display:flex;justify-content:center"></div>` : ''}
+      `}
 
       <!-- Email & Password -->
       <button type="button" data-action="loginWithEmail" style="width:100%;background:#0f172a;color:#ffffff;border:none;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 18px rgba(15,23,42,0.18)">
@@ -2476,6 +2477,62 @@ function renderShopperTrackingSection(currentOrder) {
   `;
 }
 
+function renderLoggedOrdersCard() {
+  if (!state.orders || state.orders.length === 0) return '';
+
+  const ordersCount = state.orders.length;
+  const ordersListHtml = state.orders.map(o => {
+    const isSelected = o.id === state.activeOrderId;
+    const itemCount = o.items ? o.items.reduce((s, i) => s + (i.qty || 1), 0) : 1;
+    const isCancelled = o.status === 'Cancelled';
+    const isDelivered = o.status === 'Delivered';
+
+    return `
+      <div style="background:#ffffff;border:${isSelected ? '2px solid #6366f1' : '1.5px solid #e2e8f0'};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:${isSelected ? '0 4px 14px rgba(99,102,241,0.12)' : 'none'}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <span style="font-size:15px;font-weight:800;color:#0f172a">${escapeHtml(o.merchant)}</span>
+            <span style="font-size:11.5px;background:#f1f5f9;color:#475569;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:6px">${o.id}</span>
+          </div>
+          <div style="font-size:15px;font-weight:800;color:#0f172a">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
+        </div>
+
+        <div style="font-size:12px;color:#64748b">
+          ${itemCount} item${itemCount > 1 ? 's' : ''} · ${o.timestamp || 'Just now'}
+        </div>
+
+        <div style="font-size:12px;font-weight:700;color:${isCancelled ? '#ef4444' : (isDelivered ? '#10b981' : '#6366f1')}">
+          Status: ${escapeHtml(o.status)}
+        </div>
+
+        <div style="display:flex;gap:8px;border-top:1px dashed #e2e8f0;padding-top:10px;margin-top:2px">
+          <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="flex:1.2;background:${isSelected ? '#6366f1' : '#f1f5f9'};color:${isSelected ? '#fff' : '#1e293b'};border:none;padding:10px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer">
+            ${isSelected ? 'Track Map ↗' : 'Track Order ↗'}
+          </button>
+          ${!isCancelled && !isDelivered ? `
+            <button type="button" data-action="cancelOrder" data-arg="${o.id}" style="flex:1;background:#fff5f9;color:#ef4444;border:1px solid #fecbe1;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
+              Cancel Order ✕
+            </button>
+          ` : ''}
+          <button type="button" data-action="deleteOrder" data-arg="${o.id}" style="flex:0.8;background:#f8fafc;color:#64748b;border:1px solid #e2e8f0;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
+            Remove 🗑️
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
+      <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">LOGGED ORDERS (${ordersCount})</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${ordersListHtml}
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderShopperInbox() {
   const currentOrder = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
 
@@ -2515,6 +2572,7 @@ function renderShopperInbox() {
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
     <div style="font-size:25px;font-weight:700">Activity</div>
     ${trackingCard}
+    ${renderLoggedOrdersCard()}
     ${messagesCard}
   </div>`;
 }
@@ -2822,7 +2880,7 @@ function render() {
       const el = document.getElementById('google-signin-button-container');
       if (el && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
         el.innerHTML = '';
-        google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', width: 280 });
+        google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', logo_alignment: 'left', width: 330 });
       }
     }, 50);
   }
