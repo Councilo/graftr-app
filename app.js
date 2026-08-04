@@ -249,7 +249,7 @@ function finalizeOrder(snapshot) {
     read: false,
   });
   saveInbox();
-  state.screen = 'shopper-track';
+  state.screen = 'shopper-inbox';
   render();
 }
 
@@ -295,6 +295,9 @@ const state = {
   ...loadCourierStats(),
   justDeliveredOrderId: null,
   courierLiveGps: null,
+  liveEtaMinutes: null,
+  liveEtaUpdatedAt: null,
+  shopperInboxScrollTop: null,
   packItems: [
     { name: 'Semi-skimmed milk 2L', qty: 1, checked: true },
     { name: 'Free range eggs x6', qty: 1, checked: true },
@@ -482,7 +485,7 @@ function startCourierGpsTracking() {
       };
       state.courierOnline = true;
 
-      if (courierMarkerInstance && (state.screen === 'shopper-track' || state.screen === 'shopper-basket')) {
+      if (courierMarkerInstance && (state.screen === 'shopper-inbox' || state.screen === 'shopper-basket')) {
         courierMarkerInstance.setLatLng([latitude, longitude]);
       }
       render();
@@ -885,26 +888,20 @@ function renderInboxList(list, toggleAction) {
   }).join('');
 }
 
-function renderInboxHeader(list, markAllAction) {
+function renderInboxHeader(list, markAllAction, title, size) {
   const unread = list.filter(m => !m.read).length;
+  const fontSize = size || '25px';
   return `
   <div style="display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:25px;font-weight:700">Inbox${unread ? ` <span style="font-size:13px;font-weight:700;color:#fff;background:oklch(56% 0.17 258);border-radius:20px;padding:2px 9px;vertical-align:middle">${unread}</span>` : ''}</div>
+    <div style="font-size:${fontSize};font-weight:700">${title || 'Inbox'}${unread ? ` <span style="font-size:13px;font-weight:700;color:#fff;background:oklch(56% 0.17 258);border-radius:20px;padding:2px 9px;vertical-align:middle">${unread}</span>` : ''}</div>
     ${unread ? `<div class="press" data-action="${markAllAction}" style="font-size:12px;font-weight:700;color:oklch(56% 0.17 258);cursor:pointer">Mark all read</div>` : ''}
   </div>`;
 }
 
 function renderCourierInbox() {
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:10px">
-    ${renderInboxHeader(state.courierInbox, 'markAllCourierRead')}
+    ${renderInboxHeader(state.courierInbox, 'markAllCourierRead', 'Inbox')}
     ${renderInboxList(state.courierInbox, 'toggleCourierRead')}
-  </div>`;
-}
-
-function renderShopperInbox() {
-  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:10px">
-    ${renderInboxHeader(state.shopperInbox, 'markAllShopperRead')}
-    ${renderInboxList(state.shopperInbox, 'toggleShopperRead')}
   </div>`;
 }
 
@@ -1987,35 +1984,19 @@ function startVoiceRecognition() {
   }
 }
 
-function renderShopperTrack() {
-  const currentOrder = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
-
-  if (!currentOrder) {
-    return `
-      <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center;min-height:520px;justify-content:center">
-        <div style="width:72px;height:72px;border-radius:50%;background:#f8fafc;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 6px 16px rgba(0,0,0,0.06)">📦</div>
-        <div>
-          <div style="font-size:20px;font-weight:800">No Orders Placed Yet</div>
-          <div style="font-size:13.5px;opacity:0.65;margin-top:6px;max-width:280px;line-height:1.4">
-            You don't have any active orders right now. Place an order from Morrisons Daily to track your delivery live on the map!
-          </div>
-        </div>
-        <button type="button" data-action="goShop" style="background:#141414;color:#fff;border:none;padding:14px 28px;border-radius:18px;font-size:14.5px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.2)">
-          🛒 Start Shopping
-        </button>
-      </div>
-    `;
-  }
-
+function renderShopperTrackingSection(currentOrder) {
   const isPending = currentOrder.status === 'Pending Courier Acceptance';
   const isDelivered = currentOrder.status === 'Delivered';
+  const isCancelled = currentOrder.status === 'Cancelled';
 
   const steps = [
-    { title: 'Order Confirmed', time: 'Just now', done: true },
-    { title: `Courier Acceptance`, time: isPending ? 'Pending' : 'Accepted', done: !isPending },
-    { title: `Out for Delivery`, time: isPending ? 'Waiting' : (isDelivered ? 'Complete' : 'In progress'), done: !isPending },
-    { title: 'Delivered to ' + (currentOrder.address ? currentOrder.address.split(',')[0] : 'Home'), time: isDelivered ? (currentOrder.deliveredAt ? new Date(currentOrder.deliveredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Delivered') : 'ETA ~8 min', done: isDelivered },
+    { label: 'Confirmed', done: true },
+    { label: 'Accepted', done: !isPending },
+    { label: 'Out for Delivery', done: !isPending && (currentOrder.status === 'Out for Delivery' || isDelivered) },
+    { label: 'Delivered', done: isDelivered },
   ];
+  const doneCount = steps.filter(s => s.done).length;
+  const progressPct = Math.max(0, ((doneCount - 1) / (steps.length - 1)) * 100);
 
   const itemsSummary = currentOrder.items && currentOrder.items.length
     ? currentOrder.items.map(i => `${i.qty}x ${i.name}`).join(', ')
@@ -2054,73 +2035,108 @@ function renderShopperTrack() {
     `
   ) : '';
 
+  let etaLabel;
+  if (isPending) etaLabel = 'Pending';
+  else if (isDelivered) etaLabel = 'Delivered ✓';
+  else if (isCancelled) etaLabel = 'Cancelled';
+  else etaLabel = state.liveEtaMinutes ? `~${state.liveEtaMinutes} min` : 'Calculating…';
+
   return `
-    <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-      <div style="display:flex;align-items:center;gap:10px;padding:4px 0">
-        <div class="press" data-action="goShop" style="cursor:pointer;font-size:22px;line-height:1">‹</div>
-        <div>
-          <div style="font-size:18px;font-weight:700">Live Order Tracking</div>
-          <div style="font-size:12px;opacity:0.6">Order ${currentOrder.id} · ${escapeHtml(currentOrder.merchant)}</div>
-        </div>
-      </div>
-
-      ${pendingNoticeHtml}
-      ${tipHtml}
-
-      <!-- Live Interactive Leaflet Map Container -->
-      <div style="position:relative">
-        <div id="graftr-leaflet-map" style="width:100%;height:320px;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.08);overflow:hidden;z-index:1"></div>
-        <div style="position:absolute;top:12px;right:12px;z-index:2;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:flex;align-items:center;gap:6px">
-          <span style="width:8px;height:8px;border-radius:50%;background:${isPending ? '#f59e0b' : '#10b981'};display:inline-block;animation:courierPulse 1.5s infinite"></span>
-          ${isPending ? 'SEARCHING FOR COURIER' : 'LIVE GPS TRACKING'}
-        </div>
-      </div>
-
-      <!-- Driver & ETA Status Card -->
-      <div style="background:#141414;color:#fff;border-radius:20px;padding:16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 24px rgba(0,0,0,0.2)">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="width:46px;height:46px;border-radius:50%;background:#ffcbe1;color:#141414;display:flex;align-items:center;justify-content:center;font-size:22px">🚴</div>
-          <div>
-            <div style="font-size:15px;font-weight:700">${currentOrder.courier || 'Alex (Assigned Courier)'}</div>
-            <div style="font-size:12px;opacity:0.7">Heading to ${escapeHtml(currentOrder.address || state.userProfile.address)}</div>
-          </div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:20px;font-weight:800;color:#ffcbe1">${isPending ? 'Pending' : '~6 min'}</div>
-          <div style="font-size:11px;opacity:0.7">Total £${currentOrder.total ? currentOrder.total.toFixed(2) : '0.00'}</div>
-        </div>
-      </div>
-
-      <!-- Order Details Summary -->
-      <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:18px;padding:14px">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748b">ORDER ITEMS (${itemsSummary.length > 45 ? itemsSummary.substring(0, 45) + '...' : itemsSummary})</div>
-        <div style="font-size:12.5px;opacity:0.8;margin-top:2px">Delivering to: <b>${escapeHtml(currentOrder.address || state.userProfile.address)}</b></div>
-      </div>
-
-      <!-- Timeline Progress -->
-      <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px">
-        <div style="font-size:13px;font-weight:700;opacity:0.6">ORDER TIMELINE</div>
-        ${steps.map(s => `
-          <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:20px;height:20px;border-radius:50%;background:${s.done ? '#141414' : '#e2e8f0'};color:${s.done ? '#fff' : '#94a3b8'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">
-              ${s.done ? '✓' : '•'}
-            </div>
-            <div style="flex:1;font-size:13.5px;font-weight:${s.done ? '600' : '400'};opacity:${s.done ? '1' : '0.55'}">${s.title}</div>
-            <div style="font-size:12px;opacity:0.5">${s.time}</div>
-          </div>
-        `).join('')}
-      </div>
-
-      <div style="display:flex;gap:10px">
-        ${currentOrder.status === 'Cancelled'
-          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">🗑️ Remove Order</button>`
-          : isDelivered
-            ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">🗑️ Clear Order</button>`
-            : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="flex:1;background:#fee2e2;color:#ef4444;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">❌ Cancel Order</button>`}
-        <button type="button" data-action="toggleAiChat" style="flex:1;background:#ffcbe1;color:#141414;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">✨ Ask AI Assistant</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:2px 0">
+      <div>
+        <div style="font-size:15px;font-weight:700">Order ${currentOrder.id} · ${escapeHtml(currentOrder.merchant)}</div>
+        <div style="font-size:11.5px;opacity:0.55">${escapeHtml(currentOrder.status)}</div>
       </div>
     </div>
+
+    ${pendingNoticeHtml}
+    ${tipHtml}
+
+    <!-- Live Interactive Leaflet Map Container -->
+    <div style="position:relative">
+      <div id="graftr-leaflet-map" style="width:100%;height:220px;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.08);overflow:hidden;z-index:1"></div>
+      <div style="position:absolute;top:10px;right:10px;z-index:2;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);padding:5px 10px;border-radius:20px;font-size:10.5px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:flex;align-items:center;gap:6px">
+        <span style="width:7px;height:7px;border-radius:50%;background:${isPending ? '#f59e0b' : '#10b981'};display:inline-block;animation:courierPulse 1.5s infinite"></span>
+        ${isPending ? 'SEARCHING FOR COURIER' : 'LIVE GPS TRACKING'}
+      </div>
+    </div>
+
+    <!-- Driver & Live ETA Status Card -->
+    <div style="background:#141414;color:#fff;border-radius:18px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 24px rgba(0,0,0,0.2)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:38px;height:38px;border-radius:50%;background:#ffcbe1;color:#141414;display:flex;align-items:center;justify-content:center;font-size:18px">🚴</div>
+        <div>
+          <div style="font-size:13.5px;font-weight:700">${currentOrder.courier || 'Alex (Assigned Courier)'}</div>
+          <div style="font-size:11px;opacity:0.7">Heading to ${escapeHtml((currentOrder.address || state.userProfile.address).split(',')[0])}</div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div id="graftr-eta-value" style="font-size:18px;font-weight:800;color:#ffcbe1">${etaLabel}</div>
+        <div style="font-size:10.5px;opacity:0.7">Total £${currentOrder.total ? currentOrder.total.toFixed(2) : '0.00'}</div>
+      </div>
+    </div>
+
+    <!-- Compact Horizontal Timeline -->
+    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:18px;padding:14px 10px 10px;position:relative">
+      <div style="position:relative;padding:0 9px">
+        <div style="position:absolute;top:9px;left:0;right:0;height:2px;background:#e2e8f0;z-index:0"></div>
+        <div style="position:absolute;top:9px;left:0;height:2px;background:#141414;z-index:0;width:${progressPct}%;transition:width 0.3s"></div>
+        <div style="display:flex;justify-content:space-between;position:relative;z-index:1">
+          ${steps.map(s => `
+            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:25%">
+              <div style="width:18px;height:18px;border-radius:50%;background:${s.done ? '#141414' : '#fff'};border:2px solid ${s.done ? '#141414' : '#e2e8f0'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${s.done ? '✓' : ''}</div>
+              <div style="font-size:9.5px;font-weight:${s.done ? 700 : 500};opacity:${s.done ? 1 : 0.5};text-align:center;line-height:1.15">${s.label}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Details Summary -->
+    <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:16px;padding:12px 14px">
+      <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;color:#64748b">ORDER ITEMS (${itemsSummary.length > 45 ? itemsSummary.substring(0, 45) + '...' : itemsSummary})</div>
+      <div style="font-size:12px;opacity:0.8;margin-top:2px">Delivering to: <b>${escapeHtml(currentOrder.address || state.userProfile.address)}</b></div>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      ${isCancelled
+        ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:11px;border-radius:14px;font-weight:700;font-size:12.5px;cursor:pointer">🗑️ Remove Order</button>`
+        : isDelivered
+          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:11px;border-radius:14px;font-weight:700;font-size:12.5px;cursor:pointer">🗑️ Clear Order</button>`
+          : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="flex:1;background:#fee2e2;color:#ef4444;border:none;padding:11px;border-radius:14px;font-weight:700;font-size:12.5px;cursor:pointer">❌ Cancel Order</button>`}
+      <button type="button" data-action="toggleAiChat" style="flex:1;background:#ffcbe1;color:#141414;border:none;padding:11px;border-radius:14px;font-weight:700;font-size:12.5px;cursor:pointer">✨ Ask AI Assistant</button>
+    </div>
   `;
+}
+
+function renderShopperInbox() {
+  const currentOrder = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
+
+  const trackingHtml = currentOrder ? renderShopperTrackingSection(currentOrder) : `
+    <div style="padding:24px 0;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center">
+      <div style="width:60px;height:60px;border-radius:50%;background:#f8fafc;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 6px 16px rgba(0,0,0,0.06)">📦</div>
+      <div>
+        <div style="font-size:16.5px;font-weight:800">No Orders Placed Yet</div>
+        <div style="font-size:12.5px;opacity:0.65;margin-top:4px;max-width:280px;line-height:1.4">
+          Place an order from Morrisons Daily to track your delivery live here.
+        </div>
+      </div>
+      <button type="button" data-action="goShop" style="background:#141414;color:#fff;border:none;padding:12px 24px;border-radius:16px;font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.2)">
+        🛒 Start Shopping
+      </button>
+    </div>
+  `;
+
+  return `<div style="padding:0 18px 12px;display:flex;flex-direction:column;gap:12px">
+    <div style="font-size:25px;font-weight:700">Inbox</div>
+    ${trackingHtml}
+    <div style="border-top:1.5px solid rgba(20,20,20,0.08);padding-top:12px;display:flex;flex-direction:column;gap:10px">
+      ${renderInboxHeader(state.shopperInbox, 'markAllShopperRead', 'Messages & Updates', '15px')}
+      <div id="shopper-inbox-messages" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:2px">
+        ${renderInboxList(state.shopperInbox, 'toggleShopperRead')}
+      </div>
+    </div>
+  </div>`;
 }
 
 let graftrMapInstance = null;
@@ -2204,6 +2220,48 @@ async function initGraftrLiveMap() {
     });
 
     courierMarkerInstance = L.marker(livePos, { icon: courierIcon }).addTo(map).bindPopup("<b>Courier Alex (Real Device GPS)</b>");
+  }
+}
+
+let etaUpdateInterval = null;
+
+// Live-recomputes ETA from the courier's real GPS position (or the store, before pickup) to the
+// customer address via OSRM, and pushes it straight into the DOM so it doesn't have to tear down
+// the live Leaflet map to refresh a number.
+async function updateLiveEta() {
+  const currentOrder = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
+  if (!currentOrder || currentOrder.status === 'Pending Courier Acceptance' || currentOrder.status === 'Delivered' || currentOrder.status === 'Cancelled') {
+    return;
+  }
+  try {
+    const customerPos = await fetchAddressCoords(currentOrder.address);
+    const fromPos = (state.courierLiveGps && state.courierLiveGps.lat) ? [state.courierLiveGps.lat, state.courierLiveGps.lng] : STORE_COORDS;
+    const url = `https://router.project-osrm.org/route/v1/driving/${fromPos[1]},${fromPos[0]};${customerPos[1]},${customerPos[0]}?overview=false`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.routes && data.routes[0]) {
+      state.liveEtaMinutes = Math.max(1, Math.round(data.routes[0].duration / 60));
+      state.liveEtaUpdatedAt = Date.now();
+      updateEtaBoxUI();
+    }
+  } catch (e) { /* keep last known ETA on network failure */ }
+}
+
+function updateEtaBoxUI() {
+  const el = document.getElementById('graftr-eta-value');
+  if (el && state.liveEtaMinutes) el.textContent = `~${state.liveEtaMinutes} min`;
+}
+
+function startEtaLiveUpdates() {
+  stopEtaLiveUpdates();
+  updateLiveEta();
+  etaUpdateInterval = setInterval(updateLiveEta, 20000);
+}
+
+function stopEtaLiveUpdates() {
+  if (etaUpdateInterval) {
+    clearInterval(etaUpdateInterval);
+    etaUpdateInterval = null;
   }
 }
 
@@ -2306,7 +2364,6 @@ const screenRenderers = {
   'shopper-inbox': renderShopperInbox,
   'shopper-account': renderShopperAccount,
   'shopper-special-request': renderShopperSpecialRequest,
-  'shopper-track': renderShopperTrack,
 };
 
 function render() {
@@ -2342,10 +2399,22 @@ function render() {
     stopCameraScanner();
   }
 
-  if (state.screen === 'shopper-track') {
+  if (state.screen === 'shopper-inbox') {
     setTimeout(initGraftrLiveMap, 50);
-  } else if (state.screen === 'shopper-basket') {
-    setTimeout(initGraftrBasketMap, 50);
+    startEtaLiveUpdates();
+  } else {
+    stopEtaLiveUpdates();
+    if (state.screen === 'shopper-basket') {
+      setTimeout(initGraftrBasketMap, 50);
+    }
+  }
+
+  if (state.screen === 'shopper-inbox') {
+    const msgBox = root.querySelector('#shopper-inbox-messages');
+    if (msgBox) {
+      if (typeof state.shopperInboxScrollTop === 'number') msgBox.scrollTop = state.shopperInboxScrollTop;
+      msgBox.addEventListener('scroll', () => { state.shopperInboxScrollTop = msgBox.scrollTop; });
+    }
   }
 
   if (state.aiChatOpen) {
@@ -2437,7 +2506,7 @@ const actions = {
     }
     state.activeOrderId = orderId;
     state.mode = 'shopper';
-    state.screen = 'shopper-track';
+    state.screen = 'shopper-inbox';
     render();
   },
   cancelOrder: (id) => {
@@ -2475,10 +2544,10 @@ const actions = {
   },
   selectOrderToTrack: (id) => {
     state.activeOrderId = id;
-    state.screen = 'shopper-track';
+    state.screen = 'shopper-inbox';
     render();
   },
-  goTrack: () => { state.screen = 'shopper-track'; render(); },
+  goTrack: () => { state.screen = 'shopper-inbox'; render(); },
   toggleAiChat: () => {
     state.aiChatOpen = !state.aiChatOpen;
     if (!state.aiChatOpen) stopVoiceRecognition();
