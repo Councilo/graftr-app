@@ -104,7 +104,7 @@ const PRODUCTS = [
 // To enable real "Continue with Google" sign-in:
 // 1. Go to https://console.cloud.google.com/apis/credentials, create an OAuth 2.0 Client ID
 //    (type: Web application), and add this site's URL under "Authorized JavaScript origins"
-//    (e.g. https://graftr-app.vercel.app and http://localhost:8126 for local testing).
+//    (e.g. https://vendaru.com and http://localhost:8126 for local testing).
 // 2. Paste the Client ID below. It's a public identifier, safe to ship in client code
 //    (unlike the Stripe secret key, this one isn't a secret).
 const GOOGLE_CLIENT_ID = '310040090151-6llrfgdqkg0vamomn9fdqnbiml3anv5k.apps.googleusercontent.com';
