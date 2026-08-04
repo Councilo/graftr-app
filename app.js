@@ -445,27 +445,27 @@ function renderLogin() {
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;gap:24px;text-align:center;min-height:580px;background:#ffffff">
     
     <!-- Hero Brand Badge -->
-    <div style="width:76px;height:76px;border-radius:24px;background:#ffcbe1;color:#141414;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 14px 30px rgba(255,203,225,0.5)">
+    <div style="width:76px;height:76px;border-radius:24px;background:#141414;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 14px 30px rgba(20,20,20,0.5)">
       ${isCourier ? '🚴' : '🛍️'}
     </div>
 
     <div>
       <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#141414">Welcome to Vendaru</div>
-      <div style="font-size:13.5px;color:#64748b;margin-top:6px;line-height:1.45;max-width:280px">Fast local delivery &amp; courier network in Bolton</div>
+      <div style="font-size:13.5px;color:#6b6b6b;margin-top:6px;line-height:1.45;max-width:280px">Fast local delivery &amp; courier network in Bolton</div>
     </div>
 
     <!-- Role Selector Segmented Tabs -->
-    <div style="display:flex;background:#f1f5f9;border-radius:16px;padding:4px;width:100%;max-width:330px;gap:4px">
-      <button type="button" data-action="setAuthRole" data-arg="shopper" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? 'transparent' : '#ffffff'};color:${isCourier ? '#64748b' : '#141414'};box-shadow:${isCourier ? 'none' : '0 4px 12px rgba(0,0,0,0.06)'}">
+    <div style="display:flex;background:#f2f2f2;border-radius:16px;padding:4px;width:100%;max-width:330px;gap:4px">
+      <button type="button" data-action="setAuthRole" data-arg="shopper" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? 'transparent' : '#ffffff'};color:${isCourier ? '#6b6b6b' : '#141414'};box-shadow:${isCourier ? 'none' : '0 4px 12px rgba(0,0,0,0.06)'}">
         🛒 I'm Shopping
       </button>
-      <button type="button" data-action="setAuthRole" data-arg="courier" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? '#ffffff' : 'transparent'};color:${isCourier ? '#141414' : '#64748b'};box-shadow:${isCourier ? '0 4px 12px rgba(0,0,0,0.06)' : 'none'}">
+      <button type="button" data-action="setAuthRole" data-arg="courier" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? '#ffffff' : 'transparent'};color:${isCourier ? '#141414' : '#6b6b6b'};box-shadow:${isCourier ? '0 4px 12px rgba(0,0,0,0.06)' : 'none'}">
         🚴 I'm a Courier
       </button>
     </div>
 
     ${state.authNotice ? `
-      <div style="width:100%;max-width:330px;background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:16px;padding:12px 14px;font-size:12.5px;text-align:left;line-height:1.45">
+      <div style="width:100%;max-width:330px;background:#fafafa;border:1.5px solid #d4d4d4;color:#141414;border-radius:16px;padding:12px 14px;font-size:12.5px;text-align:left;line-height:1.45">
         ${escapeHtml(state.authNotice)}
       </div>
     ` : ''}
@@ -474,7 +474,7 @@ function renderLogin() {
     <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:330px">
       <!-- Google Sign-In: our styled button until One Tap needs the fallback, then Google's real button takes its place (never both at once) -->
       ${state.showGoogleFallbackButton ? `<div id="google-signin-button-container" style="display:flex;justify-content:center;width:100%"></div>` : `
-      <button type="button" data-action="loginWithGoogle" style="width:100%;background:#ffffff;color:#1e293b;border:1.5px solid rgba(20,20,20,0.12);border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.04);transition:all 0.2s">
+      <button type="button" data-action="loginWithGoogle" style="width:100%;background:#ffffff;color:#141414;border:1.5px solid rgba(20,20,20,0.12);border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.04);transition:all 0.2s">
         <svg width="20" height="20" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -486,27 +486,27 @@ function renderLogin() {
       `}
 
       <!-- Email & Password -->
-      <button type="button" data-action="loginWithEmail" style="width:100%;background:#141414;color:#ffffff;border:none;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 18px rgba(15,23,42,0.18)">
+      <button type="button" data-action="loginWithEmail" style="width:100%;background:#141414;color:#ffffff;border:none;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 18px rgba(20,20,20,0.18)">
         ✉️ Continue with Email
       </button>
     </div>
 
     <!-- Divider -->
     <div style="display:flex;align-items:center;gap:12px;width:100%;max-width:330px;opacity:0.5;font-size:12px;margin-top:2px">
-      <div style="flex:1;height:1px;background:#cbd5e1"></div>
+      <div style="flex:1;height:1px;background:#d4d4d4"></div>
       <span style="font-weight:600">or continue as guest</span>
-      <div style="flex:1;height:1px;background:#cbd5e1"></div>
+      <div style="flex:1;height:1px;background:#d4d4d4"></div>
     </div>
 
     <!-- Guest Access Button -->
     <div style="width:100%;max-width:330px">
       ${isCourier
-        ? `<div class="press" data-action="chooseCourier" style="background:#f8fafc;color:#334155;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13px;font-size:13.5px;font-weight:700;cursor:pointer">🚴 Enter Courier Guest Mode</div>`
-        : `<div class="press" data-action="chooseShopper" style="background:#f8fafc;color:#334155;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13.5px;font-size:13.5px;font-weight:700;cursor:pointer">🛒 Enter Shopper Guest Mode</div>`
+        ? `<div class="press" data-action="chooseCourier" style="background:#fafafa;color:#444444;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13px;font-size:13.5px;font-weight:700;cursor:pointer">🚴 Enter Courier Guest Mode</div>`
+        : `<div class="press" data-action="chooseShopper" style="background:#fafafa;color:#444444;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13.5px;font-size:13.5px;font-weight:700;cursor:pointer">🛒 Enter Shopper Guest Mode</div>`
       }
     </div>
 
-    <div style="font-size:11px;color:#94a3b8;max-width:270px;line-height:1.45">
+    <div style="font-size:11px;color:#9a9a9a;max-width:270px;line-height:1.45">
       By continuing, you agree to Vendaru's Terms of Service and Privacy Policy.
     </div>
   </div>`;
@@ -523,41 +523,41 @@ function renderAuthModal() {
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:20px">✉️</span>
-            <span style="font-size:16px;font-weight:800;color:#1e293b">Email Account Setup</span>
+            <span style="font-size:16px;font-weight:800;color:#141414">Email Account Setup</span>
           </div>
-          <button type="button" data-action="closeAuthModal" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer">✕</button>
+          <button type="button" data-action="closeAuthModal" style="background:none;border:none;color:#6b6b6b;font-size:22px;cursor:pointer">✕</button>
         </div>
 
         <!-- Toggle Sign Up vs Log In -->
-        <div style="display:flex;background:#f1f5f9;border-radius:12px;padding:4px;gap:4px">
-          <button type="button" data-action="setEmailAuthMode" data-arg="signup" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isLogin ? 'transparent' : '#fff'};color:${isLogin ? '#64748b' : '#141414'};box-shadow:${isLogin ? 'none' : '0 2px 4px rgba(0,0,0,0.05)'}">
+        <div style="display:flex;background:#f2f2f2;border-radius:12px;padding:4px;gap:4px">
+          <button type="button" data-action="setEmailAuthMode" data-arg="signup" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isLogin ? 'transparent' : '#fff'};color:${isLogin ? '#6b6b6b' : '#141414'};box-shadow:${isLogin ? 'none' : '0 2px 4px rgba(0,0,0,0.05)'}">
             Create Account
           </button>
-          <button type="button" data-action="setEmailAuthMode" data-arg="login" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isLogin ? '#fff' : 'transparent'};color:${isLogin ? '#141414' : '#64748b'};box-shadow:${isLogin ? '0 2px 4px rgba(0,0,0,0.05)' : 'none'}">
+          <button type="button" data-action="setEmailAuthMode" data-arg="login" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isLogin ? '#fff' : 'transparent'};color:${isLogin ? '#141414' : '#6b6b6b'};box-shadow:${isLogin ? '0 2px 4px rgba(0,0,0,0.05)' : 'none'}">
             Log In
           </button>
         </div>
 
-        ${state.authError ? `<div style="background:#fee2e2;border:1.5px solid #fecaca;color:#b91c1c;border-radius:12px;padding:10px 12px;font-size:12.5px;text-align:left;line-height:1.4">${escapeHtml(state.authError)}</div>` : ''}
+        ${state.authError ? `<div style="background:#f2f2f2;border:1.5px solid #d4d4d4;color:#141414;border-radius:12px;padding:10px 12px;font-size:12.5px;text-align:left;line-height:1.4">${escapeHtml(state.authError)}</div>` : ''}
 
         <div style="display:flex;flex-direction:column;gap:10px;text-align:left">
           ${!isLogin ? `
             <div>
-              <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Full Name</label>
+              <label style="font-size:11.5px;font-weight:700;color:#5c5c5c;margin-bottom:3px;display:block">Full Name</label>
               <input type="text" id="email-setup-name" placeholder="Your full name" value="" style="width:100%;padding:11px 12px;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;font-size:13.5px;font-weight:600" />
             </div>
           ` : ''}
           <div>
-            <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Email Address</label>
+            <label style="font-size:11.5px;font-weight:700;color:#5c5c5c;margin-bottom:3px;display:block">Email Address</label>
             <input type="email" id="email-setup-email" placeholder="name@example.com" value="" style="width:100%;padding:11px 12px;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;font-size:13.5px;font-weight:600" />
           </div>
           <div>
-            <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Password</label>
+            <label style="font-size:11.5px;font-weight:700;color:#5c5c5c;margin-bottom:3px;display:block">Password</label>
             <input type="password" id="email-setup-password" placeholder="At least 6 characters" value="" style="width:100%;padding:11px 12px;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;font-size:13.5px;font-weight:600" />
           </div>
           ${!isLogin ? `
             <div>
-              <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Delivery Address (Bolton Hub)</label>
+              <label style="font-size:11.5px;font-weight:700;color:#5c5c5c;margin-bottom:3px;display:block">Delivery Address (Bolton Hub)</label>
               <input type="text" id="email-setup-address" value="${escapeHtml(state.userProfile.address || '')}${state.userProfile.postcode ? ', ' + escapeHtml(state.userProfile.postcode) : ''}" placeholder="Your address" style="width:100%;padding:11px 12px;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;font-size:13.5px;font-weight:600" />
             </div>
           ` : ''}
@@ -687,10 +687,10 @@ function renderCourierActivity() {
   // Real Pending Jobs placed by Shopper
   const pendingOrders = state.orders.filter(o => o.status === 'Pending Courier Acceptance');
   const pendingJobsHtml = pendingOrders.length > 0 ? pendingOrders.map(o => `
-    <div style="background:#fff;border:2px solid #ffcbe1;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 20px rgba(0,0,0,0.08);margin-bottom:12px">
+    <div style="background:#fff;border:2px solid #141414;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 8px 20px rgba(0,0,0,0.08);margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="background:#ffcbe1;color:#141414;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">✨ LIVE SHOPPER ORDER (${o.id})</span>
-        <span style="font-size:14px;font-weight:800;color:#10b981">£${o.total ? o.total.toFixed(2) : '7.80'}</span>
+        <span style="background:#141414;color:#ffffff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">✨ LIVE SHOPPER ORDER (${o.id})</span>
+        <span style="font-size:14px;font-weight:800;color:#141414">£${o.total ? o.total.toFixed(2) : '7.80'}</span>
       </div>
       <div>
         <div style="font-size:15px;font-weight:700">${escapeHtml(o.merchant)} ➔ ${escapeHtml(o.address)}</div>
@@ -709,7 +709,7 @@ function renderCourierActivity() {
   if (state.justDeliveredOrderId) {
     const deliveredOrder = state.orders.find(o => o.id === state.justDeliveredOrderId);
     inner = `
-    <div style="border:1.5px solid oklch(56% 0.17 258);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:oklch(97% 0.02 258)">
+    <div style="border:1.5px solid #141414;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:#fafafa">
       <div style="font-size:18px;font-weight:700">Delivered! +£${deliveredOrder && deliveredOrder.total ? deliveredOrder.total.toFixed(2) : '0.00'}</div>
       <div style="font-size:13px;opacity:0.6">Nice work on ${deliveredOrder ? deliveredOrder.id : 'that order'}. Ready for the next one?</div>
       <div class="press" data-action="dismissDeliveryConfirmation" style="background:#141414;color:#fff;border-radius:20px;padding:11px 22px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px">Continue</div>
@@ -729,7 +729,7 @@ function renderCourierActivity() {
     ${pendingJobsHtml}
     <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="background:oklch(94% 0.05 258);color:oklch(42% 0.17 258);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">In progress</span>
+        <span style="background:#f2f2f2;color:#141414;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">In progress</span>
         <span style="font-size:11px;opacity:0.5">Order ${activeOrder.id}</span>
       </div>
       <div style="font-size:16px;font-weight:700;margin-top:4px">${escapeHtml(activeOrder.merchant)} → ${escapeHtml(activeOrder.address)}</div>
@@ -856,14 +856,14 @@ function renderCourierEarnings() {
   const currentTab = state.earningsTab || 'today';
 
   const tabSelectorHtml = `
-    <div style="display:flex;background:#f1f5f9;border-radius:14px;padding:4px;gap:4px">
-      <button type="button" data-action="setEarningsTab" data-arg="today" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'today' ? '#fff' : 'transparent'};color:${currentTab === 'today' ? '#141414' : '#64748b'};box-shadow:${currentTab === 'today' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+    <div style="display:flex;background:#f2f2f2;border-radius:14px;padding:4px;gap:4px">
+      <button type="button" data-action="setEarningsTab" data-arg="today" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'today' ? '#fff' : 'transparent'};color:${currentTab === 'today' ? '#141414' : '#6b6b6b'};box-shadow:${currentTab === 'today' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
         Today (£${data.todayTotal.toFixed(2)})
       </button>
-      <button type="button" data-action="setEarningsTab" data-arg="week" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'week' ? '#fff' : 'transparent'};color:${currentTab === 'week' ? '#141414' : '#64748b'};box-shadow:${currentTab === 'week' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+      <button type="button" data-action="setEarningsTab" data-arg="week" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'week' ? '#fff' : 'transparent'};color:${currentTab === 'week' ? '#141414' : '#6b6b6b'};box-shadow:${currentTab === 'week' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
         This Week (£${data.weekTotal.toFixed(2)})
       </button>
-      <button type="button" data-action="setEarningsTab" data-arg="history" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'history' ? '#fff' : 'transparent'};color:${currentTab === 'history' ? '#141414' : '#64748b'};box-shadow:${currentTab === 'history' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+      <button type="button" data-action="setEarningsTab" data-arg="history" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'history' ? '#fff' : 'transparent'};color:${currentTab === 'history' ? '#141414' : '#6b6b6b'};box-shadow:${currentTab === 'history' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
         Payouts (${(state.payoutHistory || []).length})
       </button>
     </div>
@@ -878,28 +878,28 @@ function renderCourierEarnings() {
         <div style="flex:1;min-width:0">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:13.5px;font-weight:700">${escapeHtml(job.merchant)}</span>
-            <span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:10px;background:#dcfce7;color:#15803d">${job.status}</span>
+            <span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:10px;background:#f2f2f2;color:#141414">${job.status}</span>
           </div>
           <div style="font-size:11.5px;opacity:0.6;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(job.customer)} · ${escapeHtml(job.address)}</div>
           <div style="font-size:10.5px;opacity:0.45;margin-top:2px">${job.itemCount} item${job.itemCount > 1 ? 's' : ''} · Base £${job.basePay.toFixed(2)} + Tip £${job.tip.toFixed(2)}</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:16px;font-weight:800;color:#10b981">+£${job.totalPay.toFixed(2)}</div>
+          <div style="font-size:16px;font-weight:800;color:#141414">+£${job.totalPay.toFixed(2)}</div>
           <div style="font-size:10.5px;opacity:0.5">${job.timestamp}</div>
         </div>
       </div>
-    `).join('') : `<div style="text-align:center;font-size:13px;opacity:0.5;padding:16px;border:1px dashed #cbd5e1;border-radius:12px">No deliveries completed today yet.</div>`;
+    `).join('') : `<div style="text-align:center;font-size:13px;opacity:0.5;padding:16px;border:1px dashed #d4d4d4;border-radius:12px">No deliveries completed today yet.</div>`;
 
     tabBodyContent = `
       <!-- Today's Main Balance Card -->
-      <div style="background:linear-gradient(135deg, #141414 0%, #262626 100%);color:#fff;border-radius:20px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px">
+      <div style="background:linear-gradient(135deg, #141414 0%, #2e2e2e 100%);color:#fff;border-radius:20px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:12.5px;color:#a1a1aa;font-weight:600">TODAY'S EARNINGS</span>
-          <span style="font-size:11.5px;background:rgba(255,203,225,0.2);color:#ffcbe1;padding:3px 10px;border-radius:12px;font-weight:700">Bolton Hub</span>
+          <span style="font-size:12.5px;color:#9a9a9a;font-weight:600">TODAY'S EARNINGS</span>
+          <span style="font-size:11.5px;background:rgba(255,255,255,0.16);color:#ffffff;padding:3px 10px;border-radius:12px;font-weight:700">Bolton Hub</span>
         </div>
         
         <div style="font-size:36px;font-weight:900;letter-spacing:-0.5px">£${data.todayTotal.toFixed(2)}</div>
-        <div style="font-size:12.5px;color:#d4d4d8;display:flex;align-items:center;gap:6px">
+        <div style="font-size:12.5px;color:#d4d4d4;display:flex;align-items:center;gap:6px">
           <span>⚡ ${data.todayJobs} deliveries completed</span>
           <span>•</span>
           <span>⏱️ ${data.onlineLabel} online</span>
@@ -907,12 +907,12 @@ function renderCourierEarnings() {
 
         <!-- Daily Goal Bar -->
         <div style="margin-top:4px">
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:#a1a1aa;margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#9a9a9a;margin-bottom:6px">
             <span>Daily Goal Progress</span>
-            <span style="color:#ffcbe1;font-weight:700">${goalPercent}% (£120.00 Target)</span>
+            <span style="color:#ffffff;font-weight:700">${goalPercent}% (£120.00 Target)</span>
           </div>
           <div style="height:8px;background:rgba(255,255,255,0.15);border-radius:6px;overflow:hidden">
-            <div style="height:100%;background:#10b981;width:${goalPercent}%;transition:width 0.3s ease"></div>
+            <div style="height:100%;background:#ffffff;width:${goalPercent}%;transition:width 0.3s ease"></div>
           </div>
         </div>
       </div>
@@ -922,12 +922,12 @@ function renderCourierEarnings() {
         <div style="border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;background:#fff">
           <div style="font-size:11.5px;opacity:0.55;font-weight:600">BASE DELIVERY PAY</div>
           <div style="font-size:20px;font-weight:800;margin-top:4px">£${data.todayBasePay.toFixed(2)}</div>
-          <div style="font-size:11px;color:#10b981;margin-top:2px;font-weight:700">100% Guaranteed</div>
+          <div style="font-size:11px;color:#141414;margin-top:2px;font-weight:700">100% Guaranteed</div>
         </div>
         <div style="border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;background:#fff">
           <div style="font-size:11.5px;opacity:0.55;font-weight:600">CUSTOMER TIPS</div>
           <div style="font-size:20px;font-weight:800;margin-top:4px">£${data.todayTips.toFixed(2)}</div>
-          <div style="font-size:11px;color:oklch(56% 0.17 258);margin-top:2px;font-weight:700">Keep 100% of tips</div>
+          <div style="font-size:11px;color:#141414;margin-top:2px;font-weight:700">Keep 100% of tips</div>
         </div>
       </div>
 
@@ -949,12 +949,12 @@ function renderCourierEarnings() {
       const height = Math.max(val > 0 ? 6 : 2, Math.round((val / maxDay) * 70));
       return `
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-          <span style="font-size:9.5px;${isToday ? 'font-weight:700;color:#10b981' : 'opacity:0.5'}">£${val.toFixed(0)}</span>
-          <div style="width:100%;border-radius:4px 4px 0 0;background:${isToday ? '#10b981' : (val > 0 ? '#141414' : '#e2e8f0')};height:${height}px"></div>
+          <span style="font-size:9.5px;${isToday ? 'font-weight:700;color:#141414' : 'opacity:0.5'}">£${val.toFixed(0)}</span>
+          <div style="width:100%;border-radius:4px 4px 0 0;background:${isToday ? '#141414' : (val > 0 ? '#141414' : '#e5e5e5')};height:${height}px"></div>
         </div>`;
     }).join('');
 
-    const dayLabelsHtml = dayLabels.map((label, i) => `<span style="${i === data.todayDayIdx ? 'color:#10b981;font-weight:700' : ''}">${label}</span>`).join('');
+    const dayLabelsHtml = dayLabels.map((label, i) => `<span style="${i === data.todayDayIdx ? 'color:#141414;font-weight:700' : ''}">${label}</span>`).join('');
 
     tabBodyContent = `
       <!-- Weekly Summary Card -->
@@ -964,12 +964,12 @@ function renderCourierEarnings() {
             <div style="font-size:12px;opacity:0.55;font-weight:600">THIS WEEK TOTAL</div>
             <div style="font-size:32px;font-weight:900;margin-top:2px">£${data.weekTotal.toFixed(2)}</div>
           </div>
-          <span style="background:oklch(94% 0.05 258);color:oklch(42% 0.17 258);font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:12px">Avg £${avgPerJob.toFixed(2)}/job</span>
+          <span style="background:#f2f2f2;color:#141414;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:12px">Avg £${avgPerJob.toFixed(2)}/job</span>
         </div>
 
         <!-- 7-Day Bar Chart, built from real delivered orders -->
         <div>
-          <div style="display:flex;align-items:flex-end;gap:10px;height:90px;margin-top:10px;padding-bottom:6px;border-bottom:1px solid #e2e8f0">
+          <div style="display:flex;align-items:flex-end;gap:10px;height:90px;margin-top:10px;padding-bottom:6px;border-bottom:1px solid #e5e5e5">
             ${barsHtml}
           </div>
           <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;opacity:0.6;margin-top:6px;padding:0 4px">
@@ -987,11 +987,11 @@ function renderCourierEarnings() {
         </div>
         <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
           <div><div style="font-size:13.5px;font-weight:700">Customer Tips</div><div style="font-size:11.5px;opacity:0.5">Keep 100% of tips</div></div>
-          <div style="font-size:16px;font-weight:800;color:oklch(56% 0.17 258)">£${data.weekTips.toFixed(2)}</div>
+          <div style="font-size:16px;font-weight:800;color:#141414">£${data.weekTips.toFixed(2)}</div>
         </div>
         <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
           <div><div style="font-size:13.5px;font-weight:700">Average Per Job</div><div style="font-size:11.5px;opacity:0.5">Base pay + tip</div></div>
-          <div style="font-size:16px;font-weight:800;color:#10b981">£${avgPerJob.toFixed(2)}</div>
+          <div style="font-size:16px;font-weight:800;color:#141414">£${avgPerJob.toFixed(2)}</div>
         </div>
       </div>
     `;
@@ -1002,7 +1002,7 @@ function renderCourierEarnings() {
         <div>
           <div style="font-size:14px;font-weight:700">${p.date}</div>
           <div style="font-size:11.5px;opacity:0.5;margin-top:2px">Barclays Bank ****4892 · ${p.ref}</div>
-          <div style="font-size:11px;color:#10b981;font-weight:700;margin-top:2px">${p.status}</div>
+          <div style="font-size:11px;color:#141414;font-weight:700;margin-top:2px">${p.status}</div>
         </div>
         <div style="font-size:18px;font-weight:800">${p.amount}</div>
       </div>
@@ -1017,13 +1017,13 @@ function renderCourierEarnings() {
   }
 
   const cashOutCard = `
-    <div style="border:1.5px solid #10b981;border-radius:20px;padding:18px;background:#f0fdf4;box-shadow:0 4px 16px rgba(16,185,129,0.12)">
+    <div style="border:1.5px solid #141414;border-radius:20px;padding:18px;background:#fafafa;box-shadow:0 4px 16px rgba(20,20,20,0.12)">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-size:12.5px;color:#15803d;font-weight:700">AVAILABLE BALANCE</div>
+          <div style="font-size:12.5px;color:#141414;font-weight:700">AVAILABLE BALANCE</div>
           <div style="font-size:24px;font-weight:900;color:#141414;margin-top:2px">£${data.pendingPayout.toFixed(2)}</div>
         </div>
-        <span style="font-size:11.5px;background:#dcfce7;color:#15803d;padding:4px 10px;border-radius:12px;font-weight:700">Instant Transfer</span>
+        <span style="font-size:11.5px;background:#f2f2f2;color:#141414;padding:4px 10px;border-radius:12px;font-weight:700">Instant Transfer</span>
       </div>
 
       ${data.pendingPayout > 0 ? `
@@ -1031,7 +1031,7 @@ function renderCourierEarnings() {
           ⚡ Cash Out Now (£${data.pendingPayout.toFixed(2)})
         </button>
       ` : `
-        <div style="margin-top:14px;background:#e2e8f0;color:#64748b;border-radius:16px;padding:14px;text-align:center;font-weight:700;font-size:13.5px">
+        <div style="margin-top:14px;background:#e5e5e5;color:#6b6b6b;border-radius:16px;padding:14px;text-align:center;font-weight:700;font-size:13.5px">
           No earnings to cash out yet — complete a delivery first
         </div>
       `}
@@ -1046,7 +1046,7 @@ function renderCourierEarnings() {
           <div style="font-size:25px;font-weight:700;color:#141414">Courier Earnings</div>
           <div style="font-size:12.5px;opacity:0.6">Sam Whitfield (E-bike Courier) · Bolton Hub</div>
         </div>
-        <span style="background:#dcfce7;color:#15803d;font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">🟢 Active</span>
+        <span style="background:#f2f2f2;color:#141414;font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">🟢 Active</span>
       </div>
 
       ${tabSelectorHtml}
@@ -1074,7 +1074,7 @@ function renderInboxList(list, toggleAction) {
     return `
     <div class="press" data-action="${toggleAction}" data-arg="${i}" style="opacity:${wrapOpacity};border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:5px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:oklch(56% 0.17 258);opacity:${dotOpacity}"></span><span style="font-size:11px;border:1.5px solid rgba(20,20,20,0.2);border-radius:20px;padding:3px 8px">${msg.tag}</span></div>
+        <div style="display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#141414;opacity:${dotOpacity}"></span><span style="font-size:11px;border:1.5px solid rgba(20,20,20,0.2);border-radius:20px;padding:3px 8px">${msg.tag}</span></div>
         <span style="font-size:11px;opacity:0.45">${formatRelativeTime(msg.createdAt)}</span>
       </div>
       <div style="font-size:13.5px;font-weight:${textWeight}">${msg.text}</div>
@@ -1087,8 +1087,8 @@ function renderInboxHeader(list, markAllAction, title, size) {
   const fontSize = size || '25px';
   return `
   <div style="display:flex;align-items:center;justify-content:space-between">
-    <div style="font-size:${fontSize};font-weight:700;color:#141414">${title || 'Inbox'}${unread ? ` <span style="font-size:13px;font-weight:700;color:#fff;background:oklch(56% 0.17 258);border-radius:20px;padding:2px 9px;vertical-align:middle">${unread}</span>` : ''}</div>
-    ${unread ? `<div class="press" data-action="${markAllAction}" style="font-size:12px;font-weight:700;color:oklch(56% 0.17 258);cursor:pointer">Mark all read</div>` : ''}
+    <div style="font-size:${fontSize};font-weight:700;color:#141414">${title || 'Inbox'}${unread ? ` <span style="font-size:13px;font-weight:700;color:#fff;background:#141414;border-radius:20px;padding:2px 9px;vertical-align:middle">${unread}</span>` : ''}</div>
+    ${unread ? `<div class="press" data-action="${markAllAction}" style="font-size:12px;font-weight:700;color:#141414;cursor:pointer">Mark all read</div>` : ''}
   </div>`;
 }
 
@@ -1147,9 +1147,9 @@ function updateScanFeedbackUI(feedback) {
   if (banner) {
     if (feedback) {
       banner.style.display = 'flex';
-      banner.style.background = feedback.type === 'match' ? '#dcfce7' : '#fee2e2';
-      banner.style.color = feedback.type === 'match' ? '#15803d' : '#b91c1c';
-      banner.style.border = `1.5px solid ${feedback.type === 'match' ? '#86efac' : '#fca5a5'}`;
+      banner.style.background = feedback.type === 'match' ? '#f2f2f2' : '#f2f2f2';
+      banner.style.color = feedback.type === 'match' ? '#141414' : '#141414';
+      banner.style.border = `1.5px solid ${feedback.type === 'match' ? '#d4d4d4' : '#d4d4d4'}`;
       banner.textContent = feedback.message;
     } else {
       banner.style.display = 'none';
@@ -1157,7 +1157,7 @@ function updateScanFeedbackUI(feedback) {
     }
   }
   if (viewfinder) {
-    viewfinder.style.borderColor = feedback ? (feedback.type === 'match' ? '#10b981' : '#ef4444') : '#ffcbe1';
+    viewfinder.style.borderColor = feedback ? (feedback.type === 'match' ? '#141414' : '#141414') : '#141414';
   }
 }
 
@@ -1313,18 +1313,18 @@ function renderCourierPack() {
         <button type="button" data-action="closeScanner" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;flex:none;line-height:1">✕</button>
       </div>
 
-      <div id="scan-feedback-banner" style="width:100%;padding:12px;border-radius:14px;font-size:13px;font-weight:800;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);${state.scanFeedback ? '' : 'display:none;'}background:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#dcfce7' : '#fee2e2'};color:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#15803d' : '#b91c1c'};border:1.5px solid ${state.scanFeedback && state.scanFeedback.type === 'match' ? '#86efac' : '#fca5a5'}">${state.scanFeedback ? escapeHtml(state.scanFeedback.message) : ''}</div>
+      <div id="scan-feedback-banner" style="width:100%;padding:12px;border-radius:14px;font-size:13px;font-weight:800;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);${state.scanFeedback ? '' : 'display:none;'}background:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#f2f2f2' : '#f2f2f2'};color:${state.scanFeedback && state.scanFeedback.type === 'match' ? '#141414' : '#141414'};border:1.5px solid ${state.scanFeedback && state.scanFeedback.type === 'match' ? '#d4d4d4' : '#d4d4d4'}">${state.scanFeedback ? escapeHtml(state.scanFeedback.message) : ''}</div>
 
       <!-- Live WebRTC Camera Stream Viewfinder -->
-      <div id="scanner-viewfinder" style="width:100%;max-width:280px;height:190px;border:2px solid #ffcbe1;border-radius:16px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
+      <div id="scanner-viewfinder" style="width:100%;max-width:280px;height:190px;border:2px solid #141414;border-radius:16px;position:relative;overflow:hidden;background:#000;box-shadow:0 8px 20px rgba(0,0,0,0.4)">
         <video id="barcode-scanner-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
       </div>
 
       <div id="scanner-status-text" style="font-size:11.5px;opacity:0.7;min-height:14px">${scannerStatusMessage(state.scannerStatus)}</div>
 
       <div id="manual-barcode-fallback" style="display:${showManualFallback ? 'flex' : 'none'};gap:8px;width:100%">
-        <input id="manual-barcode-input" data-bind="manualBarcodeInput" value="${escapeHtml(state.manualBarcodeInput || '')}" placeholder="Or type the barcode number" style="flex:1;min-width:0;border:1.5px solid #3f3f46;background:#1f1f23;color:#fff;border-radius:12px;padding:10px 12px;font-size:12.5px;font-family:monospace;outline:none" />
-        <button type="button" data-action="submitManualBarcode" data-arg="${state.scanningBarcodeIndex}" style="background:#ffcbe1;color:#141414;border:none;padding:0 16px;border-radius:12px;font-size:12.5px;font-weight:800;cursor:pointer">Check</button>
+        <input id="manual-barcode-input" data-bind="manualBarcodeInput" value="${escapeHtml(state.manualBarcodeInput || '')}" placeholder="Or type the barcode number" style="flex:1;min-width:0;border:1.5px solid #444444;background:#1f1f23;color:#fff;border-radius:12px;padding:10px 12px;font-size:12.5px;font-family:monospace;outline:none" />
+        <button type="button" data-action="submitManualBarcode" data-arg="${state.scanningBarcodeIndex}" style="background:#141414;color:#ffffff;border:none;padding:0 16px;border-radius:12px;font-size:12.5px;font-weight:800;cursor:pointer">Check</button>
       </div>
     </div>
   ` : (allPacked ? '' : `
@@ -1338,15 +1338,15 @@ function renderCourierPack() {
   const itemsHtml = state.packItems.map((item) => {
     const isChecked = item.checked;
     return `
-      <div style="background:${isChecked ? '#f0fdf4' : '#fff'};border:1.5px solid ${isChecked ? '#86efac' : 'rgba(20,20,20,0.12)'};border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div style="background:${isChecked ? '#fafafa' : '#fff'};border:1.5px solid ${isChecked ? '#d4d4d4' : 'rgba(20,20,20,0.12)'};border-radius:16px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
         <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
-          <img src="${item.image}" style="width:42px;height:42px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:2px;border:1px solid #e2e8f0" alt="${escapeHtml(item.name)}" />
+          <img src="${item.image}" style="width:42px;height:42px;object-fit:contain;border-radius:8px;background:#fafafa;padding:2px;border:1px solid #e5e5e5" alt="${escapeHtml(item.name)}" />
           <div style="flex:1;min-width:0">
             <div style="font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${isChecked ? 'text-decoration:line-through;opacity:0.6' : ''}">${escapeHtml(item.name)}</div>
             <div style="font-size:11px;opacity:0.55;margin-top:2px">Qty: ${item.qty}</div>
           </div>
         </div>
-        <span title="${isChecked ? 'Scanned' : 'Not scanned yet'}" style="width:16px;height:16px;min-width:16px;border-radius:50%;background:${isChecked ? '#10b981' : '#ef4444'};box-shadow:0 0 0 3px ${isChecked ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}"></span>
+        <span title="${isChecked ? 'Scanned' : 'Not scanned yet'}" style="width:16px;height:16px;min-width:16px;border-radius:50%;background:${isChecked ? '#141414' : '#141414'};box-shadow:0 0 0 3px ${isChecked ? 'rgba(20,20,20,0.15)' : 'rgba(239,68,68,0.15)'}"></span>
       </div>
     `;
   }).join('');
@@ -1358,12 +1358,12 @@ function renderCourierPack() {
           <div style="font-size:25px;font-weight:700;color:#141414">Pick &amp; Pack Scanner</div>
           <div style="font-size:12.5px;opacity:0.65">Order ${activeOrder.id} · Morrisons Daily</div>
         </div>
-        <span style="background:${allPacked ? '#dcfce7' : '#ffcbe1'};color:${allPacked ? '#15803d' : '#141414'};font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">${progressPercent}% Done</span>
+        <span style="background:${allPacked ? '#141414' : '#f2f2f2'};color:${allPacked ? '#ffffff' : '#141414'};font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">${progressPercent}% Done</span>
       </div>
 
       <!-- Live Progress Bar -->
-      <div style="height:10px;background:#e2e8f0;border-radius:10px;overflow:hidden">
-        <div style="height:100%;background:#10b981;width:${progressPercent}%;transition:width 0.3s ease"></div>
+      <div style="height:10px;background:#e5e5e5;border-radius:10px;overflow:hidden">
+        <div style="height:100%;background:#141414;width:${progressPercent}%;transition:width 0.3s ease"></div>
       </div>
       <div style="font-size:12.5px;opacity:0.6;text-align:right">${packedCount} of ${totalPack} items verified</div>
 
@@ -1374,7 +1374,7 @@ function renderCourierPack() {
       </div>
 
       ${allPacked ? `
-        <button type="button" data-action="completePackingJob" style="background:#10b981;color:#fff;border:none;padding:16px;border-radius:18px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;box-shadow:0 8px 24px rgba(16,185,129,0.3)">
+        <button type="button" data-action="completePackingJob" style="background:#141414;color:#fff;border:none;padding:16px;border-radius:18px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;box-shadow:0 8px 24px rgba(20,20,20,0.3)">
           📦 All Items Verified — Complete Packing & Start Delivery
         </button>
       ` : ''}
@@ -1383,7 +1383,7 @@ function renderCourierPack() {
 }
 
 function renderCourierAccount() {
-  const onlineBg = state.courierOnline ? 'oklch(56% 0.17 258)' : '#e2e2e2';
+  const onlineBg = state.courierOnline ? '#141414' : '#e5e5e5';
   const onlineJustify = state.courierOnline ? 'flex-end' : 'flex-start';
   const auth = state.authUser;
   const isSignedIn = !!auth;
@@ -1394,7 +1394,7 @@ function renderCourierAccount() {
     <div style="font-size:25px;font-weight:700;color:#141414">Courier Account</div>
 
     <!-- Courier Profile Header -->
-    <div style="display:flex;align-items:center;gap:14px;background:#f8fafc;border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:16px">
+    <div style="display:flex;align-items:center;gap:14px;background:#fafafa;border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:16px">
       <div style="width:52px;height:52px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">
         ${(displayName || 'GC').substring(0,2).toUpperCase()}
       </div>
@@ -1405,13 +1405,13 @@ function renderCourierAccount() {
     </div>
 
     ${!isSignedIn ? `
-      <div style="background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:16px;padding:12px 14px;font-size:12.5px;line-height:1.4">
+      <div style="background:#fafafa;border:1.5px solid #d4d4d4;color:#141414;border-radius:16px;padding:12px 14px;font-size:12.5px;line-height:1.4">
         You're browsing in guest mode. <span class="press" data-action="logout" style="text-decoration:underline;font-weight:700;cursor:pointer">Sign in</span> with Google or your email to save your account.
       </div>
     ` : ''}
 
     <!-- Live GPS Duty Switch -->
-    <div data-action="toggleOnline" style="border:1.5px solid ${state.courierOnline ? '#10b981' : 'rgba(20,20,20,0.12)'};background:${state.courierOnline ? '#f0fdf4' : '#fff'};border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.03)">
+    <div data-action="toggleOnline" style="border:1.5px solid ${state.courierOnline ? '#141414' : 'rgba(20,20,20,0.12)'};background:${state.courierOnline ? '#fafafa' : '#fff'};border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.03)">
       <div>
         <div style="font-size:14.5px;font-weight:800">${state.courierOnline ? "🟢 Online - Live GPS Tracking ON" : "⚪ Offline - GPS Tracking OFF"}</div>
         <div style="font-size:11.5px;opacity:0.65;margin-top:2px">${state.courierOnline ? (state.courierLiveGps ? `Device GPS: ${state.courierLiveGps.lat.toFixed(4)}, ${state.courierLiveGps.lng.toFixed(4)}` : 'Streaming location to active customer maps...') : 'Turn ON to stream your real location to customer map'}</div>
@@ -1422,11 +1422,11 @@ function renderCourierAccount() {
     <!-- Account Identity -->
     <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:10px">
       <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase">ACCOUNT</div>
-      <div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:700"><span>Sign-in Method</span><span style="color:${isSignedIn ? '#10b981' : '#94a3b8'}">${providerLabel}${isSignedIn ? ' ✓' : ''}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:700"><span>Sign-in Method</span><span style="color:${isSignedIn ? '#141414' : '#9a9a9a'}">${providerLabel}${isSignedIn ? ' ✓' : ''}</span></div>
       <div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:700"><span>Active Region</span><span style="font-weight:700">Bolton Hub (BL1 3PJ)</span></div>
     </div>
 
-    <button type="button" data-action="logout" style="width:100%;background:#fee2e2;color:#ef4444;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px">
+    <button type="button" data-action="logout" style="width:100%;background:#f2f2f2;color:#141414;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px">
       🚪 ${isSignedIn ? 'Log Out of Courier Account' : 'Back to Sign In'}
     </button>
   </div>`;
@@ -1623,10 +1623,10 @@ function renderOrderItemsCardHtml(currentOrder) {
     return `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#ffffff;border:1px solid rgba(20,20,20,0.1);border-radius:12px;gap:10px">
         <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
-          <img src="${imgSrc}" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:2px;border:1px solid #f1f5f9;flex:none" alt="${escapeHtml(item.name)}" />
+          <img src="${imgSrc}" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#fafafa;padding:2px;border:1px solid #f2f2f2;flex:none" alt="${escapeHtml(item.name)}" />
           <div style="min-width:0;flex:1">
             <div style="font-size:12.5px;font-weight:700;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(item.name)}</div>
-            <div style="font-size:11px;color:#64748b">Qty: ${item.qty || 1}</div>
+            <div style="font-size:11px;color:#6b6b6b">Qty: ${item.qty || 1}</div>
           </div>
         </div>
         <div style="font-size:12.5px;font-weight:700;color:#141414">£${((item.qty || 1) * priceGbp).toFixed(2)}</div>
@@ -1638,25 +1638,25 @@ function renderOrderItemsCardHtml(currentOrder) {
     <!-- Order Items Container (Shop Page Design) -->
     <div style="background:#ffffff;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;color:#64748b;letter-spacing:0.5px">ORDER ITEMS (${itemsCount} ITEMS)</div>
-        <span style="font-size:11px;background:#f1f5f9;color:#475569;font-weight:700;padding:2px 8px;border-radius:10px">Scrollable ↕</span>
+        <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;color:#6b6b6b;letter-spacing:0.5px">ORDER ITEMS (${itemsCount} ITEMS)</div>
+        <span style="font-size:11px;background:#f2f2f2;color:#5c5c5c;font-weight:700;padding:2px 8px;border-radius:10px">Scrollable ↕</span>
       </div>
 
       <div style="max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:3px">
         ${itemsRowsHtml}
       </div>
 
-      <div style="font-size:12px;color:#334155;border-top:1px dashed rgba(20,20,20,0.15);padding-top:8px;margin-top:2px">
+      <div style="font-size:12px;color:#444444;border-top:1px dashed rgba(20,20,20,0.15);padding-top:8px;margin-top:2px">
         📍 Delivering to: <b>${escapeHtml(currentOrder.address || state.userProfile.address)}</b>
       </div>
     </div>
 
     <div>
       ${isCancelled
-        ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#64748b;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Remove Order</button>`
+        ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#6b6b6b;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Remove Order</button>`
         : isDelivered
-          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#64748b;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Clear Order</button>`
-          : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#ef4444;border:1.5px solid #fca5a5;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Cancel Order</button>`}
+          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#6b6b6b;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Clear Order</button>`
+          : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#141414;border:1.5px solid #d4d4d4;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Cancel Order</button>`}
     </div>
   `;
 }
@@ -1672,7 +1672,7 @@ function renderShopperBasket() {
       <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;text-align:center;background:#fff">
         <div style="font-size:32px">🛒</div>
         <div style="font-size:16px;font-weight:700;color:#141414">✓ Order Placed — Morrisons Daily</div>
-        <div style="font-size:12.5px;color:#64748b">Your basket has been processed and sent to local couriers.</div>
+        <div style="font-size:12.5px;color:#6b6b6b">Your basket has been processed and sent to local couriers.</div>
         <button type="button" data-action="newBasket" style="background:#141414;color:#fff;border:none;padding:12px 20px;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px">Start New Basket</button>
       </div>`
     : (lines.length > 0
@@ -1683,7 +1683,7 @@ function renderShopperBasket() {
               <span style="font-size:20px">🛒</span>
               <div>
                 <div style="font-size:15.5px;font-weight:700;color:#141414">Current Basket</div>
-                <div style="font-size:13px;color:#64748b">Morrisons Daily</div>
+                <div style="font-size:13px;color:#6b6b6b">Morrisons Daily</div>
               </div>
             </div>
             <div style="font-size:15.5px;font-weight:700;color:#141414">£${total.toFixed(2)}</div>
@@ -1694,7 +1694,7 @@ function renderShopperBasket() {
               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
                 <div style="flex:1;min-width:0">
                   <div style="font-size:13px;font-weight:600;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.product.name)}</div>
-                  <div style="font-size:11.5px;color:#64748b">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
+                  <div style="font-size:11.5px;color:#6b6b6b">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
                 </div>
                 <div style="display:flex;align-items:center;gap:8px">
                   <div class="press" data-action="removeFromCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;border:1.5px solid #141414;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;font-size:14px;color:#141414">−</div>
@@ -1708,8 +1708,8 @@ function renderShopperBasket() {
 
           <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(20,20,20,0.08);padding-top:12px">
             <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:12.5px;color:#64748b;font-weight:600">${count} item${count > 1 ? 's' : ''}</span>
-              <span class="press" data-action="emptyBasket" style="font-size:12px;font-weight:700;color:#ef4444;text-decoration:underline;cursor:pointer">Empty basket</span>
+              <span style="font-size:12.5px;color:#6b6b6b;font-weight:600">${count} item${count > 1 ? 's' : ''}</span>
+              <span class="press" data-action="emptyBasket" style="font-size:12px;font-weight:700;color:#141414;text-decoration:underline;cursor:pointer">Empty basket</span>
             </div>
             <div class="press" data-action="checkout" style="background:#141414;color:#fff;border-radius:16px;padding:10px 20px;font-weight:700;font-size:13.5px;cursor:pointer">
               Checkout (£${total.toFixed(2)}) ›
@@ -1721,7 +1721,7 @@ function renderShopperBasket() {
           <div style="font-size:32px">🛒</div>
           <div>
             <div style="font-size:16px;font-weight:700;color:#141414">Your Basket is Empty</div>
-            <div style="font-size:12.5px;color:#64748b;margin-top:4px">Add fresh groceries and essentials from Morrisons Daily.</div>
+            <div style="font-size:12.5px;color:#6b6b6b;margin-top:4px">Add fresh groceries and essentials from Morrisons Daily.</div>
           </div>
           <div class="press" data-action="goShop" style="background:#141414;color:#fff;border-radius:16px;padding:10px 20px;font-weight:700;font-size:13px;cursor:pointer;margin-top:4px">Start Shopping</div>
         </div>`
@@ -1756,7 +1756,7 @@ function renderShopperBasket() {
       <div style="font-size:28px">⚡</div>
       <div>
         <div style="font-size:15.5px;font-weight:700;color:#141414">No Active Deliveries</div>
-        <div style="font-size:12.5px;color:#64748b;margin-top:3px">Place an order to track live delivery updates in real-time.</div>
+        <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">Place an order to track live delivery updates in real-time.</div>
       </div>
       <button type="button" data-action="goTrack" style="background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:9px 18px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px">
         View Order Activity &amp; Messages
@@ -1785,15 +1785,15 @@ function renderAddressModal() {
   return `
     <div class="graftr-modal-overlay">
       <div class="graftr-modal-card" style="max-height:85vh;overflow-y:auto">
-        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e5e5;padding-bottom:12px">
           <div style="font-size:16.5px;font-weight:800;color:#141414">Edit Profile &amp; Delivery Address</div>
-          <button data-action="closeAddressModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b">✕</button>
+          <button data-action="closeAddressModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b">✕</button>
         </div>
 
         <!-- Profile Avatar Upload Section -->
-        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0;border-bottom:1px dashed #e2e8f0;margin-bottom:12px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0;border-bottom:1px dashed #e5e5e5;margin-bottom:12px">
           ${avatarHtml}
-          <label style="background:#f1f5f9;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
+          <label style="background:#f2f2f2;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
             📷 Upload Profile Photo
             <input type="file" accept="image/*" data-upload-avatar style="display:none" />
           </label>
@@ -1831,7 +1831,7 @@ function renderAddressModal() {
         </div>
 
         <div style="display:flex;gap:10px;margin-top:6px">
-          <button type="button" data-action="closeAddressModal" style="flex:1;background:#f1f5f9;border:1px solid #cbd5e1;padding:12px;border-radius:14px;font-weight:700;font-size:13.5px;cursor:pointer">Cancel</button>
+          <button type="button" data-action="closeAddressModal" style="flex:1;background:#f2f2f2;border:1px solid #d4d4d4;padding:12px;border-radius:14px;font-weight:700;font-size:13.5px;cursor:pointer">Cancel</button>
           <button type="button" data-action="saveAddressModal" style="flex:1;background:#141414;color:#fff;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13.5px;cursor:pointer">Save Details</button>
         </div>
       </div>
@@ -1857,7 +1857,7 @@ function renderCheckoutModal() {
   return `
     <div class="graftr-modal-overlay">
       <div class="graftr-modal-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e5e5;padding-bottom:12px">
           <div>
             <div style="font-size:17px;font-weight:800">Checkout &amp; Order Review</div>
             <div style="font-size:12px;opacity:0.6">Morrisons Daily</div>
@@ -1866,21 +1866,21 @@ function renderCheckoutModal() {
         </div>
 
         <!-- Delivery Address Box -->
-        <div style="background:#f8fafc;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+        <div style="background:#fafafa;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
           <div>
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748b">DELIVER TO</div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#6b6b6b">DELIVER TO</div>
             <div style="font-size:14px;font-weight:700;margin-top:2px">${escapeHtml(p.name)}</div>
             <div style="font-size:12.5px;opacity:0.8">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
-            ${p.instructions ? `<div style="font-size:11.5px;color:oklch(56% 0.17 258);margin-top:2px">Note: "${escapeHtml(p.instructions)}"</div>` : ''}
+            ${p.instructions ? `<div style="font-size:11.5px;color:#141414;margin-top:2px">Note: "${escapeHtml(p.instructions)}"</div>` : ''}
           </div>
-          <button type="button" data-action="openAddressModal" style="background:#fff;border:1px solid #cbd5e1;padding:6px 10px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer">Change</button>
+          <button type="button" data-action="openAddressModal" style="background:#fff;border:1px solid #d4d4d4;padding:6px 10px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer">Change</button>
         </div>
 
         <!-- Items Summary -->
         <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#64748b">ORDER SUMMARY (${cartCount()} items)</div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#6b6b6b">ORDER SUMMARY (${cartCount()} items)</div>
           ${itemsListHtml}
-          <div style="border-top:1px dashed #e2e8f0;padding-top:8px;margin-top:4px;display:flex;flex-direction:column;gap:4px">
+          <div style="border-top:1px dashed #e5e5e5;padding-top:8px;margin-top:4px;display:flex;flex-direction:column;gap:4px">
             <div style="display:flex;justify-content:space-between;font-size:12.5px;opacity:0.7"><span>Subtotal</span><span>£${subtotal.toFixed(2)}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:12.5px;opacity:0.7"><span>Delivery Fee (Fast 15-min)</span><span>£${deliveryFee.toFixed(2)}</span></div>
             <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;margin-top:4px;padding-top:4px;border-top:1px solid #141414"><span>Total Amount</span><span>£${grandTotal.toFixed(2)}</span></div>
@@ -1902,22 +1902,22 @@ function renderTermsModal() {
   return `
     <div class="graftr-modal-overlay">
       <div class="graftr-modal-card" style="max-height:85vh;overflow-y:auto">
-        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding-bottom:12px;position:sticky;top:0;background:#fff;z-index:2">
+        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e5e5;padding-bottom:12px;position:sticky;top:0;background:#fff;z-index:2">
           <div style="font-size:17px;font-weight:800;color:#141414">${isTerms ? '📜 Terms of Service' : '🔒 Privacy Policy'}</div>
-          <button data-action="closeTermsModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b">✕</button>
+          <button data-action="closeTermsModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b">✕</button>
         </div>
 
         <!-- Modal Tab Switcher -->
-        <div style="display:flex;background:#f1f5f9;border-radius:12px;padding:4px;gap:4px;margin-top:12px">
-          <button type="button" data-action="setTermsTab" data-arg="terms" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isTerms ? '#fff' : 'transparent'};color:${isTerms ? '#141414' : '#64748b'};box-shadow:${isTerms ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+        <div style="display:flex;background:#f2f2f2;border-radius:12px;padding:4px;gap:4px;margin-top:12px">
+          <button type="button" data-action="setTermsTab" data-arg="terms" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isTerms ? '#fff' : 'transparent'};color:${isTerms ? '#141414' : '#6b6b6b'};box-shadow:${isTerms ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
             Terms of Service
           </button>
-          <button type="button" data-action="setTermsTab" data-arg="privacy" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${!isTerms ? '#fff' : 'transparent'};color:${!isTerms ? '#141414' : '#64748b'};box-shadow:${!isTerms ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+          <button type="button" data-action="setTermsTab" data-arg="privacy" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${!isTerms ? '#fff' : 'transparent'};color:${!isTerms ? '#141414' : '#6b6b6b'};box-shadow:${!isTerms ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
             Privacy Policy
           </button>
         </div>
 
-        <div style="font-size:13px;line-height:1.6;color:#334155;display:flex;flex-direction:column;gap:12px;margin-top:14px">
+        <div style="font-size:13px;line-height:1.6;color:#444444;display:flex;flex-direction:column;gap:12px;margin-top:14px">
           ${isTerms ? `
             <p><b>1. Introduction</b><br>Welcome to Vendaru ("Company", "we", "our", "us"). These Terms of Service govern your use of our local delivery network mobile and web applications operating in Bolton, Greater Manchester, UK.</p>
             <p><b>2. Delivery Services &amp; Timelines</b><br>Vendaru provides on-demand courier dispatch connecting local customers with independent couriers and local retail merchants (such as Morrisons Daily). Standard delivery estimates range between 15 to 30 minutes subject to courier availability and local traffic conditions.</p>
@@ -1949,8 +1949,8 @@ function renderShopperAccount() {
   const providerLabel = !auth ? 'Guest Mode' : auth.provider === 'google' ? 'Google Account' : 'Email Account';
 
   const avatarBadge = p.avatarSrc
-    ? `<img src="${p.avatarSrc}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #141414;box-shadow:0 4px 12px rgba(15,23,42,0.15)" />`
-    : `<div style="width:52px;height:52px;border-radius:50%;background:#141414;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;box-shadow:0 4px 12px rgba(15,23,42,0.2)">
+    ? `<img src="${p.avatarSrc}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #141414;box-shadow:0 4px 12px rgba(20,20,20,0.15)" />`
+    : `<div style="width:52px;height:52px;border-radius:50%;background:#141414;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;box-shadow:0 4px 12px rgba(20,20,20,0.2)">
         ${(displayName || 'GU').substring(0, 2).toUpperCase()}
       </div>`;
 
@@ -1978,12 +1978,12 @@ function renderShopperAccount() {
   const faqListHtml = faqs.map((f, i) => {
     const isOpen = openFaq == i;
     return `
-      <div style="border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;background:#ffffff">
-        <button type="button" data-action="toggleFaq" data-arg="${i}" style="width:100%;padding:13px 16px;text-align:left;background:#f8fafc;border:none;font-size:13.5px;font-weight:700;color:#141414;display:flex;justify-content:space-between;align-items:center;cursor:pointer">
+      <div style="border:1px solid #e5e5e5;border-radius:14px;overflow:hidden;background:#ffffff">
+        <button type="button" data-action="toggleFaq" data-arg="${i}" style="width:100%;padding:13px 16px;text-align:left;background:#fafafa;border:none;font-size:13.5px;font-weight:700;color:#141414;display:flex;justify-content:space-between;align-items:center;cursor:pointer">
           <span>${escapeHtml(f.q)}</span>
-          <span style="font-size:14px;color:#64748b">${isOpen ? '▲' : '▼'}</span>
+          <span style="font-size:14px;color:#6b6b6b">${isOpen ? '▲' : '▼'}</span>
         </button>
-        ${isOpen ? `<div style="padding:12px 16px;font-size:12.5px;color:#475569;line-height:1.5;border-top:1px solid #f1f5f9;background:#ffffff">${escapeHtml(f.a)}</div>` : ''}
+        ${isOpen ? `<div style="padding:12px 16px;font-size:12.5px;color:#5c5c5c;line-height:1.5;border-top:1px solid #f2f2f2;background:#ffffff">${escapeHtml(f.a)}</div>` : ''}
       </div>
     `;
   }).join('');
@@ -1999,8 +1999,8 @@ function renderShopperAccount() {
         ${avatarBadge}
         <div>
           <div style="font-size:16.5px;font-weight:700;color:#141414">${escapeHtml(displayName)}</div>
-          <div style="font-size:12.5px;color:#64748b;margin-top:1px">${escapeHtml(emailDisplay)}</div>
-          <div style="font-size:11.5px;color:${isSignedIn ? '#10b981' : '#f59e0b'};font-weight:700;margin-top:3px;display:flex;align-items:center;gap:4px">
+          <div style="font-size:12.5px;color:#6b6b6b;margin-top:1px">${escapeHtml(emailDisplay)}</div>
+          <div style="font-size:11.5px;color:${isSignedIn ? '#141414' : '#141414'};font-weight:700;margin-top:3px;display:flex;align-items:center;gap:4px">
             ${isSignedIn ? '✓ Signed In (' + providerLabel + ')' : '⚡ Browsing in Guest Mode'}
           </div>
         </div>
@@ -2013,19 +2013,19 @@ function renderShopperAccount() {
     <!-- 2. Primary Delivery Address Card -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">PRIMARY DELIVERY ADDRESS</div>
+        <div style="font-size:11.5px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.5px">PRIMARY DELIVERY ADDRESS</div>
         <button type="button" data-action="openAddressModal" style="background:none;border:none;font-size:12px;font-weight:700;color:#141414;cursor:pointer;text-decoration:underline">Edit Address ✎</button>
       </div>
       <div style="font-size:14.5px;font-weight:700;color:#141414">
         📍 ${escapeHtml(p.name || 'Customer')}, ${escapeHtml(p.address || '541 Halliwell Road')}, ${escapeHtml(p.postcode || 'BL1 3PJ')}
       </div>
-      <div style="font-size:12.5px;color:#64748b">${escapeHtml(p.city || 'Bolton')}${p.phone ? ' · Tel: ' + escapeHtml(p.phone) : ''}</div>
-      ${p.instructions ? `<div style="font-size:12px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;padding:8px 12px;border-radius:10px;margin-top:2px">📝 Note: "${escapeHtml(p.instructions)}"</div>` : ''}
+      <div style="font-size:12.5px;color:#6b6b6b">${escapeHtml(p.city || 'Bolton')}${p.phone ? ' · Tel: ' + escapeHtml(p.phone) : ''}</div>
+      ${p.instructions ? `<div style="font-size:12px;color:#5c5c5c;background:#fafafa;border:1px solid #e5e5e5;padding:8px 12px;border-radius:10px;margin-top:2px">📝 Note: "${escapeHtml(p.instructions)}"</div>` : ''}
     </div>
 
     <!-- 3. Help & Support Center (Expandable FAQs) -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:12px">
-      <div style="font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">HELP &amp; SUPPORT CENTER</div>
+      <div style="font-size:11.5px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.5px">HELP &amp; SUPPORT CENTER</div>
       <div style="display:flex;flex-direction:column;gap:8px">
         ${faqListHtml}
       </div>
@@ -2033,29 +2033,29 @@ function renderShopperAccount() {
 
     <!-- 4. Direct Contact Support -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:12px">
-      <div style="font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">CONTACT US &amp; LIVE HELP</div>
+      <div style="font-size:11.5px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.5px">CONTACT US &amp; LIVE HELP</div>
       
       <div style="display:flex;flex-direction:column;gap:8px">
-        <button type="button" data-action="openContactChat" style="width:100%;background:#f8fafc;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+        <button type="button" data-action="openContactChat" style="width:100%;background:#fafafa;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
           <span style="display:flex;align-items:center;gap:8px">💬 Live AI Assistant &amp; Chat</span>
           <span style="font-size:12px;background:#141414;color:#fff;padding:2px 8px;border-radius:8px">24/7 Live</span>
         </button>
 
-        <a href="mailto:support@graftr.co.uk" style="text-decoration:none;width:100%;background:#f8fafc;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
+        <a href="mailto:support@graftr.co.uk" style="text-decoration:none;width:100%;background:#fafafa;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
           <span style="display:flex;align-items:center;gap:8px">✉️ Email Customer Support</span>
-          <span style="font-size:12px;color:#64748b">support@graftr.co.uk</span>
+          <span style="font-size:12px;color:#6b6b6b">support@graftr.co.uk</span>
         </a>
 
-        <a href="tel:+441618009000" style="text-decoration:none;width:100%;background:#f8fafc;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
+        <a href="tel:+441618009000" style="text-decoration:none;width:100%;background:#fafafa;color:#141414;border:1.5px solid rgba(20,20,20,0.12);padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
           <span style="display:flex;align-items:center;gap:8px">📞 Direct Telephone Hotline</span>
-          <span style="font-size:12px;color:#64748b">+44 161 800 9000</span>
+          <span style="font-size:12px;color:#6b6b6b">+44 161 800 9000</span>
         </a>
       </div>
     </div>
 
     <!-- 5. Legal Terms & Privacy Policy -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;background:#ffffff;display:flex;flex-direction:column;gap:10px">
-      <div style="font-size:11.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">LEGAL &amp; POLICIES</div>
+      <div style="font-size:11.5px;font-weight:700;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.5px">LEGAL &amp; POLICIES</div>
       
       <div style="display:flex;gap:10px">
         <button type="button" data-action="openTermsModal" data-arg="terms" style="flex:1;background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:11px;border-radius:14px;font-size:12.5px;font-weight:700;cursor:pointer">
@@ -2073,7 +2073,7 @@ function renderShopperAccount() {
         🚴 Switch to Courier Portal
       </button>
 
-      <button type="button" data-action="logout" style="width:100%;background:#fff;color:#ef4444;border:1.5px solid #fca5a5;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer">
+      <button type="button" data-action="logout" style="width:100%;background:#fff;color:#141414;border:1.5px solid #d4d4d4;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer">
         🚪 ${isSignedIn ? 'Log Out of Account' : 'Back to Sign In Portal'}
       </button>
     </div>
@@ -2115,7 +2115,7 @@ function renderShopperSpecialRequest() {
         <div class="press" data-action="goShop" style="cursor:pointer;font-size:20px;line-height:1">‹</div>
         <div style="font-size:18px;font-weight:700">Special Request</div>
       </div>
-      <div style="border:1.5px solid oklch(56% 0.17 258);background:oklch(97% 0.02 258);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center">
+      <div style="border:1.5px solid #141414;background:#fafafa;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center">
         <div style="font-size:18px;font-weight:700">✓ Request sent</div>
         <div style="font-size:13px;opacity:0.6">We're matching you with a courier who can collect "${escapeHtml(r.productName)}"${r.storeLocation ? ` from ${escapeHtml(r.storeLocation)}` : ''}.</div>
         <div class="press" data-action="newSpecialRequest" style="margin-top:4px;background:#141414;color:#fff;border-radius:20px;padding:10px 20px;font-weight:700;font-size:13px;cursor:pointer">Make another request</div>
@@ -2175,23 +2175,24 @@ function tabStyle(key) {
 }
 
 function renderCourierTabs() {
-  return `<div style="flex:none;display:flex;border-top:1px solid rgba(20,20,20,0.1);padding:10px 4px 22px;justify-content:space-around;background:#fff">
-    <div data-action="goActivity" style="${tabStyle('courier-activity')}">
+  return `
+  <div class="floating-tabbar">
+    <div class="press floating-tab" data-action="goActivity" style="${tabStyle('courier-activity')}">
       <span style="position:relative">
         <svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 3 H16 V15 L15 16.5 L14 15 L13 16.5 L12 15 L11 16.5 L10 15 L9 16.5 L8 15 L7 16.5 L6 15 L5 16.5 L4 15 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 7H13.5M6.5 10H13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        ${state.courierInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
+        ${state.courierInbox.some(m => !m.read) ? '<span class="tab-badge"></span>' : ''}
       </span>
       Activity
     </div>
-    <div data-action="goEarnings" style="${tabStyle('courier-earnings')}">
+    <div class="press floating-tab" data-action="goEarnings" style="${tabStyle('courier-earnings')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="5" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2 9h16" stroke="currentColor" stroke-width="1.6"/><circle cx="14" cy="12.5" r="1.2" fill="currentColor"/></svg>
       Earnings
     </div>
-    <div data-action="goPack" style="${tabStyle('courier-pack')}">
+    <div class="press floating-tab" data-action="goPack" style="${tabStyle('courier-pack')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2l7 3.5v9L10 18l-7-3.5v-9L10 2z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 5.5L10 9l6.5-3.5M10 9v9" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
       Pick&amp;Pack
     </div>
-    <div data-action="goCourierAccount" style="${tabStyle('courier-account')}">
+    <div class="press floating-tab" data-action="goCourierAccount" style="${tabStyle('courier-account')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="6.5" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 17c1-3.5 4-5 6.5-5s5.5 1.5 6.5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
       Account
     </div>
@@ -2212,7 +2213,7 @@ function renderShopperTabs() {
     <div class="press floating-tab" data-action="goShopperInbox" style="${tabStyle('shopper-inbox')}">
       <span style="position:relative">
         <svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 3 H16 V15 L15 16.5 L14 15 L13 16.5 L12 15 L11 16.5 L10 15 L9 16.5 L8 15 L7 16.5 L6 15 L5 16.5 L4 15 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 7H13.5M6.5 10H13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        ${state.shopperInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
+        ${state.shopperInbox.some(m => !m.read) ? '<span class="tab-badge"></span>' : ''}
       </span>
       Activity
     </div>
@@ -2334,7 +2335,7 @@ function renderAiChatDrawer() {
     return `<div class="ai-msg ${m.role}">${m.text}</div>`;
   }).join('');
 
-  const loadingHtml = state.aiLoading ? `<div class="ai-msg bot" style="font-style:italic;color:#64748b;">✨ Vendaru AI is thinking...</div>` : '';
+  const loadingHtml = state.aiLoading ? `<div class="ai-msg bot" style="font-style:italic;color:#6b6b6b;">✨ Vendaru AI is thinking...</div>` : '';
 
   return `
     <div class="ai-modal-overlay">
@@ -2373,7 +2374,7 @@ function renderAiChatDrawer() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </button>
         </div>
-        ${state.aiVoiceSupported === false ? '<div style="padding:0 16px 10px;font-size:11px;color:#94a3b8;text-align:center">Voice input isn\'t available in this browser — type instead.</div>' : ''}
+        ${state.aiVoiceSupported === false ? '<div style="padding:0 16px 10px;font-size:11px;color:#9a9a9a;text-align:center">Voice input isn\'t available in this browser — type instead.</div>' : ''}
       </div>
     </div>
   `;
@@ -2480,15 +2481,15 @@ function renderShopperTrackingSection(currentOrder) {
     const priceGbp = item.price || (prod ? prod.estimated_price_gbp : 2.50);
 
     return `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;gap:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#ffffff;border:1px solid #e5e5e5;border-radius:12px;gap:10px">
         <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
-          <img src="${imgSrc}" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:2px;border:1px solid #f1f5f9;flex:none" alt="${escapeHtml(item.name)}" />
+          <img src="${imgSrc}" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#fafafa;padding:2px;border:1px solid #f2f2f2;flex:none" alt="${escapeHtml(item.name)}" />
           <div style="min-width:0;flex:1">
             <div style="font-size:12.5px;font-weight:700;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(item.name)}</div>
-            <div style="font-size:11px;color:#64748b">Qty: ${item.qty || 1}</div>
+            <div style="font-size:11px;color:#6b6b6b">Qty: ${item.qty || 1}</div>
           </div>
         </div>
-        <div style="font-size:12.5px;font-weight:800;color:#1e293b">£${((item.qty || 1) * priceGbp).toFixed(2)}</div>
+        <div style="font-size:12.5px;font-weight:800;color:#141414">£${((item.qty || 1) * priceGbp).toFixed(2)}</div>
       </div>
     `;
   }).join('');
@@ -2498,19 +2499,19 @@ function renderShopperTrackingSection(currentOrder) {
   const tipHtml = isDelivered ? (
     currentOrder.tip
       ? `
-      <div style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px">
+      <div style="background:#fafafa;border:2px solid #d4d4d4;border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px">
         <div style="font-size:28px">💚</div>
         <div style="font-size:14.5px;font-weight:800">Thanks for tipping £${currentOrder.tip.toFixed(2)}!</div>
         <div style="font-size:12px;opacity:0.65">Your courier will see this on their earnings.</div>
       </div>
     `
       : `
-      <div style="background:#fff5f9;border:2px solid #ffcbe1;border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px">
+      <div style="background:#fafafa;border:2px solid #141414;border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px">
         <div style="font-size:14.5px;font-weight:800">Delivered! Add a tip for ${escapeHtml((currentOrder.courier || 'your courier').split(' (')[0])}?</div>
         <div style="display:flex;gap:8px;width:100%">
           ${[1, 2, 5].map(amt => `<button type="button" data-action="addTip" data-arg="${amt}" style="flex:1;background:#141414;color:#fff;border:none;padding:12px 0;border-radius:14px;font-weight:800;font-size:13.5px;cursor:pointer">£${amt}</button>`).join('')}
         </div>
-        <button type="button" data-action="addTip" data-arg="0" style="background:none;border:none;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline">No thanks</button>
+        <button type="button" data-action="addTip" data-arg="0" style="background:none;border:none;color:#6b6b6b;font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline">No thanks</button>
       </div>
     `
   ) : '';
@@ -2539,7 +2540,7 @@ function renderShopperTrackingSection(currentOrder) {
       <div style="position:relative;width:100%;height:220px">
         <div id="graftr-leaflet-map" style="width:100%;height:100%"></div>
         <div style="position:absolute;top:12px;right:12px;z-index:2;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);padding:5px 11px;border-radius:20px;font-size:10.5px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:flex;align-items:center;gap:6px">
-          <span style="width:7px;height:7px;border-radius:50%;background:${isLiveGpsActive ? '#10b981' : (isPending ? '#f59e0b' : 'oklch(56% 0.17 258)')};display:inline-block;animation:${isLiveGpsActive ? 'courierPulse 1.5s infinite' : 'none'}"></span>
+          <span style="width:7px;height:7px;border-radius:50%;background:${isLiveGpsActive ? '#141414' : (isPending ? '#141414' : '#141414')};display:inline-block;animation:${isLiveGpsActive ? 'courierPulse 1.5s infinite' : 'none'}"></span>
           ${mapBadgeText}
         </div>
       </div>
@@ -2547,27 +2548,27 @@ function renderShopperTrackingSection(currentOrder) {
       <!-- 2. Middle Section: Courier Driver & Live ETA Bar -->
       <div style="background:#141414;color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:38px;height:38px;border-radius:50%;background:#ffcbe1;color:#141414;display:flex;align-items:center;justify-content:center;font-size:18px">🚴</div>
+          <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.16);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:18px">🚴</div>
           <div>
             <div style="font-size:13.5px;font-weight:700">${currentOrder.courier || 'Alex (Assigned Courier)'}</div>
             <div style="font-size:11px;opacity:0.7">Heading to ${escapeHtml((currentOrder.address || state.userProfile.address).split(',')[0])}</div>
           </div>
         </div>
         <div style="text-align:right">
-          <div id="graftr-eta-value" style="font-size:18px;font-weight:800;color:#ffcbe1">${etaLabel}</div>
+          <div id="graftr-eta-value" style="font-size:18px;font-weight:800;color:#ffffff">${etaLabel}</div>
           <div style="font-size:10.5px;opacity:0.7">Total £${currentOrder.total ? currentOrder.total.toFixed(2) : '0.00'}</div>
         </div>
       </div>
 
       <!-- 3. Bottom Section: Seamless Horizontal Order Timeline -->
-      <div style="padding:16px 14px 14px;background:#ffffff;border-top:1px solid #f1f5f9;position:relative">
+      <div style="padding:16px 14px 14px;background:#ffffff;border-top:1px solid #f2f2f2;position:relative">
         <div style="position:relative;padding:0 9px">
-          <div style="position:absolute;top:9px;left:0;right:0;height:2px;background:#e2e8f0;z-index:0"></div>
+          <div style="position:absolute;top:9px;left:0;right:0;height:2px;background:#e5e5e5;z-index:0"></div>
           <div style="position:absolute;top:9px;left:0;height:2px;background:#141414;z-index:0;width:${progressPct}%;transition:width 0.3s"></div>
           <div style="display:flex;justify-content:space-between;position:relative;z-index:1">
             ${steps.map(s => `
               <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:25%">
-                <div style="width:18px;height:18px;border-radius:50%;background:${s.done ? '#141414' : '#fff'};border:2px solid ${s.done ? '#141414' : '#e2e8f0'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${s.done ? '✓' : ''}</div>
+                <div style="width:18px;height:18px;border-radius:50%;background:${s.done ? '#141414' : '#fff'};border:2px solid ${s.done ? '#141414' : '#e5e5e5'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${s.done ? '✓' : ''}</div>
                 <div style="font-size:9.5px;font-weight:${s.done ? 700 : 500};opacity:${s.done ? 1 : 0.5};text-align:center;line-height:1.15">${s.label}</div>
               </div>
             `).join('')}
@@ -2592,33 +2593,33 @@ function renderLoggedOrdersCard() {
     const isDelivered = o.status === 'Delivered';
 
     return `
-      <div style="background:#ffffff;border:${isSelected ? '2px solid oklch(56% 0.17 258)' : '1.5px solid rgba(20,20,20,0.12)'};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:${isSelected ? '0 4px 14px rgba(37,99,235,0.14)' : 'none'}">
+      <div style="background:#ffffff;border:${isSelected ? '2px solid #141414' : '1.5px solid rgba(20,20,20,0.12)'};border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:${isSelected ? '0 4px 14px rgba(20,20,20,0.14)' : 'none'}">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
             <span style="font-size:15px;font-weight:800;color:#141414">${escapeHtml(o.merchant)}</span>
-            <span style="font-size:11.5px;background:#f1f5f9;color:#475569;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:6px">${o.id}</span>
+            <span style="font-size:11.5px;background:#f2f2f2;color:#5c5c5c;font-weight:700;padding:2px 8px;border-radius:8px;margin-left:6px">${o.id}</span>
           </div>
           <div style="font-size:15px;font-weight:800;color:#141414">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
         </div>
 
-        <div style="font-size:12px;color:#64748b">
+        <div style="font-size:12px;color:#6b6b6b">
           ${itemCount} item${itemCount > 1 ? 's' : ''} · ${o.timestamp || 'Just now'}
         </div>
 
-        <div style="font-size:12px;font-weight:700;color:${isCancelled ? '#ef4444' : (isDelivered ? '#10b981' : 'oklch(56% 0.17 258)')}">
+        <div style="font-size:12px;font-weight:700;color:${isCancelled ? '#141414' : (isDelivered ? '#141414' : '#141414')}">
           Status: ${escapeHtml(o.status)}
         </div>
 
-        <div style="display:flex;gap:8px;border-top:1px dashed #e2e8f0;padding-top:10px;margin-top:2px">
-          <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="flex:1.2;background:${isSelected ? 'oklch(56% 0.17 258)' : '#f1f5f9'};color:${isSelected ? '#fff' : '#1e293b'};border:none;padding:10px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer">
+        <div style="display:flex;gap:8px;border-top:1px dashed #e5e5e5;padding-top:10px;margin-top:2px">
+          <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="flex:1.2;background:${isSelected ? '#141414' : '#f2f2f2'};color:${isSelected ? '#fff' : '#141414'};border:none;padding:10px;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer">
             ${isSelected ? 'Track Map ↗' : 'Track Order ↗'}
           </button>
           ${!isCancelled && !isDelivered ? `
-            <button type="button" data-action="cancelOrder" data-arg="${o.id}" style="flex:1;background:#fff5f9;color:#ef4444;border:1px solid #fecbe1;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
+            <button type="button" data-action="cancelOrder" data-arg="${o.id}" style="flex:1;background:#fafafa;color:#141414;border:1px solid #e5e5e5;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
               Cancel Order ✕
             </button>
           ` : ''}
-          <button type="button" data-action="deleteOrder" data-arg="${o.id}" style="flex:0.8;background:#f8fafc;color:#64748b;border:1px solid #e2e8f0;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
+          <button type="button" data-action="deleteOrder" data-arg="${o.id}" style="flex:0.8;background:#fafafa;color:#6b6b6b;border:1px solid #e5e5e5;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer">
             Remove 🗑️
           </button>
         </div>
@@ -2642,7 +2643,7 @@ function renderShopperInbox() {
 
   const trackingHtml = currentOrder ? renderShopperTrackingSection(currentOrder) : `
     <div style="padding:24px 0;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center">
-      <div style="width:60px;height:60px;border-radius:50%;background:#f8fafc;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 6px 16px rgba(0,0,0,0.06)">📦</div>
+      <div style="width:60px;height:60px;border-radius:50%;background:#fafafa;border:2px solid #e5e5e5;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 6px 16px rgba(0,0,0,0.06)">📦</div>
       <div>
         <div style="font-size:16.5px;font-weight:800">No Orders Placed Yet</div>
         <div style="font-size:12.5px;opacity:0.65;margin-top:4px;max-width:280px;line-height:1.4">
@@ -2727,7 +2728,7 @@ async function initGraftrLiveMap() {
   const addressLabel = currentOrder ? currentOrder.address : `${state.userProfile.address}, ${state.userProfile.postcode}`;
   const customerIcon = L.divIcon({
     className: 'custom-map-icon customer-icon',
-    html: '<div style="background:#4f46e5;color:#fff;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 12px rgba(79,70,229,0.4)">🏠</div>',
+    html: '<div style="background:#141414;color:#fff;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 12px rgba(20,20,20,0.4)">🏠</div>',
     iconSize: [34, 34],
     iconAnchor: [17, 17]
   });
@@ -2735,7 +2736,7 @@ async function initGraftrLiveMap() {
 
   // Real Street Route Path connecting Store to Customer Address (snapped to actual roads)
   const streetRoutePath = await fetchStreetRoute(storePos, customerPos);
-  L.polyline(streetRoutePath, { color: '#ec4899', weight: 5, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+  L.polyline(streetRoutePath, { color: '#141414', weight: 5, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
 
   // COURIER VISIBILITY RULE: Only show courier marker IF accepted!
   const isAccepted = currentOrder && currentOrder.status !== 'Pending Courier Acceptance';
@@ -2756,7 +2757,7 @@ async function initGraftrLiveMap() {
 
     const courierIcon = L.divIcon({
       className: 'custom-map-icon courier-icon',
-      html: '<div style="background:#141414;color:#fff;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 6px 16px rgba(0,0,0,0.3);border:2px solid #ffcbe1">🚴</div>',
+      html: '<div style="background:#141414;color:#fff;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 6px 16px rgba(0,0,0,0.3);border:2px solid #141414">🚴</div>',
       iconSize: [40, 40],
       iconAnchor: [20, 20]
     });
@@ -2840,7 +2841,7 @@ async function initGraftrBasketMap() {
   }).addTo(map);
 
   const streetRoutePath = await fetchStreetRoute(storePos, customerPos);
-  L.polyline(streetRoutePath, { color: '#ec4899', weight: 4, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+  L.polyline(streetRoutePath, { color: '#141414', weight: 4, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
 
   const storeIcon = L.divIcon({
     className: 'custom-map-icon store-icon',
@@ -2852,7 +2853,7 @@ async function initGraftrBasketMap() {
 
   const customerIcon = L.divIcon({
     className: 'custom-map-icon customer-icon',
-    html: '<div style="background:#4f46e5;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px">🏠</div>',
+    html: '<div style="background:#141414;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px">🏠</div>',
     iconSize: [26, 26],
     iconAnchor: [13, 13]
   });
@@ -2876,7 +2877,7 @@ async function initGraftrBasketMap() {
 
     const courierIcon = L.divIcon({
       className: 'custom-map-icon courier-icon',
-      html: '<div style="background:#141414;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 4px 10px rgba(0,0,0,0.3);border:2px solid #ffcbe1">🚴</div>',
+      html: '<div style="background:#141414;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 4px 10px rgba(0,0,0,0.3);border:2px solid #141414">🚴</div>',
       iconSize: [28, 28],
       iconAnchor: [14, 14]
     });
@@ -2913,6 +2914,7 @@ function render() {
   let bottomPad = '';
   if (state.mode === 'courier') {
     tabs = renderCourierTabs();
+    bottomPad = 'padding-bottom:110px;';
   } else if (state.mode === 'shopper') {
     tabs = renderShopperTabs();
     bottomPad = 'padding-bottom:110px;';
@@ -3707,11 +3709,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-  try {
-    localStorage.removeItem('graftr_logged_orders');
-    state.orders = [];
-    state.activeOrderId = null;
-  } catch (e) {}
   checkStripeRedirectResult();
   render();
 });
