@@ -356,7 +356,7 @@ const state = {
   manualBarcodeInput: '',
   aiChatOpen: false,
   aiMessages: [
-    { role: 'bot', text: "👋 Hi! I'm your Graftr AI Shopping Assistant. Ask me to find items, recommend groceries, or add products directly to your basket!" }
+    { role: 'bot', text: "👋 Hi! I'm your Vendaru AI Shopping Assistant. Ask me to find items, recommend groceries, or add products directly to your basket!" }
   ],
   aiInput: '',
   aiLoading: false,
@@ -468,12 +468,12 @@ function renderLogin() {
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;gap:24px;text-align:center;min-height:580px;background:#ffffff">
     
     <!-- Hero Brand Badge -->
-    <div style="width:76px;height:76px;border-radius:24px;background:#0f172a;color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 14px 30px rgba(15,23,42,0.25)">
+    <div style="width:76px;height:76px;border-radius:24px;background:#ffcbe1;color:#141414;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 14px 30px rgba(255,203,225,0.5)">
       ${isCourier ? '🚴' : '🛍️'}
     </div>
 
     <div>
-      <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#0f172a">Welcome to Graftr</div>
+      <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#0f172a">Welcome to Vendaru</div>
       <div style="font-size:13.5px;color:#64748b;margin-top:6px;line-height:1.45;max-width:280px">Fast local delivery &amp; courier network in Bolton</div>
     </div>
 
@@ -529,7 +529,7 @@ function renderLogin() {
     </div>
 
     <div style="font-size:11px;color:#94a3b8;max-width:270px;line-height:1.45">
-      By continuing, you agree to Graftr's Terms of Service and Privacy Policy.
+      By continuing, you agree to Vendaru's Terms of Service and Privacy Policy.
     </div>
   </div>`;
 }
@@ -586,7 +586,7 @@ function renderAuthModal() {
         </div>
 
         <button type="button" data-action="confirmEmailAuthSetup" style="width:100%;background:#141414;color:#fff;border:none;padding:15px;border-radius:16px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.18);margin-top:4px">
-          ⚡ ${isLogin ? 'Log In to Account' : 'Create Graftr Account'} (${roleTitle})
+          ⚡ ${isLogin ? 'Log In to Account' : 'Create Vendaru Account'} (${roleTitle})
         </button>
       </div>
     </div>
@@ -2171,11 +2171,11 @@ function processGraftrAiQuery(rawQuery) {
 
   if (matchedProducts.length > 0) {
     const productList = matchedProducts.map(p => `• ${p.name} - £${p.estimated_price_gbp.toFixed(2)} (${p.weight_or_volume})`).join('<br>');
-    return `Here are the top matches I found on Graftr:<br><br>${productList}<br><br>💡 <i>Tip: Say "Add ${matchedProducts[0].name.split(' ')[0]}" to add it to your basket!</i>`;
+    return `Here are the top matches I found on Vendaru:<br><br>${productList}<br><br>💡 <i>Tip: Say "Add ${matchedProducts[0].name.split(' ')[0]}" to add it to your basket!</i>`;
   }
 
   if (query.includes('delivery') || query.includes('fast') || query.includes('time')) {
-    return "⚡ <b>Graftr Delivery</b>: Standard delivery takes 15–30 minutes directly from your local merchant! You can track your courier live on the order screen.";
+    return "⚡ <b>Vendaru Delivery</b>: Standard delivery takes 15–30 minutes directly from your local merchant! You can track your courier live on the order screen.";
   }
 
   if (query.includes('offer') || query.includes('discount') || query.includes('deal')) {
@@ -2183,7 +2183,7 @@ function processGraftrAiQuery(rawQuery) {
   }
 
   if (query.includes('hello') || query.includes('hi') || query.includes('hey')) {
-    return "Hello! 👋 I'm here to help you shop on Graftr. What would you like to order today?";
+    return "Hello! 👋 I'm here to help you shop on Vendaru. What would you like to order today?";
   }
 
   return "I can help you search for groceries, check prices, recommend items, or track your delivery! Try asking: <i>'Find fresh milk'</i> or <i>'Add chocolate to basket'</i>";
@@ -2196,7 +2196,7 @@ function renderAiChatDrawer() {
     return `<div class="ai-msg ${m.role}">${m.text}</div>`;
   }).join('');
 
-  const loadingHtml = state.aiLoading ? `<div class="ai-msg bot" style="font-style:italic;color:#64748b;">✨ Graftr AI is thinking...</div>` : '';
+  const loadingHtml = state.aiLoading ? `<div class="ai-msg bot" style="font-style:italic;color:#64748b;">✨ Vendaru AI is thinking...</div>` : '';
 
   return `
     <div class="ai-modal-overlay">
@@ -2205,7 +2205,7 @@ function renderAiChatDrawer() {
           <div style="display:flex;align-items:center;gap:10px">
             <div style="width:32px;height:32px;border-radius:50%;background:rgba(20,20,20,0.08);display:flex;align-items:center;justify-content:center;font-size:16px">✨</div>
             <div>
-              <div style="font-weight:700;font-size:15px;line-height:1.2">Graftr AI Assistant</div>
+              <div style="font-weight:700;font-size:15px;line-height:1.2">Vendaru AI Assistant</div>
               <div style="font-size:11px;opacity:0.75">Customer Shopping Helper</div>
             </div>
           </div>
