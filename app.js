@@ -101,6 +101,14 @@ const PRODUCTS = [
   { id: 100, name: 'Whiskas Cat Milk for Cats & Kittens', category: 'Pets', estimated_price_gbp: 1.95, weight_or_volume: '3x200ml', image: 'assets/products/product_100.webp' },
 ];
 
+// To enable real "Continue with Google" sign-in:
+// 1. Go to https://console.cloud.google.com/apis/credentials, create an OAuth 2.0 Client ID
+//    (type: Web application), and add this site's URL under "Authorized JavaScript origins"
+//    (e.g. https://graftr-app.vercel.app and http://localhost:8126 for local testing).
+// 2. Paste the Client ID below. It's a public identifier, safe to ship in client code
+//    (unlike the Stripe secret key, this one isn't a secret).
+const GOOGLE_CLIENT_ID = '';
+
 function loadUserProfile() {
   try {
     const saved = localStorage.getItem('graftr_user_profile');
@@ -130,12 +138,35 @@ function loadLoggedOrders() {
     const saved = localStorage.getItem('graftr_logged_orders');
     if (saved !== null) {
       const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed)) {
-        return parsed.filter(o => o.address && !o.address.includes('Kingsdown'));
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map(o => {
+          // If an active demo order was saved as Out for Delivery before courier acceptance, reset it to Pending
+          if (!o.courier && o.status === 'Out for Delivery') {
+            o.status = 'Pending Courier Acceptance';
+          }
+          return o;
+        }).filter(o => o.address && !o.address.includes('Kingsdown'));
       }
     }
   } catch(e){}
-  return [];
+  return [
+    {
+      id: '#4821',
+      merchant: 'Morrisons Daily',
+      timestamp: 'Just now',
+      createdAt: Date.now(),
+      status: 'Pending Courier Acceptance',
+      address: '541 Halliwell Road, BL1 3PJ',
+      courier: null,
+      total: 15.74,
+      items: [
+        { name: 'Warburtons Toastie Thick White Bread 800g', qty: 1, price: 1.40 },
+        { name: 'Morrisons Fresh Semi-Skimmed Milk 2L', qty: 1, price: 1.55 },
+        { name: 'Lurpak Slightly Salted Butter 500g', qty: 1, price: 4.25 },
+        { name: 'Morrisons Free Range Medium Eggs x6', qty: 1, price: 1.80 }
+      ]
+    }
+  ];
 }
 
 function saveLoggedOrders() {
@@ -271,9 +302,50 @@ function checkStripeRedirectResult() {
   window.history.replaceState({}, '', window.location.pathname);
 }
 
+function loadAuthUser() {
+  try {
+    const saved = localStorage.getItem('graftr_auth_user');
+    if (saved) return JSON.parse(saved);
+  } catch(e){}
+  return null;
+}
+
+function saveAuthUser() {
+  try { localStorage.setItem('graftr_auth_user', JSON.stringify(state.authUser)); } catch(e){}
+}
+
+// Real (client-side-only) email account book: email -> { name, passwordHash, address, createdAt }.
+// There's no backend here, so this is the honest ceiling for "email auth" in a static app —
+// genuine account creation/lookup/password checks, just scoped to this browser's storage.
+function loadEmailAccounts() {
+  try {
+    const saved = localStorage.getItem('graftr_email_accounts');
+    if (saved) return JSON.parse(saved);
+  } catch (e) { /* ignore corrupt storage */ }
+  return {};
+}
+
+function saveEmailAccounts(accounts) {
+  try { localStorage.setItem('graftr_email_accounts', JSON.stringify(accounts)); } catch (e) { /* ignore write failure */ }
+}
+
+async function hashPassword(password) {
+  const bytes = new TextEncoder().encode(password);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 const state = {
   screen: 'login',
   mode: null,
+  authRole: 'shopper',
+  showAuthModal: false,
+  authProvider: null,
+  emailAuthMode: 'signup',
+  authError: null,
+  authNotice: null,
+  showGoogleFallbackButton: false,
+  authUser: loadAuthUser(),
   userProfile: loadUserProfile(),
   orders: loadLoggedOrders(),
   activeOrderId: '#4822',
@@ -323,6 +395,12 @@ const state = {
     submitted: false,
   },
 };
+
+// Resume a signed-in session across reloads instead of bouncing back to the login screen.
+if (state.authUser && state.authUser.role) {
+  state.mode = state.authUser.role;
+  state.screen = state.authUser.role === 'courier' ? 'courier-activity' : 'shopper-shop';
+}
 
 const SHOP_IMAGES_KEY = 'absolutely-shop-images';
 try {
@@ -384,19 +462,143 @@ function cardImageHtml(key, placeholderEmoji) {
 }
 
 function renderLogin() {
+  const isCourier = state.authRole === 'courier';
   return `
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 28px 40px;gap:26px;text-align:center;min-height:600px">
-    <div style="font-size:14px;letter-spacing:2.5px;text-transform:uppercase;opacity:0.45;font-weight:700">Absolutely</div>
-    <div>
-      <div style="font-size:26px;font-weight:700;margin-bottom:10px;line-height:1.2">Who's delivering today?</div>
-      <div style="font-size:14px;opacity:0.55;line-height:1.5;max-width:260px">Choose how you'll use Absolutely. Courier and shopper are separate accounts.</div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px 36px;gap:22px;text-align:center;min-height:600px;background:#ffffff">
+    
+    <div style="width:72px;height:72px;border-radius:22px;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 12px 28px rgba(0,0,0,0.18)">
+      ${isCourier ? '🚴' : '🛍️'}
     </div>
-    <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:270px">
-      <div class="press" data-action="chooseCourier" style="background:#141414;color:#fff;border-radius:16px;padding:18px;font-size:16px;font-weight:700;cursor:pointer">I'm a Courier</div>
-      <div class="press" data-action="chooseShopper" style="background:#fff;color:#141414;border:1.5px solid #141414;border-radius:16px;padding:18px;font-size:16px;font-weight:700;cursor:pointer">I'm Shopping</div>
+
+    <div>
+      <div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;color:#141414">Welcome to Graftr</div>
+      <div style="font-size:14px;color:#64748b;margin-top:6px;line-height:1.4">Fast local delivery &amp; courier network in Bolton</div>
+    </div>
+
+    <!-- Role Selector Tabs -->
+    <div style="display:flex;background:#f1f5f9;border-radius:14px;padding:4px;width:100%;max-width:320px;gap:4px">
+      <button type="button" data-action="setAuthRole" data-arg="shopper" style="flex:1;padding:10px;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? 'transparent' : '#fff'};color:${isCourier ? '#64748b' : '#141414'};box-shadow:${isCourier ? 'none' : '0 2px 6px rgba(0,0,0,0.06)'}">
+        🛒 I'm Shopping
+      </button>
+      <button type="button" data-action="setAuthRole" data-arg="courier" style="flex:1;padding:10px;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? '#fff' : 'transparent'};color:${isCourier ? '#141414' : '#64748b'};box-shadow:${isCourier ? 'none' : '0 2px 6px rgba(0,0,0,0.06)'}">
+        🚴 I'm a Courier
+      </button>
+    </div>
+
+    ${state.authNotice ? `
+      <div style="width:100%;max-width:320px;background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:14px;padding:11px 14px;font-size:12.5px;text-align:left;line-height:1.4">
+        ${escapeHtml(state.authNotice)}
+      </div>
+    ` : ''}
+
+    <!-- Social & Email Auth Options -->
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px">
+      <!-- Google Sign-In: real Google Identity Services flow once a Client ID is configured -->
+      <button type="button" data-action="loginWithGoogle" style="width:100%;background:#fff;color:#1f2937;border:1.5px solid #e5e7eb;border-radius:16px;padding:13.5px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Continue with Google
+      </button>
+      ${state.showGoogleFallbackButton ? `<div id="google-signin-button-container" style="display:flex;justify-content:center"></div>` : ''}
+
+      <!-- Apple Sign-In requires a paid Apple Developer account; not connected yet -->
+      <button type="button" data-action="loginWithApple" style="width:100%;background:#000;color:#fff;border:none;border-radius:16px;padding:13.5px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.15);opacity:0.85">
+        <svg width="18" height="20" fill="currentColor" viewBox="0 0 170 170">
+          <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.9.13-9.76-1.91-14.58-6.12-3.32-2.88-7.25-7.66-11.8-14.34-6.8-10.01-12.18-21.2-16.14-33.56-3.96-12.37-5.94-24.16-5.94-35.37 0-14.47 3.57-26.24 10.72-35.32 7.15-9.08 16.03-13.68 26.65-13.81 4.96.12 10.25 1.25 15.86 3.38 5.61 2.13 9.4 3.24 11.37 3.35 2.62 0 6.64-1.24 12.06-3.71 5.42-2.47 10.24-3.62 14.46-3.46 11.75.87 21.03 5.48 27.84 13.82-10.42 6.34-15.5 15.1-15.24 26.28.26 8.78 3.59 16.17 9.99 22.18 6.4 6 14.15 9.41 23.24 10.24-2.58 7.55-5.98 15.02-10.21 22.41zM119.22 31.84c0-7.07 2.58-13.83 7.74-20.28 5.16-6.45 11.66-10.45 19.51-12 0.79 7.07-1.7 13.88-7.47 20.43-5.77 6.55-12.39 10.37-19.78 11.85z"/>
+        </svg>
+        Sign in with Apple <span style="opacity:0.6;font-weight:500">(Coming soon)</span>
+      </button>
+
+      <!-- Standard Email & Password Register / Login Button -->
+      <button type="button" data-action="loginWithEmail" style="width:100%;background:#f8fafc;color:#1e293b;border:1.5px solid #cbd5e1;border-radius:16px;padding:13.5px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer">
+        ✉️ Continue with Email &amp; Password
+      </button>
+    </div>
+
+    <!-- Fallback Guest Button -->
+    <div style="display:flex;align-items:center;gap:10px;width:100%;max-width:320px;opacity:0.6;font-size:12px;margin-top:2px">
+      <div style="flex:1;height:1px;background:#cbd5e1"></div>
+      <span>Or continue as guest</span>
+      <div style="flex:1;height:1px;background:#cbd5e1"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;width:100%;max-width:320px">
+      ${isCourier
+        ? `<div class="press" data-action="chooseCourier" style="flex:1;background:#141414;color:#fff;border-radius:14px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer">Enter Courier Mode</div>`
+        : `<div class="press" data-action="chooseShopper" style="flex:1;background:#fff;color:#141414;border:1.5px solid #141414;border-radius:14px;padding:12px;font-size:13.5px;font-weight:700;cursor:pointer">Enter Shopper Mode</div>`
+      }
+    </div>
+
+    <div style="font-size:11.5px;color:#94a3b8;max-width:260px;line-height:1.4">
+      By continuing, you agree to Graftr's Terms of Service and Privacy Policy.
     </div>
   </div>`;
 }
+
+function renderAuthModal() {
+  if (!state.showAuthModal || state.authProvider !== 'email') return '';
+
+  const roleTitle = state.authRole === 'courier' ? 'Courier' : 'Shopper';
+  const isLogin = state.emailAuthMode === 'login';
+  return `
+    <div class="graftr-modal-overlay" style="z-index:99999;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px)">
+      <div style="width:100%;max-width:370px;background:#ffffff;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 20px 40px rgba(0,0,0,0.3);text-align:center">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:20px">✉️</span>
+            <span style="font-size:16px;font-weight:800;color:#1e293b">Email Account Setup</span>
+          </div>
+          <button type="button" data-action="closeAuthModal" style="background:none;border:none;color:#64748b;font-size:22px;cursor:pointer">✕</button>
+        </div>
+
+        <!-- Toggle Sign Up vs Log In -->
+        <div style="display:flex;background:#f1f5f9;border-radius:12px;padding:4px;gap:4px">
+          <button type="button" data-action="setEmailAuthMode" data-arg="signup" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isLogin ? 'transparent' : '#fff'};color:${isLogin ? '#64748b' : '#141414'};box-shadow:${isLogin ? 'none' : '0 2px 4px rgba(0,0,0,0.05)'}">
+            Create Account
+          </button>
+          <button type="button" data-action="setEmailAuthMode" data-arg="login" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isLogin ? '#fff' : 'transparent'};color:${isLogin ? '#141414' : '#64748b'};box-shadow:${isLogin ? '0 2px 4px rgba(0,0,0,0.05)' : 'none'}">
+            Log In
+          </button>
+        </div>
+
+        ${state.authError ? `<div style="background:#fee2e2;border:1.5px solid #fecaca;color:#b91c1c;border-radius:12px;padding:10px 12px;font-size:12.5px;text-align:left;line-height:1.4">${escapeHtml(state.authError)}</div>` : ''}
+
+        <div style="display:flex;flex-direction:column;gap:10px;text-align:left">
+          ${!isLogin ? `
+            <div>
+              <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Full Name</label>
+              <input type="text" id="email-setup-name" placeholder="Your full name" value="" style="width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13.5px;font-weight:600" />
+            </div>
+          ` : ''}
+          <div>
+            <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Email Address</label>
+            <input type="email" id="email-setup-email" placeholder="name@example.com" value="" style="width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13.5px;font-weight:600" />
+          </div>
+          <div>
+            <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Password</label>
+            <input type="password" id="email-setup-password" placeholder="At least 6 characters" value="" style="width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13.5px;font-weight:600" />
+          </div>
+          ${!isLogin ? `
+            <div>
+              <label style="font-size:11.5px;font-weight:700;color:#475569;margin-bottom:3px;display:block">Delivery Address (Bolton Hub)</label>
+              <input type="text" id="email-setup-address" value="${escapeHtml(state.userProfile.address || '')}${state.userProfile.postcode ? ', ' + escapeHtml(state.userProfile.postcode) : ''}" placeholder="Your address" style="width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:12px;font-size:13.5px;font-weight:600" />
+            </div>
+          ` : ''}
+        </div>
+
+        <button type="button" data-action="confirmEmailAuthSetup" style="width:100%;background:#141414;color:#fff;border:none;padding:15px;border-radius:16px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.18);margin-top:4px">
+          ⚡ ${isLogin ? 'Log In to Account' : 'Create Graftr Account'} (${roleTitle})
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+
 
 function getCoordsForAddress(addressStr) {
   const str = (addressStr || '').toLowerCase().trim();
@@ -1197,33 +1399,50 @@ function renderCourierPack() {
 function renderCourierAccount() {
   const onlineBg = state.courierOnline ? 'oklch(56% 0.17 258)' : '#e2e2e2';
   const onlineJustify = state.courierOnline ? 'flex-end' : 'flex-start';
-  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:12px">
-    <div style="font-size:25px;font-weight:700">Account</div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="width:44px;height:44px;border-radius:50%;border:2px solid #141414;display:flex;align-items:center;justify-content:center;font-weight:700">SW</div>
-      <div><div style="font-size:15px;font-weight:700">Sam Whitfield</div><div style="font-size:12px;opacity:0.55">Courier since Mar 2024 · 4.92 ★</div></div>
-    </div>
-    <div data-action="toggleOnline" style="border:1.5px solid ${state.courierOnline ? '#10b981' : 'rgba(20,20,20,0.12)'};background:${state.courierOnline ? '#f0fdf4' : '#fff'};border-radius:16px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer">
-      <div>
-        <div style="font-size:14.5px;font-weight:700">${state.courierOnline ? "🟢 Online - Live GPS Tracking ON" : "⚪ Offline - GPS Tracking OFF"}</div>
-        <div style="font-size:11.5px;opacity:0.65">${state.courierOnline ? (state.courierLiveGps ? `Device GPS: ${state.courierLiveGps.lat.toFixed(4)}, ${state.courierLiveGps.lng.toFixed(4)}` : 'Streaming location to active customer maps...') : 'Turn ON to stream your real location to customer map'}</div>
+  const auth = state.authUser;
+  const isSignedIn = !!auth;
+  const displayName = auth ? auth.name : 'Guest Courier';
+  const providerLabel = !auth ? 'Not signed in' : auth.provider === 'google' ? 'Google Account' : auth.provider === 'apple' ? 'Apple ID' : 'Email Account';
+
+  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+    <div style="font-size:25px;font-weight:800">Courier Account</div>
+
+    <!-- Courier Profile Header -->
+    <div style="display:flex;align-items:center;gap:14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:16px">
+      <div style="width:52px;height:52px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">
+        ${(displayName || 'GC').substring(0,2).toUpperCase()}
       </div>
-      <span style="width:34px;height:20px;border-radius:12px;background:${onlineBg};display:flex;align-items:center;padding:2px;justify-content:${onlineJustify};box-sizing:border-box"><span style="width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.25)"></span></span>
+      <div>
+        <div style="font-size:16.5px;font-weight:800">${escapeHtml(displayName)}</div>
+        <div style="font-size:12px;opacity:0.6">${auth ? escapeHtml(auth.email) : 'Sign in to link a real account'}</div>
+      </div>
     </div>
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
-      <div style="font-size:12px;opacity:0.55">Documents</div>
-      <div style="display:flex;justify-content:space-between;font-size:13.5px"><span>Right to work</span><span>✓</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:13.5px"><span>Insurance</span><span>✓</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:13.5px"><span>DBS check</span><span style="font-size:11px;border:1.5px solid rgba(20,20,20,0.2);border-radius:20px;padding:2px 8px">Pending</span></div>
+
+    ${!isSignedIn ? `
+      <div style="background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:16px;padding:12px 14px;font-size:12.5px;line-height:1.4">
+        You're browsing in guest mode. <span class="press" data-action="logout" style="text-decoration:underline;font-weight:700;cursor:pointer">Sign in</span> with Google or your email to save your account.
+      </div>
+    ` : ''}
+
+    <!-- Live GPS Duty Switch -->
+    <div data-action="toggleOnline" style="border:1.5px solid ${state.courierOnline ? '#10b981' : 'rgba(20,20,20,0.12)'};background:${state.courierOnline ? '#f0fdf4' : '#fff'};border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.03)">
+      <div>
+        <div style="font-size:14.5px;font-weight:800">${state.courierOnline ? "🟢 Online - Live GPS Tracking ON" : "⚪ Offline - GPS Tracking OFF"}</div>
+        <div style="font-size:11.5px;opacity:0.65;margin-top:2px">${state.courierOnline ? (state.courierLiveGps ? `Device GPS: ${state.courierLiveGps.lat.toFixed(4)}, ${state.courierLiveGps.lng.toFixed(4)}` : 'Streaming location to active customer maps...') : 'Turn ON to stream your real location to customer map'}</div>
+      </div>
+      <span style="width:36px;height:22px;border-radius:12px;background:${onlineBg};display:flex;align-items:center;padding:2px;justify-content:${onlineJustify};box-sizing:border-box"><span style="width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.25)"></span></span>
     </div>
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:4px 16px;display:flex;flex-direction:column">
-      <div style="padding:11px 0;border-bottom:1px solid rgba(20,20,20,0.08);font-size:14px">Vehicle · E-bike</div>
-      <div style="padding:11px 0;border-bottom:1px solid rgba(20,20,20,0.08);font-size:14px">Notifications</div>
-      <div style="padding:11px 0;border-bottom:1px solid rgba(20,20,20,0.08);font-size:14px">Payment details</div>
-      <div style="padding:11px 0;border-bottom:1px solid rgba(20,20,20,0.08);font-size:14px">Working areas</div>
-      <div style="padding:11px 0;font-size:14px">Help &amp; support</div>
+
+    <!-- Account Identity -->
+    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase">ACCOUNT</div>
+      <div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:700"><span>Sign-in Method</span><span style="color:${isSignedIn ? '#10b981' : '#94a3b8'}">${providerLabel}${isSignedIn ? ' ✓' : ''}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:700"><span>Active Region</span><span style="font-weight:700">Bolton Hub (BL1 3PJ)</span></div>
     </div>
-    <div class="press" data-action="logout" style="text-align:center;font-size:14px;font-weight:700;opacity:0.55;padding:8px;cursor:pointer">Log out</div>
+
+    <button type="button" data-action="logout" style="width:100%;background:#fee2e2;color:#ef4444;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px">
+      🚪 ${isSignedIn ? 'Log Out of Courier Account' : 'Back to Sign In'}
+    </button>
   </div>`;
 }
 
@@ -1567,6 +1786,18 @@ function renderCheckoutModal() {
 
 function renderShopperAccount() {
   const p = state.userProfile;
+  const auth = state.authUser;
+  const isSignedIn = !!auth;
+
+  const providerIcon = !auth ? '👤' : auth.provider === 'google'
+    ? `<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>`
+    : auth.provider === 'apple'
+      ? `<svg width="16" height="18" fill="currentColor" viewBox="0 0 170 170"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.9.13-9.76-1.91-14.58-6.12-3.32-2.88-7.25-7.66-11.8-14.34-6.8-10.01-12.18-21.2-16.14-33.56-3.96-12.37-5.94-24.16-5.94-35.37 0-14.47 3.57-26.24 10.72-35.32 7.15-9.08 16.03-13.68 26.65-13.81 4.96.12 10.25 1.25 15.86 3.38 5.61 2.13 9.4 3.24 11.37 3.35 2.62 0 6.64-1.24 12.06-3.71 5.42-2.47 10.24-3.62 14.46-3.46 11.75.87 21.03 5.48 27.84 13.82-10.42 6.34-15.5 15.1-15.24 26.28.26 8.78 3.59 16.17 9.99 22.18 6.4 6 14.15 9.41 23.24 10.24-2.58 7.55-5.98 15.02-10.21 22.41zM119.22 31.84c0-7.07 2.58-13.83 7.74-20.28 5.16-6.45 11.66-10.45 19.51-12 0.79 7.07-1.7 13.88-7.47 20.43-5.77 6.55-12.39 10.37-19.78 11.85z"/></svg>`
+      : '✉️';
+
+  const providerLabel = !auth ? 'Guest (not signed in)' : auth.provider === 'google' ? 'Google Account' : auth.provider === 'apple' ? 'Apple ID' : 'Verified Email';
+  const displayName = auth ? auth.name : (p.name || 'Guest');
+
   const ordersListHtml = state.orders.length > 0 ? state.orders.map(o => {
     const isCancelled = o.status === 'Cancelled';
     const isDelivered = o.status === 'Delivered';
@@ -1592,39 +1823,115 @@ function renderShopperAccount() {
   }).join('') : `<div style="text-align:center;font-size:13px;opacity:0.5;padding:16px;border:1px dashed #cbd5e1;border-radius:12px">No logged orders yet.</div>`;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:25px;font-weight:700">Account &amp; Settings</div>
+    <div style="font-size:25px;font-weight:800;color:#141414">Account &amp; Settings</div>
     
-    <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:18px;padding:16px">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:48px;height:48px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px">
-          ${p.name ? p.name.substring(0,2).toUpperCase() : 'PN'}
+    <!-- User Profile Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.03)">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:52px;height:52px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
+          ${(displayName || 'GU').substring(0,2).toUpperCase()}
         </div>
         <div>
-          <div style="font-size:16px;font-weight:700">${escapeHtml(p.name)}</div>
-          <div style="font-size:12.5px;opacity:0.6">${escapeHtml(p.phone)}</div>
+          <div style="font-size:16.5px;font-weight:800;color:#0f172a">${escapeHtml(displayName)}</div>
+          <div style="font-size:12.5px;color:#64748b;margin-top:1px">${escapeHtml((auth && auth.email) || p.email || 'No email on file')}</div>
+          <div style="font-size:11.5px;color:${isSignedIn ? '#10b981' : '#94a3b8'};font-weight:700;margin-top:2px;display:flex;align-items:center;gap:5px">
+            ${providerIcon} ${isSignedIn ? `Connected via ${providerLabel}` : providerLabel}
+          </div>
         </div>
       </div>
-      <button type="button" data-action="openAddressModal" style="background:#fff;border:1.5px solid #141414;padding:7px 12px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer">Edit Profile</button>
+      <button type="button" data-action="openAddressModal" style="background:#fff;border:1.5px solid #141414;padding:8px 12px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.05)">Edit Profile</button>
+    </div>
+
+    ${!isSignedIn ? `
+      <div style="background:#fffbeb;border:1.5px solid #fde68a;color:#92400e;border-radius:16px;padding:12px 14px;font-size:12.5px;line-height:1.4">
+        You're browsing in guest mode — your account isn't saved anywhere. <span class="press" data-action="logout" style="text-decoration:underline;font-weight:700;cursor:pointer">Sign in</span> to link a real account.
+      </div>
+    ` : ''}
+
+    <!-- Connected OAuth Identity Cards -->
+    <div style="border:1.5px solid #e2e8f0;border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">LINKED IDENTITY &amp; AUTHENTICATION</div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border-radius:14px;border:1px solid ${auth && auth.provider === 'google' ? '#bfdbfe' : '#e2e8f0'}">
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <div>
+            <div style="font-size:13.5px;font-weight:700">Google Account</div>
+            <div style="font-size:11.5px;color:#64748b">${auth && auth.provider === 'google' ? escapeHtml(auth.email) : (GOOGLE_CLIENT_ID ? 'Not linked' : 'Not connected yet')}</div>
+          </div>
+        </div>
+        <button type="button" data-action="loginWithGoogle" style="background:${auth && auth.provider === 'google' ? '#dcfce7' : '#fff'};color:${auth && auth.provider === 'google' ? '#15803d' : '#141414'};border:1px solid ${auth && auth.provider === 'google' ? '#86efac' : '#cbd5e1'};padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:pointer">
+          ${auth && auth.provider === 'google' ? 'Connected ✓' : 'Link Google'}
+        </button>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border-radius:14px;border:1px solid #e2e8f0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px">✉️</span>
+          <div>
+            <div style="font-size:13.5px;font-weight:700">Email Account</div>
+            <div style="font-size:11.5px;color:#64748b">${auth && auth.provider === 'email' ? escapeHtml(auth.email) : 'Not linked'}</div>
+          </div>
+        </div>
+        <button type="button" data-action="loginWithEmail" style="background:${auth && auth.provider === 'email' ? '#dcfce7' : '#fff'};color:${auth && auth.provider === 'email' ? '#15803d' : '#141414'};border:1px solid ${auth && auth.provider === 'email' ? '#86efac' : '#cbd5e1'};padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:pointer">
+          ${auth && auth.provider === 'email' ? 'Connected ✓' : 'Link Email'}
+        </button>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f8fafc;border-radius:14px;border:1px solid #e2e8f0;opacity:0.75">
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg width="18" height="20" fill="currentColor" viewBox="0 0 170 170">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.9.13-9.76-1.91-14.58-6.12-3.32-2.88-7.25-7.66-11.8-14.34-6.8-10.01-12.18-21.2-16.14-33.56-3.96-12.37-5.94-24.16-5.94-35.37 0-14.47 3.57-26.24 10.72-35.32 7.15-9.08 16.03-13.68 26.65-13.81 4.96.12 10.25 1.25 15.86 3.38 5.61 2.13 9.4 3.24 11.37 3.35 2.62 0 6.64-1.24 12.06-3.71 5.42-2.47 10.24-3.62 14.46-3.46 11.75.87 21.03 5.48 27.84 13.82-10.42 6.34-15.5 15.1-15.24 26.28.26 8.78 3.59 16.17 9.99 22.18 6.4 6 14.15 9.41 23.24 10.24-2.58 7.55-5.98 15.02-10.21 22.41zM119.22 31.84c0-7.07 2.58-13.83 7.74-20.28 5.16-6.45 11.66-10.45 19.51-12 0.79 7.07-1.7 13.88-7.47 20.43-5.77 6.55-12.39 10.37-19.78 11.85z"/>
+          </svg>
+          <div>
+            <div style="font-size:13.5px;font-weight:700">Apple ID</div>
+            <div style="font-size:11.5px;color:#64748b">Coming soon</div>
+          </div>
+        </div>
+        <button type="button" data-action="loginWithApple" style="background:#fff;color:#94a3b8;border:1px solid #cbd5e1;padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:not-allowed">
+          Not available
+        </button>
+      </div>
     </div>
 
     <!-- Active Delivery Address Card -->
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px">
+    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:6px">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:12px;font-weight:700;opacity:0.55;text-transform:uppercase">PRIMARY DELIVERY ADDRESS</div>
+        <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">PRIMARY DELIVERY ADDRESS</div>
         <span class="press" data-action="openAddressModal" style="font-size:12px;font-weight:700;color:#6366f1;cursor:pointer">Change ✎</span>
       </div>
-      <div style="font-size:14.5px;font-weight:700">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
-      <div style="font-size:12.5px;opacity:0.65">${escapeHtml(p.city || 'London')}</div>
-      ${p.instructions ? `<div style="font-size:12px;color:#475569;background:#f1f5f9;padding:6px 10px;border-radius:8px;margin-top:4px">📝 ${escapeHtml(p.instructions)}</div>` : ''}
+      <div style="font-size:14.5px;font-weight:800;color:#0f172a">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
+      <div style="font-size:12.5px;opacity:0.65">${escapeHtml(p.city || 'Bolton')}</div>
+      ${p.instructions ? `<div style="font-size:12px;color:#475569;background:#f1f5f9;padding:8px 12px;border-radius:10px;margin-top:4px">📝 Note: "${escapeHtml(p.instructions)}"</div>` : ''}
+    </div>
+
+    <!-- Payment Methods -->
+    <div style="border:1.5px solid #e2e8f0;border-radius:20px;padding:16px;background:#fff;display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11.5px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">PAYMENT METHODS</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:700">
+        <span> Apple Pay / Google Pay</span>
+        <span style="font-size:11px;background:#dcfce7;color:#15803d;padding:3px 8px;border-radius:8px">Primary</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:0.75">
+        <span>Barclays Visa Debit (•••• 4892)</span>
+        <span style="font-size:11px;color:#64748b">Verified</span>
+      </div>
     </div>
 
     <!-- Order History -->
     <div style="display:flex;flex-direction:column;gap:8px">
-      <div style="font-size:13px;font-weight:700;opacity:0.55;text-transform:uppercase">YOUR LOGGED ORDERS (${state.orders.length})</div>
+      <div style="font-size:12px;font-weight:800;opacity:0.55;text-transform:uppercase;letter-spacing:0.5px">LOGGED ORDERS (${state.orders.length})</div>
       ${ordersListHtml}
     </div>
 
-    <div class="press" data-action="logout" style="text-align:center;font-size:14px;font-weight:700;opacity:0.55;padding:8px;cursor:pointer">Log out</div>
+    <button type="button" data-action="logout" style="width:100%;background:#fee2e2;color:#ef4444;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px">
+      🚪 ${isSignedIn ? 'Log Out of Account' : 'Back to Sign In'}
+    </button>
   </div>`;
 }
 
@@ -1986,21 +2293,63 @@ function startVoiceRecognition() {
 
 function renderShopperTrackingSection(currentOrder) {
   const isPending = currentOrder.status === 'Pending Courier Acceptance';
+  const isPacking = currentOrder.status === 'Packing';
+  const isOutForDelivery = currentOrder.status === 'Out for Delivery';
   const isDelivered = currentOrder.status === 'Delivered';
   const isCancelled = currentOrder.status === 'Cancelled';
 
+  // Strict Lifecycle Triggers:
+  // Step 1 (Ordered): Customer places order
+  // Step 2 (Packing): Courier accepts job & packs items
+  // Step 3 (On the Way): Courier completes packing & departs (Live GPS Enabled)
+  // Step 4 (Delivered): Courier confirms delivery
   const steps = [
-    { label: 'Confirmed', done: true },
-    { label: 'Accepted', done: !isPending },
-    { label: 'Out for Delivery', done: !isPending && (currentOrder.status === 'Out for Delivery' || isDelivered) },
+    { label: 'Ordered', done: true },
+    { label: 'Packing', done: isPacking || isOutForDelivery || isDelivered },
+    { label: 'On the Way', done: isOutForDelivery || isDelivered },
     { label: 'Delivered', done: isDelivered },
   ];
   const doneCount = steps.filter(s => s.done).length;
   const progressPct = Math.max(0, ((doneCount - 1) / (steps.length - 1)) * 100);
 
-  const itemsSummary = currentOrder.items && currentOrder.items.length
-    ? currentOrder.items.map(i => `${i.qty}x ${i.name}`).join(', ')
-    : 'Grocery & Essentials';
+  const isLiveGpsActive = isOutForDelivery;
+  const mapBadgeText = isPending
+    ? '⏳ WAITING FOR COURIER'
+    : isPacking
+      ? '🏬 STORE PACKING IN PROGRESS'
+      : isOutForDelivery
+        ? '🟢 LIVE GPS TRACKING'
+        : '🏠 DELIVERED';
+
+  const itemsList = (currentOrder.items && currentOrder.items.length > 0)
+    ? currentOrder.items
+    : [
+        { name: 'Warburtons Toastie Thick White Bread 800g', qty: 1, price: 1.40 },
+        { name: 'Morrisons Fresh Semi-Skimmed Milk 2L', qty: 1, price: 1.55 },
+        { name: 'Lurpak Slightly Salted Butter 500g', qty: 1, price: 4.25 },
+        { name: 'Morrisons Free Range Medium Eggs x6', qty: 1, price: 1.80 }
+      ];
+
+  const itemsCount = itemsList.reduce((sum, i) => sum + (i.qty || 1), 0);
+
+  const itemsRowsHtml = itemsList.map(item => {
+    const prod = PRODUCTS.find(p => p.name.toLowerCase() === item.name.toLowerCase() || item.name.toLowerCase().includes(p.name.toLowerCase()));
+    const imgSrc = item.image || (prod ? prod.image : 'assets/products/product_1.png');
+    const priceGbp = item.price || (prod ? prod.estimated_price_gbp : 2.50);
+
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+          <img src="${imgSrc}" style="width:34px;height:34px;object-fit:contain;border-radius:8px;background:#f8fafc;padding:2px;border:1px solid #f1f5f9;flex:none" alt="${escapeHtml(item.name)}" />
+          <div style="min-width:0;flex:1">
+            <div style="font-size:12.5px;font-weight:700;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(item.name)}</div>
+            <div style="font-size:11px;color:#64748b">Qty: ${item.qty || 1}</div>
+          </div>
+        </div>
+        <div style="font-size:12.5px;font-weight:800;color:#1e293b">£${((item.qty || 1) * priceGbp).toFixed(2)}</div>
+      </div>
+    `;
+  }).join('');
 
   const pendingNoticeHtml = isPending ? `
     <div style="background:#fff5f9;border:2px dashed #ffcbe1;border-radius:20px;padding:18px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.05)">
@@ -2052,59 +2401,73 @@ function renderShopperTrackingSection(currentOrder) {
     ${pendingNoticeHtml}
     ${tipHtml}
 
-    <!-- Live Interactive Leaflet Map Container -->
-    <div style="position:relative">
-      <div id="graftr-leaflet-map" style="width:100%;height:220px;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.08);overflow:hidden;z-index:1"></div>
-      <div style="position:absolute;top:10px;right:10px;z-index:2;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);padding:5px 10px;border-radius:20px;font-size:10.5px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:flex;align-items:center;gap:6px">
-        <span style="width:7px;height:7px;border-radius:50%;background:${isPending ? '#f59e0b' : '#10b981'};display:inline-block;animation:courierPulse 1.5s infinite"></span>
-        ${isPending ? 'SEARCHING FOR COURIER' : 'LIVE GPS TRACKING'}
-      </div>
-    </div>
-
-    <!-- Driver & Live ETA Status Card -->
-    <div style="background:#141414;color:#fff;border-radius:18px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 24px rgba(0,0,0,0.2)">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:38px;height:38px;border-radius:50%;background:#ffcbe1;color:#141414;display:flex;align-items:center;justify-content:center;font-size:18px">🚴</div>
-        <div>
-          <div style="font-size:13.5px;font-weight:700">${currentOrder.courier || 'Alex (Assigned Courier)'}</div>
-          <div style="font-size:11px;opacity:0.7">Heading to ${escapeHtml((currentOrder.address || state.userProfile.address).split(',')[0])}</div>
+    <!-- Unified Master Delivery Tracking Card -->
+    <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);display:flex;flex-direction:column">
+      
+      <!-- 1. Top Section: Live Map -->
+      <div style="position:relative;width:100%;height:220px">
+        <div id="graftr-leaflet-map" style="width:100%;height:100%"></div>
+        <div style="position:absolute;top:12px;right:12px;z-index:2;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);padding:5px 11px;border-radius:20px;font-size:10.5px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.15);display:flex;align-items:center;gap:6px">
+          <span style="width:7px;height:7px;border-radius:50%;background:${isLiveGpsActive ? '#10b981' : (isPending ? '#f59e0b' : '#6366f1')};display:inline-block;animation:${isLiveGpsActive ? 'courierPulse 1.5s infinite' : 'none'}"></span>
+          ${mapBadgeText}
         </div>
       </div>
-      <div style="text-align:right">
-        <div id="graftr-eta-value" style="font-size:18px;font-weight:800;color:#ffcbe1">${etaLabel}</div>
-        <div style="font-size:10.5px;opacity:0.7">Total £${currentOrder.total ? currentOrder.total.toFixed(2) : '0.00'}</div>
-      </div>
-    </div>
 
-    <!-- Compact Horizontal Timeline -->
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:18px;padding:14px 10px 10px;position:relative">
-      <div style="position:relative;padding:0 9px">
-        <div style="position:absolute;top:9px;left:0;right:0;height:2px;background:#e2e8f0;z-index:0"></div>
-        <div style="position:absolute;top:9px;left:0;height:2px;background:#141414;z-index:0;width:${progressPct}%;transition:width 0.3s"></div>
-        <div style="display:flex;justify-content:space-between;position:relative;z-index:1">
-          ${steps.map(s => `
-            <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:25%">
-              <div style="width:18px;height:18px;border-radius:50%;background:${s.done ? '#141414' : '#fff'};border:2px solid ${s.done ? '#141414' : '#e2e8f0'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${s.done ? '✓' : ''}</div>
-              <div style="font-size:9.5px;font-weight:${s.done ? 700 : 500};opacity:${s.done ? 1 : 0.5};text-align:center;line-height:1.15">${s.label}</div>
-            </div>
-          `).join('')}
+      <!-- 2. Middle Section: Courier Driver & Live ETA Bar -->
+      <div style="background:#141414;color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:38px;height:38px;border-radius:50%;background:#ffcbe1;color:#141414;display:flex;align-items:center;justify-content:center;font-size:18px">🚴</div>
+          <div>
+            <div style="font-size:13.5px;font-weight:700">${currentOrder.courier || 'Alex (Assigned Courier)'}</div>
+            <div style="font-size:11px;opacity:0.7">Heading to ${escapeHtml((currentOrder.address || state.userProfile.address).split(',')[0])}</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div id="graftr-eta-value" style="font-size:18px;font-weight:800;color:#ffcbe1">${etaLabel}</div>
+          <div style="font-size:10.5px;opacity:0.7">Total £${currentOrder.total ? currentOrder.total.toFixed(2) : '0.00'}</div>
         </div>
       </div>
+
+      <!-- 3. Bottom Section: Seamless Horizontal Order Timeline -->
+      <div style="padding:16px 14px 14px;background:#ffffff;border-top:1px solid #f1f5f9;position:relative">
+        <div style="position:relative;padding:0 9px">
+          <div style="position:absolute;top:9px;left:0;right:0;height:2px;background:#e2e8f0;z-index:0"></div>
+          <div style="position:absolute;top:9px;left:0;height:2px;background:#141414;z-index:0;width:${progressPct}%;transition:width 0.3s"></div>
+          <div style="display:flex;justify-content:space-between;position:relative;z-index:1">
+            ${steps.map(s => `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:25%">
+                <div style="width:18px;height:18px;border-radius:50%;background:${s.done ? '#141414' : '#fff'};border:2px solid ${s.done ? '#141414' : '#e2e8f0'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${s.done ? '✓' : ''}</div>
+                <div style="font-size:9.5px;font-weight:${s.done ? 700 : 500};opacity:${s.done ? 1 : 0.5};text-align:center;line-height:1.15">${s.label}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Order Details Summary -->
-    <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:16px;padding:12px 14px">
-      <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;color:#64748b">ORDER ITEMS (${itemsSummary.length > 45 ? itemsSummary.substring(0, 45) + '...' : itemsSummary})</div>
-      <div style="font-size:12px;opacity:0.8;margin-top:2px">Delivering to: <b>${escapeHtml(currentOrder.address || state.userProfile.address)}</b></div>
+    <!-- Enlarged & Scrollable Order Details Summary Box -->
+    <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.02)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;color:#64748b;letter-spacing:0.5px">ORDER ITEMS (${itemsCount} items)</div>
+        <span style="font-size:11px;background:#e2e8f0;color:#334155;font-weight:700;padding:2px 8px;border-radius:10px">Scrollable ↕</span>
+      </div>
+
+      <div style="max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:3px">
+        ${itemsRowsHtml}
+      </div>
+
+      <div style="font-size:12px;color:#334155;border-top:1px dashed #cbd5e1;padding-top:8px;margin-top:2px">
+        📍 Delivering to: <b>${escapeHtml(currentOrder.address || state.userProfile.address)}</b>
+      </div>
     </div>
 
-    <div style="display:flex;gap:10px">
+    <div>
       ${isCancelled
-        ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:11px;border-radius:14px;font-weight:700;font-size:12.5px;cursor:pointer">🗑️ Remove Order</button>`
+        ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#f8fafc;color:#64748b;border:1.5px solid #cbd5e1;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Remove Order</button>`
         : isDelivered
-          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:11px;border-radius:14px;font-weight:700;font-size:12.5px;cursor:pointer">🗑️ Clear Order</button>`
-          : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="flex:1;background:#fee2e2;color:#ef4444;border:none;padding:11px;border-radius:14px;font-weight:700;font-size:12.5px;cursor:pointer">❌ Cancel Order</button>`}
-      <button type="button" data-action="toggleAiChat" style="flex:1;background:#ffcbe1;color:#141414;border:none;padding:11px;border-radius:14px;font-weight:700;font-size:12.5px;cursor:pointer">✨ Ask AI Assistant</button>
+          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="width:100%;background:#f8fafc;color:#64748b;border:1.5px solid #cbd5e1;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Clear Order</button>`
+          : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="width:100%;background:#fff;color:#ef4444;border:1.5px solid #fca5a5;padding:12px;border-radius:16px;font-weight:700;font-size:13.5px;cursor:pointer">Cancel Order</button>`}
     </div>
   `;
 }
@@ -2380,6 +2743,7 @@ function render() {
   const aiDrawer = renderAiChatDrawer();
   const addressModal = renderAddressModal();
   const checkoutModal = renderCheckoutModal();
+  const authModal = renderAuthModal();
 
   root.innerHTML = `
     <div class="app-scroll" style="flex:1;overflow:auto;padding-top:56px;${bottomPad}">${content}</div>
@@ -2387,6 +2751,7 @@ function render() {
     ${aiDrawer}
     ${addressModal}
     ${checkoutModal}
+    ${authModal}
   `;
 
   if (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) {
@@ -2427,9 +2792,224 @@ function render() {
     if (el) el.scrollIntoView({ block: 'start' });
     state.pendingScrollCategory = null;
   }
+
+  if (state.screen === 'login' && state.showGoogleFallbackButton) {
+    setTimeout(() => {
+      const el = document.getElementById('google-signin-button-container');
+      if (el && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+        el.innerHTML = '';
+        google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', width: 280 });
+      }
+    }, 50);
+  }
+}
+
+let googleSignInInitialized = false;
+
+// Decodes the real ID token Google issues after the user authenticates on Google's own
+// consent screen — name/email/picture here are genuinely theirs, not typed by hand.
+// (A production backend would also verify the JWT signature server-side; this app has
+// no backend, so this is the honest ceiling for a static client-only integration.)
+function handleGoogleCredentialResponse(response) {
+  try {
+    const base64Payload = response.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64Payload));
+    const email = payload.email;
+    const name = payload.name || email;
+
+    state.userProfile.name = name;
+    state.userProfile.email = email;
+    if (payload.picture) state.userProfile.avatarUrl = payload.picture;
+
+    state.authUser = {
+      provider: 'google',
+      name,
+      email,
+      picture: payload.picture || null,
+      role: state.authRole,
+      createdAt: new Date().toISOString()
+    };
+    saveAuthUser();
+    saveUserProfile();
+
+    state.authNotice = null;
+    state.showGoogleFallbackButton = false;
+    state.mode = state.authRole;
+    state.screen = state.authRole === 'courier' ? 'courier-activity' : 'shopper-shop';
+
+    const inboxTarget = state.authRole === 'courier' ? state.courierInbox : state.shopperInbox;
+    if (inboxTarget) {
+      inboxTarget.unshift({
+        tag: 'Account Verified',
+        text: `Welcome ${name}! Signed in with Google (${email}).`,
+        createdAt: Date.now(),
+        read: false
+      });
+      saveInbox();
+    }
+    render();
+  } catch (e) {
+    state.authNotice = 'Google Sign-In failed to complete. Please try again.';
+    render();
+  }
+}
+
+function initGoogleSignIn() {
+  if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+    state.authNotice = 'Google Sign-In library failed to load. Check your connection and try again.';
+    render();
+    return;
+  }
+  if (!googleSignInInitialized) {
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredentialResponse });
+    googleSignInInitialized = true;
+  }
+  google.accounts.id.prompt((notification) => {
+    if (notification.isNotDisplayed && (notification.isNotDisplayed() || notification.isSkippedMoment())) {
+      state.showGoogleFallbackButton = true;
+      render();
+    }
+  });
 }
 
 const actions = {
+  logout: () => {
+    state.authUser = null;
+    state.mode = null;
+    state.screen = 'login';
+    try { localStorage.removeItem('graftr_auth_user'); } catch(e){}
+    render();
+  },
+  setAuthRole: (role) => {
+    state.authRole = role;
+    render();
+  },
+  loginWithEmail: () => {
+    state.authProvider = 'email';
+    state.authError = null;
+    state.showAuthModal = true;
+    render();
+  },
+  setEmailAuthMode: (mode) => {
+    state.emailAuthMode = mode;
+    state.authError = null;
+    render();
+  },
+  confirmEmailAuthSetup: async () => {
+    const emailEl = document.getElementById('email-setup-email');
+    const nameEl = document.getElementById('email-setup-name');
+    const passwordEl = document.getElementById('email-setup-password');
+    const addrEl = document.getElementById('email-setup-address');
+    const isLogin = state.emailAuthMode === 'login';
+
+    const email = ((emailEl && emailEl.value.trim()) || '').toLowerCase();
+    const password = (passwordEl && passwordEl.value) || '';
+    const name = (nameEl && nameEl.value.trim()) || '';
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      state.authError = 'Enter a valid email address.';
+      render();
+      return;
+    }
+    if (password.length < 6) {
+      state.authError = 'Password must be at least 6 characters.';
+      render();
+      return;
+    }
+    if (!isLogin && !name) {
+      state.authError = 'Enter your full name.';
+      render();
+      return;
+    }
+
+    const accounts = loadEmailAccounts();
+    const passwordHash = await hashPassword(password);
+    let finalName;
+
+    if (isLogin) {
+      const account = accounts[email];
+      if (!account) {
+        state.authError = 'No account found for this email. Try creating one instead.';
+        render();
+        return;
+      }
+      if (account.passwordHash !== passwordHash) {
+        state.authError = 'Incorrect password.';
+        render();
+        return;
+      }
+      finalName = account.name;
+      state.userProfile.name = account.name;
+      state.userProfile.email = email;
+      if (account.address) state.userProfile.address = account.address;
+    } else {
+      if (accounts[email]) {
+        state.authError = 'An account with this email already exists. Log in instead.';
+        render();
+        return;
+      }
+      let address = (addrEl && addrEl.value.trim()) || state.userProfile.address;
+      if (state.userProfile.postcode && address.endsWith(', ' + state.userProfile.postcode)) {
+        address = address.slice(0, -(', ' + state.userProfile.postcode).length);
+      }
+      accounts[email] = { name, passwordHash, address, createdAt: new Date().toISOString() };
+      saveEmailAccounts(accounts);
+      finalName = name;
+      state.userProfile.name = name;
+      state.userProfile.email = email;
+      if (address) state.userProfile.address = address;
+    }
+
+    state.authError = null;
+    state.authUser = {
+      provider: 'email',
+      name: finalName,
+      email: email,
+      role: state.authRole,
+      createdAt: new Date().toISOString()
+    };
+    saveAuthUser();
+    saveUserProfile();
+
+    state.showAuthModal = false;
+    state.authProvider = null;
+    state.mode = state.authRole;
+    state.screen = state.authRole === 'courier' ? 'courier-activity' : 'shopper-shop';
+
+    const inboxTarget = state.authRole === 'courier' ? state.courierInbox : state.shopperInbox;
+    if (inboxTarget) {
+      inboxTarget.unshift({
+        tag: 'Account Verified',
+        text: isLogin
+          ? `Welcome back, ${finalName}! You're logged in as ${email}.`
+          : `Welcome ${finalName}! Your email account (${email}) has been created. Fast local delivery is ready!`,
+        createdAt: Date.now(),
+        read: false
+      });
+      saveInbox();
+    }
+
+    render();
+  },
+  loginWithGoogle: () => {
+    if (!GOOGLE_CLIENT_ID) {
+      state.authNotice = "Google Sign-In isn't connected yet — add a Google OAuth Client ID in app.js to enable it. Use Email or guest mode for now.";
+      render();
+      return;
+    }
+    state.authNotice = null;
+    initGoogleSignIn();
+  },
+  loginWithApple: () => {
+    state.authNotice = "Sign in with Apple isn't available yet — it requires a paid Apple Developer account. Use Google or Email for now.";
+    render();
+  },
+  closeAuthModal: () => {
+    state.showAuthModal = false;
+    state.authProvider = null;
+    state.authError = null;
+    render();
+  },
   openAddressModal: () => { state.showAddressModal = true; render(); },
   closeAddressModal: () => { state.showAddressModal = false; render(); },
   saveAddressModal: () => {
@@ -2486,27 +3066,42 @@ const actions = {
     state.placingOrder = false;
     finalizeOrder(snapshot);
   },
+  setOrderStage: (stage) => {
+    const order = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
+    if (!order) return;
+    if (stage === 'pending') {
+      order.status = 'Pending Courier Acceptance';
+      order.courier = null;
+    } else if (stage === 'packing') {
+      order.status = 'Packing';
+      order.courier = 'Alex (E-bike)';
+    } else if (stage === 'ontheway') {
+      order.status = 'Out for Delivery';
+      order.courier = 'Alex (E-bike)';
+    } else if (stage === 'delivered') {
+      order.status = 'Delivered';
+      order.courier = 'Alex (E-bike)';
+    }
+    saveLoggedOrders();
+    render();
+  },
   acceptCourierJob: (orderId) => {
     const order = state.orders.find(o => o.id === orderId);
     if (order) {
-      order.status = 'Out for Delivery';
+      order.status = 'Packing';
       order.courier = 'Alex (E-bike)';
       saveLoggedOrders();
       state.shopperInbox.unshift({
         tag: 'Courier Alert',
-        text: `Courier Alex accepted your Order ${order.id}! Live GPS tracking is active.`,
+        text: `Courier Alex accepted your Order ${order.id}! Packing in progress at Morrisons Daily.`,
         createdAt: Date.now(),
         read: false
       });
       saveInbox();
     }
-    if (!state.courierOnline) {
-      state.courierOnline = true;
-      startCourierGpsTracking();
-    }
     state.activeOrderId = orderId;
-    state.mode = 'shopper';
-    state.screen = 'shopper-inbox';
+    state.mode = 'courier';
+    state.screen = 'courier-pack';
     render();
   },
   cancelOrder: (id) => {
