@@ -332,7 +332,7 @@ const state = {
   authRole: PATH_ROLE,
   showAuthModal: false,
   authProvider: null,
-  emailAuthMode: 'signup',
+  emailAuthMode: 'login',
   authError: null,
   authNotice: null,
   showGoogleFallbackButton: false,
@@ -495,25 +495,16 @@ function renderLogin() {
       </button>
       `}
 
-      <!-- Email & Password -->
+      <!-- Email & Password — defaults to logging in; signing up is the link below. -->
       <button type="button" data-action="loginWithEmail" style="width:100%;background:#141414;color:#ffffff;border:none;border-radius:18px;padding:14px 18px;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 6px 18px rgba(20,20,20,0.18)">
-        ✉️ Continue with Email
+        ✉️ Log In with Email
       </button>
     </div>
 
-    <!-- Divider -->
-    <div style="display:flex;align-items:center;gap:12px;width:100%;max-width:330px;opacity:0.5;font-size:12px;margin-top:2px">
-      <div style="flex:1;height:1px;background:#d4d4d4"></div>
-      <span style="font-weight:600">or continue as guest</span>
-      <div style="flex:1;height:1px;background:#d4d4d4"></div>
-    </div>
-
-    <!-- Guest Access Button -->
-    <div style="width:100%;max-width:330px">
-      ${isCourier
-        ? `<div class="press" data-action="chooseCourier" style="background:#fafafa;color:#444444;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13px;font-size:13.5px;font-weight:700;cursor:pointer">🚴 Enter Courier Guest Mode</div>`
-        : `<div class="press" data-action="chooseShopper" style="background:#fafafa;color:#444444;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13.5px;font-size:13.5px;font-weight:700;cursor:pointer">🛒 Enter Shopper Guest Mode</div>`
-      }
+    <!-- Sign-up entry point for anyone without an account yet. -->
+    <div style="font-size:13px;color:#5c5c5c;max-width:330px">
+      New to Vendaru?
+      <span class="press" data-action="openEmailSignup" style="color:#141414;font-weight:800;text-decoration:underline;text-underline-offset:2px;cursor:pointer;margin-left:2px">Sign Up Here</span>
     </div>
 
     <!-- Escape hatch for anyone who landed on the wrong URL. -->
@@ -538,19 +529,15 @@ function renderAuthModal() {
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:20px">✉️</span>
-            <span style="font-size:16px;font-weight:800;color:#141414">Email Account Setup</span>
+            <span style="font-size:16px;font-weight:800;color:#141414">${isLogin ? 'Log In' : 'Create Your Account'}</span>
           </div>
           <button type="button" data-action="closeAuthModal" style="background:none;border:none;color:#6b6b6b;font-size:22px;cursor:pointer">✕</button>
         </div>
 
-        <!-- Toggle Sign Up vs Log In -->
-        <div style="display:flex;background:#f2f2f2;border-radius:12px;padding:4px;gap:4px">
-          <button type="button" data-action="setEmailAuthMode" data-arg="signup" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isLogin ? 'transparent' : '#fff'};color:${isLogin ? '#6b6b6b' : '#141414'};box-shadow:${isLogin ? 'none' : '0 2px 4px rgba(0,0,0,0.05)'}">
-            Create Account
-          </button>
-          <button type="button" data-action="setEmailAuthMode" data-arg="login" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isLogin ? '#fff' : 'transparent'};color:${isLogin ? '#141414' : '#6b6b6b'};box-shadow:${isLogin ? '0 2px 4px rgba(0,0,0,0.05)' : 'none'}">
-            Log In
-          </button>
+        <div style="font-size:12.5px;color:#5c5c5c;text-align:left;line-height:1.45;margin-top:-6px">
+          ${isLogin
+            ? 'Welcome back — sign in to pick up where you left off.'
+            : `Set up your Vendaru ${roleTitle.toLowerCase()} account. It only takes a moment.`}
         </div>
 
         ${state.authError ? `<div style="background:#f2f2f2;border:1.5px solid #d4d4d4;color:#141414;border-radius:12px;padding:10px 12px;font-size:12.5px;text-align:left;line-height:1.4">${escapeHtml(state.authError)}</div>` : ''}
@@ -579,8 +566,15 @@ function renderAuthModal() {
         </div>
 
         <button type="button" data-action="confirmEmailAuthSetup" style="width:100%;background:#141414;color:#fff;border:none;padding:15px;border-radius:16px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.18);margin-top:4px">
-          ⚡ ${isLogin ? 'Log In to Account' : 'Create Vendaru Account'} (${roleTitle})
+          ⚡ ${isLogin ? 'Log In' : 'Create Account'}
         </button>
+
+        <div style="font-size:12.5px;color:#5c5c5c">
+          ${isLogin ? 'New to Vendaru?' : 'Already have an account?'}
+          <span class="press" data-action="setEmailAuthMode" data-arg="${isLogin ? 'signup' : 'login'}" style="color:#141414;font-weight:800;text-decoration:underline;text-underline-offset:2px;cursor:pointer;margin-left:2px">
+            ${isLogin ? 'Sign Up Here' : 'Log In'}
+          </span>
+        </div>
       </div>
     </div>
   `;
@@ -1402,7 +1396,7 @@ function renderCourierAccount() {
   const onlineJustify = state.courierOnline ? 'flex-end' : 'flex-start';
   const auth = state.authUser;
   const isSignedIn = !!auth;
-  const displayName = auth ? auth.name : 'Guest Courier';
+  const displayName = auth ? auth.name : 'Courier';
   const providerLabel = !auth ? 'Not signed in' : auth.provider === 'google' ? 'Google Account' : auth.provider === 'apple' ? 'Apple ID' : 'Email Account';
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
@@ -1418,12 +1412,6 @@ function renderCourierAccount() {
         <div style="font-size:12px;opacity:0.6">${auth ? escapeHtml(auth.email) : 'Sign in to link a real account'}</div>
       </div>
     </div>
-
-    ${!isSignedIn ? `
-      <div style="background:#fafafa;border:1.5px solid #d4d4d4;color:#141414;border-radius:16px;padding:12px 14px;font-size:12.5px;line-height:1.4">
-        You're browsing in guest mode. <span class="press" data-action="logout" style="text-decoration:underline;font-weight:700;cursor:pointer">Sign in</span> with Google or your email to save your account.
-      </div>
-    ` : ''}
 
     <!-- Live GPS Duty Switch -->
     <div data-action="toggleOnline" style="border:1.5px solid ${state.courierOnline ? '#141414' : 'rgba(20,20,20,0.12)'};background:${state.courierOnline ? '#fafafa' : '#fff'};border-radius:18px;padding:16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.03)">
@@ -1442,7 +1430,7 @@ function renderCourierAccount() {
     </div>
 
     <button type="button" data-action="logout" style="width:100%;background:#f2f2f2;color:#141414;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px">
-      🚪 ${isSignedIn ? 'Log Out of Courier Account' : 'Back to Sign In'}
+      🚪 Log Out
     </button>
   </div>`;
 }
@@ -1959,9 +1947,9 @@ function renderShopperAccount() {
   const auth = state.authUser;
   const isSignedIn = !!auth;
 
-  const displayName = auth ? auth.name : (p.name || 'Guest User');
+  const displayName = auth ? auth.name : (p.name || 'Your account');
   const emailDisplay = (auth && auth.email) || p.email || 'No email saved';
-  const providerLabel = !auth ? 'Guest Mode' : auth.provider === 'google' ? 'Google Account' : 'Email Account';
+  const providerLabel = !auth ? 'Not signed in' : auth.provider === 'google' ? 'Google Account' : 'Email Account';
 
   const avatarBadge = p.avatarSrc
     ? `<img src="${p.avatarSrc}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #141414;box-shadow:0 4px 12px rgba(20,20,20,0.15)" />`
@@ -2016,7 +2004,7 @@ function renderShopperAccount() {
           <div style="font-size:16.5px;font-weight:700;color:#141414">${escapeHtml(displayName)}</div>
           <div style="font-size:12.5px;color:#6b6b6b;margin-top:1px">${escapeHtml(emailDisplay)}</div>
           <div style="font-size:11.5px;color:${isSignedIn ? '#141414' : '#141414'};font-weight:700;margin-top:3px;display:flex;align-items:center;gap:4px">
-            ${isSignedIn ? '✓ Signed In (' + providerLabel + ')' : '⚡ Browsing in Guest Mode'}
+            ${isSignedIn ? '✓ Signed In (' + providerLabel + ')' : 'Not signed in'}
           </div>
         </div>
       </div>
@@ -2089,7 +2077,7 @@ function renderShopperAccount() {
       </a>
 
       <button type="button" data-action="logout" style="width:100%;background:#fff;color:#141414;border:1.5px solid #d4d4d4;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer">
-        🚪 ${isSignedIn ? 'Log Out of Account' : 'Back to Sign In Portal'}
+        🚪 Log Out
       </button>
     </div>
 
@@ -3093,6 +3081,15 @@ const actions = {
   loginWithEmail: () => {
     state.authProvider = 'email';
     state.authError = null;
+    state.emailAuthMode = 'login';
+    state.showAuthModal = true;
+    render();
+  },
+  // "New to Vendaru? Sign Up Here" — same modal, opened straight onto the signup form.
+  openEmailSignup: () => {
+    state.authProvider = 'email';
+    state.authError = null;
+    state.emailAuthMode = 'signup';
     state.showAuthModal = true;
     render();
   },
@@ -3199,7 +3196,7 @@ const actions = {
   },
   loginWithGoogle: () => {
     if (!GOOGLE_CLIENT_ID) {
-      state.authNotice = "Google Sign-In isn't connected yet — add a Google OAuth Client ID in app.js to enable it. Use Email or guest mode for now.";
+      state.authNotice = "Google Sign-In isn't connected yet — add a Google OAuth Client ID in app.js to enable it. Use email sign-in for now.";
       render();
       return;
     }
@@ -3406,8 +3403,6 @@ const actions = {
       render();
     }, 500);
   },
-  chooseCourier: () => { state.mode = 'courier'; state.screen = 'courier-activity'; render(); },
-  chooseShopper: () => { state.mode = 'shopper'; state.screen = 'shopper-shop'; render(); },
   goActivity: () => { state.screen = 'courier-activity'; render(); },
   goEarnings: () => { state.screen = 'courier-earnings'; render(); },
   goPack: () => { state.screen = 'courier-pack'; render(); },
@@ -3425,7 +3420,6 @@ const actions = {
   },
   goShopperInbox: () => { state.screen = 'shopper-inbox'; render(); },
   goShopperAccount: () => { state.screen = 'shopper-account'; render(); },
-  logout: () => { state.screen = 'login'; state.mode = null; render(); },
   toggleOnline: () => {
     const todayKey = new Date().toDateString();
     if (state.courierOnlineDayKey !== todayKey) {
