@@ -312,10 +312,24 @@ async function hashPassword(password) {
   return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// The URL decides which of the two apps you're in: /courier is the courier
+// app, everything else is the customer app. Both are served from the same
+// origin on purpose — all state lives in localStorage, which is per-origin,
+// so a split across domains or subdomains would stop the courier from ever
+// seeing a customer's order. Same origin keeps that loop working.
+const ROLE_PATH = '/courier';
+const PATH_ROLE = window.location.pathname.replace(/\/+$/, '').toLowerCase() === ROLE_PATH
+  ? 'courier'
+  : 'shopper';
+
+function roleHome(role) {
+  return role === 'courier' ? ROLE_PATH : '/';
+}
+
 const state = {
   screen: 'login',
   mode: null,
-  authRole: 'shopper',
+  authRole: PATH_ROLE,
   showAuthModal: false,
   authProvider: null,
   emailAuthMode: 'signup',
@@ -375,9 +389,11 @@ const state = {
 };
 
 // Resume a signed-in session across reloads instead of bouncing back to the login screen.
-if (state.authUser && state.authUser.role) {
-  state.mode = state.authUser.role;
-  state.screen = state.authUser.role === 'courier' ? 'courier-activity' : 'shopper-shop';
+// The account is shared across both URLs (same origin), so the path — not the role
+// stored at signup — decides which app you land in.
+if (state.authUser) {
+  state.mode = PATH_ROLE;
+  state.screen = PATH_ROLE === 'courier' ? 'courier-activity' : 'shopper-shop';
 }
 
 const SHOP_IMAGES_KEY = 'absolutely-shop-images';
@@ -451,17 +467,12 @@ function renderLogin() {
 
     <div>
       <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#141414">Welcome to Vendaru</div>
-      <div style="font-size:13.5px;color:#6b6b6b;margin-top:6px;line-height:1.45;max-width:280px">Fast local delivery &amp; courier network in Bolton</div>
+      <div style="font-size:13.5px;color:#6b6b6b;margin-top:6px;line-height:1.45;max-width:280px">${isCourier ? 'Courier sign-in · Bolton delivery network' : 'Fast local delivery &amp; courier network in Bolton'}</div>
     </div>
 
-    <!-- Role Selector Segmented Tabs -->
-    <div style="display:flex;background:#f2f2f2;border-radius:16px;padding:4px;width:100%;max-width:330px;gap:4px">
-      <button type="button" data-action="setAuthRole" data-arg="shopper" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? 'transparent' : '#ffffff'};color:${isCourier ? '#6b6b6b' : '#141414'};box-shadow:${isCourier ? 'none' : '0 4px 12px rgba(0,0,0,0.06)'}">
-        🛒 I'm Shopping
-      </button>
-      <button type="button" data-action="setAuthRole" data-arg="courier" style="flex:1;padding:11px;border:none;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:${isCourier ? '#ffffff' : 'transparent'};color:${isCourier ? '#141414' : '#6b6b6b'};box-shadow:${isCourier ? '0 4px 12px rgba(0,0,0,0.06)' : 'none'}">
-        🚴 I'm a Courier
-      </button>
+    <!-- Which app you're signing into is set by the URL, not a toggle. -->
+    <div style="display:inline-flex;align-items:center;gap:7px;background:#f2f2f2;border-radius:20px;padding:7px 14px;font-size:12.5px;font-weight:700;color:#141414">
+      ${isCourier ? '🚴 Courier app' : '🛒 Customer app'}
     </div>
 
     ${state.authNotice ? `
@@ -505,6 +516,11 @@ function renderLogin() {
         : `<div class="press" data-action="chooseShopper" style="background:#fafafa;color:#444444;border:1.5px solid rgba(20,20,20,0.15);border-radius:16px;padding:13.5px;font-size:13.5px;font-weight:700;cursor:pointer">🛒 Enter Shopper Guest Mode</div>`
       }
     </div>
+
+    <!-- Escape hatch for anyone who landed on the wrong URL. -->
+    <a href="${isCourier ? '/' : ROLE_PATH}" style="font-size:12px;color:#5c5c5c;font-weight:700;text-decoration:underline;text-underline-offset:2px">
+      ${isCourier ? 'Looking to order? Go to the customer app' : 'Are you a courier? Go to the courier app'}
+    </a>
 
     <div style="font-size:11px;color:#9a9a9a;max-width:270px;line-height:1.45">
       By continuing, you agree to Vendaru's Terms of Service and Privacy Policy.
@@ -2069,9 +2085,9 @@ function renderShopperAccount() {
 
     <!-- 6. Mode & Auth Switcher Buttons -->
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
-      <button type="button" data-action="setAuthRole" data-arg="courier" style="width:100%;background:#141414;color:#ffffff;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer">
+      <a href="${ROLE_PATH}" style="width:100%;background:#141414;color:#ffffff;border:none;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;box-sizing:border-box;display:block">
         🚴 Switch to Courier Portal
-      </button>
+      </a>
 
       <button type="button" data-action="logout" style="width:100%;background:#fff;color:#141414;border:1.5px solid #d4d4d4;padding:14px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer">
         🚪 ${isSignedIn ? 'Log Out of Account' : 'Back to Sign In Portal'}
@@ -3070,9 +3086,10 @@ const actions = {
     try { localStorage.removeItem('graftr_auth_user'); } catch(e){}
     render();
   },
+  // Role is decided by the URL now, so switching role means going to that app.
   setAuthRole: (role) => {
-    state.authRole = role;
-    render();
+    if (role === PATH_ROLE) return;
+    window.location.href = roleHome(role);
   },
   loginWithEmail: () => {
     state.authProvider = 'email';
