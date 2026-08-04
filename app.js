@@ -142,6 +142,35 @@ function saveLoggedOrders() {
   try { localStorage.setItem('graftr_logged_orders', JSON.stringify(state.orders)); } catch(e){}
 }
 
+function loadCourierStats() {
+  try {
+    const saved = localStorage.getItem('graftr_courier_stats');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          courierOnlineSecondsToday: parsed.courierOnlineSecondsToday || 0,
+          courierOnlineDayKey: parsed.courierOnlineDayKey || null,
+          lastCashOutAt: parsed.lastCashOutAt || null,
+          payoutHistory: Array.isArray(parsed.payoutHistory) ? parsed.payoutHistory : [],
+        };
+      }
+    }
+  } catch (e) { /* ignore corrupt storage */ }
+  return { courierOnlineSecondsToday: 0, courierOnlineDayKey: null, lastCashOutAt: null, payoutHistory: [] };
+}
+
+function saveCourierStats() {
+  try {
+    localStorage.setItem('graftr_courier_stats', JSON.stringify({
+      courierOnlineSecondsToday: state.courierOnlineSecondsToday,
+      courierOnlineDayKey: state.courierOnlineDayKey,
+      lastCashOutAt: state.lastCashOutAt,
+      payoutHistory: state.payoutHistory,
+    }));
+  } catch (e) { /* ignore write failure */ }
+}
+
 const PENDING_ORDER_KEY = 'graftr_pending_order';
 
 // Shared by both the real Stripe-paid path and the no-backend-configured fallback,
@@ -152,6 +181,7 @@ function finalizeOrder(snapshot) {
     id: newId,
     merchant: 'Morrisons Daily',
     timestamp: 'Just now',
+    createdAt: Date.now(),
     items: snapshot.items,
     subtotal: snapshot.subtotal,
     deliveryFee: snapshot.deliveryFee,
@@ -159,6 +189,7 @@ function finalizeOrder(snapshot) {
     status: 'Pending Courier Acceptance',
     address: snapshot.address,
     courier: null,
+    tip: 0,
   };
   state.orders.unshift(newOrder);
   state.activeOrderId = newId;
@@ -208,6 +239,8 @@ const state = {
   aiListening: false,
   aiVoiceSupported: undefined,
   courierOnline: true,
+  courierOnlineSince: Date.now(),
+  ...loadCourierStats(),
   justDeliveredOrderId: null,
   courierLiveGps: null,
   packItems: [
@@ -217,7 +250,7 @@ const state = {
     { name: 'Baby spinach 200g', qty: 2, checked: false },
   ],
   packDone: false,
-  cashedOut: false,
+  earningsTab: 'today',
   deliveryLater: false,
   courierInbox: [
     { tag: 'Job alert', text: 'New job available near you — Lewisham, £7.80', time: '2m', read: false },
@@ -504,40 +537,288 @@ function renderCourierActivity() {
   </div>`;
 }
 
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay(); // 0=Sun..6=Sat
+  const diffToMonday = (day === 0 ? -6 : 1) - day;
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + diffToMonday);
+  return d;
+}
+
+// A courier is paid the real delivery fee the customer was charged, plus whatever
+// tip the customer actually added — no invented or padded numbers.
+function courierJobPay(order) {
+  return (order.deliveryFee || 0) + (order.tip || 0);
+}
+
+function getCourierEarningsData() {
+  const now = new Date();
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+  const weekStart = getWeekStart(now);
+
+  const deliveredOrders = (state.orders || []).filter(o => o.status === 'Delivered' && typeof o.deliveredAt === 'number');
+
+  const todayOrders = deliveredOrders.filter(o => o.deliveredAt >= todayStart.getTime());
+  const weekOrders = deliveredOrders.filter(o => o.deliveredAt >= weekStart.getTime());
+
+  const todayTotal = todayOrders.reduce((sum, o) => sum + courierJobPay(o), 0);
+  const todayJobs = todayOrders.length;
+  const todayTips = todayOrders.reduce((sum, o) => sum + (o.tip || 0), 0);
+  const todayBasePay = todayTotal - todayTips;
+
+  const weekTotal = weekOrders.reduce((sum, o) => sum + courierJobPay(o), 0);
+  const weekTips = weekOrders.reduce((sum, o) => sum + (o.tip || 0), 0);
+  const weekJobs = weekOrders.length;
+
+  // Per-day totals, Mon..Sun, for the week bar chart
+  const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+  weekOrders.forEach(o => {
+    const d = new Date(o.deliveredAt);
+    const dayIdx = (d.getDay() + 6) % 7; // Mon=0..Sun=6
+    dayTotals[dayIdx] += courierJobPay(o);
+  });
+  const todayDayIdx = (now.getDay() + 6) % 7;
+
+  const todayJobList = todayOrders
+    .slice()
+    .sort((a, b) => b.deliveredAt - a.deliveredAt)
+    .map(o => ({
+      id: o.id,
+      merchant: o.merchant || 'Morrisons Daily',
+      customer: state.userProfile ? state.userProfile.name : 'Customer',
+      address: o.address || `${state.userProfile.address}, ${state.userProfile.postcode}`,
+      status: o.status,
+      basePay: o.deliveryFee || 0,
+      tip: o.tip || 0,
+      totalPay: courierJobPay(o),
+      itemCount: o.items ? o.items.length : 1,
+      timestamp: new Date(o.deliveredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    }));
+
+  const pendingPayout = deliveredOrders
+    .filter(o => o.deliveredAt > (state.lastCashOutAt || 0))
+    .reduce((sum, o) => sum + courierJobPay(o), 0);
+
+  const onlineSeconds = (state.courierOnlineDayKey === now.toDateString() ? state.courierOnlineSecondsToday : 0)
+    + (state.courierOnline && state.courierOnlineSince ? Math.round((Date.now() - state.courierOnlineSince) / 1000) : 0);
+  const onlineHours = Math.floor(onlineSeconds / 3600);
+  const onlineMinutes = Math.floor((onlineSeconds % 3600) / 60);
+  const onlineLabel = `${onlineHours}h ${onlineMinutes}m`;
+
+  return {
+    todayTotal, todayJobs, todayTips, todayBasePay, todayJobList,
+    weekTotal, weekTips, weekJobs, dayTotals, todayDayIdx,
+    pendingPayout, onlineLabel,
+  };
+}
+
 function renderCourierEarnings() {
-  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:25px;font-weight:700">Earnings</div>
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px">
-      <div style="font-size:12.5px;opacity:0.55">Today</div>
-      <div style="font-size:30px;font-weight:700">£86.40</div>
-      <div style="font-size:12px;opacity:0.55">6 jobs completed · online 4h 12m</div>
+  const data = getCourierEarningsData();
+  const currentTab = state.earningsTab || 'today';
+
+  const tabSelectorHtml = `
+    <div style="display:flex;background:#f1f5f9;border-radius:14px;padding:4px;gap:4px">
+      <button type="button" data-action="setEarningsTab" data-arg="today" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'today' ? '#fff' : 'transparent'};color:${currentTab === 'today' ? '#141414' : '#64748b'};box-shadow:${currentTab === 'today' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+        Today (£${data.todayTotal.toFixed(2)})
+      </button>
+      <button type="button" data-action="setEarningsTab" data-arg="week" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'week' ? '#fff' : 'transparent'};color:${currentTab === 'week' ? '#141414' : '#64748b'};box-shadow:${currentTab === 'week' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+        This Week (£${data.weekTotal.toFixed(2)})
+      </button>
+      <button type="button" data-action="setEarningsTab" data-arg="history" style="flex:1;padding:9px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;background:${currentTab === 'history' ? '#fff' : 'transparent'};color:${currentTab === 'history' ? '#141414' : '#64748b'};box-shadow:${currentTab === 'history' ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
+        Payouts (${(state.payoutHistory || []).length})
+      </button>
     </div>
-    <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:14px;font-weight:700">This week</span><span style="font-size:13px;opacity:0.6">£412.90</span></div>
-      <div style="display:flex;align-items:flex-end;gap:8px;height:60px;margin-top:10px">
-        <div style="width:16px;border-radius:3px 3px 0 0;background:#141414;height:24px"></div>
-        <div style="width:16px;border-radius:3px 3px 0 0;background:#141414;height:40px"></div>
-        <div style="width:16px;border-radius:3px 3px 0 0;background:#141414;height:32px"></div>
-        <div style="width:16px;border-radius:3px 3px 0 0;background:oklch(56% 0.17 258);height:52px"></div>
-        <div style="width:16px;border-radius:3px 3px 0 0;background:oklch(56% 0.17 258);height:58px"></div>
-        <div style="width:16px;border-radius:3px 3px 0 0;background:#141414;height:20px"></div>
-        <div style="width:16px;border-radius:3px 3px 0 0;background:#141414;height:12px"></div>
+  `;
+
+  let tabBodyContent = '';
+
+  if (currentTab === 'today') {
+    const goalPercent = Math.min(100, Math.round((data.todayTotal / 120) * 100));
+    const jobsListHtml = data.todayJobList.length ? data.todayJobList.map(job => `
+      <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:13.5px;font-weight:700">${escapeHtml(job.merchant)}</span>
+            <span style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:10px;background:#dcfce7;color:#15803d">${job.status}</span>
+          </div>
+          <div style="font-size:11.5px;opacity:0.6;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(job.customer)} · ${escapeHtml(job.address)}</div>
+          <div style="font-size:10.5px;opacity:0.45;margin-top:2px">${job.itemCount} item${job.itemCount > 1 ? 's' : ''} · Base £${job.basePay.toFixed(2)} + Tip £${job.tip.toFixed(2)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:16px;font-weight:800;color:#10b981">+£${job.totalPay.toFixed(2)}</div>
+          <div style="font-size:10.5px;opacity:0.5">${job.timestamp}</div>
+        </div>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;opacity:0.5;margin-top:4px"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+    `).join('') : `<div style="text-align:center;font-size:13px;opacity:0.5;padding:16px;border:1px dashed #cbd5e1;border-radius:12px">No deliveries completed today yet.</div>`;
+
+    tabBodyContent = `
+      <!-- Today's Main Balance Card -->
+      <div style="background:linear-gradient(135deg, #141414 0%, #262626 100%);color:#fff;border-radius:20px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,0.15);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:12.5px;color:#a1a1aa;font-weight:600">TODAY'S EARNINGS</span>
+          <span style="font-size:11.5px;background:rgba(255,203,225,0.2);color:#ffcbe1;padding:3px 10px;border-radius:12px;font-weight:700">Bolton Hub</span>
+        </div>
+        
+        <div style="font-size:36px;font-weight:900;letter-spacing:-0.5px">£${data.todayTotal.toFixed(2)}</div>
+        <div style="font-size:12.5px;color:#d4d4d8;display:flex;align-items:center;gap:6px">
+          <span>⚡ ${data.todayJobs} deliveries completed</span>
+          <span>•</span>
+          <span>⏱️ ${data.onlineLabel} online</span>
+        </div>
+
+        <!-- Daily Goal Bar -->
+        <div style="margin-top:4px">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#a1a1aa;margin-bottom:6px">
+            <span>Daily Goal Progress</span>
+            <span style="color:#ffcbe1;font-weight:700">${goalPercent}% (£120.00 Target)</span>
+          </div>
+          <div style="height:8px;background:rgba(255,255,255,0.15);border-radius:6px;overflow:hidden">
+            <div style="height:100%;background:#10b981;width:${goalPercent}%;transition:width 0.3s ease"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;background:#fff">
+          <div style="font-size:11.5px;opacity:0.55;font-weight:600">BASE DELIVERY PAY</div>
+          <div style="font-size:20px;font-weight:800;margin-top:4px">£${data.todayBasePay.toFixed(2)}</div>
+          <div style="font-size:11px;color:#10b981;margin-top:2px;font-weight:700">100% Guaranteed</div>
+        </div>
+        <div style="border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;background:#fff">
+          <div style="font-size:11.5px;opacity:0.55;font-weight:600">CUSTOMER TIPS</div>
+          <div style="font-size:20px;font-weight:800;margin-top:4px">£${data.todayTips.toFixed(2)}</div>
+          <div style="font-size:11px;color:#6366f1;margin-top:2px;font-weight:700">Keep 100% of tips</div>
+        </div>
+      </div>
+
+      <!-- Today's Job History Header -->
+      <div style="margin-top:4px">
+        <div style="font-size:15px;font-weight:800;margin-bottom:8px">Today's Completed Orders</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${jobsListHtml}
+        </div>
+      </div>
+    `;
+  } else if (currentTab === 'week') {
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const maxDay = Math.max(1, ...data.dayTotals);
+    const avgPerJob = data.weekJobs > 0 ? data.weekTotal / data.weekJobs : 0;
+
+    const barsHtml = data.dayTotals.map((val, i) => {
+      const isToday = i === data.todayDayIdx;
+      const height = Math.max(val > 0 ? 6 : 2, Math.round((val / maxDay) * 70));
+      return `
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:9.5px;${isToday ? 'font-weight:700;color:#10b981' : 'opacity:0.5'}">£${val.toFixed(0)}</span>
+          <div style="width:100%;border-radius:4px 4px 0 0;background:${isToday ? '#10b981' : (val > 0 ? '#141414' : '#e2e8f0')};height:${height}px"></div>
+        </div>`;
+    }).join('');
+
+    const dayLabelsHtml = dayLabels.map((label, i) => `<span style="${i === data.todayDayIdx ? 'color:#10b981;font-weight:700' : ''}">${label}</span>`).join('');
+
+    tabBodyContent = `
+      <!-- Weekly Summary Card -->
+      <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:20px;padding:18px;background:#fff;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div>
+            <div style="font-size:12px;opacity:0.55;font-weight:600">THIS WEEK TOTAL</div>
+            <div style="font-size:32px;font-weight:900;margin-top:2px">£${data.weekTotal.toFixed(2)}</div>
+          </div>
+          <span style="background:#e0e7ff;color:#3730a3;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:12px">Avg £${avgPerJob.toFixed(2)}/job</span>
+        </div>
+
+        <!-- 7-Day Bar Chart, built from real delivered orders -->
+        <div>
+          <div style="display:flex;align-items:flex-end;gap:10px;height:90px;margin-top:10px;padding-bottom:6px;border-bottom:1px solid #e2e8f0">
+            ${barsHtml}
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;opacity:0.6;margin-top:6px;padding:0 4px">
+            ${dayLabelsHtml}
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Performance Breakdown -->
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:15px;font-weight:800">Weekly Stats Summary</div>
+        <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13.5px;font-weight:700">Jobs Completed</div><div style="font-size:11.5px;opacity:0.5">Since Monday</div></div>
+          <div style="font-size:16px;font-weight:800">${data.weekJobs}</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13.5px;font-weight:700">Customer Tips</div><div style="font-size:11.5px;opacity:0.5">Keep 100% of tips</div></div>
+          <div style="font-size:16px;font-weight:800;color:#6366f1">£${data.weekTips.toFixed(2)}</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13.5px;font-weight:700">Average Per Job</div><div style="font-size:11.5px;opacity:0.5">Base pay + tip</div></div>
+          <div style="font-size:16px;font-weight:800;color:#10b981">£${avgPerJob.toFixed(2)}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    // Payout History Tab
+    const historyItemsHtml = (state.payoutHistory || []).map(p => `
+      <div style="background:#fff;border:1.5px solid rgba(20,20,20,0.1);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:14px;font-weight:700">${p.date}</div>
+          <div style="font-size:11.5px;opacity:0.5;margin-top:2px">Barclays Bank ****4892 · ${p.ref}</div>
+          <div style="font-size:11px;color:#10b981;font-weight:700;margin-top:2px">${p.status}</div>
+        </div>
+        <div style="font-size:18px;font-weight:800">${p.amount}</div>
+      </div>
+    `).join('');
+
+    tabBodyContent = `
+      <div style="font-size:15px;font-weight:800">Bank Transfer & Payout History</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${historyItemsHtml || `<div style="text-align:center;padding:24px 0;opacity:0.5;font-size:13px">No payouts yet — cash out your balance to see history here.</div>`}
+      </div>
+    `;
+  }
+
+  const cashOutCard = `
+    <div style="border:1.5px solid #10b981;border-radius:20px;padding:18px;background:#f0fdf4;box-shadow:0 4px 16px rgba(16,185,129,0.12)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:12.5px;color:#15803d;font-weight:700">AVAILABLE BALANCE</div>
+          <div style="font-size:24px;font-weight:900;color:#141414;margin-top:2px">£${data.pendingPayout.toFixed(2)}</div>
+        </div>
+        <span style="font-size:11.5px;background:#dcfce7;color:#15803d;padding:4px 10px;border-radius:12px;font-weight:700">Instant Transfer</span>
+      </div>
+
+      ${data.pendingPayout > 0 ? `
+        <button type="button" data-action="cashOut" style="width:100%;margin-top:14px;background:#141414;color:#fff;border:none;border-radius:16px;padding:14px;text-align:center;font-weight:800;font-size:14.5px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.2)">
+          ⚡ Cash Out Now (£${data.pendingPayout.toFixed(2)})
+        </button>
+      ` : `
+        <div style="margin-top:14px;background:#e2e8f0;color:#64748b;border-radius:16px;padding:14px;text-align:center;font-weight:700;font-size:13.5px">
+          No earnings to cash out yet — complete a delivery first
+        </div>
+      `}
+      <div style="text-align:center;font-size:11px;opacity:0.5;margin-top:8px">Transfers instantly to Barclays Bank plc (****4892) · £0.50 fee</div>
     </div>
-    <div style="display:flex;gap:12px">
-      <div style="flex:1;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;text-align:center"><div style="font-size:12px;opacity:0.55">Tips</div><div style="font-size:18px;font-weight:700">£38.50</div></div>
-      <div style="flex:1;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;text-align:center"><div style="font-size:12px;opacity:0.55">Jobs done</div><div style="font-size:18px;font-weight:700">34</div></div>
+  `;
+
+  return `
+    <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:24px;font-weight:800">Courier Earnings</div>
+          <div style="font-size:12.5px;opacity:0.6">Sam Whitfield (E-bike Courier) · Bolton Hub</div>
+        </div>
+        <span style="background:#dcfce7;color:#15803d;font-size:12px;font-weight:800;padding:5px 12px;border-radius:14px">🟢 Active</span>
+      </div>
+
+      ${tabSelectorHtml}
+
+      ${cashOutCard}
+
+      ${tabBodyContent}
     </div>
-    <div style="border:1.5px solid oklch(56% 0.17 258);border-radius:16px;padding:16px;background:oklch(97% 0.02 258)">
-      <div style="font-size:12.5px;opacity:0.6">Next payout</div>
-      <div style="font-size:16px;font-weight:700">Fri 7 Aug · £412.90</div>
-      ${state.cashedOut
-        ? `<div style="margin-top:10px;text-align:center;font-size:14px;font-weight:700">Payout requested ✓</div>`
-        : `<div class="press" data-action="cashOut" style="margin-top:10px;background:#141414;color:#fff;border-radius:20px;padding:12px;text-align:center;font-weight:700;font-size:14px;cursor:pointer">Cash out now</div>`}
-      <div style="text-align:center;font-size:11px;opacity:0.5;margin-top:6px">Instant transfer · £0.50 fee</div>
-    </div>
-  </div>`;
+  `;
 }
 
 function renderInboxList(list, toggleAction) {
@@ -1664,12 +1945,13 @@ function renderShopperTrack() {
   }
 
   const isPending = currentOrder.status === 'Pending Courier Acceptance';
+  const isDelivered = currentOrder.status === 'Delivered';
 
   const steps = [
     { title: 'Order Confirmed', time: 'Just now', done: true },
     { title: `Courier Acceptance`, time: isPending ? 'Pending' : 'Accepted', done: !isPending },
-    { title: `Out for Delivery`, time: isPending ? 'Waiting' : 'In progress', done: !isPending },
-    { title: 'Delivered to ' + (currentOrder.address ? currentOrder.address.split(',')[0] : 'Home'), time: 'ETA ~8 min', done: false },
+    { title: `Out for Delivery`, time: isPending ? 'Waiting' : (isDelivered ? 'Complete' : 'In progress'), done: !isPending },
+    { title: 'Delivered to ' + (currentOrder.address ? currentOrder.address.split(',')[0] : 'Home'), time: isDelivered ? (currentOrder.deliveredAt ? new Date(currentOrder.deliveredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Delivered') : 'ETA ~8 min', done: isDelivered },
   ];
 
   const itemsSummary = currentOrder.items && currentOrder.items.length
@@ -1689,6 +1971,26 @@ function renderShopperTrack() {
     </div>
   ` : '';
 
+  const tipHtml = isDelivered ? (
+    currentOrder.tip
+      ? `
+      <div style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px">
+        <div style="font-size:28px">💚</div>
+        <div style="font-size:14.5px;font-weight:800">Thanks for tipping £${currentOrder.tip.toFixed(2)}!</div>
+        <div style="font-size:12px;opacity:0.65">Your courier will see this on their earnings.</div>
+      </div>
+    `
+      : `
+      <div style="background:#fff5f9;border:2px solid #ffcbe1;border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px">
+        <div style="font-size:14.5px;font-weight:800">Delivered! Add a tip for ${escapeHtml((currentOrder.courier || 'your courier').split(' (')[0])}?</div>
+        <div style="display:flex;gap:8px;width:100%">
+          ${[1, 2, 5].map(amt => `<button type="button" data-action="addTip" data-arg="${amt}" style="flex:1;background:#141414;color:#fff;border:none;padding:12px 0;border-radius:14px;font-weight:800;font-size:13.5px;cursor:pointer">£${amt}</button>`).join('')}
+        </div>
+        <button type="button" data-action="addTip" data-arg="0" style="background:none;border:none;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline">No thanks</button>
+      </div>
+    `
+  ) : '';
+
   return `
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
       <div style="display:flex;align-items:center;gap:10px;padding:4px 0">
@@ -1700,6 +2002,7 @@ function renderShopperTrack() {
       </div>
 
       ${pendingNoticeHtml}
+      ${tipHtml}
 
       <!-- Live Interactive Leaflet Map Container -->
       <div style="position:relative">
@@ -1746,7 +2049,11 @@ function renderShopperTrack() {
       </div>
 
       <div style="display:flex;gap:10px">
-        ${currentOrder.status !== 'Cancelled' ? `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="flex:1;background:#fee2e2;color:#ef4444;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">❌ Cancel Order</button>` : `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">🗑️ Remove Order</button>`}
+        ${currentOrder.status === 'Cancelled'
+          ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">🗑️ Remove Order</button>`
+          : isDelivered
+            ? `<button type="button" data-action="deleteOrder" data-arg="${currentOrder.id}" style="flex:1;background:#f1f5f9;color:#64748b;border:1px solid #cbd5e1;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">🗑️ Clear Order</button>`
+            : `<button type="button" data-action="cancelOrder" data-arg="${currentOrder.id}" style="flex:1;background:#fee2e2;color:#ef4444;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">❌ Cancel Order</button>`}
         <button type="button" data-action="toggleAiChat" style="flex:1;background:#ffcbe1;color:#141414;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer">✨ Ask AI Assistant</button>
       </div>
     </div>
@@ -2171,13 +2478,24 @@ const actions = {
   goShopperAccount: () => { state.screen = 'shopper-account'; render(); },
   logout: () => { state.screen = 'login'; state.mode = null; render(); },
   toggleOnline: () => {
+    const todayKey = new Date().toDateString();
+    if (state.courierOnlineDayKey !== todayKey) {
+      state.courierOnlineDayKey = todayKey;
+      state.courierOnlineSecondsToday = 0;
+    }
     state.courierOnline = !state.courierOnline;
     if (state.courierOnline) {
+      state.courierOnlineSince = Date.now();
       startCourierGpsTracking();
     } else {
+      if (state.courierOnlineSince) {
+        state.courierOnlineSecondsToday += Math.round((Date.now() - state.courierOnlineSince) / 1000);
+      }
+      state.courierOnlineSince = null;
       stopCourierGpsTracking();
       state.courierLiveGps = null;
     }
+    saveCourierStats();
     render();
   },
   markPickedUp: () => {
@@ -2193,6 +2511,7 @@ const actions = {
     if (order) {
       order.status = 'Delivered';
       order.pickedUp = false;
+      order.deliveredAt = Date.now();
       saveLoggedOrders();
       state.justDeliveredOrderId = order.id;
       state.shopperInbox.unshift({
@@ -2206,6 +2525,22 @@ const actions = {
   },
   dismissDeliveryConfirmation: () => {
     state.justDeliveredOrderId = null;
+    render();
+  },
+  addTip: (amount) => {
+    const order = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
+    if (!order || order.status !== 'Delivered' || order.tip) return;
+    order.tip = Number(amount) || 0;
+    saveLoggedOrders();
+    if (order.tip > 0) {
+      state.courierInbox = state.courierInbox || [];
+      state.courierInbox.unshift({
+        tag: 'Tip Received',
+        text: `${state.userProfile.name} tipped £${order.tip.toFixed(2)} on order ${order.id}. Nice work!`,
+        time: 'Just now',
+        read: false,
+      });
+    }
     render();
   },
   openScanner: (index) => {
@@ -2263,7 +2598,33 @@ const actions = {
     state.screen = 'courier-activity';
     render();
   },
-  cashOut: () => { state.cashedOut = true; render(); },
+  setEarningsTab: (tab) => {
+    state.earningsTab = tab;
+    render();
+  },
+  cashOut: () => {
+    const data = getCourierEarningsData();
+    if (data.pendingPayout <= 0) return;
+    const ref = 'PAY-' + Math.floor(89000 + Math.random() * 1000);
+    const payoutAmount = data.pendingPayout;
+    state.lastCashOutAt = Date.now();
+    if (!state.payoutHistory) state.payoutHistory = [];
+    state.payoutHistory.unshift({
+      date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+      amount: `£${payoutAmount.toFixed(2)}`,
+      status: 'Transferring to Barclays (****4892) ✓',
+      ref: ref
+    });
+    saveCourierStats();
+    if (!state.courierInbox) state.courierInbox = [];
+    state.courierInbox.unshift({
+      tag: 'Payout Alert',
+      text: `Cash out request of £${payoutAmount.toFixed(2)} sent to Barclays (****4892). Ref: ${ref}`,
+      time: 'Just now',
+      read: false
+    });
+    render();
+  },
   toggleDeliveryLater: () => { state.deliveryLater = !state.deliveryLater; render(); },
   toggleCourierRead: (i) => { state.courierInbox[i].read = !state.courierInbox[i].read; render(); },
   toggleShopperRead: (i) => { state.shopperInbox[i].read = !state.shopperInbox[i].read; render(); },
