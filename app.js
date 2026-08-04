@@ -107,7 +107,7 @@ const PRODUCTS = [
 //    (e.g. https://graftr-app.vercel.app and http://localhost:8126 for local testing).
 // 2. Paste the Client ID below. It's a public identifier, safe to ship in client code
 //    (unlike the Stripe secret key, this one isn't a secret).
-const GOOGLE_CLIENT_ID = '';
+const GOOGLE_CLIENT_ID = '310040090151-6llrfgdqkg0vamomn9fdqnbiml3anv5k.apps.googleusercontent.com';
 
 function loadUserProfile() {
   try {
