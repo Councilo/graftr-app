@@ -2046,7 +2046,7 @@ function renderCourierTabs() {
   return `<div style="flex:none;display:flex;border-top:1px solid rgba(20,20,20,0.1);padding:10px 4px 22px;justify-content:space-around;background:#fff">
     <div data-action="goActivity" style="${tabStyle('courier-activity')}">
       <span style="position:relative">
-        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2c-3 0-5.5 2.4-5.5 5.5C4.5 11 10 18 10 18s5.5-7 5.5-10.5C15.5 4.4 13 2 10 2z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="7.5" r="2" fill="currentColor"/></svg>
+        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 3 H16 V15 L15 16.5 L14 15 L13 16.5 L12 15 L11 16.5 L10 15 L9 16.5 L8 15 L7 16.5 L6 15 L5 16.5 L4 15 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 7H13.5M6.5 10H13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
         ${state.courierInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
       </span>
       Activity
@@ -2079,7 +2079,7 @@ function renderShopperTabs() {
     </div>
     <div class="press floating-tab" data-action="goShopperInbox" style="${tabStyle('shopper-inbox')}">
       <span style="position:relative">
-        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 2c-3 0-5.5 2.4-5.5 5.5C4.5 11 10 18 10 18s5.5-7 5.5-10.5C15.5 4.4 13 2 10 2z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="7.5" r="2" fill="currentColor"/></svg>
+        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 3 H16 V15 L15 16.5 L14 15 L13 16.5 L12 15 L11 16.5 L10 15 L9 16.5 L8 15 L7 16.5 L6 15 L5 16.5 L4 15 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 7H13.5M6.5 10H13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
         ${state.shopperInbox.some(m => !m.read) ? '<span style="position:absolute;top:-1px;right:-3px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #fff"></span>' : ''}
       </span>
       Activity
