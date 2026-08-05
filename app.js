@@ -289,16 +289,25 @@ function finalizeOrder(snapshot) {
   const scheduledAt = snapshot.scheduledAt || null;
   const holdUntilLater = !!scheduledAt && Date.now() < scheduledAt - SCHEDULE_RELEASE_LEAD_MS;
 
+  // A basket of service bookings alone is never handed to a courier.
+  const bookedServices = snapshot.bookings || [];
+  const hasDelivery = (snapshot.items || []).length > 0;
+
   const newOrder = {
     id: newId,
-    merchant: 'Morrisons Daily',
+    merchant: hasDelivery
+      ? 'Morrisons Daily'
+      : (bookedServices.length === 1 ? bookedServices[0].businessName : 'Local services'),
     timestamp: 'Just now',
     createdAt: Date.now(),
     items: snapshot.items,
+    bookings: bookedServices,
     subtotal: snapshot.subtotal,
     deliveryFee: snapshot.deliveryFee,
     total: snapshot.subtotal + snapshot.deliveryFee,
-    status: holdUntilLater ? 'Scheduled' : 'Pending Courier Acceptance',
+    status: !hasDelivery ? 'Booked'
+      : holdUntilLater ? 'Scheduled'
+      : 'Pending Courier Acceptance',
     address: snapshot.address,
     courier: null,
     tip: 0,
@@ -314,6 +323,27 @@ function finalizeOrder(snapshot) {
     state.loyaltyRedeemed = (state.loyaltyRedeemed || 0) + snapshot.loyaltyUsed;
     saveLoyalty();
   }
+  // Paid bookings become real appointments the business can see and work.
+  bookedServices.forEach((bk, i) => {
+    state.bookings.unshift({
+      id: `bk-${Date.now().toString(36)}-${i}`,
+      orderId: newId,
+      businessId: bk.businessId,
+      businessName: bk.businessName,
+      serviceId: bk.serviceId,
+      serviceName: bk.serviceName,
+      price: bk.price,
+      scheduledAt: bk.at,
+      customerName: state.userProfile.name || '',
+      customerPhone: state.userProfile.phone || '',
+      customerAddress: snapshot.address || '',
+      status: 'Confirmed',
+      createdAt: Date.now(),
+    });
+  });
+  if (bookedServices.length) saveBookings();
+  state.bookingCart = [];
+
   state.loyaltyFree = {};
   state.cart = {};
   state.showCheckoutModal = false;
@@ -326,16 +356,19 @@ function finalizeOrder(snapshot) {
 
   saveLoggedOrders();
   state.shopperInbox.unshift({
-    tag: 'Order Alert',
-    text: holdUntilLater
-      ? `Order ${newOrder.id} scheduled for ${newOrder.scheduledFor} — £${newOrder.total.toFixed(2)}. We'll line up a courier nearer the time.`
-      : `Order ${newOrder.id} confirmed — £${newOrder.total.toFixed(2)}. We're finding you a courier.`,
+    tag: !hasDelivery ? 'Booking' : 'Order Alert',
+    text: !hasDelivery
+      ? `${bookedServices.length} booking${bookedServices.length === 1 ? '' : 's'} confirmed — £${newOrder.total.toFixed(2)}. ${bookedServices.length === 1 ? bookedServices[0].businessName + ' has' : 'The businesses have'} your details.`
+      : holdUntilLater
+        ? `Order ${newOrder.id} scheduled for ${newOrder.scheduledFor} — £${newOrder.total.toFixed(2)}. We'll line up a courier nearer the time.`
+        : `Order ${newOrder.id} confirmed — £${newOrder.total.toFixed(2)}. We're finding you a courier.`,
     createdAt: Date.now(),
     read: false,
   });
-  // A scheduled order isn't offered to couriers yet — that alert fires when it
-  // is released, otherwise they'd see a job they can't start for two days.
-  if (!holdUntilLater) {
+  // Bookings never reach the courier pool, and a scheduled order isn't offered
+  // yet — that alert fires when it's released, otherwise couriers would see a
+  // job they can't start for two days.
+  if (hasDelivery && !holdUntilLater) {
     state.courierInbox.unshift({
       tag: 'Job alert',
       text: `New job available: ${newOrder.merchant} → ${newOrder.address}, £${newOrder.deliveryFee.toFixed(2)}`,
@@ -424,12 +457,252 @@ async function hashPassword(password) {
 // so a split across domains or subdomains would stop the courier from ever
 // seeing a customer's order. Same origin keeps that loop working.
 const ROLE_PATH = '/courier';
-const PATH_ROLE = window.location.pathname.replace(/\/+$/, '').toLowerCase() === ROLE_PATH
-  ? 'courier'
+const BUSINESS_PATH = '/business';
+
+const CURRENT_PATH = window.location.pathname.replace(/\/+$/, '').toLowerCase();
+const PATH_ROLE = CURRENT_PATH === ROLE_PATH ? 'courier'
+  : CURRENT_PATH === BUSINESS_PATH ? 'business'
   : 'shopper';
 
 function roleHome(role) {
-  return role === 'courier' ? ROLE_PATH : '/';
+  if (role === 'courier') return ROLE_PATH;
+  if (role === 'business') return BUSINESS_PATH;
+  return '/';
+}
+
+// ---------------------------------------------------------------------------
+// Local services marketplace
+//
+// The platform is no longer only groceries: businesses list themselves under a
+// category, get a page of their own, and sell bookable services. A booking is
+// just another line in the basket, so it pays through the same Stripe checkout
+// the shopping does.
+// ---------------------------------------------------------------------------
+
+const SERVICE_CATEGORIES = [
+  { id: 'real-estate', label: 'Real estate', emoji: '🏠' },
+  { id: 'pets', label: 'Pets', emoji: '🐾' },
+  { id: 'dog-walkers', label: 'Dog walkers', emoji: '🐕' },
+  { id: 'cleaning', label: 'Cleaning', emoji: '🧽' },
+  { id: 'trades', label: 'Trades', emoji: '🔧' },
+  { id: 'beauty', label: 'Hair & beauty', emoji: '💇' },
+  { id: 'tutoring', label: 'Tutoring', emoji: '📚' },
+  { id: 'events', label: 'Events', emoji: '🎉' },
+];
+
+function serviceCategory(id) {
+  return SERVICE_CATEGORIES.find(c => c.id === id) || null;
+}
+
+const BUSINESSES_KEY = 'graftr_businesses';
+const BOOKINGS_KEY = 'graftr_bookings';
+
+// Enough listings that the categories aren't empty on a first visit. Real
+// businesses created through /business are stored alongside these.
+const SEED_BUSINESSES = [
+  {
+    id: 'biz-halliwell-homes', ownerEmail: null, name: 'Halliwell Homes',
+    category: 'real-estate', tagline: 'Independent Bolton estate agents',
+    about: "Family-run agents covering Halliwell, Astley Bridge and Heaton since 2009. We handle valuations, viewings and full lettings management, and we answer the phone ourselves.",
+    area: 'Bolton BL1', phone: '01204 900 118',
+    services: [
+      { id: 's1', name: 'Property valuation', description: 'In-person market appraisal with a written report.', price: 0, durationMins: 45 },
+      { id: 's2', name: 'Accompanied viewing', description: 'We show your property to a buyer on your behalf.', price: 45, durationMins: 60 },
+      { id: 's3', name: 'Professional photography', description: 'Full photo set plus floor plan for your listing.', price: 120, durationMins: 90 },
+    ],
+    gallery: [],
+  },
+  {
+    id: 'biz-paws-bolton', ownerEmail: null, name: 'Paws of Bolton',
+    category: 'dog-walkers', tagline: 'Insured dog walking & drop-in visits',
+    about: "Small-group and solo walks around Moss Bank Park and Barrow Bridge. Fully insured, DBS checked, and you get photos from every walk.",
+    area: 'Bolton BL1 · BL3', phone: '07700 900 214',
+    services: [
+      { id: 's1', name: 'Group walk (1 hour)', description: 'Up to four dogs, collected and dropped home.', price: 14, durationMins: 60 },
+      { id: 's2', name: 'Solo walk (1 hour)', description: 'One-to-one for reactive or elderly dogs.', price: 22, durationMins: 60 },
+      { id: 's3', name: 'Puppy drop-in (30 min)', description: 'Toilet break, feed and a short play.', price: 12, durationMins: 30 },
+    ],
+    gallery: [],
+  },
+  {
+    id: 'biz-whiskers-vet', ownerEmail: null, name: 'Whiskers Mobile Vet',
+    category: 'pets', tagline: 'Vet care at your kitchen table',
+    about: "A mobile veterinary practice for cats and small animals who find the clinic stressful. Routine care, vaccinations and end-of-life support at home.",
+    area: 'Greater Bolton', phone: '01204 900 776',
+    services: [
+      { id: 's1', name: 'Home health check', description: 'Full nose-to-tail examination.', price: 55, durationMins: 30 },
+      { id: 's2', name: 'Annual vaccination', description: 'Booster and health check combined.', price: 68, durationMins: 30 },
+      { id: 's3', name: 'Nail clip & grooming tidy', description: 'For cats and small animals.', price: 25, durationMins: 20 },
+    ],
+    gallery: [],
+  },
+  {
+    id: 'biz-brightside-clean', ownerEmail: null, name: 'Brightside Cleaning',
+    category: 'cleaning', tagline: 'Domestic & end-of-tenancy cleaning',
+    about: "Two-person teams, our own products, and a fixed price agreed before we start. End-of-tenancy cleans come with a deposit-back guarantee.",
+    area: 'Bolton & Bury', phone: '07700 900 431',
+    services: [
+      { id: 's1', name: 'Standard home clean (2 hrs)', description: 'Kitchen, bathrooms, floors and surfaces.', price: 48, durationMins: 120 },
+      { id: 's2', name: 'Deep clean (4 hrs)', description: 'Inside appliances, skirtings, windows and doors.', price: 95, durationMins: 240 },
+      { id: 's3', name: 'End of tenancy', description: 'Full property clean with deposit-back guarantee.', price: 165, durationMins: 300 },
+    ],
+    gallery: [],
+  },
+  {
+    id: 'biz-north-electrical', ownerEmail: null, name: 'Northgate Electrical',
+    category: 'trades', tagline: 'NICEIC approved electricians',
+    about: "Domestic and small commercial electrical work across Bolton. Fault finding, consumer units, EV chargers and landlord safety certificates.",
+    area: 'Bolton BL1–BL7', phone: '01204 900 552',
+    services: [
+      { id: 's1', name: 'Callout & diagnosis', description: 'First hour on site, fault traced and quoted.', price: 65, durationMins: 60 },
+      { id: 's2', name: 'EICR safety certificate', description: 'Landlord electrical report for up to 3 bedrooms.', price: 140, durationMins: 180 },
+      { id: 's3', name: 'EV charger install', description: 'Survey, fit and commission a home charge point.', price: 450, durationMins: 300 },
+    ],
+    gallery: [],
+  },
+  {
+    id: 'biz-cut-above', ownerEmail: null, name: 'A Cut Above',
+    category: 'beauty', tagline: 'Mobile hairdressing & barbering',
+    about: "Salon-trained stylists who come to you. Cuts, colour and blow-dries in your own front room, evenings and weekends included.",
+    area: 'Bolton town centre & surrounds', phone: '07700 900 388',
+    services: [
+      { id: 's1', name: "Cut & blow-dry", description: 'Wash, cut and finish at home.', price: 32, durationMins: 60 },
+      { id: 's2', name: 'Gents cut', description: 'Clipper or scissor cut, beard tidy included.', price: 18, durationMins: 30 },
+      { id: 's3', name: 'Full head colour', description: 'Consultation, colour and finish.', price: 75, durationMins: 150 },
+    ],
+    gallery: [],
+  },
+  {
+    id: 'biz-bolton-tutors', ownerEmail: null, name: 'Bolton Tutors',
+    category: 'tutoring', tagline: 'GCSE & A-level maths and science',
+    about: "Qualified teachers offering one-to-one tuition at home or online. We share a short progress note with parents after every session.",
+    area: 'Bolton · online', phone: '01204 900 907',
+    services: [
+      { id: 's1', name: 'GCSE maths (1 hour)', description: 'One-to-one, tailored to your exam board.', price: 30, durationMins: 60 },
+      { id: 's2', name: 'A-level physics (1 hour)', description: 'Specialist subject tutor, at home or online.', price: 38, durationMins: 60 },
+      { id: 's3', name: 'Exam technique workshop', description: 'Two hours on past papers and timing.', price: 55, durationMins: 120 },
+    ],
+    gallery: [],
+  },
+  {
+    id: 'biz-lantern-events', ownerEmail: null, name: 'Lantern Events',
+    category: 'events', tagline: 'Parties, weddings & hire',
+    about: "Everything for a party in one van: lights, sound, dance floors and a DJ if you want one. We set up and clear down the same night.",
+    area: 'Bolton & Greater Manchester', phone: '07700 900 640',
+    services: [
+      { id: 's1', name: 'Party DJ (4 hours)', description: 'DJ, sound system and lighting rig.', price: 320, durationMins: 240 },
+      { id: 's2', name: 'Venue lighting hire', description: 'Uplighters and festoon, delivered and set up.', price: 180, durationMins: 120 },
+      { id: 's3', name: 'Photo booth hire', description: 'Attended booth with props and prints.', price: 250, durationMins: 180 },
+    ],
+    gallery: [],
+  },
+];
+
+function loadBusinesses() {
+  try {
+    const raw = localStorage.getItem(BUSINESSES_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        // Seeds are re-merged on load so a new demo listing appears for people
+        // who already have storage, without touching anything they've edited.
+        const own = parsed.filter(b => b && b.id);
+        const ids = new Set(own.map(b => b.id));
+        return own.concat(SEED_BUSINESSES.filter(s => !ids.has(s.id)));
+      }
+    }
+  } catch (e) { /* ignore corrupt storage */ }
+  return SEED_BUSINESSES.map(b => ({ ...b }));
+}
+
+function saveBusinesses() {
+  try { localStorage.setItem(BUSINESSES_KEY, JSON.stringify(state.businesses)); } catch (e) { /* ignore */ }
+}
+
+function loadBookings() {
+  try {
+    const raw = localStorage.getItem(BOOKINGS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    if (Array.isArray(parsed)) return parsed;
+  } catch (e) { /* ignore corrupt storage */ }
+  return [];
+}
+
+function saveBookings() {
+  try { localStorage.setItem(BOOKINGS_KEY, JSON.stringify(state.bookings)); } catch (e) { /* ignore */ }
+}
+
+function businessById(id) {
+  return (state.businesses || []).find(b => b.id === id) || null;
+}
+
+function businessesInCategory(categoryId) {
+  return (state.businesses || []).filter(b => b.category === categoryId);
+}
+
+// The listing owned by whoever is signed in on /business, if they've made one.
+function myBusiness() {
+  const email = state.authUser && state.authUser.email;
+  if (!email) return null;
+  return (state.businesses || []).find(
+    b => b.ownerEmail && b.ownerEmail.toLowerCase() === String(email).toLowerCase()
+  ) || null;
+}
+
+function serviceById(business, serviceId) {
+  if (!business) return null;
+  return (business.services || []).find(s => s.id === serviceId) || null;
+}
+
+// Services book further ahead than groceries deliver.
+const SERVICE_BOOKING_DAYS = 14;
+
+function serviceDayLabel(offset) {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  if (offset === 0) return 'Today';
+  if (offset === 1) return 'Tomorrow';
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+function serviceSlotsFor(offset) {
+  const now = new Date();
+  const earliest = offset === 0 ? now.getHours() + 2 : 0;   // two hours' notice
+  return DELIVERY_SLOT_HOURS
+    .filter(h => h >= earliest)
+    .map(h => `${String(h).padStart(2, '0')}:00`);
+}
+
+function serviceSlotTimestamp(offset, slot) {
+  const hour = parseInt(String(slot).slice(0, 2), 10);
+  if (Number.isNaN(hour)) return null;
+  const d = new Date();
+  d.setDate(d.getDate() + (offset || 0));
+  d.setHours(hour, 0, 0, 0);
+  return d.getTime();
+}
+
+// --- bookings held in the basket -------------------------------------------
+
+function bookingLines() {
+  return (state.bookingCart || []).map(b => ({
+    ...b,
+    business: businessById(b.businessId),
+  }));
+}
+
+function bookingsTotal() {
+  return (state.bookingCart || []).reduce((sum, b) => sum + (b.price || 0), 0);
+}
+
+function bookingCount() {
+  return (state.bookingCart || []).length;
+}
+
+// A basket of services alone has nothing for a courier to carry, so it doesn't
+// attract a delivery fee and never reaches the courier pool.
+function basketHasDelivery() {
+  return cartLines().length > 0;
 }
 
 const state = {
@@ -448,6 +721,15 @@ const state = {
   activeOrderId: null,
   showAddressModal: false,
   showCheckoutModal: false,
+  // Local services marketplace
+  businesses: loadBusinesses(),
+  bookings: loadBookings(),
+  bookingCart: [],                 // bookings sitting in the basket, unpaid
+  servicesCategory: null,          // category being browsed
+  activeBusinessId: null,          // business page being viewed
+  bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
+  businessTab: 'page',             // business dashboard section
+  businessEditor: null,            // working copy while editing the listing
   placingOrder: false,
   checkoutError: null,
   scannerStatus: null,
@@ -509,7 +791,9 @@ const state = {
 // stored at signup — decides which app you land in.
 if (state.authUser) {
   state.mode = PATH_ROLE;
-  state.screen = PATH_ROLE === 'courier' ? 'courier-activity' : 'shopper-shop';
+  state.screen = PATH_ROLE === 'courier' ? 'courier-activity'
+    : PATH_ROLE === 'business' ? 'business-dashboard'
+    : 'shopper-shop';
 }
 
 const SHOP_IMAGES_KEY = 'absolutely-shop-images';
@@ -552,6 +836,7 @@ function savedLines() {
     .map(([id, qty]) => ({ product: PRODUCTS.find((p) => p.id === Number(id)), qty }))
     .filter((l) => l.product && l.qty > 0);
 }
+
 
 function cartCount() {
   return cartLines().reduce((sum, l) => sum + l.qty, 0);
@@ -628,6 +913,7 @@ function cardImageHtml(key, placeholderEmoji) {
 
 function renderLogin() {
   const isCourier = state.authRole === 'courier';
+  const isBusiness = state.authRole === 'business';
   return `
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;gap:24px;text-align:center;min-height:580px;background:#ffffff">
     
@@ -637,12 +923,12 @@ function renderLogin() {
 
     <div>
       <div style="font-size:27px;font-weight:800;letter-spacing:-0.6px;color:#141414">Welcome</div>
-      <div style="font-size:13.5px;color:#6b6b6b;margin-top:6px;line-height:1.45;max-width:280px">${isCourier ? 'Courier sign-in · Bolton delivery network' : 'Fast local delivery &amp; courier network in Bolton'}</div>
+      <div style="font-size:13.5px;color:#6b6b6b;margin-top:6px;line-height:1.45;max-width:280px">${isCourier ? 'Courier sign-in · Bolton delivery network' : isBusiness ? 'List your business and take bookings across Bolton' : 'Groceries, couriers &amp; local services in Bolton'}</div>
     </div>
 
     <!-- Which app you're signing into is set by the URL, not a toggle. -->
     <div style="display:inline-flex;align-items:center;gap:7px;background:#f2f2f2;border-radius:20px;padding:7px 14px;font-size:12.5px;font-weight:700;color:#141414">
-      ${isCourier ? '🚴 Courier app' : '🛒 Customer app'}
+      ${isCourier ? '🚴 Courier app' : isBusiness ? '🏪 Business app' : '🛒 Customer app'}
     </div>
 
     ${state.authNotice ? `
@@ -679,9 +965,11 @@ function renderLogin() {
     </div>
 
     <!-- Escape hatch for anyone who landed on the wrong URL. -->
-    <a href="${isCourier ? '/' : ROLE_PATH}" style="font-size:12px;color:#5c5c5c;font-weight:700;text-decoration:underline;text-underline-offset:2px">
-      ${isCourier ? 'Looking to order? Go to the customer app' : 'Are you a courier? Go to the courier app'}
-    </a>
+    <div style="display:flex;flex-direction:column;gap:9px;align-items:center">
+      ${(isCourier || isBusiness) ? `<a href="/" style="font-size:12px;color:#5c5c5c;font-weight:700;text-decoration:underline;text-underline-offset:2px">Looking to order? Go to the customer app</a>` : ''}
+      ${!isCourier ? `<a href="${ROLE_PATH}" style="font-size:12px;color:#5c5c5c;font-weight:700;text-decoration:underline;text-underline-offset:2px">Are you a courier? Go to the courier app</a>` : ''}
+      ${!isBusiness ? `<a href="${BUSINESS_PATH}" style="font-size:12px;color:#5c5c5c;font-weight:700;text-decoration:underline;text-underline-offset:2px">Run a business? List it on Vendaru</a>` : ''}
+    </div>
 
     <div style="font-size:11px;color:#9a9a9a;max-width:270px;line-height:1.45">
       By continuing, you agree to Vendaru's Terms of Service and Privacy Policy.
@@ -692,7 +980,9 @@ function renderLogin() {
 function renderAuthModal() {
   if (!state.showAuthModal || state.authProvider !== 'email') return '';
 
-  const roleTitle = state.authRole === 'courier' ? 'Courier' : 'Shopper';
+  const roleTitle = state.authRole === 'courier' ? 'Courier'
+    : state.authRole === 'business' ? 'Business'
+    : 'Shopper';
   const isLogin = state.emailAuthMode === 'login';
   return `
     <div class="graftr-modal-overlay" style="z-index:99999;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);justify-content:center;align-items:center;padding:24px">
@@ -1772,6 +2062,206 @@ function renderCheckoutDeliveryCard(cardShell, sectionLabel) {
     </div>`;
 }
 
+// --- customer-facing services screens --------------------------------------
+
+const SERVICE_CARD_SHELL = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff';
+const SERVICE_SECTION_LABEL = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
+
+// The listing card. Same object on the category list and at the top of the
+// business's own page, so the two can't drift apart.
+function businessCardHtml(b, { linked = true } = {}) {
+  const cat = serviceCategory(b.category);
+  const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const cheapest = (b.services || []).filter(s => s.price > 0).map(s => s.price).sort((x, y) => x - y)[0];
+
+  const avatar = b.logoSrc
+    ? `<span style="width:52px;height:52px;border-radius:14px;flex:0 0 auto;background:#f2f2f2 center/cover url('${b.logoSrc}')"></span>`
+    : `<span style="width:52px;height:52px;border-radius:14px;flex:0 0 auto;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">${escapeHtml(initials)}</span>`;
+
+  return `
+    <div class="${linked ? 'press ' : ''}shop-card" ${linked ? `data-action="openBusiness" data-arg="${b.id}"` : ''} style="${SERVICE_CARD_SHELL}${linked ? ';cursor:pointer' : ''}">
+      <div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+        ${avatar}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:15px;font-weight:600;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.name)}</div>
+          <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.tagline || (cat ? cat.label : ''))}</div>
+          <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">
+            ${cat ? `${cat.emoji} ${escapeHtml(cat.label)}` : ''}${b.area ? ` · ${escapeHtml(b.area)}` : ''}
+          </div>
+        </div>
+        ${cheapest !== undefined
+          ? `<div style="text-align:right;flex:0 0 auto">
+               <div style="font-size:11.5px;color:#6b6b6b">from</div>
+               <div style="font-size:14px;font-weight:600;color:#141414">£${cheapest.toFixed(2)}</div>
+             </div>`
+          : ''}
+      </div>
+    </div>`;
+}
+
+// Category list: every business filed under one category.
+function renderShopperServices() {
+  const cat = serviceCategory(state.servicesCategory);
+  const list = cat ? businessesInCategory(cat.id) : [];
+
+  return `
+    <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div>
+          <div style="font-size:25px;font-weight:700;color:#141414">${cat ? escapeHtml(cat.label) : 'Services'}</div>
+          <div style="font-size:13px;color:#6b6b6b;margin-top:2px">${list.length} local business${list.length === 1 ? '' : 'es'}</div>
+        </div>
+        <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
+      </div>
+
+      ${list.length
+        ? list.map(b => businessCardHtml(b)).join('')
+        : `<div class="shop-card" style="${SERVICE_CARD_SHELL}">
+             <div style="padding:22px 16px;text-align:center">
+               <div style="font-size:15px;font-weight:600;color:#141414">Nobody listed here yet</div>
+               <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Run a business in this area? List it free and take bookings through Vendaru.</div>
+               <a href="${BUSINESS_PATH}" style="display:inline-block;background:#141414;color:#fff;text-decoration:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;margin-top:12px">List your business</a>
+             </div>
+           </div>`}
+    </div>`;
+}
+
+// Four tiles of the business's own work. Empty slots stay visible so the page
+// keeps its shape before the owner has uploaded anything.
+function galleryGridHtml(gallery, { editable = false } = {}) {
+  const tiles = Array.from({ length: 4 }, (_, i) => {
+    const src = (gallery || [])[i];
+    const inner = src
+      ? `<span style="position:absolute;inset:0;background:#f2f2f2 center/cover url('${src}')"></span>`
+      : `<span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#f6f6f6;color:#b0b0b0;font-size:12px">${editable ? 'Add photo' : ''}</span>`;
+
+    const body = `<span style="position:relative;display:block;width:100%;padding-top:100%;border-radius:12px;overflow:hidden;border:1.5px solid rgba(20,20,20,0.1)">${inner}</span>`;
+
+    return editable
+      ? `<label style="cursor:pointer;display:block">
+           ${body}
+           <input type="file" accept="image/*" data-upload-gallery="${i}" style="display:none" />
+         </label>`
+      : body;
+  }).join('');
+
+  return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px">${tiles}</div>`;
+}
+
+// The business's own page: card, then bookable services, then their work.
+function renderShopperBusiness() {
+  const b = businessById(state.activeBusinessId);
+  if (!b) {
+    return `<div style="padding:0 18px 24px"><div style="font-size:25px;font-weight:700">Not found</div>
+      <div style="font-size:13px;color:#6b6b6b;margin-top:6px">That business is no longer listed.</div>
+      <button type="button" data-action="goShop" style="background:#141414;color:#fff;border:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:12px;font-family:inherit">Back to Shop</button></div>`;
+  }
+
+  const cat = serviceCategory(b.category);
+  const booked = new Set((state.bookingCart || []).filter(x => x.businessId === b.id).map(x => x.serviceId));
+
+  const servicesHtml = (b.services || []).length
+    ? (b.services || []).map((s, i) => `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13.5px;font-weight:500;color:#141414">${escapeHtml(s.name)}</div>
+            ${s.description ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:2px;line-height:1.45">${escapeHtml(s.description)}</div>` : ''}
+            <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">
+              ${s.durationMins ? `${s.durationMins} min` : ''}${s.durationMins && s.price > 0 ? ' · ' : ''}${s.price > 0 ? `£${s.price.toFixed(2)}` : 'Free'}
+            </div>
+          </div>
+          ${booked.has(s.id)
+            ? `<span style="flex:0 0 auto;font-size:12.5px;font-weight:600;color:#6b6b6b;padding:10px 0">In basket</span>`
+            : `<div class="press" data-action="openBookingPicker" data-arg="${b.id}|${s.id}" style="flex:0 0 auto;background:#141414;color:#fff;border-radius:14px;padding:10px 16px;font-weight:600;font-size:13.5px;cursor:pointer">Book</div>`}
+        </div>
+      `).join('')
+    : `<div style="padding:14px 0 4px;font-size:13px;color:#6b6b6b">No services listed yet.</div>`;
+
+  return `
+    <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div class="press" data-action="backToCategory" style="cursor:pointer;font-size:13px;font-weight:500;color:#6b6b6b">‹ ${cat ? escapeHtml(cat.label) : 'Back'}</div>
+        <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
+      </div>
+
+      <!-- 1. The listing card, exactly as it appears in the category -->
+      ${businessCardHtml(b, { linked: false })}
+
+      ${b.about ? `
+        <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+          <div style="padding:4px 16px 14px">
+            <div style="${SERVICE_SECTION_LABEL}">About</div>
+            <div style="font-size:13.5px;color:#141414;line-height:1.55;margin-top:6px">${escapeHtml(b.about)}</div>
+            ${b.phone ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:9px">${escapeHtml(b.phone)}</div>` : ''}
+          </div>
+        </div>` : ''}
+
+      <!-- 2. Bookable services -->
+      <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+        <div style="padding:4px 16px 14px">
+          <div style="${SERVICE_SECTION_LABEL}">Services</div>
+          ${servicesHtml}
+        </div>
+      </div>
+
+      <!-- 3. Their work -->
+      <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+        <div style="padding:4px 16px 16px">
+          <div style="${SERVICE_SECTION_LABEL}">Their work</div>
+          ${galleryGridHtml(b.gallery)}
+        </div>
+      </div>
+    </div>`;
+}
+
+// Slot picker for a single service — same day/time chip pattern as delivery.
+function renderBookingPickerModal() {
+  const draft = state.bookingDraft;
+  if (!draft) return '';
+  const b = businessById(draft.businessId);
+  const s = serviceById(b, draft.serviceId);
+  if (!b || !s) return '';
+
+  const days = Array.from({ length: SERVICE_BOOKING_DAYS }, (_, i) => i)
+    .filter(o => serviceSlotsFor(o).length > 0);
+  const slots = serviceSlotsFor(draft.dayOffset);
+  const chip = (active) => `flex:0 0 auto;padding:8px 13px;border-radius:20px;font-size:12.5px;font-weight:${active ? 600 : 500};cursor:pointer;white-space:nowrap;border:1.5px solid ${active ? '#141414' : 'rgba(20,20,20,0.15)'};background:${active ? '#141414' : '#fff'};color:${active ? '#fff' : '#141414'};font-family:inherit`;
+
+  return `
+    <div class="graftr-modal-overlay">
+      <div class="graftr-modal-card" style="padding:0;gap:0">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 18px 14px;border-bottom:1px solid #f0f0f0;flex:0 0 auto">
+          <div style="min-width:0">
+            <div style="font-size:17px;font-weight:700;color:#141414">${escapeHtml(s.name)}</div>
+            <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${escapeHtml(b.name)} · ${s.price > 0 ? `£${s.price.toFixed(2)}` : 'Free'}</div>
+          </div>
+          <button data-action="closeBookingPicker" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b;padding:2px 6px;line-height:1">✕</button>
+        </div>
+
+        <div style="flex:1;min-height:0;overflow-y:auto;padding:14px 18px">
+          <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">Pick a date</div>
+          <div style="display:flex;gap:7px;overflow-x:auto;padding:9px 0 2px" class="slot-scroll">
+            ${days.map(o => `<button type="button" data-action="setBookingDay" data-arg="${o}" style="${chip(o === draft.dayOffset)}">${serviceDayLabel(o)}</button>`).join('')}
+          </div>
+
+          <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;margin-top:13px">Pick a time</div>
+          ${slots.length
+            ? `<div style="display:flex;flex-wrap:wrap;gap:7px;padding-top:9px">
+                 ${slots.map(t => `<button type="button" data-action="setBookingSlot" data-arg="${t}" style="${chip(t === draft.slot)}">${t}</button>`).join('')}
+               </div>`
+            : `<div style="font-size:13px;color:#6b6b6b;margin-top:9px">No times left that day.</div>`}
+        </div>
+
+        <div style="display:flex;gap:10px;padding:14px 18px calc(14px + env(safe-area-inset-bottom, 0px));border-top:1px solid #f0f0f0;flex:0 0 auto">
+          <button type="button" data-action="closeBookingPicker" style="flex:1;background:#fff;border:1.5px solid rgba(20,20,20,0.15);padding:13px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit">Cancel</button>
+          <button type="button" data-action="confirmBooking" ${draft.slot ? '' : 'disabled'} style="flex:1;background:${draft.slot ? '#141414' : 'rgba(20,20,20,0.35)'};color:#fff;border:none;padding:13px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:${draft.slot ? 'pointer' : 'default'};font-family:inherit">
+            ${draft.slot ? 'Add to basket' : 'Pick a time'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderShopperShop() {
   const searching = state.searchQuery.trim().length > 0;
   const body = searching
@@ -1803,6 +2293,22 @@ function renderShopperShop() {
       <div style="padding:16px">
         <div style="display:flex;justify-content:space-between"><span style="font-size:15.5px;font-weight:700">Special Requests</span><span style="opacity:0.4">›</span></div>
         <div style="font-size:13px;opacity:0.6">Collection and delivery from any store</div>
+      </div>
+    </div>
+
+    <!-- Vendaru isn't only groceries: local businesses list here by category. -->
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
+      <div style="padding:4px 16px 14px">
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">Local services</div>
+        <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Book trusted businesses near you and pay in the same basket.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px">
+          ${SERVICE_CATEGORIES.map(c => `
+            <div class="press" data-action="goServiceCategory" data-arg="${c.id}" style="display:flex;align-items:center;gap:9px;border:1.5px solid rgba(20,20,20,0.12);border-radius:12px;padding:10px 11px;cursor:pointer;min-width:0">
+              <span style="font-size:16px;flex:0 0 auto">${c.emoji}</span>
+              <span style="font-size:12.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.label}</span>
+            </div>`).join('')}
+        </div>
+        <a href="${BUSINESS_PATH}" style="display:block;text-align:center;margin-top:12px;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>
       </div>
     </div>
   `;
@@ -2120,6 +2626,37 @@ function renderShopperBasket() {
   // basket, so the card only shows up once there's a reward waiting.
   const loyaltyCard = loyaltyState().rewardsReady > 0 ? renderLoyaltyCard('basket') : '';
 
+  // Service bookings ride in the same basket as the shopping.
+  const bookings = bookingLines();
+  const bookingsCard = bookings.length
+    ? `
+    <div class="shop-card" style="${cardShell}">
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${sectionLabel}">
+          <span>Bookings (${bookings.length})</span>
+          <span style="font-size:14px;font-weight:600;color:#141414">£${bookingsTotal().toFixed(2)}</span>
+        </div>
+        ${bookings.map((bk, i) => `
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13.5px;font-weight:500;color:#141414">${escapeHtml(bk.serviceName)}</div>
+              <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${escapeHtml(bk.businessName)}</div>
+              <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${escapeHtml(scheduleLabelFor(bk.at) || '')}</div>
+              <button type="button" data-action="removeBooking" data-arg="${bk.key}" style="background:none;border:none;padding:4px 0 0;font-size:12.5px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Remove</button>
+            </div>
+            <span style="font-size:13.5px;font-weight:600;color:#141414;flex:0 0 auto">£${bk.price.toFixed(2)}</span>
+          </div>
+        `).join('')}
+        ${lines.length === 0 ? `
+          <div style="display:flex;justify-content:flex-end;border-top:1px solid #f0f0f0;padding-top:13px;margin-top:2px">
+            <div class="press" data-action="checkout" style="background:#141414;color:#fff;border-radius:14px;padding:10px 18px;font-weight:600;font-size:13.5px;cursor:pointer;flex:0 0 auto">
+              Checkout · £${bookingsTotal().toFixed(2)}
+            </div>
+          </div>` : ''}
+      </div>
+    </div>`
+    : '';
+
   return `
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
@@ -2127,7 +2664,9 @@ function renderShopperBasket() {
         <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
       </div>
       ${loyaltyCard}
-      ${basketBox}
+      ${bookingsCard}
+      <!-- "Your basket is empty" would contradict a basket holding bookings. -->
+      ${(state.basketCheckedOut || lines.length > 0 || bookings.length === 0) ? basketBox : ''}
       ${savedCard}
       ${activeOrdersCard}
       ${pastOrdersCard}
@@ -2215,12 +2754,15 @@ function renderCheckoutModal() {
   const lines = cartLines();
   const subtotal = cartSubtotal();
   const discount = loyaltyDiscount();
-  const deliveryFee = 1.99;
-  const grandTotal = subtotal - discount + deliveryFee;
+  const bookings = bookingLines();
+  const bookingsSum = bookingsTotal();
+  // A basket of bookings alone has nothing to carry, so no delivery fee.
+  const deliveryFee = basketHasDelivery() ? 1.99 : 0;
+  const grandTotal = subtotal - discount + bookingsSum + deliveryFee;
   const p = state.userProfile;
   // "Schedule" picked but no slot chosen — otherwise the order would quietly
   // go out as an immediate one.
-  const needsSlot = state.deliveryLater && !state.deliverySlot;
+  const needsSlot = basketHasDelivery() && state.deliveryLater && !state.deliverySlot;
 
   const cardShell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#fff;padding:4px 16px 14px';
   const sectionLabel = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
@@ -2260,19 +2802,35 @@ function renderCheckoutModal() {
           </div>
         </div>
 
-        <!-- Delivery time -->
-        ${renderCheckoutDeliveryCard(cardShell, sectionLabel)}
+        <!-- Bookings -->
+        ${bookings.length ? `
+          <div style="${cardShell}">
+            <div style="${sectionLabel}">Bookings (${bookings.length})</div>
+            ${bookings.map((bk, i) => `
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
+                <span style="font-size:13.5px;color:#141414;min-width:0">
+                  ${escapeHtml(bk.serviceName)}
+                  <span style="display:block;font-size:12.5px;color:#6b6b6b">${escapeHtml(bk.businessName)} · ${escapeHtml(scheduleLabelFor(bk.at) || '')}</span>
+                </span>
+                <span style="font-size:13.5px;font-weight:600;flex:0 0 auto">£${bk.price.toFixed(2)}</span>
+              </div>
+            `).join('')}
+          </div>` : ''}
+
+        <!-- Delivery time — only when something is actually being delivered -->
+        ${basketHasDelivery() ? renderCheckoutDeliveryCard(cardShell, sectionLabel) : ''}
 
         <!-- Order summary -->
         <div style="${cardShell}">
-          <div style="${sectionLabel}">Order summary (${cartCount()} item${cartCount() === 1 ? '' : 's'})</div>
+          <div style="${sectionLabel}">Order summary (${cartCount() + bookings.length} item${cartCount() + bookings.length === 1 ? '' : 's'})</div>
           ${itemsListHtml}
           <div style="border-top:1px solid #f0f0f0;padding-top:10px;margin-top:2px">
             <div style="${summaryRow}"><span>Subtotal</span><span>£${subtotal.toFixed(2)}</span></div>
             ${discount > 0
               ? `<div style="${summaryRow};color:#c9447a;font-weight:600"><span>Loyalty reward</span><span>−£${discount.toFixed(2)}</span></div>`
               : ''}
-            <div style="${summaryRow}"><span>Delivery</span><span>£${deliveryFee.toFixed(2)}</span></div>
+            ${bookingsSum > 0 ? `<div style="${summaryRow}"><span>Bookings</span><span>£${bookingsSum.toFixed(2)}</span></div>` : ''}
+            ${deliveryFee > 0 ? `<div style="${summaryRow}"><span>Delivery</span><span>£${deliveryFee.toFixed(2)}</span></div>` : ''}
             <div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;font-weight:600;color:#141414;padding-top:9px;margin-top:5px;border-top:1px solid #f0f0f0">
               <span>Total</span><span>£${grandTotal.toFixed(2)}</span>
             </div>
@@ -2565,6 +3123,9 @@ function renderShopperAccount() {
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px">
       <a href="${ROLE_PATH}" style="width:100%;background:#ffffff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:14px;border-radius:16px;font-size:14px;font-weight:600;text-decoration:none;text-align:center;box-sizing:border-box;display:block">
         Switch to courier app
+      </a>
+      <a href="${BUSINESS_PATH}" style="width:100%;background:#ffffff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:14px;border-radius:16px;font-size:14px;font-weight:600;text-decoration:none;text-align:center;box-sizing:border-box;display:block">
+        List your business
       </a>
       <button type="button" data-action="logout" style="width:100%;background:none;border:none;padding:6px;font-size:14px;font-weight:600;color:#6b6b6b;cursor:pointer;font-family:inherit">
         Log out
@@ -3338,6 +3899,223 @@ function stopVoiceRecognition() {
   state.aiListening = false;
 }
 
+// --- business dashboard (/business) ----------------------------------------
+
+function blankBusiness() {
+  return {
+    id: 'biz-' + Date.now().toString(36),
+    ownerEmail: (state.authUser && state.authUser.email) || null,
+    name: '', category: SERVICE_CATEGORIES[0].id, tagline: '', about: '',
+    area: '', phone: '', services: [], gallery: [], createdAt: Date.now(),
+  };
+}
+
+function bookingsForBusiness(businessId) {
+  return (state.bookings || [])
+    .filter(bk => bk.businessId === businessId)
+    .sort((a, b) => a.scheduledAt - b.scheduledAt);
+}
+
+function renderBusinessTabs() {
+  const tab = (id, label, icon) => `
+    <div class="press floating-tab" data-action="setBusinessTab" data-arg="${id}" style="${state.businessTab === id
+      ? 'color:#141414;font-weight:600' : 'color:#9a9a9a;font-weight:500'}">
+      ${icon}
+      ${label}
+    </div>`;
+
+  return `
+  <div class="floating-tabbar">
+    ${tab('page', 'Page', '<svg width="20" height="20" viewBox="0 0 20 20"><rect x="3.5" y="3" width="13" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 7.5h7M6.5 10.5h7M6.5 13.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>')}
+    ${tab('services', 'Services', '<svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 6h14M3 10h14M3 14h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>')}
+    ${tab('gallery', 'Photos', '<svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="8" r="1.2" fill="currentColor"/><path d="M4 14l4-4 3.5 3.5L14 11l2 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>')}
+    ${tab('bookings', 'Bookings', '<svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4.5" width="14" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 8.5h14M7 3v3M13 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>')}
+  </div>`;
+}
+
+function renderBusinessDashboard() {
+  const shell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff';
+  const label = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
+  const mine = myBusiness();
+
+  // Nothing listed yet — one button to create the listing.
+  if (!mine) {
+    return `
+      <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:25px;font-weight:700;color:#141414">Your business</div>
+        <div class="shop-card" style="${shell}">
+          <div style="padding:22px 16px;text-align:center">
+            <div style="font-size:15px;font-weight:600;color:#141414">List your business on Vendaru</div>
+            <div style="font-size:13px;color:#6b6b6b;margin-top:4px;line-height:1.5">Create your card, add the services you offer and take bookings from local customers.</div>
+            <button type="button" data-action="createBusiness" style="background:#141414;color:#fff;border:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:12px;font-family:inherit">Create my page</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const tab = state.businessTab;
+  let body;
+
+  if (tab === 'page') {
+    const e = state.businessEditor || mine;
+    body = `
+      <div class="shop-card" style="${shell}">
+        <div style="padding:4px 16px 14px">
+          <div style="${label}">How your card looks</div>
+          <div style="margin-top:10px">${businessCardHtml(e, { linked: false })}</div>
+        </div>
+      </div>
+
+      <div class="shop-card" style="${shell}">
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:13px">
+          <div style="display:flex;align-items:center;gap:13px">
+            ${e.logoSrc
+              ? `<img src="${e.logoSrc}" style="width:56px;height:56px;border-radius:14px;object-fit:cover;flex:0 0 auto" />`
+              : `<div style="width:56px;height:56px;border-radius:14px;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;flex:0 0 auto">${escapeHtml((e.name || '?').slice(0, 1).toUpperCase())}</div>`}
+            <label style="font-size:13.5px;font-weight:500;color:#141414;cursor:pointer;text-decoration:underline;text-underline-offset:2px">
+              Change logo
+              <input type="file" accept="image/*" data-upload-business-logo style="display:none" />
+            </label>
+          </div>
+
+          <div class="graftr-input-group">
+            <label>Business name</label>
+            <input type="text" data-bind="business.name" value="${escapeHtml(e.name || '')}" placeholder="e.g. Paws of Bolton" />
+          </div>
+
+          <div class="graftr-input-group">
+            <label>Category</label>
+            <select data-bind="business.category" style="width:100%;box-sizing:border-box;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;padding:11px 13px;font-size:16px;font-family:inherit;background:#fff;color:#141414">
+              ${SERVICE_CATEGORIES.map(c => `<option value="${c.id}" ${c.id === e.category ? 'selected' : ''}>${c.emoji} ${c.label}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="graftr-input-group">
+            <label>One-line description</label>
+            <input type="text" data-bind="business.tagline" value="${escapeHtml(e.tagline || '')}" placeholder="Insured dog walking &amp; drop-in visits" />
+          </div>
+
+          <div class="graftr-input-group">
+            <label>Area covered</label>
+            <input type="text" data-bind="business.area" value="${escapeHtml(e.area || '')}" placeholder="Bolton BL1" />
+          </div>
+
+          <div class="graftr-input-group">
+            <label>Contact number</label>
+            <input type="tel" data-bind="business.phone" value="${escapeHtml(e.phone || '')}" placeholder="01204 900 000" />
+          </div>
+
+          <div class="graftr-input-group">
+            <label>About your business</label>
+            <textarea data-bind="business.about" rows="4" placeholder="Tell customers what you do and what makes you different.">${escapeHtml(e.about || '')}</textarea>
+          </div>
+
+          <button type="button" data-action="saveBusiness" style="background:#141414;color:#fff;border:none;padding:13px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit">Save page</button>
+        </div>
+      </div>`;
+  } else if (tab === 'services') {
+    const list = mine.services || [];
+    body = `
+      <div class="shop-card" style="${shell}">
+        <div style="padding:4px 16px 14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${label}">
+            <span>Services you offer${list.length ? ` (${list.length})` : ''}</span>
+            <button type="button" data-action="addService" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Add service</button>
+          </div>
+          ${list.length
+            ? list.map((s, i) => `
+                <div style="padding:12px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
+                  <div class="graftr-input-group">
+                    <label>Name</label>
+                    <input type="text" data-bind="service.${s.id}.name" value="${escapeHtml(s.name || '')}" placeholder="Group walk (1 hour)" />
+                  </div>
+                  <div class="graftr-input-group" style="margin-top:9px">
+                    <label>Description</label>
+                    <input type="text" data-bind="service.${s.id}.description" value="${escapeHtml(s.description || '')}" placeholder="What's included" />
+                  </div>
+                  <div style="display:flex;gap:10px;margin-top:9px">
+                    <div class="graftr-input-group" style="flex:1;min-width:0">
+                      <label>Price (£)</label>
+                      <input type="number" min="0" step="0.01" data-bind="service.${s.id}.price" value="${s.price != null ? s.price : ''}" placeholder="14.00" />
+                    </div>
+                    <div class="graftr-input-group" style="flex:1;min-width:0">
+                      <label>Minutes</label>
+                      <input type="number" min="0" step="5" data-bind="service.${s.id}.durationMins" value="${s.durationMins != null ? s.durationMins : ''}" placeholder="60" />
+                    </div>
+                  </div>
+                  <button type="button" data-action="removeService" data-arg="${s.id}" style="background:none;border:none;padding:8px 0 0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Remove</button>
+                </div>`).join('')
+            : `<div style="padding:14px 0 4px">
+                 <div style="font-size:13.5px;font-weight:500;color:#141414">No services yet</div>
+                 <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Add what customers can book, with a price and how long it takes.</div>
+               </div>`}
+        </div>
+      </div>`;
+  } else if (tab === 'gallery') {
+    body = `
+      <div class="shop-card" style="${shell}">
+        <div style="padding:4px 16px 16px">
+          <div style="${label}">Showcase your work</div>
+          <div style="font-size:12.5px;color:#6b6b6b;margin-top:4px;line-height:1.5">Four photos, shown at the bottom of your page. Tap a tile to replace it.</div>
+          ${galleryGridHtml(mine.gallery, { editable: true })}
+        </div>
+      </div>`;
+  } else {
+    const list = bookingsForBusiness(mine.id);
+    const upcoming = list.filter(bk => bk.status === 'Confirmed');
+    const past = list.filter(bk => bk.status !== 'Confirmed');
+    const row = (bk, i) => `
+      <div style="padding:13px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : ''}">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <div style="font-size:14px;font-weight:500;color:#141414">${escapeHtml(bk.serviceName)}</div>
+          <div style="font-size:14px;font-weight:600;color:#141414;flex:0 0 auto">£${(bk.price || 0).toFixed(2)}</div>
+        </div>
+        <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">
+          ${escapeHtml(scheduleLabelFor(bk.scheduledAt) || '')} · ${escapeHtml(bk.customerName || 'Customer')} · ${escapeHtml(bk.status)}
+        </div>
+        ${bk.customerPhone ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${escapeHtml(bk.customerPhone)}</div>` : ''}
+        ${bk.customerAddress ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${escapeHtml(bk.customerAddress)}</div>` : ''}
+        ${bk.status === 'Confirmed'
+          ? `<div style="display:flex;gap:16px;margin-top:9px">
+               <button type="button" data-action="completeBooking" data-arg="${bk.id}" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Mark complete</button>
+               <button type="button" data-action="cancelBooking" data-arg="${bk.id}" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Cancel</button>
+             </div>`
+          : ''}
+      </div>`;
+
+    body = `
+      <div class="shop-card" style="${shell}">
+        <div style="padding:4px 16px 14px">
+          <div style="${label}">Upcoming${upcoming.length ? ` (${upcoming.length})` : ''}</div>
+          ${upcoming.length
+            ? upcoming.map(row).join('')
+            : `<div style="padding:14px 0 4px">
+                 <div style="font-size:13.5px;font-weight:500;color:#141414">No bookings yet</div>
+                 <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Bookings customers pay for appear here with their contact details.</div>
+               </div>`}
+        </div>
+      </div>
+      ${past.length ? `
+        <div class="shop-card" style="${shell}">
+          <div style="padding:4px 16px 14px">
+            <div style="${label}">Past (${past.length})</div>
+            ${past.map(row).join('')}
+          </div>
+        </div>` : ''}`;
+  }
+
+  const titles = { page: 'Your page', services: 'Services', gallery: 'Photos', bookings: 'Bookings' };
+
+  return `
+    <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div style="font-size:25px;font-weight:700;color:#141414">${titles[tab] || 'Your business'}</div>
+        <button type="button" data-action="logout" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Log out</button>
+      </div>
+      ${body}
+    </div>`;
+}
+
 const screenRenderers = {
   login: renderLogin,
   'courier-activity': renderCourierActivity,
@@ -3350,6 +4128,9 @@ const screenRenderers = {
   'shopper-inbox': renderShopperInbox,
   'shopper-account': renderShopperAccount,
   'shopper-special-request': renderShopperSpecialRequest,
+  'shopper-services': renderShopperServices,
+  'shopper-business': renderShopperBusiness,
+  'business-dashboard': renderBusinessDashboard,
 };
 
 function render() {
@@ -3362,6 +4143,9 @@ function render() {
   } else if (state.mode === 'shopper') {
     tabs = renderShopperTabs();
     bottomPad = 'padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px));';
+  } else if (state.mode === 'business') {
+    tabs = renderBusinessTabs();
+    bottomPad = 'padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px));';
   }
 
   const aiDrawer = renderAiChatDrawer();
@@ -3370,6 +4154,7 @@ function render() {
   const authModal = renderAuthModal();
   const termsModal = renderTermsModal();
   const loyaltyPicker = renderLoyaltyPickerModal();
+  const bookingPicker = renderBookingPickerModal();
 
   root.innerHTML = `
     <div class="app-scroll" style="flex:1;overflow:auto;padding-top:calc(56px + env(safe-area-inset-top, 0px));${bottomPad}">${content}</div>
@@ -3380,6 +4165,7 @@ function render() {
     ${authModal}
     ${termsModal}
     ${loyaltyPicker}
+    ${bookingPicker}
   `;
 
   if (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) {
@@ -3468,7 +4254,9 @@ function handleGoogleCredentialResponse(response) {
     state.authNotice = null;
     state.showGoogleFallbackButton = false;
     state.mode = state.authRole;
-    state.screen = state.authRole === 'courier' ? 'courier-activity' : 'shopper-shop';
+    state.screen = state.authRole === 'courier' ? 'courier-activity'
+      : state.authRole === 'business' ? 'business-dashboard'
+      : 'shopper-shop';
 
     const inboxTarget = state.authRole === 'courier' ? state.courierInbox : state.shopperInbox;
     if (inboxTarget) {
@@ -3617,7 +4405,9 @@ const actions = {
     state.showAuthModal = false;
     state.authProvider = null;
     state.mode = state.authRole;
-    state.screen = state.authRole === 'courier' ? 'courier-activity' : 'shopper-shop';
+    state.screen = state.authRole === 'courier' ? 'courier-activity'
+      : state.authRole === 'business' ? 'business-dashboard'
+      : 'shopper-shop';
 
     const inboxTarget = state.authRole === 'courier' ? state.courierInbox : state.shopperInbox;
     if (inboxTarget) {
@@ -3678,7 +4468,7 @@ const actions = {
   },
   placeOrder: async () => {
     const lines = cartLines();
-    if (lines.length === 0 || state.placingOrder) return;
+    if ((lines.length === 0 && bookingCount() === 0) || state.placingOrder) return;
 
     // Belt and braces: the button is swapped out when details are missing, but
     // never let an order through without somewhere to deliver it.
@@ -3692,14 +4482,16 @@ const actions = {
 
     // Same belt and braces for scheduling: the button is disabled without a
     // slot, but never let a "Schedule" order through as an immediate one.
-    if (state.deliveryLater && !state.deliverySlot) {
+    if (basketHasDelivery() && state.deliveryLater && !state.deliverySlot) {
       state.checkoutError = 'Choose a delivery slot first.';
       render();
       return;
     }
     const sub = cartTotal();                 // already net of any free items
-    const deliveryFee = 1.99;
+    // Services alone are not delivered, so they carry no delivery fee.
+    const deliveryFee = basketHasDelivery() ? 1.99 : 0;
     const freeUsed = loyaltyPendingFree();
+    const bookings = bookingLines();
 
     // Free units are billed as their own zero-priced line so they show up on
     // the Stripe receipt as a reward rather than silently vanishing.
@@ -3714,6 +4506,11 @@ const actions = {
       }
     });
 
+    // Each booking bills as its own line so it shows on the Stripe receipt.
+    bookings.forEach(bk => {
+      billedLines.push({ name: `${bk.serviceName} — ${bk.businessName}`, qty: 1, unitPrice: bk.price });
+    });
+
     const snapshot = {
       items: lines.map(l => ({
         name: l.product.name,
@@ -3721,8 +4518,9 @@ const actions = {
         price: l.product.estimated_price_gbp,
         freeQty: freeQtyFor(l.product.id, l.qty),
       })),
-      subtotal: sub,
+      subtotal: sub + bookingsTotal(),
       deliveryFee,
+      bookings: bookings.map(bk => ({ businessId: bk.businessId, businessName: bk.businessName, serviceId: bk.serviceId, serviceName: bk.serviceName, price: bk.price, at: bk.at })),
       loyaltyUsed: freeUsed,
       loyaltyDiscount: loyaltyDiscount(),
       address: `${state.userProfile.address}, ${state.userProfile.postcode}`,
@@ -3923,6 +4721,135 @@ const actions = {
   goShop: () => { state.screen = 'shopper-shop'; render(); },
   goBrowse: () => { state.screen = 'shopper-browse'; render(); },
   goBrowseCategory: (category) => { state.screen = 'shopper-browse'; state.pendingScrollCategory = category; render(); },
+  // --- local services: browsing and booking --------------------------------
+  goServiceCategory: (id) => {
+    state.servicesCategory = String(id);
+    state.screen = 'shopper-services';
+    render();
+  },
+  openBusiness: (id) => {
+    state.activeBusinessId = String(id);
+    state.screen = 'shopper-business';
+    render();
+  },
+  backToCategory: () => {
+    const b = businessById(state.activeBusinessId);
+    if (b) state.servicesCategory = b.category;
+    state.screen = state.servicesCategory ? 'shopper-services' : 'shopper-shop';
+    render();
+  },
+  openBookingPicker: (arg) => {
+    const [businessId, serviceId] = String(arg).split('|');
+    const business = businessById(businessId);
+    if (!serviceById(business, serviceId)) return;
+    // Open on the first day that still has usable times.
+    const firstDay = Array.from({ length: SERVICE_BOOKING_DAYS }, (_, i) => i)
+      .find(o => serviceSlotsFor(o).length > 0) ?? 1;
+    state.bookingDraft = { businessId, serviceId, dayOffset: firstDay, slot: null };
+    render();
+  },
+  closeBookingPicker: () => { state.bookingDraft = null; render(); },
+  setBookingDay: (offset) => {
+    if (!state.bookingDraft) return;
+    state.bookingDraft.dayOffset = Number(offset) || 0;
+    state.bookingDraft.slot = null;      // times differ per day
+    render();
+  },
+  setBookingSlot: (slot) => {
+    if (!state.bookingDraft) return;
+    state.bookingDraft.slot = String(slot);
+    render();
+  },
+  confirmBooking: () => {
+    const d = state.bookingDraft;
+    if (!d || !d.slot) return;
+    const business = businessById(d.businessId);
+    const service = serviceById(business, d.serviceId);
+    if (!business || !service) return;
+
+    const at = serviceSlotTimestamp(d.dayOffset, d.slot);
+    if (!at) return;
+
+    state.bookingCart.push({
+      key: `${business.id}:${service.id}:${at}`,
+      businessId: business.id,
+      businessName: business.name,
+      serviceId: service.id,
+      serviceName: service.name,
+      price: Number(service.price) || 0,
+      durationMins: service.durationMins || null,
+      at,
+    });
+    state.bookingDraft = null;
+    state.screen = 'shopper-basket';
+    render();
+  },
+  removeBooking: (key) => {
+    state.bookingCart = (state.bookingCart || []).filter(b => b.key !== String(key));
+    render();
+  },
+
+  // --- business owner ------------------------------------------------------
+  setBusinessTab: (tab) => {
+    state.businessTab = String(tab);
+    state.businessEditor = null;
+    render();
+  },
+  createBusiness: () => {
+    const fresh = blankBusiness();
+    state.businesses.unshift(fresh);
+    saveBusinesses();
+    state.businessTab = 'page';
+    state.businessEditor = null;
+    render();
+  },
+  saveBusiness: () => {
+    const mine = myBusiness();
+    if (!mine || !state.businessEditor) { render(); return; }
+    Object.assign(mine, state.businessEditor);
+    state.businessEditor = null;
+    saveBusinesses();
+    render();
+  },
+  addService: () => {
+    const mine = myBusiness();
+    if (!mine) return;
+    mine.services = mine.services || [];
+    mine.services.push({
+      id: 's' + Date.now().toString(36),
+      name: '', description: '', price: 0, durationMins: 60,
+    });
+    saveBusinesses();
+    render();
+  },
+  removeService: (serviceId) => {
+    const mine = myBusiness();
+    if (!mine) return;
+    mine.services = (mine.services || []).filter(s => s.id !== String(serviceId));
+    saveBusinesses();
+    render();
+  },
+  completeBooking: (id) => {
+    const bk = (state.bookings || []).find(x => x.id === String(id));
+    if (!bk) return;
+    bk.status = 'Completed';
+    saveBookings();
+    render();
+  },
+  cancelBooking: (id) => {
+    const bk = (state.bookings || []).find(x => x.id === String(id));
+    if (!bk) return;
+    bk.status = 'Cancelled';
+    saveBookings();
+    state.shopperInbox.unshift({
+      tag: 'Booking',
+      text: `${bk.businessName} cancelled your ${bk.serviceName} booking for ${scheduleLabelFor(bk.scheduledAt)}.`,
+      createdAt: Date.now(),
+      read: false,
+    });
+    saveInbox();
+    render();
+  },
   goBasket: () => { state.screen = 'shopper-basket'; render(); },
   addToCart: (id) => { state.cart[id] = (state.cart[id] || 0) + 1; render(); },
   removeFromCart: (id) => {
@@ -4275,6 +5202,39 @@ document.addEventListener('DOMContentLoaded', () => {
         render();
       };
       reader.readAsDataURL(avatarInput.files[0]);
+      return;
+    }
+    const bizLogoInput = e.target.closest('input[type="file"][data-upload-business-logo]');
+    if (bizLogoInput && bizLogoInput.files[0]) {
+      const mine = myBusiness();
+      if (mine) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          mine.logoSrc = reader.result;
+          if (state.businessEditor) state.businessEditor.logoSrc = reader.result;
+          saveBusinesses();
+          render();
+        };
+        reader.readAsDataURL(bizLogoInput.files[0]);
+      }
+      return;
+    }
+    const galleryInput = e.target.closest('input[type="file"][data-upload-gallery]');
+    if (galleryInput && galleryInput.files[0]) {
+      const mine = myBusiness();
+      if (mine) {
+        const slot = Number(galleryInput.dataset.uploadGallery);
+        const reader = new FileReader();
+        reader.onload = () => {
+          mine.gallery = mine.gallery || [];
+          // Pad so an upload into slot 3 doesn't collapse into slot 0.
+          while (mine.gallery.length < 4) mine.gallery.push(null);
+          mine.gallery[slot] = reader.result;
+          saveBusinesses();
+          render();
+        };
+        reader.readAsDataURL(galleryInput.files[0]);
+      }
     }
   });
   root.addEventListener('keydown', (e) => {
@@ -4323,6 +5283,23 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (path.startsWith('profile.')) {
       state.userProfile[path.replace('profile.', '')] = el.value;
       saveUserProfile();
+    } else if (path.startsWith('business.')) {
+      // Edited into a working copy so the card preview updates on Save, not
+      // on every keystroke — typing must not re-render and steal focus.
+      const mine = myBusiness();
+      if (mine) {
+        if (!state.businessEditor) state.businessEditor = { ...mine };
+        state.businessEditor[path.replace('business.', '')] = el.value;
+      }
+    } else if (path.startsWith('service.')) {
+      const [, serviceId, field] = path.split('.');
+      const svc = serviceById(myBusiness(), serviceId);
+      if (svc) {
+        svc[field] = (field === 'price' || field === 'durationMins')
+          ? (el.value === '' ? 0 : Number(el.value))
+          : el.value;
+        saveBusinesses();
+      }
     } else {
       const m = /^specialRequest\.(\w+)$/.exec(path);
       if (m) {
