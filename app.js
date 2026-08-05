@@ -7188,25 +7188,64 @@ function renderAiChatDrawer() {
   if (!state.aiChatOpen) return '';
 
   const msgsHtml = state.aiMessages.map(m => {
-    return `<div class="ai-msg ${m.role}">${m.text}</div>`;
+    const isBot = m.role === 'bot';
+    return `
+      <div class="ai-msg ${m.role}">
+        ${isBot ? '<div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;display:flex;align-items:center;gap:4px">✨ Graftr AI</div>' : ''}
+        <div>${escapeHtml(m.text)}</div>
+      </div>`;
   }).join('');
 
-  const loadingHtml = state.aiLoading ? `<div class="ai-msg bot" style="font-style:italic;color:#6b6b6b;">✨ Vendaru AI is thinking...</div>` : '';
+  const loadingHtml = state.aiLoading ? `
+    <div class="ai-msg bot" style="display:flex;align-items:center;gap:8px;color:#64748b;font-size:13px;font-style:italic">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6"></span>
+      ✨ Graftr AI is thinking...
+    </div>` : '';
+
+  const presetChips = [
+    { label: '🛒 Grocery Staples', prompt: 'Find grocery staples for fast delivery' },
+    { label: '📦 Track My Order', prompt: 'Where is my active order?' },
+    { label: '🔧 Local Trades', prompt: 'Show me verified plumbers and electricians' },
+    { label: '⚡ Free Shipping', prompt: 'Which items have free delivery?' }
+  ];
 
   return `
-    <div class="ai-modal-overlay">
-      <div class="ai-chat-sheet">
+    <div class="ai-modal-overlay" data-action="toggleAiChat">
+      <div class="ai-chat-sheet" onclick="event.stopPropagation()">
+        <!-- Grab handle for mobile bottom sheet -->
+        <div style="width:38px;height:4px;background:#e2e8f0;border-radius:2px;margin:8px auto 0;flex:0 0 auto" class="ai-grab-handle"></div>
+
+        <!-- Header -->
         <div class="ai-sheet-header">
-          <img src="assets/brand/logo.svg" alt="Vendaru" style="height:20px;width:auto;display:block" />
-          <button data-action="toggleAiChat" style="background:none;border:none;color:#ffffff;font-size:20px;cursor:pointer;padding:2px 6px;line-height:1">✕</button>
+          <div style="display:flex;align-items:center;gap:10px;min-width:0">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg, #1e293b, #0f172a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.2);flex:0 0 auto">✨</div>
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:14.5px;font-weight:700;color:#ffffff;line-height:1.2">Graftr Assistant</span>
+                <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981"></span>
+              </div>
+              <div style="font-size:11.5px;color:#94a3b8;line-height:1.2;margin-top:2px">Online · Shopping & Services</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button type="button" data-action="clearAiChat" title="Reset Conversation" style="background:rgba(255,255,255,0.1);border:none;color:#94a3b8;border-radius:8px;padding:5px 9px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s">Reset</button>
+            <button type="button" data-action="toggleAiChat" title="Close" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:#ffffff;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;transition:all 0.15s">✕</button>
+          </div>
         </div>
 
+        <!-- Chat Body -->
         <div class="ai-chat-body" id="ai-chat-body-scroll">
           ${msgsHtml}
           ${loadingHtml}
         </div>
 
+        <!-- Suggestion Chips Row -->
         <div class="ai-chip-suggestions">
+          ${presetChips.map(c => `
+            <button type="button" class="ai-chip" data-action="sendPresetPrompt" data-arg="${escapeHtml(c.prompt)}">
+              ${escapeHtml(c.label)}
+            </button>
+          `).join('')}
           ${aiQuickAddProducts().map(p => {
             const src = state.productImages[p.id] || p.image;
             return `
@@ -7218,18 +7257,19 @@ function renderAiChatDrawer() {
           }).join('')}
         </div>
 
+        <!-- Input Footer -->
         <div class="ai-chat-footer">
-          <button type="button" class="ai-mic-btn-inline${state.aiListening ? ' listening' : ''}" data-action="toggleVoiceInput" title="Speak to add items">
+          <button type="button" class="ai-mic-btn-inline${state.aiListening ? ' listening' : ''}" data-action="toggleVoiceInput" title="Speak message">
             ${state.aiListening
               ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>'
               : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>'}
           </button>
-          <input type="text" id="ai-chat-input" data-bind="aiInput" value="${escapeHtml(state.aiInput || '')}" placeholder="${state.aiListening ? 'Listening…' : 'Ask AI to find items or help...'}" autocomplete="off" />
-          <button type="button" class="ai-send-btn" data-action="submitAiMessage">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          <input type="text" id="ai-chat-input" data-bind="aiInput" value="${escapeHtml(state.aiInput || '')}" placeholder="${state.aiListening ? 'Listening… speak now' : 'Ask Graftr AI anything...'}" autocomplete="off" />
+          <button type="button" class="ai-send-btn" data-action="submitAiMessage" title="Send message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </button>
         </div>
-        ${state.aiVoiceSupported === false ? '<div style="padding:0 16px 10px;font-size:11px;color:#9a9a9a;text-align:center">Voice input isn\'t available in this browser — type instead.</div>' : ''}
+        ${state.aiVoiceSupported === false ? '<div style="padding:0 16px 8px;font-size:11px;color:#94a3b8;text-align:center">Voice input unavailable in this browser — type instead.</div>' : ''}
       </div>
     </div>
   `;
@@ -8672,6 +8712,12 @@ const actions = {
   toggleAiChat: () => {
     state.aiChatOpen = !state.aiChatOpen;
     if (!state.aiChatOpen) stopVoiceRecognition();
+    render();
+  },
+  clearAiChat: () => {
+    state.aiMessages = [
+      { role: 'bot', text: "👋 Hi! I'm your Graftr AI Assistant. Ask me to find items, recommend groceries, or locate verified local UK services!" }
+    ];
     render();
   },
   toggleVoiceInput: () => {
