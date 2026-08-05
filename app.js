@@ -2250,7 +2250,7 @@ function renderShopperServices() {
   const list = cat ? businessesInCategory(cat.id) : [];
 
   return `
-    <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+    <div class="page page-cards" style="padding:0 18px 24px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
         <div>
           <div style="font-size:25px;font-weight:700;color:#141414">${cat ? escapeHtml(cat.label) : 'Services'}</div>
@@ -2456,7 +2456,7 @@ function renderShopperShop() {
     </div>
   `;
 
-  return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+  return `<div class="page page-cards" style="padding:0 18px 24px">
     <!-- Brand mark, centred. Same 200px width as the sign-in screen.
          Swapping assets/brand/logo.svg changes it here too. -->
     <div style="display:flex;justify-content:center;padding:2px 0">

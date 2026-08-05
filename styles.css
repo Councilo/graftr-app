@@ -619,6 +619,15 @@ body::-webkit-scrollbar {
 
 /* Brand mark at the top of the rail. Hidden on the phone, where the tab bar
    is a floating pill with no room for it. */
+
+/* Page container. Was an inline flex column on every screen; pulled into CSS
+   so the desktop breakpoint can lay the card pages out as a grid instead. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .tabbar-brand {
   display: none;
 }
@@ -643,6 +652,20 @@ body::-webkit-scrollbar {
   .app-scroll > div {
     max-width: 1120px;
     margin: 0 auto;
+  }
+
+  /* Two cards a row. A single 1120px-wide card is a lot of empty space next
+     to a 200px image; at ~550px each they sit at a sensible shape. */
+  .page-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  /* Headings, the search bar, the category row and section labels are not
+     cards — they run the full width above the grid. */
+  .page-cards > *:not(.shop-card) {
+    grid-column: 1 / -1;
   }
 
   /* A card twice the width needs a taller picture, or the photo reads as a
