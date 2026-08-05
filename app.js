@@ -457,6 +457,7 @@ const state = {
   trackStep: 2,
   shopImages: { morrisons: null, track: null, offers: null, local: null },
   cart: {},
+  savedForLater: loadSavedForLater(),
   productImages: {},
   searchQuery: '',
   specialRequest: {
@@ -491,6 +492,29 @@ try {
 
 function cartLines() {
   return Object.entries(state.cart)
+    .map(([id, qty]) => ({ product: PRODUCTS.find((p) => p.id === Number(id)), qty }))
+    .filter((l) => l.product && l.qty > 0);
+}
+
+// Saved-for-later outlives the basket on purpose: the cart is in-memory only
+// and empties on reload, whereas "later" is worthless if it doesn't come back.
+function loadSavedForLater() {
+  try {
+    const saved = localStorage.getItem('graftr_saved_items');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === 'object') return parsed;
+    }
+  } catch (e) { /* ignore corrupt storage */ }
+  return {};
+}
+
+function saveSavedForLater() {
+  try { localStorage.setItem('graftr_saved_items', JSON.stringify(state.savedForLater)); } catch (e) { /* ignore */ }
+}
+
+function savedLines() {
+  return Object.entries(state.savedForLater || {})
     .map(([id, qty]) => ({ product: PRODUCTS.find((p) => p.id === Number(id)), qty }))
     .filter((l) => l.product && l.qty > 0);
 }
@@ -1839,6 +1863,7 @@ function renderShopperBasket() {
                 <div style="flex:1;min-width:0">
                   <div style="font-size:13.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.product.name)}</div>
                   <div style="font-size:12.5px;color:#6b6b6b">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
+                  <button type="button" data-action="saveForLater" data-arg="${l.product.id}" style="background:none;border:none;padding:2px 0 0;font-size:12.5px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Save for later</button>
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto">
                   <div class="press" data-action="removeFromCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(20,20,20,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#141414">−</div>
@@ -1869,6 +1894,35 @@ function renderShopperBasket() {
           </div>
         </div>`
   );
+
+  // Items parked out of the basket. Persisted, so they're still here next visit.
+  const saved = savedLines();
+  const savedCard = saved.length
+    ? `
+    <div class="shop-card" style="${cardShell}">
+      <div style="padding:4px 16px 12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${sectionLabel}">
+          <span>Saved for later (${saved.length})</span>
+          ${saved.length > 1
+            ? `<button type="button" data-action="moveAllToBasket" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Move all</button>`
+            : ''}
+        </div>
+        ${saved.map((l, i) => `
+          <div style="display:flex;align-items:center;gap:11px;padding:11px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
+            <span style="width:36px;height:36px;border-radius:9px;flex:0 0 auto;background:#f2f2f2 center/cover url('${state.productImages[l.product.id] || l.product.image}')"></span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.product.name)}</div>
+              <div style="font-size:12.5px;color:#6b6b6b">£${l.product.estimated_price_gbp.toFixed(2)}${l.qty > 1 ? ` · ${l.qty}` : ''}</div>
+              <div style="display:flex;gap:14px;margin-top:5px">
+                <button type="button" data-action="moveToBasket" data-arg="${l.product.id}" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Move to basket</button>
+                <button type="button" data-action="removeSaved" data-arg="${l.product.id}" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Remove</button>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`
+    : '';
 
   // CARD 2 + 3: orders still in flight, and everything that's finished.
   const activeOrders = state.orders.filter(o => o.status !== 'Cancelled' && o.status !== 'Delivered');
@@ -1901,6 +1955,7 @@ function renderShopperBasket() {
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
       <div style="font-size:25px;font-weight:700;color:#141414">Basket</div>
       ${basketBox}
+      ${savedCard}
       ${activeOrdersCard}
       ${pastOrdersCard}
     </div>
@@ -3821,6 +3876,37 @@ const actions = {
   },
   setDeliverySlot: (slot) => {
     state.deliverySlot = slot;
+    render();
+  },
+  saveForLater: (productId) => {
+    const id = String(productId);
+    const qty = state.cart[id] || 0;
+    if (!qty) return;
+    state.savedForLater[id] = (state.savedForLater[id] || 0) + qty;
+    delete state.cart[id];
+    saveSavedForLater();
+    render();
+  },
+  moveToBasket: (productId) => {
+    const id = String(productId);
+    const qty = state.savedForLater[id] || 0;
+    if (!qty) return;
+    state.cart[id] = (state.cart[id] || 0) + qty;   // merge if it's already there
+    delete state.savedForLater[id];
+    saveSavedForLater();
+    render();
+  },
+  removeSaved: (productId) => {
+    delete state.savedForLater[String(productId)];
+    saveSavedForLater();
+    render();
+  },
+  moveAllToBasket: () => {
+    Object.entries(state.savedForLater).forEach(([id, qty]) => {
+      state.cart[id] = (state.cart[id] || 0) + qty;
+    });
+    state.savedForLater = {};
+    saveSavedForLater();
     render();
   },
   openLoyaltyPicker: () => {
