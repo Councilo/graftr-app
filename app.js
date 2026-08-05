@@ -4418,7 +4418,7 @@ const state = {
   manualBarcodeInput: '',
   aiChatOpen: false,
   aiMessages: [
-    { role: 'bot', text: "👋 Hi! I'm your Vendaru AI Shopping Assistant. Ask me to find items, recommend groceries, or add products directly to your basket!" }
+    { role: 'bot', text: "👋 Hi! I'm your Vendaru AI Assistant. Ask me to find items, recommend groceries, or locate verified local UK services!" }
   ],
   aiInput: '',
   aiLoading: false,
@@ -7110,7 +7110,7 @@ function findProductsForSegment(segment) {
   return found.length ? found : null;
 }
 
-function processGraftrAiQuery(rawQuery) {
+function processVendaruAiQuery(rawQuery) {
   const query = rawQuery.toLowerCase();
 
   const terms = extractShoppingListTerms(query);
@@ -7191,7 +7191,7 @@ function renderAiChatDrawer() {
     const isBot = m.role === 'bot';
     return `
       <div class="ai-msg ${m.role}">
-        ${isBot ? '<div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;display:flex;align-items:center;gap:4px">✨ Graftr AI</div>' : ''}
+        ${isBot ? '<div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;display:flex;align-items:center;gap:4px">✨ Vendaru AI</div>' : ''}
         <div>${escapeHtml(m.text)}</div>
       </div>`;
   }).join('');
@@ -7199,7 +7199,7 @@ function renderAiChatDrawer() {
   const loadingHtml = state.aiLoading ? `
     <div class="ai-msg bot" style="display:flex;align-items:center;gap:8px;color:#64748b;font-size:13px;font-style:italic">
       <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6"></span>
-      ✨ Graftr AI is thinking...
+      ✨ Vendaru AI is thinking...
     </div>` : '';
 
   const presetChips = [
@@ -7221,7 +7221,7 @@ function renderAiChatDrawer() {
             <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg, #1e293b, #0f172a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.2);flex:0 0 auto">✨</div>
             <div style="min-width:0">
               <div style="display:flex;align-items:center;gap:6px">
-                <span style="font-size:14.5px;font-weight:700;color:#ffffff;line-height:1.2">Graftr Assistant</span>
+                <span style="font-size:14.5px;font-weight:700;color:#ffffff;line-height:1.2">Vendaru Assistant</span>
                 <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981"></span>
               </div>
               <div style="font-size:11.5px;color:#94a3b8;line-height:1.2;margin-top:2px">Online · Shopping & Services</div>
@@ -7264,7 +7264,7 @@ function renderAiChatDrawer() {
               ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>'
               : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>'}
           </button>
-          <input type="text" id="ai-chat-input" data-bind="aiInput" value="${escapeHtml(state.aiInput || '')}" placeholder="${state.aiListening ? 'Listening… speak now' : 'Ask Graftr AI anything...'}" autocomplete="off" />
+          <input type="text" id="ai-chat-input" data-bind="aiInput" value="${escapeHtml(state.aiInput || '')}" placeholder="${state.aiListening ? 'Listening… speak now' : 'Ask Vendaru AI anything...'}" autocomplete="off" />
           <button type="button" class="ai-send-btn" data-action="submitAiMessage" title="Send message">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </button>
@@ -8758,7 +8758,7 @@ const actions = {
       }
 
       if (!replyText) {
-        replyText = processGraftrAiQuery(query);
+        replyText = processVendaruAiQuery(query);
       }
 
       state.aiMessages.push({ role: 'bot', text: replyText });
