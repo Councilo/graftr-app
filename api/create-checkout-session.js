@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
       line_items.push({
         price_data: {
           currency: 'gbp',
-          product_data: { name: 'Delivery Fee' },
+          product_data: { name: 'Service fee' },
           unit_amount: Math.round(Number(deliveryFee) * 100),
         },
         quantity: 1,

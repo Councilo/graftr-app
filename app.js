@@ -1978,6 +1978,10 @@ const CALENDAR_ICON_SVG = `<svg width="22" height="22" viewBox="0 0 24 24" fill=
   <path d="M3 10h18M8 3v4M16 3v4" />
 </svg>`;
 
+// One flat fee on every order, whether it's shopping, a booking or both.
+// Simpler than charging delivery on some baskets and nothing on others.
+const SERVICE_FEE = 1.99;
+
 // A scheduled order joins the courier pool this far before its window opens —
 // enough lead time to shop the items and travel.
 const SCHEDULE_RELEASE_LEAD_MS = 45 * 60 * 1000;
@@ -2757,8 +2761,8 @@ function renderCheckoutModal() {
   const bookings = bookingLines();
   const bookingsSum = bookingsTotal();
   // A basket of bookings alone has nothing to carry, so no delivery fee.
-  const deliveryFee = basketHasDelivery() ? 1.99 : 0;
-  const grandTotal = subtotal - discount + bookingsSum + deliveryFee;
+  const serviceFee = SERVICE_FEE;
+  const grandTotal = subtotal - discount + bookingsSum + serviceFee;
   const p = state.userProfile;
   // "Schedule" picked but no slot chosen — otherwise the order would quietly
   // go out as an immediate one.
@@ -2830,7 +2834,7 @@ function renderCheckoutModal() {
               ? `<div style="${summaryRow};color:#c9447a;font-weight:600"><span>Loyalty reward</span><span>−£${discount.toFixed(2)}</span></div>`
               : ''}
             ${bookingsSum > 0 ? `<div style="${summaryRow}"><span>Bookings</span><span>£${bookingsSum.toFixed(2)}</span></div>` : ''}
-            ${deliveryFee > 0 ? `<div style="${summaryRow}"><span>Delivery</span><span>£${deliveryFee.toFixed(2)}</span></div>` : ''}
+            <div style="${summaryRow}"><span>Service fee</span><span>£${serviceFee.toFixed(2)}</span></div>
             <div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;font-weight:600;color:#141414;padding-top:9px;margin-top:5px;border-top:1px solid #f0f0f0">
               <span>Total</span><span>£${grandTotal.toFixed(2)}</span>
             </div>
@@ -4488,8 +4492,8 @@ const actions = {
       return;
     }
     const sub = cartTotal();                 // already net of any free items
-    // Services alone are not delivered, so they carry no delivery fee.
-    const deliveryFee = basketHasDelivery() ? 1.99 : 0;
+    // One flat fee, whatever the basket holds.
+    const deliveryFee = SERVICE_FEE;
     const freeUsed = loyaltyPendingFree();
     const bookings = bookingLines();
 
