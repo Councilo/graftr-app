@@ -70,6 +70,16 @@ body::-webkit-scrollbar {
   margin: 0;
 }
 
+
+/* Business listing banner. Same height as the shop cards' picture area so
+   the two card families line up. */
+.biz-banner {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .card-image input[type="file"] {
   display: none;
 }
@@ -618,8 +628,9 @@ body::-webkit-scrollbar {
     background: #f4f5f7;
   }
 
+  /* Fill the screen — a capped shell just leaves dead grey either side. */
   #app {
-    max-width: 1240px;
+    max-width: none;
     background: #f4f5f7;
   }
 
@@ -630,8 +641,15 @@ body::-webkit-scrollbar {
 
   /* One readable column rather than text running the full width. */
   .app-scroll > div {
-    max-width: 880px;
+    max-width: 1120px;
     margin: 0 auto;
+  }
+
+  /* A card twice the width needs a taller picture, or the photo reads as a
+     letterboxed strip. */
+  .card-image,
+  .biz-banner {
+    height: 200px;
   }
 
   .floating-tabbar {

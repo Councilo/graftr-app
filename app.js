@@ -2204,7 +2204,7 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
     const focal = b.coverPosition || 'center';
     return `
       <div class="${linked ? 'press ' : ''}shop-card" ${open} style="${shell}">
-        <div style="height:110px;background:${banner ? `#eef0ee url('${banner}') ${focal}/cover no-repeat` : '#eef0ee'};display:flex;align-items:center;justify-content:center">
+        <div class="biz-banner" style="background:${banner ? `#eef0ee url('${banner}') ${focal}/cover no-repeat` : '#eef0ee'}">
           ${banner ? '' : `<span style="font-size:32px;opacity:0.3">${cat ? cat.emoji : '🏪'}</span>`}
         </div>
         <!-- Logo sits with the text beneath the banner, so the brand mark
