@@ -501,7 +501,7 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 3;
+const BUSINESS_SEED_VERSION = 4;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
 // Real listings only. The fictional demo businesses were retired in v2.
@@ -527,6 +527,8 @@ const SEED_BUSINESSES = [
     category: 'real-estate', tagline: 'Sell your home with Yopa',
     about: "Online estate agents covering Bolton and the surrounding area, handling sales from valuation through to completion. Book a free valuation below or call the team direct.",
     area: 'Bolton & Greater Manchester', phone: '0333 305 0202',
+    coverSrc: 'assets/business/yopa-cover.jpg',
+    coverPosition: 'center top',   // keeps the Yopa board in frame when cropped
     services: [
       { id: 's1', name: 'Free property valuation', description: 'A local agent values your home, with no obligation to list.', price: 0, durationMins: 60 },
     ],
@@ -2051,9 +2053,12 @@ function businessCardHtml(b, { linked = true, variant = 'compact' } = {}) {
     // Banner falls back to the first piece of their work, then to a plain
     // tile — a business with no photos yet still gets a full-size card.
     const banner = b.coverSrc || (b.gallery || []).find(Boolean);
+    // The banner is much wider than it is tall, so a photo gets cropped
+    // top and bottom. coverPosition lets a listing keep its subject in frame.
+    const focal = b.coverPosition || 'center';
     return `
       <div class="${linked ? 'press ' : ''}shop-card" ${open} style="${shell}">
-        <div style="height:110px;background:${banner ? `#eef0ee center/cover url('${banner}')` : '#eef0ee'};display:flex;align-items:center;justify-content:center">
+        <div style="height:110px;background:${banner ? `#eef0ee url('${banner}') ${focal}/cover no-repeat` : '#eef0ee'};display:flex;align-items:center;justify-content:center">
           ${banner ? '' : `<span style="font-size:32px;opacity:0.3">${cat ? cat.emoji : '🏪'}</span>`}
         </div>
         <div style="padding:14px 16px">
@@ -2160,7 +2165,8 @@ function renderShopperBusiness() {
             <div style="font-size:13.5px;font-weight:500;color:#141414">${escapeHtml(s.name)}</div>
             ${s.description ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:2px;line-height:1.45">${escapeHtml(s.description)}</div>` : ''}
             <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">
-              ${s.durationMins ? `${s.durationMins} min` : ''}${s.durationMins && s.price > 0 ? ' · ' : ''}${s.price > 0 ? `£${s.price.toFixed(2)}` : 'Free'}
+              ${[s.durationMins ? `${s.durationMins} min` : '', s.price > 0 ? `£${s.price.toFixed(2)}` : 'Free']
+                .filter(Boolean).join(' · ')}
             </div>
           </div>
           ${booked.has(s.id)
