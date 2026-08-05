@@ -261,6 +261,16 @@ function finalizeOrder(snapshot) {
   render();
 }
 
+// Cleared if the redirect to Stripe actually happens; fires otherwise so the
+// Pay button can't stay stuck on "Redirecting…".
+let redirectWatchdog = null;
+
+// The server answers with this when STRIPE_SECRET_KEY isn't set. That's the
+// expected demo setup rather than a payment failure, so it's treated separately.
+function isStripeUnconfigured(data) {
+  return !!(data && typeof data.error === 'string' && /not configured/i.test(data.error));
+}
+
 function checkStripeRedirectResult() {
   const params = new URLSearchParams(window.location.search);
   const payment = params.get('payment');
@@ -272,10 +282,16 @@ function checkStripeRedirectResult() {
       try {
         finalizeOrder(JSON.parse(raw));
       } catch (e) { /* malformed snapshot, nothing to recover */ }
-      localStorage.removeItem(PENDING_ORDER_KEY);
     }
+    localStorage.removeItem(PENDING_ORDER_KEY);
+  } else {
+    // Cancelled or abandoned at Stripe: drop the snapshot so it can't be
+    // finalised later, and put the checkout back in a usable state.
+    localStorage.removeItem(PENDING_ORDER_KEY);
+    state.placingOrder = false;
+    state.checkoutError = 'Payment was cancelled — you have not been charged.';
+    state.showCheckoutModal = true;
   }
-  // payment === 'cancelled': nothing to finalize, just strip the query string below.
   window.history.replaceState({}, '', window.location.pathname);
 }
 
@@ -343,6 +359,7 @@ const state = {
   showAddressModal: false,
   showCheckoutModal: false,
   placingOrder: false,
+  checkoutError: null,
   scannerStatus: null,
   manualBarcodeInput: '',
   aiChatOpen: false,
@@ -1880,8 +1897,16 @@ function renderCheckoutModal() {
           </div>
         </div>
 
+        ${state.checkoutError ? `
+          <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;padding:12px 14px;font-size:13px;color:#141414;line-height:1.5">
+            ${escapeHtml(state.checkoutError)}
+          </div>
+        ` : ''}
+
         <button type="button" data-action="placeOrder" ${state.placingOrder ? 'disabled' : ''} style="background:${state.placingOrder ? 'rgba(20,20,20,0.4)' : '#141414'};color:#fff;border:none;padding:16px;border-radius:18px;font-weight:800;font-size:15px;cursor:${state.placingOrder ? 'default' : 'pointer'};box-shadow:0 8px 20px rgba(0,0,0,0.25);margin-top:4px">
-          ${state.placingOrder ? 'Redirecting to secure checkout…' : `🔒 Pay &amp; Place Order (£${grandTotal.toFixed(2)})`}
+          ${state.placingOrder
+            ? 'Redirecting to secure checkout…'
+            : `${state.checkoutError ? 'Try again' : '🔒 Pay &amp; Place Order'} (£${grandTotal.toFixed(2)})`}
         </button>
       </div>
     </div>
@@ -3139,9 +3164,15 @@ const actions = {
   checkout: () => {
     if (cartCount() === 0) return;
     state.showCheckoutModal = true;
+    state.checkoutError = null;
     render();
   },
-  closeCheckoutModal: () => { state.showCheckoutModal = false; render(); },
+  closeCheckoutModal: () => {
+    state.showCheckoutModal = false;
+    state.checkoutError = null;
+    state.placingOrder = false;
+    render();
+  },
   placeOrder: async () => {
     const lines = cartLines();
     if (lines.length === 0 || state.placingOrder) return;
@@ -3156,6 +3187,7 @@ const actions = {
     };
 
     state.placingOrder = true;
+    state.checkoutError = null;
     render();
 
     try {
@@ -3168,14 +3200,40 @@ const actions = {
         }),
       });
       const data = await res.json().catch(() => ({}));
+
       if (res.ok && data.url) {
         localStorage.setItem(PENDING_ORDER_KEY, JSON.stringify(snapshot));
+        // The redirect can fail to take (blocked navigation, or the user comes
+        // straight back). Re-enable the button so it can't sit disabled forever.
+        redirectWatchdog = setTimeout(() => {
+          state.placingOrder = false;
+          state.checkoutError = "Couldn't reach the payment page. Please try again.";
+          localStorage.removeItem(PENDING_ORDER_KEY);
+          render();
+        }, 8000);
         window.location.href = data.url;
         return;
       }
-      console.warn('Stripe checkout unavailable, placing a mock order instead:', data.error);
+
+      // No payment key on the server is the expected demo setup, not a failed
+      // payment — fall through to the mock order. Anything else is a genuine
+      // failure, so surface it instead of quietly creating an order.
+      if (!isStripeUnconfigured(data)) {
+        state.placingOrder = false;
+        state.checkoutError = data.error
+          ? `Payment failed: ${data.error}`
+          : 'Payment failed. No charge was made — please try again.';
+        render();
+        return;
+      }
+      console.warn('Stripe not configured, placing a mock order instead:', data.error);
     } catch (err) {
-      console.warn('Stripe checkout request failed, placing a mock order instead:', err);
+      // Network/offline. Don't invent an order the customer never paid for.
+      console.warn('Checkout request failed:', err);
+      state.placingOrder = false;
+      state.checkoutError = "Couldn't reach checkout. Check your connection and try again.";
+      render();
+      return;
     }
 
     state.placingOrder = false;
@@ -3631,6 +3689,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+  // Coming back from Stripe via the back button restores this page from the
+  // bfcache with its old JS state, which would leave the Pay button disabled
+  // on "Redirecting…". Reset it whenever the page is shown again.
+  window.addEventListener('pageshow', (e) => {
+    if (redirectWatchdog) { clearTimeout(redirectWatchdog); redirectWatchdog = null; }
+    if (e.persisted && state.placingOrder) {
+      state.placingOrder = false;
+      state.checkoutError = 'Payment was not completed — you have not been charged.';
+      try { localStorage.removeItem(PENDING_ORDER_KEY); } catch (err) { /* ignore */ }
+      render();
+    }
+  });
+
   checkStripeRedirectResult();
   render();
 });
