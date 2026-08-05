@@ -194,7 +194,10 @@ function qualifyingOrderCount() {
 
 function loyaltyState() {
   const earned = qualifyingOrderCount();
-  const spent = (state.loyaltyRedeemed || 0) * LOYALTY_STAMPS_PER_REWARD;
+  // A reward sitting unpaid in the basket is reserved, not spent: it counts
+  // against the balance so you can't claim two, but it's released the moment
+  // the item leaves the basket.
+  const spent = ((state.loyaltyRedeemed || 0) + loyaltyPendingFree()) * LOYALTY_STAMPS_PER_REWARD;
   // If stamps vanish (an order was cancelled after a reward was claimed) the
   // balance can go negative — clamp so the card never shows nonsense.
   const available = Math.max(0, earned - spent);
@@ -294,9 +297,17 @@ function finalizeOrder(snapshot) {
     courier: null,
     tip: 0,
     scheduledFor: snapshot.scheduledFor || null,
+    loyaltyDiscount: snapshot.loyaltyDiscount || 0,
   };
   state.orders.unshift(newOrder);
   state.activeOrderId = newId;
+
+  // The order is real now, so the reserved rewards are finally spent.
+  if (snapshot.loyaltyUsed) {
+    state.loyaltyRedeemed = (state.loyaltyRedeemed || 0) + snapshot.loyaltyUsed;
+    saveLoyalty();
+  }
+  state.loyaltyFree = {};
   state.cart = {};
   state.showCheckoutModal = false;
   state.mode = 'shopper';
@@ -451,6 +462,10 @@ const state = {
   deliveryDayOffset: 0,
   deliverySlot: null,
   loyaltyRedeemed: loadLoyaltyRedeemed(),
+  // productId -> how many units of it are free in the basket right now. Held in
+  // memory alongside the cart on purpose: the stamp isn't spent until the order
+  // is placed, so emptying the basket or reloading hands the reward back.
+  loyaltyFree: {},
   showLoyaltyPicker: false,
   ...loadInbox(),
   basketCheckedOut: false,
@@ -523,8 +538,40 @@ function cartCount() {
   return cartLines().reduce((sum, l) => sum + l.qty, 0);
 }
 
-function cartTotal() {
+// Free units can never outnumber what's actually in the basket — if the item is
+// removed or reduced, the reward stops applying (and the stamp comes back).
+function freeQtyFor(productId, cartQty) {
+  const claimed = (state.loyaltyFree || {})[productId] || 0;
+  return Math.max(0, Math.min(claimed, cartQty));
+}
+
+// Drop reservations for items that have left the basket, so re-adding the same
+// product later doesn't quietly come out free.
+function pruneLoyaltyFree() {
+  Object.keys(state.loyaltyFree || {}).forEach((id) => {
+    const inCart = state.cart[id] || 0;
+    if (inCart <= 0) delete state.loyaltyFree[id];
+    else if (state.loyaltyFree[id] > inCart) state.loyaltyFree[id] = inCart;
+  });
+}
+
+// Rewards attached to the current basket but not yet paid for.
+function loyaltyPendingFree() {
+  return cartLines().reduce((sum, l) => sum + freeQtyFor(l.product.id, l.qty), 0);
+}
+
+function cartSubtotal() {
   return cartLines().reduce((sum, l) => sum + l.qty * l.product.estimated_price_gbp, 0);
+}
+
+function loyaltyDiscount() {
+  return cartLines().reduce(
+    (sum, l) => sum + freeQtyFor(l.product.id, l.qty) * l.product.estimated_price_gbp, 0
+  );
+}
+
+function cartTotal() {
+  return Math.max(0, cartSubtotal() - loyaltyDiscount());
 }
 
 const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -1858,11 +1905,17 @@ function renderShopperBasket() {
               <span style="font-size:14px;font-weight:600;color:#141414">£${total.toFixed(2)}</span>
             </div>
 
-            ${lines.map((l, i) => `
+            ${lines.map((l, i) => {
+              const free = freeQtyFor(l.product.id, l.qty);
+              const charged = (l.qty - free) * l.product.estimated_price_gbp;
+              return `
               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
                 <div style="flex:1;min-width:0">
                   <div style="font-size:13.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.product.name)}</div>
                   <div style="font-size:12.5px;color:#6b6b6b">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
+                  ${free > 0
+                    ? `<div style="font-size:12.5px;font-weight:600;color:#c9447a;margin-top:1px">${free} free · loyalty reward</div>`
+                    : ''}
                   <button type="button" data-action="saveForLater" data-arg="${l.product.id}" style="background:none;border:none;padding:2px 0 0;font-size:12.5px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Save for later</button>
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto">
@@ -1870,9 +1923,9 @@ function renderShopperBasket() {
                   <span style="font-size:13.5px;font-weight:500;min-width:16px;text-align:center">${l.qty}</span>
                   <div class="press" data-action="addToCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px">+</div>
                 </div>
-                <span style="font-size:13.5px;font-weight:600;min-width:48px;text-align:right;color:#141414;flex:0 0 auto">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
-              </div>
-            `).join('')}
+                <span style="font-size:13.5px;font-weight:600;min-width:48px;text-align:right;color:#141414;flex:0 0 auto">£${charged.toFixed(2)}</span>
+              </div>`;
+            }).join('')}
 
             <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f0f0f0;padding-top:13px;margin-top:2px;gap:10px">
               <div style="display:flex;align-items:center;gap:14px">
@@ -2048,21 +2101,26 @@ function renderCheckoutModal() {
   if (!state.showCheckoutModal) return '';
   const missing = missingProfileFields();
   const lines = cartLines();
-  const subtotal = cartTotal();
+  const subtotal = cartSubtotal();
+  const discount = loyaltyDiscount();
   const deliveryFee = 1.99;
-  const grandTotal = subtotal + deliveryFee;
+  const grandTotal = subtotal - discount + deliveryFee;
   const p = state.userProfile;
 
   const cardShell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#fff;padding:4px 16px 14px';
   const sectionLabel = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
   const summaryRow = 'display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#6b6b6b;padding:3px 0';
 
-  const itemsListHtml = lines.map((l, i) => `
+  const itemsListHtml = lines.map((l, i) => {
+    const free = freeQtyFor(l.product.id, l.qty);
+    return `
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
-      <span style="font-size:13.5px;color:#141414;min-width:0">${l.qty} × ${escapeHtml(l.product.name)}</span>
+      <span style="font-size:13.5px;color:#141414;min-width:0">${l.qty} × ${escapeHtml(l.product.name)}${
+        free > 0 ? `<span style="display:block;font-size:12.5px;font-weight:600;color:#c9447a">${free} free · loyalty reward</span>` : ''
+      }</span>
       <span style="font-size:13.5px;font-weight:600;flex:0 0 auto">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 
   return `
     <div class="graftr-modal-overlay">
@@ -2093,6 +2151,9 @@ function renderCheckoutModal() {
           ${itemsListHtml}
           <div style="border-top:1px solid #f0f0f0;padding-top:10px;margin-top:2px">
             <div style="${summaryRow}"><span>Subtotal</span><span>£${subtotal.toFixed(2)}</span></div>
+            ${discount > 0
+              ? `<div style="${summaryRow};color:#c9447a;font-weight:600"><span>Loyalty reward</span><span>−£${discount.toFixed(2)}</span></div>`
+              : ''}
             <div style="${summaryRow}"><span>Delivery</span><span>£${deliveryFee.toFixed(2)}</span></div>
             ${state.deliveryLater && selectedDeliveryLabel()
               ? `<div style="${summaryRow}"><span>Scheduled</span><span>${escapeHtml(selectedDeliveryLabel())}</span></div>`
@@ -3492,13 +3553,34 @@ const actions = {
       render();
       return;
     }
-    const sub = cartTotal();
+    const sub = cartTotal();                 // already net of any free items
     const deliveryFee = 1.99;
+    const freeUsed = loyaltyPendingFree();
+
+    // Free units are billed as their own zero-priced line so they show up on
+    // the Stripe receipt as a reward rather than silently vanishing.
+    const billedLines = [];
+    lines.forEach(l => {
+      const free = freeQtyFor(l.product.id, l.qty);
+      if (l.qty - free > 0) {
+        billedLines.push({ name: l.product.name, qty: l.qty - free, unitPrice: l.product.estimated_price_gbp });
+      }
+      if (free > 0) {
+        billedLines.push({ name: `${l.product.name} (loyalty reward)`, qty: free, unitPrice: 0 });
+      }
+    });
 
     const snapshot = {
-      items: lines.map(l => ({ name: l.product.name, qty: l.qty, price: l.product.estimated_price_gbp })),
+      items: lines.map(l => ({
+        name: l.product.name,
+        qty: l.qty,
+        price: l.product.estimated_price_gbp,
+        freeQty: freeQtyFor(l.product.id, l.qty),
+      })),
       subtotal: sub,
       deliveryFee,
+      loyaltyUsed: freeUsed,
+      loyaltyDiscount: loyaltyDiscount(),
       address: `${state.userProfile.address}, ${state.userProfile.postcode}`,
       scheduledFor: selectedDeliveryLabel(),
     };
@@ -3512,7 +3594,7 @@ const actions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: lines.map(l => ({ name: l.product.name, qty: l.qty, unitPrice: l.product.estimated_price_gbp })),
+          items: billedLines,
           deliveryFee,
         }),
       });
@@ -3703,6 +3785,7 @@ const actions = {
     if (!state.cart[id]) return;
     state.cart[id] -= 1;
     if (state.cart[id] <= 0) delete state.cart[id];
+    pruneLoyaltyFree();
     render();
   },
   goShopperInbox: () => { state.screen = 'shopper-inbox'; render(); },
@@ -3910,6 +3993,7 @@ const actions = {
     if (!qty) return;
     state.savedForLater[id] = (state.savedForLater[id] || 0) + qty;
     delete state.cart[id];
+    pruneLoyaltyFree();                   // parking it gives the reward back
     saveSavedForLater();
     render();
   },
@@ -3947,9 +4031,10 @@ const actions = {
     const product = PRODUCTS.find(p => String(p.id) === String(productId));
     if (!product || product.estimated_price_gbp > LOYALTY_REWARD_MAX) return;
 
-    state.loyaltyRedeemed = (state.loyaltyRedeemed || 0) + 1;
-    saveLoyalty();
+    // The stamp isn't spent here — it's reserved by loyaltyFree and only
+    // committed when the order is actually placed.
     state.cart[product.id] = (state.cart[product.id] || 0) + 1;
+    state.loyaltyFree[product.id] = (state.loyaltyFree[product.id] || 0) + 1;
     state.showLoyaltyPicker = false;
 
     state.shopperInbox.unshift({
@@ -3967,8 +4052,8 @@ const actions = {
   toggleShopperRead: (i) => { state.shopperInbox[i].read = !state.shopperInbox[i].read; saveInbox(); render(); },
   markAllCourierRead: () => { state.courierInbox.forEach(m => m.read = true); saveInbox(); render(); },
   markAllShopperRead: () => { state.shopperInbox.forEach(m => m.read = true); saveInbox(); render(); },
-  newBasket: () => { state.basketCheckedOut = false; state.cart = {}; render(); },
-  emptyBasket: () => { state.cart = {}; render(); },
+  newBasket: () => { state.basketCheckedOut = false; state.cart = {}; state.loyaltyFree = {}; render(); },
+  emptyBasket: () => { state.cart = {}; state.loyaltyFree = {}; render(); },
   advanceTrack: () => { state.trackStep = Math.min(state.trackStep + 1, 3); render(); },
   goSpecialRequest: (prefill) => {
     state.screen = 'shopper-special-request';
