@@ -1681,6 +1681,13 @@ function scheduleLabelFor(ts) {
   return `${dayLabel} ${pad(d.getHours())}:00–${pad(d.getHours() + 1)}:00`;
 }
 
+// Drawn rather than an emoji: 🗓 renders as a lopsided spiral-bound pad on
+// Windows and doesn't sit straight in a circle.
+const CALENDAR_ICON_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <rect x="3" y="5" width="18" height="16" rx="3" />
+  <path d="M3 10h18M8 3v4M16 3v4" />
+</svg>`;
+
 // A scheduled order joins the courier pool this far before its window opens —
 // enough lead time to shop the items and travel.
 const SCHEDULE_RELEASE_LEAD_MS = 45 * 60 * 1000;
@@ -3039,7 +3046,7 @@ function renderShopperTrackingSection(currentOrder) {
       <!-- 2. Middle Section: Courier Driver & Live ETA Bar -->
       <div style="background:#141414;color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.16);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:18px">${isScheduled ? '🗓' : '🚴'}</div>
+          <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.16);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:18px">${isScheduled ? CALENDAR_ICON_SVG : '🚴'}</div>
           <div>
             <!-- Nobody is assigned to a scheduled order yet, so don't claim a
                  courier is on their way to you. -->
