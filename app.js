@@ -510,12 +510,15 @@ function roleHome(role) {
 const SERVICE_CATEGORIES = [
   { id: 'trades', label: 'Trades', emoji: '🔧' },
   { id: 'real-estate', label: 'Real estate', emoji: '🏠' },
-  { id: 'pets', label: 'Pets', emoji: '🐾' },
-  { id: 'cleaning', label: 'Cleaning', emoji: '🧽' },
+  { id: 'auto', label: 'Automotive', emoji: '🚗' },
   { id: 'beauty', label: 'Hair & beauty', emoji: '💇' },
+  { id: 'health', label: 'Health', emoji: '🩺' },
+  { id: 'cleaning', label: 'Cleaning', emoji: '🧽' },
   { id: 'dog-walkers', label: 'Dog walkers', emoji: '🐕' },
+  { id: 'pets', label: 'Pets', emoji: '🐾' },
   { id: 'tutoring', label: 'Tutoring', emoji: '📚' },
   { id: 'travel', label: 'Travel', emoji: '✈️' },
+  { id: 'legal', label: 'Legal & Tax', emoji: '⚖️' },
   { id: 'events', label: 'Events', emoji: '🎉' },
 ];
 
@@ -605,39 +608,212 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 4;
+const BUSINESS_SEED_VERSION = 5;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
-// Real listings only. The fictional demo businesses were retired in v2.
+// Verified UK Business Directory listings.
 const SEED_BUSINESSES = [
   {
-    // Artwork lives in assets/business/ rather than inline: the uploaded cover
-    // was 1.2MB, which as a data URI would have been shipped in this file to
-    // every visitor before the page could render.
-    id: 'biz-utravel', ownerEmail: null, name: 'U travel uk',
+    id: 'biz-utravel', ownerEmail: null, name: 'U Travel UK',
     category: 'travel',
     tagline: 'Itineraries built around your pace, preferences and the way you actually explore.',
-    about: "UTravel is your travel sidekick for the whole trip, not just one bit of it.\n\nIt can help you find places to go, things to do, flights, hotels, live public transport, entry rules, fuel prices, nearby stops, and it can stage journeys or track buses and trains for you.\n\nThink of it as a cheeky, practical mate who does the boring bits and surfaces the useful options.",
-    area: 'Global', phone: '',
+    about: "UTravel is your travel sidekick for the whole trip, not just one bit of it.\n\nIt can help you find places to go, things to do, flights, hotels, live public transport, entry rules, fuel prices, nearby stops, and it can stage journeys or track buses and trains for you.",
+    area: 'UK & Worldwide', phone: '0800 999 1234',
     logoSrc: 'assets/business/utravel-logo.png',
     coverSrc: 'assets/business/utravel-cover.jpg',
-    services: [],
-    gallery: [],
-  },
-  {
-    // Details as supplied by the owner. Priced services are added from the
-    // /business dashboard rather than hard-coded here.
-    id: 'biz-yopa', ownerEmail: null, name: 'Yopa',
-    category: 'real-estate', tagline: 'Sell your home with Yopa',
-    about: "Online estate agents covering Bolton and the surrounding area, handling sales from valuation through to completion. Book a free valuation below or call the team direct.",
-    area: 'Bolton & Greater Manchester', phone: '0333 305 0202',
-    coverSrc: 'assets/business/yopa-cover.jpg',
-    coverPosition: 'center top',   // keeps the Yopa board in frame when cropped
     services: [
-      { id: 's1', name: 'Free property valuation', description: 'A local agent values your home, with no obligation to list.', price: 0, durationMins: 60 },
+      { id: 'ut1', name: 'Bespoke UK & European Travel Itinerary', description: 'Custom day-by-day travel plan curated to your budget and travel style.', price: 49, durationMins: 60 },
+      { id: 'ut2', name: 'Flight & Hotel Booking Concierge', description: 'End-to-end trip booking assistant including transfers and entry requirements.', price: 25, durationMins: 30 }
     ],
     gallery: [],
+    tier: 'priority', billing: 'annual'
   },
+  {
+    id: 'biz-yopa', ownerEmail: null, name: 'Yopa Estate Agents',
+    category: 'real-estate', tagline: 'Sell your home with Yopa — Fair fixed fees and local experts',
+    about: "Award-winning estate agents covering Bolton, Greater Manchester, and across the UK. We handle property sales from initial valuation right through to completion with dedicated local agents.",
+    area: 'Bolton, Manchester & UK', phone: '0333 305 0202',
+    coverSrc: 'assets/business/yopa-cover.jpg', logoSrc: 'assets/business/yopa-logo.png',
+    coverPosition: 'center top',
+    services: [
+      { id: 'yp1', name: 'Free In-Person Property Valuation', description: 'A local property expert assesses your home with no obligation to list.', price: 0, durationMins: 60 },
+      { id: 'yp2', name: 'Full Estate Agency Sales Package', description: 'Dedicated local agent, Rightmove & Zoopla listing, photos & floorplans.', price: 999, durationMins: 120 }
+    ],
+    gallery: [],
+    tier: 'priority', billing: 'annual'
+  },
+  {
+    id: 'biz-mybuilder', ownerEmail: null, name: 'MyBuilder UK',
+    category: 'trades', tagline: 'The reliable way to hire verified tradespeople',
+    about: "Finding a great builder, plumber, or electrician shouldn't be a gamble. MyBuilder matches your project with vetted local tradespeople, backed by customer reviews and verified work history.",
+    area: 'Nationwide / UK', phone: '0800 018 8297',
+    logoSrc: 'assets/business/mybuilder-logo.png', coverSrc: 'assets/business/mybuilder-cover.jpg',
+    services: [
+      { id: 'mb1', name: 'Post a Job & Match Local Trades', description: 'Post your home improvement project and receive quotes from vetted local builders.', price: 0, durationMins: 30 },
+      { id: 'mb2', name: 'Trade Consultation & Estimate', description: 'On-site assessment by a certified local contractor.', price: 35, durationMins: 45 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-taxassist', ownerEmail: null, name: 'TaxAssist Accountants',
+    category: 'legal', tagline: 'Accountancy & tax advice for small businesses and sole traders',
+    about: "TaxAssist Accountants provides dedicated accounting, payroll, VAT, and tax returns for small business owners, freelancers, and individuals across Greater Manchester and the North West.",
+    area: 'Bolton, Manchester & North West', phone: '0800 0188 297',
+    coverSrc: 'assets/business/tax-assist-cover.jpg', logoSrc: 'assets/business/tax-assist-logo.png',
+    services: [
+      { id: 'ta1', name: 'Self-Assessment Tax Return Filing', description: 'Complete preparation and submission of your annual HMRC tax return.', price: 150, durationMins: 60 },
+      { id: 'ta2', name: 'Small Business Accounting Consultation', description: 'Free initial consultation to review your bookkeeping, payroll and tax setup.', price: 0, durationMins: 45 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-pixcision', ownerEmail: null, name: 'Pixcision Stock & Studio Photography',
+    category: 'events', tagline: 'Lancashire roots. High-end commercial and event photography.',
+    about: "Pixcision delivers authentic, high-resolution photography for brands, events, weddings, and commercial campaigns. Every shot is crafted with attention to atmosphere, lighting, and detail.",
+    area: 'Lancashire & Greater Manchester', phone: '0161 800 9100',
+    coverSrc: 'assets/business/pixcisionstock-cover.jpg', logoSrc: 'assets/business/pixcisionstock-logo.png',
+    services: [
+      { id: 'px1', name: 'Commercial Product & Brand Shoot', description: '2-hour professional studio or on-location shoot with edited high-res images.', price: 140, durationMins: 120 },
+      { id: 'px2', name: 'Event & Corporate Headshots Package', description: 'On-site team headshots and event coverage with digital delivery.', price: 180, durationMins: 90 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-apex-plumbing', ownerEmail: null, name: 'Apex Gas & Plumbing Engineers',
+    category: 'trades', tagline: 'Gas Safe registered plumbers serving Bolton and Greater Manchester',
+    about: "Apex Gas & Plumbing offers 24/7 emergency response, boiler installations, central heating repairs, and Gas Safe safety certificates for homeowners and landlords.",
+    area: 'Bolton, Bury, Wigan & Manchester', phone: '0800 321 9900',
+    services: [
+      { id: 'ap1', name: 'Boiler Service & Gas Safety Certificate (CP12)', description: 'Full annual gas boiler inspection, efficiency check and landlord CP12 cert.', price: 75, durationMins: 45 },
+      { id: 'ap2', name: 'Emergency Plumbing & Leak Repair', description: 'Fast-response callout for burst pipes, leaking radiators, or blocked drainage.', price: 85, durationMins: 60 },
+      { id: 'ap3', name: 'Central Heating Radiator Power Flush', description: 'Comprehensive chemical flush to clear sludge and restore heating efficiency.', price: 220, durationMins: 180 }
+    ],
+    gallery: [],
+    tier: 'priority', billing: 'annual'
+  },
+  {
+    id: 'biz-prestige-clean', ownerEmail: null, name: 'Prestige Cleaning & End of Tenancy',
+    category: 'cleaning', tagline: 'Spotless domestic, office and end-of-tenancy deep cleaning',
+    about: "Prestige Cleaning provides professional deep cleaning services across Greater Manchester and Cheshire. Fully insured cleaners using eco-friendly non-toxic products.",
+    area: 'Bolton, Manchester & Cheshire', phone: '0161 490 8820',
+    services: [
+      { id: 'pc1', name: 'End of Tenancy Deep Clean (1-2 Bed)', description: 'Full deposit-back deep clean covering kitchen, oven, bathrooms and floors.', price: 140, durationMins: 240 },
+      { id: 'pc2', name: '2-Hour Regular Domestic House Clean', description: 'Dusting, vacuuming, mopping, bathroom and kitchen sanitation.', price: 40, durationMins: 120 },
+      { id: 'pc3', name: 'Carpet & Upholstery Steam Clean', description: 'Deep hot-water extraction steam clean for living room carpets or sofas.', price: 65, durationMins: 90 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-paws-trails', ownerEmail: null, name: 'Paws & Trails Country Dog Walks',
+    category: 'dog-walkers', tagline: 'Energetic countryside group and solo dog walking',
+    about: "Paws & Trails takes your dogs on exciting country walks around Rivington, Horwich, and the West Pennine Moors. Fully insured, DBS checked, and canine first-aid certified.",
+    area: 'Bolton, Horwich & Rivington', phone: '07700 900452',
+    services: [
+      { id: 'pt1', name: '1-Hour Countryside Group Walk', description: 'Fun off-lead or on-lead countryside pack walk with pick-up and drop-off.', price: 14, durationMins: 60 },
+      { id: 'pt2', name: '45-Minute Solo Dog Walk', description: 'Dedicated one-on-one walking session tailored for nervous or senior dogs.', price: 18, durationMins: 45 },
+      { id: 'pt3', name: 'Overnight Home Pet Sitting', description: 'In-home care keeping your pet in their familiar routine while you are away.', price: 35, durationMins: 1440 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-hair-aesthetics', ownerEmail: null, name: 'The Hair & Styling Lounge',
+    category: 'beauty', tagline: 'Modern hair coloring, balayage, and precision styling',
+    about: "Premier salon specializing in bespoke hair coloring, master balayage, Olaplex treatments, and precision cutting in a stylish, relaxed environment.",
+    area: 'Bolton & Manchester City Centre', phone: '0161 832 9900',
+    services: [
+      { id: 'ha1', name: 'Cut, Wash & Signature Blow Dry', description: 'In-depth consultation, luxury shampoo treatment, cut and styling.', price: 45, durationMins: 60 },
+      { id: 'ha2', name: 'Full Balayage & Olaplex Treatment Package', description: 'Hand-painted highlights, toner, Olaplex bond repair, and blow dry.', price: 110, durationMins: 150 },
+      { id: 'ha3', name: 'Gel Nails & Manicure', description: 'Nail shaping, cuticle care, long-lasting gel polish finish.', price: 32, durationMins: 45 }
+    ],
+    gallery: [],
+    tier: 'priority', billing: 'annual'
+  },
+  {
+    id: 'biz-mobile-mechanic', ownerEmail: null, name: 'North West Mobile Mechanics',
+    category: 'auto', tagline: 'Vehicle servicing, diagnostics and repairs at your home or workplace',
+    about: "Skip the garage waiting room. Our dealer-trained mobile mechanics bring full OBD-II computer diagnostics, servicing, battery replacements, and brake repairs straight to your driveway.",
+    area: 'Bolton, Bury, Salford & Manchester', phone: '01204 892 100',
+    services: [
+      { id: 'mm1', name: 'Mobile Computer Diagnostics & Fault Scan', description: 'Full electronic vehicle code read, engine light diagnosis, and live data check.', price: 45, durationMins: 45 },
+      { id: 'mm2', name: 'Full Engine Service (Oil & All Filters)', description: 'Castrol oil change, air, fuel, and cabin filter renewal with service light reset.', price: 135, durationMins: 90 },
+      { id: 'mm3', name: 'Mobile Brake Pads Replacement (Front or Rear)', description: 'Quality Brembo or Bosch brake pad replacement fitted at your home.', price: 95, durationMins: 60 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-nw-tutors', ownerEmail: null, name: 'North West Academic Tutors',
+    category: 'tutoring', tagline: 'Expert 1-on-1 GCSE, A-Level & 11+ tuition in Maths, English & Science',
+    about: "Qualified UK teachers offering personalized home and online tutoring. Proven track record of boosting student exam grades and confidence across AQA, Edexcel, and OCR curricula.",
+    area: 'Greater Manchester & Online UK', phone: '0161 720 4400',
+    services: [
+      { id: 'nt1', name: '1-on-1 GCSE / A-Level Tuition Session', description: '60-minute subject session tailored to target weaknesses and exam technique.', price: 35, durationMins: 60 },
+      { id: 'nt2', name: 'Eleven Plus (11+) Entrance Exam Prep', description: 'Verbal and non-verbal reasoning, English and Maths intensive prep.', price: 38, durationMins: 60 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-grooming-room', ownerEmail: null, name: 'The Grooming Room Dog Spa',
+    category: 'pets', tagline: 'Gentle canine pampering, styling, and hydrobath treatments',
+    about: "Experienced pet groomers providing a calm, stress-free grooming environment for dogs of all sizes and breeds. Using natural hypoallergenic shampoos.",
+    area: 'Bromley Cross, Bolton', phone: '01204 845 600',
+    services: [
+      { id: 'gr1', name: 'Full Breed Groom & Warm Hydrobath', description: 'Bath, fluff dry, hair styling/clipping, nail trim, ear cleaning and spritz.', price: 42, durationMins: 90 },
+      { id: 'gr2', name: 'Puppy First Spa Experience', description: 'Gentle bath, light brush, nail trim and positive reward introduction.', price: 25, durationMins: 45 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-precision-joinery', ownerEmail: null, name: 'Precision Joinery & Bespoke Alcoves',
+    category: 'trades', tagline: 'Custom fitted wardrobes, alcove units, and architectural joinery',
+    about: "Master carpenters creating hand-built fitted wardrobes, alcove shelving, media walls, and custom timber furniture for traditional and contemporary UK homes.",
+    area: 'Manchester, Bolton & Altrincham', phone: '0161 941 2200',
+    services: [
+      { id: 'pj1', name: 'Design & Quote Consultation', description: 'On-site measurement, material selection, and 3D design estimate.', price: 0, durationMins: 45 },
+      { id: 'pj2', name: 'Internal Door Hanging & Fitting', description: 'Precision fitting of solid or hollow interior timber doors including ironmongery.', price: 60, durationMins: 90 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-manchester-physio', ownerEmail: null, name: 'Manchester Physiotherapy & Sports Massage',
+    category: 'health', tagline: 'Chartered physiotherapists for back pain, joint injury & sports rehab',
+    about: "HCPC registered physiotherapists helping you recover from injury, chronic back pain, or surgery. Evidence-based treatment including manual therapy and exercise rehabilitation.",
+    area: 'Manchester City Centre & Bolton', phone: '0161 236 7788',
+    services: [
+      { id: 'mp1', name: 'Initial Physiotherapy Assessment & Treatment', description: 'Full physical assessment, diagnosis, manual treatment and exercise plan.', price: 55, durationMins: 45 },
+      { id: 'mp2', name: 'Deep Tissue Sports Massage Session', description: 'Targeted deep tissue work to relieve muscle tension, tightness and fatigue.', price: 45, durationMins: 45 }
+    ],
+    gallery: [],
+    tier: 'priority', billing: 'annual'
+  },
+  {
+    id: 'biz-lancs-wills', ownerEmail: null, name: 'Lancashire Will Writing & Estate Planning',
+    category: 'legal', tagline: "Protect your family's future with professionally drafted Wills & LPAs",
+    about: "Institute of Professional Willwriters members offering clear, compassionate estate planning. Protect your home and assets with legally binding Wills and Power of Attorney.",
+    area: 'Bolton, Preston & North West', phone: '01204 332 110',
+    services: [
+      { id: 'lw1', name: 'Single Will Drafting & Legal Review', description: 'Comprehensive single Will drafted to protect your estate and beneficiaries.', price: 95, durationMins: 60 },
+      { id: 'lw2', name: 'Lasting Power of Attorney (Property & Financial)', description: 'Complete legal drafting and registration guidance for LPA documents.', price: 195, durationMins: 90 }
+    ],
+    gallery: [],
+    tier: 'featured', billing: 'monthly'
+  },
+  {
+    id: 'biz-memuriah', ownerEmail: 'op@vendaru.com', name: 'Memuriah Digital Memorials',
+    category: 'events', tagline: 'Keep their light among the living.',
+    about: "Memuriah is a social memorial platform where family and friends share stories, photographs, and honor loved ones across generations.",
+    area: 'UK & Global', phone: '0800 772 3000',
+    coverSrc: 'assets/business/memuriah-cover.jpg', logoSrc: 'assets/business/memuriah-logo.png',
+    services: [], gallery: [], tier: 'featured', billing: 'monthly'
+  }
 ];
 
 function loadBusinesses() {
