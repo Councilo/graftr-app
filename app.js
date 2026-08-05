@@ -340,8 +340,17 @@ function finalizeOrder(snapshot) {
       status: 'Confirmed',
       createdAt: Date.now(),
     });
+    logBusinessMessage(bk.businessId, 'New booking',
+      `${bk.serviceName} booked for ${scheduleLabelFor(bk.at)} by ${state.userProfile.name || 'a customer'} — £${(bk.price || 0).toFixed(2)}.`);
   });
   if (bookedServices.length) saveBookings();
+
+  // The shop the groceries came from gets the order on its own account.
+  if (hasDelivery) {
+    const itemCount = (snapshot.items || []).reduce((s, i) => s + (i.qty || 1), 0);
+    logBusinessMessage(merchantBusinessId(newOrder.merchant), 'New order',
+      `Order ${newId} — ${itemCount} item${itemCount === 1 ? '' : 's'}, £${newOrder.total.toFixed(2)}, to ${snapshot.address}.`);
+  }
   state.bookingCart = [];
 
   state.loyaltyFree = {};
@@ -581,6 +590,20 @@ function saveBookings() {
   try { localStorage.setItem(BOOKINGS_KEY, JSON.stringify(state.bookings)); } catch (e) { /* ignore */ }
 }
 
+const BUSINESS_MESSAGES_KEY = 'graftr_business_messages';
+
+function loadBusinessMessages() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(BUSINESS_MESSAGES_KEY) || '[]');
+    if (Array.isArray(parsed)) return parsed;
+  } catch (e) { /* ignore corrupt storage */ }
+  return [];
+}
+
+function saveBusinessMessages() {
+  try { localStorage.setItem(BUSINESS_MESSAGES_KEY, JSON.stringify(state.businessMessages)); } catch (e) { /* ignore */ }
+}
+
 function businessById(id) {
   return (state.businesses || []).find(b => b.id === id) || null;
 }
@@ -605,8 +628,19 @@ function recentBusinesses(limit) {
     .slice(0, limit || 4);
 }
 
+// SETUP ONLY. Lets one operator create and edit every listing from /business
+// while the accounts are being built, rather than one listing per sign-in.
+// Set to false (or delete this and the admin bar) to hand each business its
+// own account and nothing else.
+const ADMIN_MODE = true;
+
 // The listing owned by whoever is signed in on /business, if they've made one.
+// In admin mode, whichever listing the operator has selected instead.
 function myBusiness() {
+  if (ADMIN_MODE && state.adminEditingId) {
+    const picked = businessById(state.adminEditingId);
+    if (picked) return picked;
+  }
   const email = state.authUser && state.authUser.email;
   if (!email) return null;
   return (state.businesses || []).find(
@@ -689,6 +723,7 @@ const state = {
   // Local services marketplace
   businesses: loadBusinesses(),
   bookings: loadBookings(),
+  businessMessages: loadBusinessMessages(),
   bookingCart: [],                 // bookings sitting in the basket, unpaid
   servicesCategory: null,          // category being browsed
   activeBusinessId: null,          // business page being viewed
@@ -697,6 +732,7 @@ const state = {
   businessEditor: null,            // working copy while editing the listing
   businessNotice: null,            // confirmation shown after saving/publishing
   confirmingBusinessDelete: false, // delete listing is a two-tap action
+  adminEditingId: null,            // setup-only: which listing the operator is editing
   placingOrder: false,
   checkoutError: null,
   scannerStatus: null,
@@ -2274,20 +2310,6 @@ function renderShopperShop() {
         <div style="font-size:13px;opacity:0.6">Order in 12 min · £30 min basket</div>
       </div>
     </div>
-    <div class="press shop-card" data-action="goTrack" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;cursor:pointer">
-      ${cardImageHtml('track', '📦')}
-      <div style="padding:16px">
-        <div style="display:flex;justify-content:space-between"><span style="font-size:15.5px;font-weight:700">Track my order</span><span style="opacity:0.4">›</span></div>
-        <div style="font-size:13px;opacity:0.6">Boots Pharmacy — arriving 14:20</div>
-      </div>
-    </div>
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden">
-      ${cardImageHtml('offers', '🏷️')}
-      <div style="padding:16px">
-        <div style="display:flex;justify-content:space-between"><span style="font-size:15.5px;font-weight:700">Weekly offers</span><span style="opacity:0.4">›</span></div>
-        <div style="font-size:13px;opacity:0.6">New deals this week · 4 collections</div>
-      </div>
-    </div>
     <div class="press shop-card" data-action="goSpecialRequest" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;cursor:pointer">
       ${cardImageHtml('local', '📍')}
       <div style="padding:16px">
@@ -2296,7 +2318,17 @@ function renderShopperShop() {
       </div>
     </div>
 
-    <!-- Vendaru isn't only groceries: local businesses list here by category. -->
+    <!-- Newly published listings surface here, not only inside their category,
+         so a business that has just signed up is visible straight away. -->
+    ${(() => {
+      const recent = recentBusinesses(4);
+      if (!recent.length) return '';
+      return `
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">New on Vendaru</div>
+        ${recent.map(b => businessCardHtml(b, { variant: 'large' })).join('')}`;
+    })()}
+
+    <!-- Category directory sits at the foot of the page. -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
       <div style="padding:4px 16px 14px">
         <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">Local services</div>
@@ -2311,16 +2343,6 @@ function renderShopperShop() {
         <a href="${BUSINESS_PATH}" style="display:block;text-align:center;margin-top:12px;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>
       </div>
     </div>
-
-    <!-- Newly published listings surface here, not only inside their category,
-         so a business that has just signed up is visible straight away. -->
-    ${(() => {
-      const recent = recentBusinesses(4);
-      if (!recent.length) return '';
-      return `
-        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">New on Vendaru</div>
-        ${recent.map(b => businessCardHtml(b, { variant: 'large' })).join('')}`;
-    })()}
   `;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
@@ -3920,6 +3942,30 @@ function blankBusiness() {
   };
 }
 
+// Every business keeps its own log — bookings, orders and cancellations for
+// that account only, so one merchant never sees another's activity.
+function logBusinessMessage(businessId, tag, text) {
+  if (!businessId) return;
+  state.businessMessages.unshift({
+    id: 'bm-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    businessId, tag, text, createdAt: Date.now(), read: false,
+  });
+  saveBusinessMessages();
+}
+
+function messagesForBusiness(businessId) {
+  return (state.businessMessages || []).filter(m => m.businessId === businessId);
+}
+
+// Grocery orders belong to the shop they were placed with, so Morrisons gets
+// the same per-account log a service business does.
+function merchantBusinessId(merchantName) {
+  const match = (state.businesses || []).find(
+    b => (b.name || '').toLowerCase() === String(merchantName || '').toLowerCase()
+  );
+  return match ? match.id : null;
+}
+
 function bookingsForBusiness(businessId) {
   return (state.bookings || [])
     .filter(bk => bk.businessId === businessId)
@@ -3940,6 +3986,9 @@ function renderBusinessTabs() {
     ${tab('services', 'Services', '<svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 6h14M3 10h14M3 14h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>')}
     ${tab('gallery', 'Photos', '<svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="8" r="1.2" fill="currentColor"/><path d="M4 14l4-4 3.5 3.5L14 11l2 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>')}
     ${tab('bookings', 'Bookings', '<svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4.5" width="14" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 8.5h14M7 3v3M13 3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>')}
+    ${tab('messages', 'Activity', `<span style="position:relative"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 3 H16 V15 L15 16.5 L14 15 L13 16.5 L12 15 L11 16.5 L10 15 L9 16.5 L8 15 L7 16.5 L6 15 L5 16.5 L4 15 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 7H13.5M6.5 10H13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>${
+      (() => { const m = myBusiness(); return m && messagesForBusiness(m.id).some(x => !x.read) ? '<span class="tab-badge"></span>' : ''; })()
+    }</span>`)}
   </div>`;
 }
 
@@ -3948,11 +3997,30 @@ function renderBusinessDashboard() {
   const label = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
   const mine = myBusiness();
 
+  // SETUP ONLY — remove with ADMIN_MODE.
+  const adminBar = ADMIN_MODE ? `
+    <div class="shop-card" style="${shell}">
+      <div style="padding:4px 16px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${label}">
+          <span>All listings (${(state.businesses || []).length})</span>
+          <button type="button" data-action="exportBusinesses" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Export</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:10px">
+          ${(state.businesses || []).map(b => {
+            const on = mine && b.id === mine.id;
+            return `<button type="button" data-action="adminSelectBusiness" data-arg="${b.id}" style="flex:0 0 auto;padding:8px 12px;border-radius:20px;font-size:12.5px;font-weight:${on ? 600 : 500};cursor:pointer;border:1.5px solid ${on ? '#141414' : 'rgba(20,20,20,0.15)'};background:${on ? '#141414' : '#fff'};color:${on ? '#fff' : '#141414'};font-family:inherit">${escapeHtml(b.name || 'Untitled')}</button>`;
+          }).join('')}
+          <button type="button" data-action="createBusiness" style="flex:0 0 auto;padding:8px 12px;border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;border:1.5px dashed rgba(20,20,20,0.3);background:#fff;color:#141414;font-family:inherit">+ New listing</button>
+        </div>
+      </div>
+    </div>` : '';
+
   // Nothing listed yet — one button to create the listing.
   if (!mine) {
     return `
       <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
         <div style="font-size:25px;font-weight:700;color:#141414">Your business</div>
+        ${adminBar}
         <div class="shop-card" style="${shell}">
           <div style="padding:22px 16px;text-align:center">
             <div style="font-size:15px;font-weight:600;color:#141414">List your business on Vendaru</div>
@@ -3965,6 +4033,8 @@ function renderBusinessDashboard() {
 
   const tab = state.businessTab;
   let body;
+
+
 
   if (tab === 'page') {
     const e = state.businessEditor || mine;
@@ -4104,6 +4174,32 @@ function renderBusinessDashboard() {
           ${galleryGridHtml(mine.gallery, { editable: true })}
         </div>
       </div>`;
+  } else if (tab === 'messages') {
+    const msgs = messagesForBusiness(mine.id);
+    body = `
+      <div class="shop-card" style="${shell}">
+        <div style="padding:4px 16px 14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${label}">
+            <span>Activity${msgs.length ? ` (${msgs.length})` : ''}</span>
+            ${msgs.some(m => !m.read)
+              ? `<button type="button" data-action="markBusinessMessagesRead" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Mark all read</button>`
+              : ''}
+          </div>
+          ${msgs.length
+            ? msgs.map((m, i) => `
+                <div style="padding:12px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+                    <span style="font-size:12.5px;font-weight:600;color:#6b6b6b">${escapeHtml(m.tag)}</span>
+                    <span style="font-size:12px;color:#6b6b6b;flex:0 0 auto">${scheduleLabelFor(m.createdAt) || ''}</span>
+                  </div>
+                  <div style="font-size:13.5px;color:#141414;line-height:1.5;margin-top:3px;font-weight:${m.read ? 400 : 500}">${escapeHtml(m.text)}</div>
+                </div>`).join('')
+            : `<div style="padding:14px 0 4px">
+                 <div style="font-size:13.5px;font-weight:500;color:#141414">Nothing yet</div>
+                 <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Orders and bookings placed with this account are logged here.</div>
+               </div>`}
+        </div>
+      </div>`;
   } else {
     const list = bookingsForBusiness(mine.id);
     const upcoming = list.filter(bk => bk.status === 'Confirmed');
@@ -4148,7 +4244,7 @@ function renderBusinessDashboard() {
         </div>` : ''}`;
   }
 
-  const titles = { page: 'Your page', services: 'Services', gallery: 'Photos', bookings: 'Bookings' };
+  const titles = { page: 'Your page', services: 'Services', gallery: 'Photos', bookings: 'Bookings', messages: 'Activity' };
 
   return `
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
@@ -4156,6 +4252,8 @@ function renderBusinessDashboard() {
         <div style="font-size:25px;font-weight:700;color:#141414">${titles[tab] || 'Your business'}</div>
         <button type="button" data-action="logout" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Log out</button>
       </div>
+
+      ${adminBar}
 
       ${state.businessNotice ? `
         <div style="border:1.5px solid ${state.businessNotice.tone === 'ok' ? 'rgba(46,125,79,0.35)' : 'rgba(20,20,20,0.15)'};border-radius:16px;padding:13px 15px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:${state.businessNotice.tone === 'ok' ? '#f2f9f5' : '#fafafa'}">
@@ -4852,6 +4950,13 @@ const actions = {
     saveBusinesses();
     state.businessTab = 'page';
     state.businessEditor = null;
+    if (ADMIN_MODE) state.adminEditingId = fresh.id;   // edit the new one straight away
+    render();
+  },
+  adminSelectBusiness: (id) => {
+    state.adminEditingId = String(id);
+    state.businessEditor = null;
+    state.confirmingBusinessDelete = false;
     render();
   },
   saveBusiness: () => {
@@ -4885,6 +4990,34 @@ const actions = {
     render();
   },
   dismissBusinessNotice: () => { state.businessNotice = null; render(); },
+  markBusinessMessagesRead: () => {
+    const mine = myBusiness();
+    if (!mine) return;
+    state.businessMessages.forEach(m => { if (m.businessId === mine.id) m.read = true; });
+    saveBusinessMessages();
+    render();
+  },
+
+  // --- setup-only: publishing listings to everyone -------------------------
+  // Listings live in this browser. Downloading them as assets/businesses.json
+  // and committing that file is what makes them visible to every visitor.
+  // Delete ADMIN_MODE (and this action) once the accounts are set up.
+  exportBusinesses: () => {
+    const payload = (state.businesses || []).filter(isBusinessLive).map(b => ({ ...b }));
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'businesses.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    state.businessNotice = {
+      tone: 'ok',
+      text: `Exported ${payload.length} listing${payload.length === 1 ? '' : 's'} to businesses.json. Drop it into assets/ and deploy to publish them to everyone.`,
+    };
+    render();
+  },
   // Two taps: the first arms it, so a stray tap can't wipe a live listing.
   confirmDeleteBusiness: () => { state.confirmingBusinessDelete = true; render(); },
   cancelDeleteBusiness: () => { state.confirmingBusinessDelete = false; render(); },
@@ -4921,6 +5054,7 @@ const actions = {
     if (!bk) return;
     bk.status = 'Completed';
     saveBookings();
+    logBusinessMessage(bk.businessId, 'Completed', `${bk.serviceName} for ${bk.customerName || 'a customer'} marked complete.`);
     render();
   },
   cancelBooking: (id) => {
@@ -4928,6 +5062,7 @@ const actions = {
     if (!bk) return;
     bk.status = 'Cancelled';
     saveBookings();
+    logBusinessMessage(bk.businessId, 'Cancelled', `${bk.serviceName} on ${scheduleLabelFor(bk.scheduledAt)} was cancelled.`);
     state.shopperInbox.unshift({
       tag: 'Booking',
       text: `${bk.businessName} cancelled your ${bk.serviceName} booking for ${scheduleLabelFor(bk.scheduledAt)}.`,
@@ -5426,6 +5561,21 @@ document.addEventListener('DOMContentLoaded', () => {
       render();
     }
   });
+
+  // Published listings ship as a data file rather than code, so adding a
+  // business is a matter of committing assets/businesses.json. Missing file is
+  // the normal case early on — the seeds in this file still apply.
+  fetch('assets/businesses.json', { cache: 'no-cache' })
+    .then(res => (res.ok ? res.json() : null))
+    .then(list => {
+      if (!Array.isArray(list) || !list.length) return;
+      const known = new Set(state.businesses.map(b => b.id));
+      const added = list.filter(b => b && b.id && !known.has(b.id));
+      if (!added.length) return;
+      state.businesses = state.businesses.concat(added);
+      render();
+    })
+    .catch(() => { /* no published file yet */ });
 
   checkStripeRedirectResult();
 
