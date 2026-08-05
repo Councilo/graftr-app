@@ -599,3 +599,86 @@ body::-webkit-scrollbar {
 
 
 
+
+/* ---------------------------------------------------------------------------
+   Desktop layout
+   The phone column is the design; on a wide screen it just wastes the space
+   either side of it. Past 900px the bottom pill becomes a left rail and the
+   content gets room to breathe. Everything below 900px is untouched.
+   --------------------------------------------------------------------------- */
+
+/* Brand mark at the top of the rail. Hidden on the phone, where the tab bar
+   is a floating pill with no room for it. */
+.tabbar-brand {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  body {
+    background: #f4f5f7;
+  }
+
+  #app {
+    max-width: 1240px;
+    background: #f4f5f7;
+  }
+
+  .app-scroll {
+    padding-left: 148px;
+    padding-right: 40px;
+  }
+
+  /* One readable column rather than text running the full width. */
+  .app-scroll > div {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+
+  .floating-tabbar {
+    left: 0;
+    right: auto;
+    top: 0;
+    bottom: 0;
+    width: 108px;
+    height: auto;
+    padding: 22px 10px;
+    border-radius: 0;
+    border-right: 1px solid rgba(20, 20, 20, 0.08);
+    box-shadow: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .tabbar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 0 18px;
+  }
+
+  .tabbar-brand img {
+    width: 74px;
+    height: auto;
+    display: block;
+  }
+
+  .floating-tab {
+    gap: 5px;
+    font-size: 11px;
+    padding: 11px 6px;
+    border-radius: 14px;
+    transition: background 0.12s ease;
+  }
+
+  .floating-tab:hover {
+    background: rgba(20, 20, 20, 0.05);
+  }
+
+  /* Clear of the rail, and off the bottom edge now nothing sits there. */
+  .ai-fab {
+    right: 32px;
+    bottom: 32px;
+  }
+}

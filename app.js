@@ -3374,6 +3374,7 @@ function tabStyle(key) {
 function renderCourierTabs() {
   return `
   <div class="floating-tabbar">
+    <div class="tabbar-brand"><img src="assets/brand/logo.svg" alt="Vendaru" /></div>
     <div class="press floating-tab" data-action="goActivity" style="${tabStyle('courier-activity')}">
       <span style="position:relative">
         <svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 3 H16 V15 L15 16.5 L14 15 L13 16.5 L12 15 L11 16.5 L10 15 L9 16.5 L8 15 L7 16.5 L6 15 L5 16.5 L4 15 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 7H13.5M6.5 10H13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -3399,6 +3400,7 @@ function renderCourierTabs() {
 function renderShopperTabs() {
   return `
   <div class="floating-tabbar">
+    <div class="tabbar-brand"><img src="assets/brand/logo.svg" alt="Vendaru" /></div>
     <div class="press floating-tab" data-action="goShop" style="${tabStyle('shopper-shop')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M5 7h10l-1 10H6L5 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 7V5.5a2.5 2.5 0 015 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
       Shop
@@ -4093,6 +4095,7 @@ function renderBusinessTabs() {
 
   return `
   <div class="floating-tabbar">
+    <div class="tabbar-brand"><img src="assets/brand/logo.svg" alt="Vendaru" /></div>
     ${tab('page', 'Page', '<svg width="20" height="20" viewBox="0 0 20 20"><rect x="3.5" y="3" width="13" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 7.5h7M6.5 10.5h7M6.5 13.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>')}
     ${tab('services', 'Services', '<svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 6h14M3 10h14M3 14h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>')}
     ${tab('gallery', 'Photos', '<svg width="20" height="20" viewBox="0 0 20 20"><rect x="3" y="4" width="14" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="8" r="1.2" fill="currentColor"/><path d="M4 14l4-4 3.5 3.5L14 11l2 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>')}
