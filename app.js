@@ -1808,9 +1808,11 @@ function renderShopperShop() {
   `;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <!-- Brand mark, centred. Swapping assets/brand/logo.svg changes it here too. -->
+    <!-- Brand mark, centred. Same 200px width as the sign-in screen.
+         Swapping assets/brand/logo.svg changes it here too. -->
     <div style="display:flex;justify-content:center;padding:2px 0">
-      <img src="assets/brand/logo.svg" alt="Vendaru" style="height:26px;width:auto;display:block" />
+      <img src="assets/brand/logo.svg" alt="Vendaru" width="200"
+           style="width:200px;max-width:62%;height:auto;display:block" />
     </div>
     <div style="font-size:15px;opacity:0.55;font-weight:600">Good afternoon</div>
     <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:11px 16px">
