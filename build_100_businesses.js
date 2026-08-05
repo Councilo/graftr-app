@@ -16,6 +16,7 @@ const ukCities = [
 
 // Custom local logo overrides for key brand assets already in assets/business/
 const localLogos = {
+  "Yopa Estate Agents": "assets/business/yopa-logo.png",
   "Yopa UK Property Sales": "assets/business/yopa-logo.png",
   "MyBuilder UK": "assets/business/mybuilder-logo.png",
   "U Travel UK": "assets/business/utravel-logo.png",
@@ -27,6 +28,7 @@ const localLogos = {
 
 const localCovers = {
   "U Travel UK": "assets/business/utravel-cover.jpg",
+  "Yopa Estate Agents": "assets/business/yopa-cover.jpg",
   "Yopa UK Property Sales": "assets/business/yopa-cover.jpg",
   "MyBuilder UK": "assets/business/mybuilder-cover.jpg",
   "TaxAssist Accountants": "assets/business/tax-assist-cover.jpg",
@@ -345,6 +347,21 @@ for (const cat of categories) {
   }
 }
 
-// Exactly 100 total
+// Write to assets/businesses.json
 fs.writeFileSync(path.join(__dirname, 'assets', 'businesses.json'), JSON.stringify(list, null, 2), 'utf8');
-console.log(`Generated ${list.length} unique UK businesses with logoSrc & coverSrc into assets/businesses.json`);
+console.log(`Generated ${list.length} unique UK businesses into assets/businesses.json`);
+
+// Also update SEED_BUSINESSES inside app.js so app.js natively embeds all 100 businesses!
+const appJsPath = path.join(__dirname, 'app.js');
+let appJsContent = fs.readFileSync(appJsPath, 'utf8');
+
+const seedBusinessesStr = `const SEED_BUSINESSES = ${JSON.stringify(list, null, 2)};`;
+
+const seedRegex = /const SEED_BUSINESSES = \[\s*[\s\S]*?\n\];/;
+if (seedRegex.test(appJsContent)) {
+  appJsContent = appJsContent.replace(seedRegex, seedBusinessesStr);
+  fs.writeFileSync(appJsPath, appJsContent, 'utf8');
+  console.log(`Successfully updated SEED_BUSINESSES in app.js with ${list.length} items!`);
+} else {
+  console.error("Could not find SEED_BUSINESSES in app.js!");
+}
