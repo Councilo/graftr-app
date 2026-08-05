@@ -1671,109 +1671,97 @@ function renderShopperBasket() {
   const count = cartCount();
   const total = cartTotal();
 
-  // BOX 1 (Top): Current Basket (Shop Page Card Theme)
+  const cardShell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff';
+  const sectionLabel = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
+
+  // CARD 1: the basket you're building right now.
   const basketBox = state.basketCheckedOut
     ? `
-      <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;text-align:center;background:#fff">
-        <div style="font-size:32px">🛒</div>
-        <div style="font-size:16px;font-weight:700;color:#141414">✓ Order Placed — Morrisons Daily</div>
-        <div style="font-size:12.5px;color:#6b6b6b">Your basket has been processed and sent to local couriers.</div>
-        <button type="button" data-action="newBasket" style="background:#141414;color:#fff;border:none;padding:12px 20px;border-radius:16px;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px">Start New Basket</button>
+      <div class="shop-card" style="${cardShell}">
+        <div style="padding:20px 16px;text-align:center">
+          <div style="font-size:15px;font-weight:600;color:#141414">Order placed</div>
+          <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Your basket has been sent to local couriers.</div>
+          <button type="button" data-action="newBasket" style="background:#141414;color:#fff;border:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:12px;font-family:inherit">Start new basket</button>
+        </div>
       </div>`
     : (lines.length > 0
       ? `
-        <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px;background:#ffffff">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div style="display:flex;align-items:center;gap:8px">
-              <span style="font-size:20px">🛒</span>
-              <div>
-                <div style="font-size:15.5px;font-weight:700;color:#141414">Current Basket</div>
-                <div style="font-size:13px;color:#6b6b6b">Morrisons Daily</div>
-              </div>
+        <div class="shop-card" style="${cardShell}">
+          <div style="padding:4px 16px 14px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;${sectionLabel}">
+              <span>Basket · Morrisons Daily</span>
+              <span style="font-size:14px;font-weight:600;color:#141414">£${total.toFixed(2)}</span>
             </div>
-            <div style="font-size:15.5px;font-weight:700;color:#141414">£${total.toFixed(2)}</div>
-          </div>
 
-          <div style="display:flex;flex-direction:column;gap:10px;border-top:1px dashed rgba(20,20,20,0.15);padding-top:12px">
-            ${lines.map((l) => `
-              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            ${lines.map((l, i) => `
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
                 <div style="flex:1;min-width:0">
-                  <div style="font-size:13px;font-weight:600;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.product.name)}</div>
-                  <div style="font-size:11.5px;color:#6b6b6b">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
+                  <div style="font-size:13.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.product.name)}</div>
+                  <div style="font-size:12.5px;color:#6b6b6b">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
                 </div>
-                <div style="display:flex;align-items:center;gap:8px">
-                  <div class="press" data-action="removeFromCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;border:1.5px solid #141414;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;font-size:14px;color:#141414">−</div>
-                  <span style="font-size:13.5px;font-weight:700;min-width:16px;text-align:center">${l.qty}</span>
-                  <div class="press" data-action="addToCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;font-size:14px">+</div>
+                <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto">
+                  <div class="press" data-action="removeFromCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(20,20,20,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#141414">−</div>
+                  <span style="font-size:13.5px;font-weight:500;min-width:16px;text-align:center">${l.qty}</span>
+                  <div class="press" data-action="addToCart" data-arg="${l.product.id}" style="width:26px;height:26px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px">+</div>
                 </div>
-                <span style="font-size:13px;font-weight:700;min-width:48px;text-align:right;color:#141414">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
+                <span style="font-size:13.5px;font-weight:600;min-width:48px;text-align:right;color:#141414;flex:0 0 auto">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
               </div>
             `).join('')}
-          </div>
 
-          <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(20,20,20,0.08);padding-top:12px">
-            <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:12.5px;color:#6b6b6b;font-weight:600">${count} item${count > 1 ? 's' : ''}</span>
-              <span class="press" data-action="emptyBasket" style="font-size:12px;font-weight:700;color:#141414;text-decoration:underline;cursor:pointer">Empty basket</span>
-            </div>
-            <div class="press" data-action="checkout" style="background:#141414;color:#fff;border-radius:16px;padding:10px 20px;font-weight:700;font-size:13.5px;cursor:pointer">
-              Checkout (£${total.toFixed(2)}) ›
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f0f0f0;padding-top:13px;margin-top:2px;gap:10px">
+              <div style="display:flex;align-items:center;gap:14px">
+                <span style="font-size:12.5px;color:#6b6b6b">${count} item${count > 1 ? 's' : ''}</span>
+                <button type="button" data-action="emptyBasket" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Empty</button>
+              </div>
+              <div class="press" data-action="checkout" style="background:#141414;color:#fff;border-radius:14px;padding:10px 18px;font-weight:600;font-size:13.5px;cursor:pointer;flex:0 0 auto">
+                Checkout · £${total.toFixed(2)}
+              </div>
             </div>
           </div>
         </div>`
       : `
-        <div class="shop-card" style="border:1.5px dashed rgba(20,20,20,0.2);border-radius:16px;padding:28px 20px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;background:#fff">
-          <div style="font-size:32px">🛒</div>
-          <div>
-            <div style="font-size:16px;font-weight:700;color:#141414">Your Basket is Empty</div>
-            <div style="font-size:12.5px;color:#6b6b6b;margin-top:4px">Add fresh groceries and essentials from Morrisons Daily.</div>
+        <div class="shop-card" style="${cardShell}">
+          <div style="padding:22px 16px;text-align:center">
+            <div style="font-size:15px;font-weight:600;color:#141414">Your basket is empty</div>
+            <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Add groceries and essentials from Morrisons Daily.</div>
+            <button type="button" data-action="goShop" style="background:#141414;color:#fff;border:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:12px;font-family:inherit">Start shopping</button>
           </div>
-          <div class="press" data-action="goShop" style="background:#141414;color:#fff;border-radius:16px;padding:10px 20px;font-weight:700;font-size:13px;cursor:pointer;margin-top:4px">Start Shopping</div>
         </div>`
   );
 
-  // BOX 2 (Bottom): Active Delivery & Active Order Items (Shop Page Card Theme)
-  const activeOrder = state.orders.find(o => o.status !== 'Cancelled' && o.status !== 'Delivered');
+  // CARD 2 + 3: orders still in flight, and everything that's finished.
+  const activeOrders = state.orders.filter(o => o.status !== 'Cancelled' && o.status !== 'Delivered');
+  const pastOrders = state.orders.filter(o => o.status === 'Cancelled' || o.status === 'Delivered');
 
-  const activeOrderBox = activeOrder ? `
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;background:#fff">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-size:15.5px;font-weight:700;color:#141414">Active Delivery ${activeOrder.id}</div>
-          <div style="font-size:12px;color:#141414;font-weight:700;margin-top:2px">${escapeHtml(activeOrder.status)}</div>
-        </div>
-        <button type="button" data-action="goTrack" style="background:#141414;color:#fff;border:none;padding:8px 14px;border-radius:14px;font-size:12.5px;font-weight:700;cursor:pointer">
-          Live Map ↗
-        </button>
+  const activeOrdersCard = `
+    <div class="shop-card" style="${cardShell}">
+      <div style="padding:4px 16px 12px">
+        <div style="${sectionLabel}">Active orders${activeOrders.length ? ` (${activeOrders.length})` : ''}</div>
+        ${activeOrders.length
+          ? orderRowsHtml(activeOrders)
+          : `<div style="padding:14px 0 4px">
+               <div style="font-size:13.5px;font-weight:500;color:#141414">No active orders</div>
+               <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Place an order to follow it here and on Activity.</div>
+             </div>`}
       </div>
+    </div>`;
 
-      <div class="press" data-action="goTrack" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;overflow:hidden;height:125px;position:relative;cursor:pointer">
-        <div id="graftr-basket-leaflet-map" style="width:100%;height:100%"></div>
-        <div style="position:absolute;bottom:8px;right:8px;z-index:2;background:rgba(20,20,20,0.85);backdrop-filter:blur(4px);color:#fff;padding:4px 10px;border-radius:10px;font-size:10.5px;font-weight:700">
-          Tap for full live tracking
-        </div>
+  const pastOrdersCard = pastOrders.length
+    ? `
+    <div class="shop-card" style="${cardShell}">
+      <div style="padding:4px 16px 12px">
+        <div style="${sectionLabel}">Past orders (${pastOrders.length})</div>
+        ${orderRowsHtml(pastOrders)}
       </div>
-
-      ${renderOrderItemsCardHtml(activeOrder)}
-    </div>
-  ` : `
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;background:#ffffff">
-      <div style="font-size:28px">⚡</div>
-      <div>
-        <div style="font-size:15.5px;font-weight:700;color:#141414">No Active Deliveries</div>
-        <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">Place an order to track live delivery updates in real-time.</div>
-      </div>
-      <button type="button" data-action="goTrack" style="background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:9px 18px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer;margin-top:4px">
-        View Order Activity &amp; Messages
-      </button>
-    </div>
-  `;
+    </div>`
+    : '';
 
   return `
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-      <div style="font-size:25px;font-weight:700;color:#141414">Basket &amp; Delivery</div>
+      <div style="font-size:25px;font-weight:700;color:#141414">Basket</div>
       ${basketBox}
-      ${activeOrderBox}
+      ${activeOrdersCard}
+      ${pastOrdersCard}
     </div>
   `;
 }
@@ -2597,19 +2585,18 @@ function renderShopperTrackingSection(currentOrder) {
   `;
 }
 
-function renderLoggedOrdersCard() {
-  if (!state.orders || state.orders.length === 0) return '';
-
-  const ordersCount = state.orders.length;
-  const ordersListHtml = state.orders.map((o, index) => {
+// One order row, shared by the Activity and Basket cards so the two can't drift.
+// Rows share their card and are split by hairlines rather than each being its own
+// bordered box; the tracked one is marked by weight, not a heavy border.
+function orderRowsHtml(orders) {
+  const smallBtn = 'background:none;border:none;padding:0;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit';
+  return orders.map((o, index) => {
     const isSelected = o.id === state.activeOrderId;
     const itemCount = o.items ? o.items.reduce((s, i) => s + (i.qty || 1), 0) : 1;
     const isCancelled = o.status === 'Cancelled';
     const isDelivered = o.status === 'Delivered';
+    const isClosed = isCancelled || isDelivered;
 
-    // Rows share the card and are split by hairlines rather than each being its
-    // own bordered box — the selected one is marked by weight, not a heavy border.
-    const smallBtn = 'background:none;border:none;padding:0;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit';
     return `
       <div style="padding:13px 0;${index > 0 ? 'border-top:1px solid #f0f0f0;' : ''}">
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
@@ -2620,23 +2607,29 @@ function renderLoggedOrdersCard() {
           ${o.id} · ${itemCount} item${itemCount > 1 ? 's' : ''} · ${escapeHtml(o.status)}
         </div>
         <div style="display:flex;gap:16px;margin-top:9px">
-          <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="${smallBtn};color:#141414">
-            ${isSelected ? 'Tracking' : 'Track'}
-          </button>
-          ${!isCancelled && !isDelivered ? `
+          ${!isClosed ? `
+            <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="${smallBtn};color:#141414">
+              ${isSelected ? 'Tracking' : 'Track'}
+            </button>
             <button type="button" data-action="cancelOrder" data-arg="${o.id}" style="${smallBtn};color:#6b6b6b">Cancel</button>
-          ` : ''}
+          ` : `
+            <button type="button" data-action="selectOrderToTrack" data-arg="${o.id}" style="${smallBtn};color:#141414">View</button>
+          `}
           <button type="button" data-action="deleteOrder" data-arg="${o.id}" style="${smallBtn};color:#6b6b6b">Remove</button>
         </div>
       </div>
     `;
   }).join('');
+}
+
+function renderLoggedOrdersCard() {
+  if (!state.orders || state.orders.length === 0) return '';
 
   return `
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
       <div style="padding:4px 16px 12px">
-        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">Orders (${ordersCount})</div>
-        ${ordersListHtml}
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">Orders (${state.orders.length})</div>
+        ${orderRowsHtml(state.orders)}
       </div>
     </div>`;
 }
@@ -2810,83 +2803,6 @@ function stopEtaLiveUpdates() {
   }
 }
 
-let basketMapInstance = null;
-let basketCourierMarker = null;
-
-async function initGraftrBasketMap() {
-  const container = document.getElementById('graftr-basket-leaflet-map');
-  if (!container || typeof L === 'undefined') return;
-
-  if (basketMapInstance) {
-    try { basketMapInstance.remove(); } catch(e){}
-    basketMapInstance = null;
-  }
-
-  const currentOrder = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
-  const customerPos = await fetchAddressCoords(currentOrder ? currentOrder.address : state.userProfile.address);
-  const storePos = STORE_COORDS;
-
-  const bounds = L.latLngBounds([storePos, customerPos]);
-  const map = L.map('graftr-basket-leaflet-map', {
-    zoomControl: false,
-    attributionControl: false,
-    dragging: false,
-    touchZoom: false,
-    doubleClickZoom: false,
-    scrollWheelZoom: false
-  }).fitBounds(bounds, { padding: [15, 15] });
-
-  basketMapInstance = map;
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19
-  }).addTo(map);
-
-  const streetRoutePath = await fetchStreetRoute(storePos, customerPos);
-  L.polyline(streetRoutePath, { color: '#141414', weight: 4, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
-
-  const storeIcon = L.divIcon({
-    className: 'custom-map-icon store-icon',
-    html: '<div style="background:#141414;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px">🏬</div>',
-    iconSize: [26, 26],
-    iconAnchor: [13, 13]
-  });
-  L.marker(storePos, { icon: storeIcon }).addTo(map);
-
-  const customerIcon = L.divIcon({
-    className: 'custom-map-icon customer-icon',
-    html: '<div style="background:#141414;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px">🏠</div>',
-    iconSize: [26, 26],
-    iconAnchor: [13, 13]
-  });
-  L.marker(customerPos, { icon: customerIcon }).addTo(map);
-
-  const isAccepted = currentOrder && currentOrder.status !== 'Pending Courier Acceptance';
-
-  if (isAccepted) {
-    let liveGps = state.courierLiveGps;
-    if (!liveGps) {
-      try {
-        const res = await fetch('/api/courier/location');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.location) liveGps = data.location;
-        }
-      } catch(e){}
-    }
-
-    const livePos = (liveGps && liveGps.lat) ? [liveGps.lat, liveGps.lng] : storePos;
-
-    const courierIcon = L.divIcon({
-      className: 'custom-map-icon courier-icon',
-      html: '<div style="background:#141414;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 4px 10px rgba(0,0,0,0.3);border:2px solid #141414">🚴</div>',
-      iconSize: [28, 28],
-      iconAnchor: [14, 14]
-    });
-
-    basketCourierMarker = L.marker(livePos, { icon: courierIcon }).addTo(map);
-  }
-}
 
 function stopVoiceRecognition() {
   if (recognition) {
@@ -2953,9 +2869,6 @@ function render() {
     startEtaLiveUpdates();
   } else {
     stopEtaLiveUpdates();
-    if (state.screen === 'shopper-basket') {
-      setTimeout(initGraftrBasketMap, 50);
-    }
   }
 
   if (state.screen === 'shopper-inbox') {
