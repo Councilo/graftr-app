@@ -497,8 +497,13 @@ function serviceCategory(id) {
 const BUSINESSES_KEY = 'graftr_businesses';
 const BOOKINGS_KEY = 'graftr_bookings';
 
-// Enough listings that the categories aren't empty on a first visit. Real
-// businesses created through /business are stored alongside these.
+// Bumped when the shipped listings change in a way that has to reach browsers
+// that already saved the old set. Storage written before this version is
+// cleared once, so retired demo listings don't linger on anyone's device.
+const BUSINESS_SEED_VERSION = 2;
+const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
+
+// Real listings only. The fictional demo businesses were retired in v2.
 const SEED_BUSINESSES = [
   {
     // Details as supplied by the owner. Priced services are added from the
@@ -512,105 +517,20 @@ const SEED_BUSINESSES = [
     ],
     gallery: [],
   },
-  {
-    id: 'biz-halliwell-homes', ownerEmail: null, name: 'Halliwell Homes',
-    category: 'real-estate', tagline: 'Independent Bolton estate agents',
-    about: "Family-run agents covering Halliwell, Astley Bridge and Heaton since 2009. We handle valuations, viewings and full lettings management, and we answer the phone ourselves.",
-    area: 'Bolton BL1', phone: '01204 900 118',
-    services: [
-      { id: 's1', name: 'Property valuation', description: 'In-person market appraisal with a written report.', price: 0, durationMins: 45 },
-      { id: 's2', name: 'Accompanied viewing', description: 'We show your property to a buyer on your behalf.', price: 45, durationMins: 60 },
-      { id: 's3', name: 'Professional photography', description: 'Full photo set plus floor plan for your listing.', price: 120, durationMins: 90 },
-    ],
-    gallery: [],
-  },
-  {
-    id: 'biz-paws-bolton', ownerEmail: null, name: 'Paws of Bolton',
-    category: 'dog-walkers', tagline: 'Insured dog walking & drop-in visits',
-    about: "Small-group and solo walks around Moss Bank Park and Barrow Bridge. Fully insured, DBS checked, and you get photos from every walk.",
-    area: 'Bolton BL1 · BL3', phone: '07700 900 214',
-    services: [
-      { id: 's1', name: 'Group walk (1 hour)', description: 'Up to four dogs, collected and dropped home.', price: 14, durationMins: 60 },
-      { id: 's2', name: 'Solo walk (1 hour)', description: 'One-to-one for reactive or elderly dogs.', price: 22, durationMins: 60 },
-      { id: 's3', name: 'Puppy drop-in (30 min)', description: 'Toilet break, feed and a short play.', price: 12, durationMins: 30 },
-    ],
-    gallery: [],
-  },
-  {
-    id: 'biz-whiskers-vet', ownerEmail: null, name: 'Whiskers Mobile Vet',
-    category: 'pets', tagline: 'Vet care at your kitchen table',
-    about: "A mobile veterinary practice for cats and small animals who find the clinic stressful. Routine care, vaccinations and end-of-life support at home.",
-    area: 'Greater Bolton', phone: '01204 900 776',
-    services: [
-      { id: 's1', name: 'Home health check', description: 'Full nose-to-tail examination.', price: 55, durationMins: 30 },
-      { id: 's2', name: 'Annual vaccination', description: 'Booster and health check combined.', price: 68, durationMins: 30 },
-      { id: 's3', name: 'Nail clip & grooming tidy', description: 'For cats and small animals.', price: 25, durationMins: 20 },
-    ],
-    gallery: [],
-  },
-  {
-    id: 'biz-brightside-clean', ownerEmail: null, name: 'Brightside Cleaning',
-    category: 'cleaning', tagline: 'Domestic & end-of-tenancy cleaning',
-    about: "Two-person teams, our own products, and a fixed price agreed before we start. End-of-tenancy cleans come with a deposit-back guarantee.",
-    area: 'Bolton & Bury', phone: '07700 900 431',
-    services: [
-      { id: 's1', name: 'Standard home clean (2 hrs)', description: 'Kitchen, bathrooms, floors and surfaces.', price: 48, durationMins: 120 },
-      { id: 's2', name: 'Deep clean (4 hrs)', description: 'Inside appliances, skirtings, windows and doors.', price: 95, durationMins: 240 },
-      { id: 's3', name: 'End of tenancy', description: 'Full property clean with deposit-back guarantee.', price: 165, durationMins: 300 },
-    ],
-    gallery: [],
-  },
-  {
-    id: 'biz-north-electrical', ownerEmail: null, name: 'Northgate Electrical',
-    category: 'trades', tagline: 'NICEIC approved electricians',
-    about: "Domestic and small commercial electrical work across Bolton. Fault finding, consumer units, EV chargers and landlord safety certificates.",
-    area: 'Bolton BL1–BL7', phone: '01204 900 552',
-    services: [
-      { id: 's1', name: 'Callout & diagnosis', description: 'First hour on site, fault traced and quoted.', price: 65, durationMins: 60 },
-      { id: 's2', name: 'EICR safety certificate', description: 'Landlord electrical report for up to 3 bedrooms.', price: 140, durationMins: 180 },
-      { id: 's3', name: 'EV charger install', description: 'Survey, fit and commission a home charge point.', price: 450, durationMins: 300 },
-    ],
-    gallery: [],
-  },
-  {
-    id: 'biz-cut-above', ownerEmail: null, name: 'A Cut Above',
-    category: 'beauty', tagline: 'Mobile hairdressing & barbering',
-    about: "Salon-trained stylists who come to you. Cuts, colour and blow-dries in your own front room, evenings and weekends included.",
-    area: 'Bolton town centre & surrounds', phone: '07700 900 388',
-    services: [
-      { id: 's1', name: "Cut & blow-dry", description: 'Wash, cut and finish at home.', price: 32, durationMins: 60 },
-      { id: 's2', name: 'Gents cut', description: 'Clipper or scissor cut, beard tidy included.', price: 18, durationMins: 30 },
-      { id: 's3', name: 'Full head colour', description: 'Consultation, colour and finish.', price: 75, durationMins: 150 },
-    ],
-    gallery: [],
-  },
-  {
-    id: 'biz-bolton-tutors', ownerEmail: null, name: 'Bolton Tutors',
-    category: 'tutoring', tagline: 'GCSE & A-level maths and science',
-    about: "Qualified teachers offering one-to-one tuition at home or online. We share a short progress note with parents after every session.",
-    area: 'Bolton · online', phone: '01204 900 907',
-    services: [
-      { id: 's1', name: 'GCSE maths (1 hour)', description: 'One-to-one, tailored to your exam board.', price: 30, durationMins: 60 },
-      { id: 's2', name: 'A-level physics (1 hour)', description: 'Specialist subject tutor, at home or online.', price: 38, durationMins: 60 },
-      { id: 's3', name: 'Exam technique workshop', description: 'Two hours on past papers and timing.', price: 55, durationMins: 120 },
-    ],
-    gallery: [],
-  },
-  {
-    id: 'biz-lantern-events', ownerEmail: null, name: 'Lantern Events',
-    category: 'events', tagline: 'Parties, weddings & hire',
-    about: "Everything for a party in one van: lights, sound, dance floors and a DJ if you want one. We set up and clear down the same night.",
-    area: 'Bolton & Greater Manchester', phone: '07700 900 640',
-    services: [
-      { id: 's1', name: 'Party DJ (4 hours)', description: 'DJ, sound system and lighting rig.', price: 320, durationMins: 240 },
-      { id: 's2', name: 'Venue lighting hire', description: 'Uplighters and festoon, delivered and set up.', price: 180, durationMins: 120 },
-      { id: 's3', name: 'Photo booth hire', description: 'Attended booth with props and prints.', price: 250, durationMins: 180 },
-    ],
-    gallery: [],
-  },
 ];
 
 function loadBusinesses() {
+  try {
+    // Saved copies of retired demo listings would otherwise outlive their
+    // removal from the code, since saving writes the merged set back out.
+    const storedVersion = Number(localStorage.getItem(BUSINESS_SEED_VERSION_KEY) || 0);
+    if (storedVersion < BUSINESS_SEED_VERSION) {
+      localStorage.removeItem(BUSINESSES_KEY);
+      localStorage.setItem(BUSINESS_SEED_VERSION_KEY, String(BUSINESS_SEED_VERSION));
+      return SEED_BUSINESSES.map(b => ({ ...b }));
+    }
+  } catch (e) { /* ignore storage failure */ }
+
   try {
     const raw = localStorage.getItem(BUSINESSES_KEY);
     if (raw) {
@@ -759,6 +679,7 @@ const state = {
   businessTab: 'page',             // business dashboard section
   businessEditor: null,            // working copy while editing the listing
   businessNotice: null,            // confirmation shown after saving/publishing
+  confirmingBusinessDelete: false, // delete listing is a two-tap action
   placingOrder: false,
   checkoutError: null,
   scannerStatus: null,
@@ -4102,6 +4023,16 @@ function renderBusinessDashboard() {
           </div>
 
           <button type="button" data-action="saveBusiness" style="background:#141414;color:#fff;border:none;padding:13px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit">Save page</button>
+
+          ${state.confirmingBusinessDelete
+            ? `<div style="border-top:1px solid #f0f0f0;padding-top:13px;margin-top:2px">
+                 <div style="font-size:13px;color:#141414;line-height:1.5">Delete this listing? Customers will no longer be able to find or book you.</div>
+                 <div style="display:flex;gap:10px;margin-top:11px">
+                   <button type="button" data-action="cancelDeleteBusiness" style="flex:1;background:#fff;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit">Keep it</button>
+                   <button type="button" data-action="deleteBusiness" style="flex:1;background:#fff;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit;color:#a3243b">Delete listing</button>
+                 </div>
+               </div>`
+            : `<button type="button" data-action="confirmDeleteBusiness" style="background:none;border:none;padding:2px 0 0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Delete this listing</button>`}
         </div>
       </div>`;
   } else if (tab === 'services') {
@@ -4932,6 +4863,19 @@ const actions = {
     render();
   },
   dismissBusinessNotice: () => { state.businessNotice = null; render(); },
+  // Two taps: the first arms it, so a stray tap can't wipe a live listing.
+  confirmDeleteBusiness: () => { state.confirmingBusinessDelete = true; render(); },
+  cancelDeleteBusiness: () => { state.confirmingBusinessDelete = false; render(); },
+  deleteBusiness: () => {
+    const mine = myBusiness();
+    if (!mine) return;
+    state.businesses = state.businesses.filter(b => b.id !== mine.id);
+    saveBusinesses();
+    state.confirmingBusinessDelete = false;
+    state.businessEditor = null;
+    state.businessNotice = { tone: 'ok', text: `${mine.name || 'Your listing'} has been deleted. It no longer appears anywhere on Vendaru.` };
+    render();
+  },
   addService: () => {
     const mine = myBusiness();
     if (!mine) return;
