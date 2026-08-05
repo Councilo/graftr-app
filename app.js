@@ -2165,12 +2165,16 @@ function renderLoyaltyCard() {
   const l = loyaltyState();
   const ready = l.rewardsReady > 0;
 
-  const dots = Array.from({ length: LOYALTY_STAMPS_PER_REWARD }, (_, i) => {
-    const filled = i < l.stamps;
-    return `<span style="width:26px;height:26px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;
-      background:${filled ? '#141414' : 'rgba(20,20,20,0.07)'};color:${filled ? '#fff' : 'rgba(20,20,20,0.35)'};
-      border:1.5px solid ${filled ? '#141414' : 'rgba(20,20,20,0.12)'}">${filled ? '' : i + 1}</span>`;
-  }).join('');
+  // On the order that completes a card the remainder wraps to 0, which would
+  // blank every stamp at the exact moment the reward lands. Show a full card
+  // instead until the reward is claimed.
+  const shown = ready && l.stamps === 0 ? LOYALTY_STAMPS_PER_REWARD : l.stamps;
+
+  // Earned stamps fill in a deeper rose than the card itself so they read as
+  // stamped rather than printed; white numerals need that much contrast.
+  const dots = Array.from({ length: LOYALTY_STAMPS_PER_REWARD }, (_, i) =>
+    `<span class="loyalty-stamp${i < shown ? ' is-filled' : ''}">${i + 1}</span>`
+  ).join('');
 
   const toGo = LOYALTY_STAMPS_PER_REWARD - l.stamps;
 
@@ -2179,7 +2183,7 @@ function renderLoyaltyCard() {
       <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px">
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
           <span style="font-size:12.5px;font-weight:600;color:rgba(20,20,20,0.65)">Vendaru loyalty</span>
-          <span style="font-size:12.5px;color:rgba(20,20,20,0.65)">${l.stamps}/${LOYALTY_STAMPS_PER_REWARD}</span>
+          <span style="font-size:12.5px;color:rgba(20,20,20,0.65)">${shown}/${LOYALTY_STAMPS_PER_REWARD}</span>
         </div>
 
         <div style="display:flex;gap:7px;justify-content:space-between">${dots}</div>
