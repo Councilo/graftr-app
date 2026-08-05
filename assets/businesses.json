@@ -1,5 +1,41 @@
 [
   {
+    "id": "biz-utravel",
+    "ownerEmail": null,
+    "name": "U travel uk",
+    "category": "travel",
+    "tagline": "Itineraries built around your pace, preferences and the way you actually explore.",
+    "about": "UTravel is your travel sidekick for the whole trip, not just one bit of it.\n\nIt can help you find places to go, things to do, flights, hotels, live public transport, entry rules, fuel prices, nearby stops, and it can stage journeys or track buses and trains for you.\n\nThink of it as a cheeky, practical mate who does the boring bits and surfaces the useful options.",
+    "area": "Global",
+    "phone": "",
+    "logoSrc": "assets/business/utravel-logo.png",
+    "coverSrc": "assets/business/u-travel-uk-cover.jpg",
+    "services": [],
+    "gallery": []
+  },
+  {
+    "id": "biz-yopa",
+    "ownerEmail": null,
+    "name": "Yopa",
+    "category": "real-estate",
+    "tagline": "Sell your home with Yopa",
+    "about": "Online estate agents covering Bolton and the surrounding area, handling sales from valuation through to completion. Book a free valuation below or call the team direct.",
+    "area": "Bolton & Greater Manchester",
+    "phone": "0333 305 0202",
+    "coverSrc": "assets/business/yopa-cover.jpg",
+    "coverPosition": "center top",
+    "services": [
+      {
+        "id": "s1",
+        "name": "Free property valuation",
+        "description": "A local agent values your home, with no obligation to list.",
+        "price": 0,
+        "durationMins": 60
+      }
+    ],
+    "gallery": []
+  },
+  {
     "id": "biz-msg8faz2",
     "ownerEmail": "op@vendaru.com",
     "name": "Pixcisionstock.com",
@@ -62,41 +98,5 @@
     "coverSrc": "assets/business/tax-assist-cover.jpg",
     "logoSrc": "assets/business/tax-assist-logo.png",
     "publishedAt": 1785942502814
-  },
-  {
-    "id": "biz-utravel",
-    "ownerEmail": null,
-    "name": "U travel uk",
-    "category": "travel",
-    "tagline": "Itineraries built around your pace, preferences and the way you actually explore.",
-    "about": "UTravel is your travel sidekick for the whole trip, not just one bit of it.\n\nIt can help you find places to go, things to do, flights, hotels, live public transport, entry rules, fuel prices, nearby stops, and it can stage journeys or track buses and trains for you.\n\nThink of it as a cheeky, practical mate who does the boring bits and surfaces the useful options.",
-    "area": "Global",
-    "phone": "",
-    "logoSrc": "assets/business/utravel-logo.png",
-    "coverSrc": "assets/business/u-travel-uk-cover.jpg",
-    "services": [],
-    "gallery": []
-  },
-  {
-    "id": "biz-yopa",
-    "ownerEmail": null,
-    "name": "Yopa",
-    "category": "real-estate",
-    "tagline": "Sell your home with Yopa",
-    "about": "Online estate agents covering Bolton and the surrounding area, handling sales from valuation through to completion. Book a free valuation below or call the team direct.",
-    "area": "Bolton & Greater Manchester",
-    "phone": "0333 305 0202",
-    "coverSrc": "assets/business/yopa-cover.jpg",
-    "coverPosition": "center top",
-    "services": [
-      {
-        "id": "s1",
-        "name": "Free property valuation",
-        "description": "A local agent values your home, with no obligation to list.",
-        "price": 0,
-        "durationMins": 60
-      }
-    ],
-    "gallery": []
   }
 ]
