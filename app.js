@@ -2245,6 +2245,55 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
 }
 
 // Category list: every business filed under one category.
+// Every listed business as a square logo tile, laid out like app icons on a
+// phone home screen. Tapping one opens that business's page.
+function renderShopperAllServices() {
+  const all = (state.businesses || []).filter(isBusinessLive).slice().sort(byTierThenRecency);
+
+  // Grouped by category so a long directory still has some structure.
+  const groups = SERVICE_CATEGORIES
+    .map(cat => ({ cat, items: all.filter(b => b.category === cat.id) }))
+    .filter(g => g.items.length);
+
+  const tile = (b) => {
+    const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    // contain, not cover: a logo cropped to a square loses the wordmark.
+    const face = b.logoSrc
+      ? `<span class="app-tile-icon" style="background-image:url('${b.logoSrc}')"></span>`
+      : `<span class="app-tile-icon app-tile-initials">${escapeHtml(initials)}</span>`;
+    return `
+      <div class="press app-tile" data-action="openBusiness" data-arg="${b.id}">
+        ${face}
+        <span class="app-tile-label">${escapeHtml(b.name)}</span>
+      </div>`;
+  };
+
+  return `
+    <div class="page" style="padding:0 18px 24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div>
+          <div style="font-size:25px;font-weight:700;color:#141414">Services</div>
+          <div style="font-size:13px;color:#6b6b6b;margin-top:2px">${all.length} business${all.length === 1 ? '' : 'es'} on Vendaru</div>
+        </div>
+        <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
+      </div>
+
+      ${groups.length
+        ? groups.map(g => `
+            <div>
+              <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;margin-bottom:11px">${g.cat.emoji} ${escapeHtml(g.cat.label)}</div>
+              <div class="app-grid">${g.items.map(tile).join('')}</div>
+            </div>
+          `).join('')
+        : `<div class="shop-card" style="${SERVICE_CARD_SHELL}">
+             <div style="padding:22px 16px;text-align:center">
+               <div style="font-size:15px;font-weight:600;color:#141414">No businesses listed yet</div>
+               <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Local businesses will appear here once they've published a page.</div>
+             </div>
+           </div>`}
+    </div>`;
+}
+
 function renderShopperServices() {
   const cat = serviceCategory(state.servicesCategory);
   const list = cat ? businessesInCategory(cat.id) : [];
@@ -2442,7 +2491,10 @@ function renderShopperShop() {
     <!-- Category directory sits at the foot of the page. -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
       <div style="padding:4px 16px 14px">
-        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">Local services</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">
+          <span>Local services</span>
+          <button type="button" data-action="goAllServices" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">See all</button>
+        </div>
         <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Book trusted businesses near you and pay in the same basket.</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px">
           ${SERVICE_CATEGORIES.map(c => `
@@ -4495,6 +4547,7 @@ const screenRenderers = {
   'shopper-account': renderShopperAccount,
   'shopper-special-request': renderShopperSpecialRequest,
   'shopper-services': renderShopperServices,
+  'shopper-all-services': renderShopperAllServices,
   'shopper-business': renderShopperBusiness,
   'business-dashboard': renderBusinessDashboard,
 };
@@ -5088,6 +5141,7 @@ const actions = {
   goBrowse: () => { state.screen = 'shopper-browse'; render(); },
   goBrowseCategory: (category) => { state.screen = 'shopper-browse'; state.pendingScrollCategory = category; render(); },
   // --- local services: browsing and booking --------------------------------
+  goAllServices: () => { state.screen = 'shopper-all-services'; render(); },
   goServiceCategory: (id) => {
     state.servicesCategory = String(id);
     state.screen = 'shopper-services';

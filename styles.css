@@ -610,6 +610,61 @@ body::-webkit-scrollbar {
 
 
 
+
+/* Business directory — square logo tiles laid out like app icons on a phone
+   home screen. Four a row on a phone, six on desktop. */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px 10px;
+}
+
+.app-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.app-tile-icon {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 22%;
+  background-color: #ffffff;
+  border: 1.5px solid rgba(20, 20, 20, 0.1);
+  /* contain, so a wide wordmark is not cropped to fit a square */
+  background-size: 74%;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.app-tile-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #141414;
+  border-color: #141414;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.app-tile-label {
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: #141414;
+  text-align: center;
+  /* Two lines then ellipsis, so one long name cannot shove the row out */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+}
+
 /* ---------------------------------------------------------------------------
    Desktop layout
    The phone column is the design; on a wide screen it just wastes the space
@@ -666,6 +721,16 @@ body::-webkit-scrollbar {
      cards — they run the full width above the grid. */
   .page-cards > *:not(.shop-card) {
     grid-column: 1 / -1;
+  }
+
+  /* Six a row rather than thirteen tiny ones across a wide column. */
+  .app-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 22px 16px;
+  }
+
+  .app-tile-label {
+    font-size: 12.5px;
   }
 
   /* A card twice the width needs a taller picture, or the photo reads as a
