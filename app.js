@@ -608,7 +608,7 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 6;
+const BUSINESS_SEED_VERSION = 7;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
 // Verified UK Business Directory listings.

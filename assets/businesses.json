@@ -1,369 +1,2932 @@
 [
   {
-    "id": "biz-purplebricks",
+    "name": "Checkatrade Verified Trades",
+    "category": "trades",
+    "tagline": "Where reputation matters — Find vetted UK builders & plumbers",
+    "about": "Checkatrade thoroughly checks and vets UK tradespeople so you can hire with total peace of mind. Over 12 background checks conducted on every electrician, plumber, and builder.",
+    "area": "Nationwide / UK Wide",
+    "phone": "0800 015 4550",
+    "coverSrc": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Post a Job & Get 3 Verified Quotes",
+        "description": "Post your project and matched vetted local trades contact you.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "name": "Verified Trade On-Site Survey",
+        "description": "In-person assessment by a registered contractor.",
+        "price": 45,
+        "durationMins": 45
+      }
+    ]
+  },
+  {
+    "name": "MyBuilder UK",
+    "category": "trades",
+    "tagline": "The reliable way to hire verified tradespeople",
+    "about": "Finding a great builder, plumber, or electrician shouldn't be a gamble. MyBuilder matches your project with vetted local tradespeople backed by customer reviews.",
+    "area": "UK Nationwide",
+    "phone": "0800 018 8297",
+    "coverSrc": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Post a Job & Match Local Trades",
+        "description": "Post your home project and receive quotes from vetted builders.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "name": "Trade Consultation & Estimate",
+        "description": "On-site assessment by a certified local builder.",
+        "price": 35,
+        "durationMins": 45
+      }
+    ]
+  },
+  {
+    "name": "Timpson Locksmiths & Key Cutting",
+    "category": "trades",
+    "tagline": "Great service by great people — Emergency locksmiths & key duplication",
+    "about": "Timpson is Britain's most trusted high-street service provider. Offers 24/7 mobile emergency locksmith callouts, house & car key cutting, and watch servicing.",
+    "area": "UK Wide / 2,000+ Branches",
+    "phone": "0161 946 6200",
+    "coverSrc": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "24/7 Emergency Locksmith Callout",
+        "description": "Fast-response mobile locksmith service for gain entry and lock changes.",
+        "price": 79,
+        "durationMins": 45
+      },
+      {
+        "name": "Watch Battery Replacement & Pressure Test",
+        "description": "Swiss battery replacement with water resistance re-sealing.",
+        "price": 15,
+        "durationMins": 15
+      }
+    ]
+  },
+  {
+    "name": "Apex Gas & Plumbing Engineers",
+    "category": "trades",
+    "tagline": "Gas Safe registered plumbers serving Bolton & Greater Manchester",
+    "about": "Apex Gas & Plumbing offers 24/7 emergency response, boiler installations, central heating repairs, and Gas Safe safety certificates for homeowners and landlords.",
+    "area": "Bolton & Greater Manchester",
+    "phone": "0800 321 9900",
+    "coverSrc": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Boiler Service & Gas Safety Certificate (CP12)",
+        "description": "Annual gas boiler inspection and landlord CP12 certificate.",
+        "price": 75,
+        "durationMins": 45
+      },
+      {
+        "name": "Emergency Plumbing & Leak Repair",
+        "description": "Callout for burst pipes, leaking radiators, or blocked drainage.",
+        "price": 85,
+        "durationMins": 60
+      }
+    ]
+  },
+  {
+    "name": "Precision Joinery & Bespoke Alcoves",
+    "category": "trades",
+    "tagline": "Custom fitted wardrobes, alcove units, and architectural joinery",
+    "about": "Master carpenters creating hand-built fitted wardrobes, alcove shelving, media walls, and custom timber furniture for UK homes.",
+    "area": "Manchester, Bolton & Altrincham",
+    "phone": "0161 941 2200",
+    "coverSrc": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Design & Quote Consultation",
+        "description": "On-site measurement and 3D design estimate.",
+        "price": 0,
+        "durationMins": 45
+      },
+      {
+        "name": "Internal Door Hanging & Fitting",
+        "description": "Precision fitting of interior timber doors.",
+        "price": 60,
+        "durationMins": 90
+      }
+    ]
+  },
+  {
+    "name": "Vanguard Security Systems & CCTV",
+    "category": "trades",
+    "tagline": "Smart 4K CCTV installation & burglar alarms",
+    "about": "Vanguard installs high-definition CCTV camera systems, wireless intruder alarms, and video doorbells for homes and businesses across the UK.",
+    "area": "Lancashire & Greater Manchester",
+    "phone": "0800 999 4433",
+    "coverSrc": "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Smart 4K CCTV 2-Camera Package & Fitting",
+        "description": "Full installation of 2 night-vision 4K cameras with smartphone live view.",
+        "price": 399,
+        "durationMins": 180
+      },
+      {
+        "name": "Wireless Alarm System Installation",
+        "description": "Hub, motion sensors, door contacts, and siren box.",
+        "price": 249,
+        "durationMins": 120
+      }
+    ]
+  },
+  {
+    "name": "North West Electrical & Rewiring",
+    "category": "trades",
+    "tagline": "NICEIC approved electricians for home rewiring & EV chargers",
+    "about": "NICEIC registered electricians specializing in consumer unit fuse box upgrades, home rewires, EV car charger installation, and EICR landlord safety certificates.",
+    "area": "Bolton, Wigan & Salford",
+    "phone": "01204 492 880",
+    "coverSrc": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Landlord Electrical Safety Certificate (EICR)",
+        "description": "Complete electrical installation condition report.",
+        "price": 120,
+        "durationMins": 90
+      },
+      {
+        "name": "7kW Home EV Car Charger Installation",
+        "description": "Supply and certified fitting of smart home car charger.",
+        "price": 499,
+        "durationMins": 240
+      }
+    ]
+  },
+  {
+    "name": "Bolton Roofing & Heritage Slate Repairs",
+    "category": "trades",
+    "tagline": "Roof repairs, re-roofing, chimney pointing & guttering",
+    "about": "Family-run roofing contractors with 25+ years experience repairing slate roofs, tile roofs, flat rubber roofs, fascias, soffits, and gutters.",
+    "area": "Bolton, Horwich & Bury",
+    "phone": "01204 654 321",
+    "coverSrc": "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Roof Leak Inspection & Tile Repair",
+        "description": "On-roof inspection and replacement of broken tiles or slipped slates.",
+        "price": 95,
+        "durationMins": 60
+      },
+      {
+        "name": "Gutter Cleaning & Clearance",
+        "description": "High-reach vacuum clearance of debris and downpipe unblocking.",
+        "price": 55,
+        "durationMins": 45
+      }
+    ]
+  },
+  {
+    "name": "Fresh Coat Decorating & Plastering",
+    "category": "trades",
+    "tagline": "Flawless interior painting, wallpapering and skim plastering",
+    "about": "Professional painter decorators providing clean, meticulous wall painting, wallpaper hanging, and smooth plaster skimming for homes and offices.",
+    "area": "Greater Manchester & Cheshire",
+    "phone": "0161 320 8840",
+    "coverSrc": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Single Room Skim Plastering",
+        "description": "Smooth plaster coat over existing walls or plasterboard.",
+        "price": 180,
+        "durationMins": 360
+      },
+      {
+        "name": "Room Painting & Woodwork Gloss",
+        "description": "Two coats of durable emulsion plus skirtings and door frame glossing.",
+        "price": 160,
+        "durationMins": 300
+      }
+    ]
+  },
+  {
+    "name": "Lancashire Architectural Design Studio",
+    "category": "trades",
+    "tagline": "Planning permission drawings & structural building calculations",
+    "about": "RIBA chartered architects assisting homeowners with single-story rear extensions, double-story side extensions, loft conversions, and local council planning submissions.",
+    "area": "Preston, Bolton & Manchester",
+    "phone": "01772 443 110",
+    "coverSrc": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "name": "Extension Initial Site Survey & Feasibility",
+        "description": "In-person measured survey and architectural feasibility report.",
+        "price": 150,
+        "durationMins": 90
+      },
+      {
+        "name": "Full Planning Permission Drawing Package",
+        "description": "Existing & proposed elevation floorplans drawn for council submission.",
+        "price": 750,
+        "durationMins": 600
+      }
+    ]
+  },
+  {
+    "id": "biz-real-estate-0-purplebricks-estate-agents",
     "ownerEmail": null,
     "name": "Purplebricks Estate Agents",
     "category": "real-estate",
-    "tagline": "The UK's leading online estate agent — Fair fixed fees",
-    "about": "Purplebricks is the UK's leading online estate agency. We combine local property experts with transparent online technology to help you sell your home quickly and smoothly across Greater Manchester and nationwide.",
-    "area": "Bolton, Manchester & UK Nationwide",
+    "tagline": "The UK's leading online estate agent",
+    "about": "Purplebricks Estate Agents provides professional, reliable real estate services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Cardiff & South Wales",
     "phone": "0800 810 8008",
     "coverSrc": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
-    "logoSrc": "assets/business/yopa-logo.png",
-    "coverPosition": "center top",
     "services": [
-      { "id": "pb1", "name": "Free In-Person Home Valuation", "description": "A local UK property expert evaluates your property with no obligation to sell.", "price": 0, "durationMins": 60 },
-      { "id": "pb2", "name": "Full UK House Sales Package", "description": "Includes Rightmove & Zoopla listing, professional photography, floorplans and 24/7 offer management.", "price": 999, "durationMins": 120 }
+      {
+        "id": "s-1000-1",
+        "name": "Purplebricks Estate Agents Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1000-2",
+        "name": "Purplebricks Estate Agents Full Service Booking",
+        "description": "Professional real-estate service delivered by experienced staff.",
+        "price": 105,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-real-estate-1-yopa-uk-property-sales",
+    "ownerEmail": null,
+    "name": "Yopa UK Property Sales",
+    "category": "real-estate",
+    "tagline": "Sell your home with Yopa — Fair fixed fees",
+    "about": "Yopa UK Property Sales provides professional, reliable real estate services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Preston & Lancashire",
+    "phone": "0333 305 0202",
+    "coverSrc": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1001-1",
+        "name": "Yopa UK Property Sales Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1001-2",
+        "name": "Yopa UK Property Sales Full Service Booking",
+        "description": "Professional real-estate service delivered by experienced staff.",
+        "price": 120,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-real-estate-2-savills-luxury-property",
+    "ownerEmail": null,
+    "name": "Savills Luxury Property",
+    "category": "real-estate",
+    "tagline": "Global estate agency & premium UK homes",
+    "about": "Savills Luxury Property provides professional, reliable real estate services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Chester & Cheshire",
+    "phone": "020 7409 8885",
+    "coverSrc": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1002-1",
+        "name": "Savills Luxury Property Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1002-2",
+        "name": "Savills Luxury Property Full Service Booking",
+        "description": "Professional real-estate service delivered by experienced staff.",
+        "price": 135,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "priority",
-    "billing": "annual"
+    "billing": "monthly"
   },
   {
-    "id": "biz-kwikfit",
+    "id": "biz-real-estate-3-foxtons-london-south-east",
+    "ownerEmail": null,
+    "name": "Foxtons London & South East",
+    "category": "real-estate",
+    "tagline": "London's leading real estate network",
+    "about": "Foxtons London & South East provides professional, reliable real estate services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Sheffield & South Yorkshire",
+    "phone": "020 7893 6000",
+    "coverSrc": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1003-1",
+        "name": "Foxtons London & South East Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1003-2",
+        "name": "Foxtons London & South East Full Service Booking",
+        "description": "Professional real-estate service delivered by experienced staff.",
+        "price": 150,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-real-estate-4-belvoir-lettings-property-management",
+    "ownerEmail": null,
+    "name": "Belvoir Lettings & Property Management",
+    "category": "real-estate",
+    "tagline": "Property management specialists",
+    "about": "Belvoir Lettings & Property Management provides professional, reliable real estate services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Nationwide / UK Wide",
+    "phone": "01204 522 244",
+    "coverSrc": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1004-1",
+        "name": "Belvoir Lettings & Property Management Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1004-2",
+        "name": "Belvoir Lettings & Property Management Full Service Booking",
+        "description": "Professional real-estate service delivered by experienced staff.",
+        "price": 165,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-real-estate-5-bridgfords-north-west-estate-agents",
+    "ownerEmail": null,
+    "name": "Bridgfords North West Estate Agents",
+    "category": "real-estate",
+    "tagline": "Selling homes in the North West since 1832",
+    "about": "Bridgfords North West Estate Agents provides professional, reliable real estate services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bolton & Greater Manchester",
+    "phone": "0161 834 8822",
+    "coverSrc": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1005-1",
+        "name": "Bridgfords North West Estate Agents Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1005-2",
+        "name": "Bridgfords North West Estate Agents Full Service Booking",
+        "description": "Professional real-estate service delivered by experienced staff.",
+        "price": 180,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-real-estate-6-connells-estate-agents",
+    "ownerEmail": null,
+    "name": "Connells Estate Agents",
+    "category": "real-estate",
+    "tagline": "High street property sales & lettings",
+    "about": "Connells Estate Agents provides professional, reliable real estate services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Manchester City Centre",
+    "phone": "0800 083 4567",
+    "coverSrc": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1006-1",
+        "name": "Connells Estate Agents Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1006-2",
+        "name": "Connells Estate Agents Full Service Booking",
+        "description": "Professional real-estate service delivered by experienced staff.",
+        "price": 195,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-real-estate-7-winkworth-uk-property-consultants",
+    "ownerEmail": null,
+    "name": "Winkworth UK Property Consultants",
+    "category": "real-estate",
+    "tagline": "Bespoke property buying and selling",
+    "about": "Winkworth UK Property Consultants provides professional, reliable real estate services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "London & South East",
+    "phone": "020 7355 2244",
+    "coverSrc": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1007-1",
+        "name": "Winkworth UK Property Consultants Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1007-2",
+        "name": "Winkworth UK Property Consultants Full Service Booking",
+        "description": "Professional real-estate service delivered by experienced staff.",
+        "price": 210,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-auto-0-kwik-fit-tyres-autocentres",
     "ownerEmail": null,
     "name": "Kwik Fit Tyres & Autocentres",
     "category": "auto",
     "tagline": "The UK's number 1 tyre & MOT specialist",
-    "about": "With over 600 centres across the UK, Kwik Fit provides expert tyre replacement, MOT testing, brake repairs, batteries, air conditioning re-gas, and full engine servicing for all vehicle makes.",
-    "area": "Bolton, Manchester & 600+ UK Locations",
+    "about": "Kwik Fit Tyres & Autocentres provides professional, reliable auto services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Birmingham & Midlands",
     "phone": "0800 222 111",
     "coverSrc": "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "kf1", "name": "Official MOT Test & Vehicle Inspection", "description": "DVSA-certificated MOT inspection covering safety, brakes, emissions and lights.", "price": 45, "durationMins": 45 },
-      { "id": "kf2", "name": "Full Engine Service & Oil Replacement", "description": "Comprehensive 50-point engine check, fresh Mobil oil, filter renewal and fluid top-up.", "price": 149, "durationMins": 90 },
-      { "id": "kf3", "name": "Premium Mobile Tyre Fitting & Balancing", "description": "New Goodyear or Michelin tyre supplied and fitted at your home or workplace.", "price": 89, "durationMins": 45 }
+      {
+        "id": "s-1008-1",
+        "name": "Kwik Fit Tyres & Autocentres Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1008-2",
+        "name": "Kwik Fit Tyres & Autocentres Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 45,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "priority",
-    "billing": "annual"
+    "billing": "monthly"
   },
   {
-    "id": "biz-checkatrade",
+    "id": "biz-auto-1-halfords-autocentres-uk",
     "ownerEmail": null,
-    "name": "Checkatrade Verified Tradespeople",
-    "category": "trades",
-    "tagline": "Where reputation matters — Find vetted UK builders & plumbers",
-    "about": "Checkatrade thoroughly checks and vets UK tradespeople so you can hire with total peace of mind. Over 12 background checks conducted on every electrician, plumber, and builder listed.",
-    "area": "UK Nationwide",
-    "phone": "0800 015 4550",
-    "coverSrc": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
+    "name": "Halfords Autocentres UK",
+    "category": "auto",
+    "tagline": "Car servicing, MOT testing, brakes & batteries",
+    "about": "Halfords Autocentres UK provides professional, reliable auto services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Leeds & West Yorkshire",
+    "phone": "0800 050 1080",
+    "coverSrc": "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "ct1", "name": "Post a Job & Receive 3 Verified Quotes", "description": "Post your home improvement project and matched vetted local trades contact you.", "price": 0, "durationMins": 30 },
-      { "id": "ct2", "name": "Verified Trade Site Survey & Estimate", "description": "In-person technical assessment by a top-rated Checkatrade registered contractor.", "price": 45, "durationMins": 45 }
+      {
+        "id": "s-1009-1",
+        "name": "Halfords Autocentres UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1009-2",
+        "name": "Halfords Autocentres UK Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 60,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-auto-2-prodrive-mobile-detailing",
+    "ownerEmail": null,
+    "name": "ProDrive Mobile Detailing",
+    "category": "auto",
+    "tagline": "Paint correction & ceramic coating specialists",
+    "about": "ProDrive Mobile Detailing provides professional, reliable auto services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Glasgow & West Scotland",
+    "phone": "07700 912384",
+    "coverSrc": "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1010-1",
+        "name": "ProDrive Mobile Detailing Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1010-2",
+        "name": "ProDrive Mobile Detailing Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 75,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-auto-3-rac-approved-mobile-servicing",
+    "ownerEmail": null,
+    "name": "RAC Approved Mobile Servicing",
+    "category": "auto",
+    "tagline": "Breakdown recovery & vehicle health checks",
+    "about": "RAC Approved Mobile Servicing provides professional, reliable auto services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Edinburgh & Lothian",
+    "phone": "0330 159 1111",
+    "coverSrc": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1011-1",
+        "name": "RAC Approved Mobile Servicing Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1011-2",
+        "name": "RAC Approved Mobile Servicing Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 90,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "priority",
-    "billing": "annual"
+    "billing": "monthly"
   },
   {
-    "id": "biz-rush-hair",
+    "id": "biz-auto-4-aa-mobile-mechanic-service",
+    "ownerEmail": null,
+    "name": "AA Mobile Mechanic Service",
+    "category": "auto",
+    "tagline": "Driveway car servicing & battery fitting",
+    "about": "AA Mobile Mechanic Service provides professional, reliable auto services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bristol & South West",
+    "phone": "0800 88 77 66",
+    "coverSrc": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1012-1",
+        "name": "AA Mobile Mechanic Service Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1012-2",
+        "name": "AA Mobile Mechanic Service Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 105,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-auto-5-national-tyres-autocare",
+    "ownerEmail": null,
+    "name": "National Tyres & Autocare",
+    "category": "auto",
+    "tagline": "Tyres, exhausts and wheel alignment",
+    "about": "National Tyres & Autocare provides professional, reliable auto services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Liverpool & Merseyside",
+    "phone": "0800 626 666",
+    "coverSrc": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1013-1",
+        "name": "National Tyres & Autocare Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1013-2",
+        "name": "National Tyres & Autocare Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 120,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-auto-6-autoglass-uk-windscreen-repair",
+    "ownerEmail": null,
+    "name": "Autoglass UK Windscreen Repair",
+    "category": "auto",
+    "tagline": "Chips repair & windscreen replacements",
+    "about": "Autoglass UK Windscreen Repair provides professional, reliable auto services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Newcastle & North East",
+    "phone": "0800 36 36 36",
+    "coverSrc": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1014-1",
+        "name": "Autoglass UK Windscreen Repair Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1014-2",
+        "name": "Autoglass UK Windscreen Repair Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 135,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-auto-7-chipsaway-smart-car-body-repairs",
+    "ownerEmail": null,
+    "name": "ChipsAway SMART Car Body Repairs",
+    "category": "auto",
+    "tagline": "Bumper scuffs, scratch repair & dent removal",
+    "about": "ChipsAway SMART Car Body Repairs provides professional, reliable auto services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Cardiff & South Wales",
+    "phone": "0800 145 5118",
+    "coverSrc": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1015-1",
+        "name": "ChipsAway SMART Car Body Repairs Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1015-2",
+        "name": "ChipsAway SMART Car Body Repairs Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 150,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-auto-8-bolton-auto-electrical-ecu-remapping",
+    "ownerEmail": null,
+    "name": "Bolton Auto Electrical & ECU Remapping",
+    "category": "auto",
+    "tagline": "Vehicle remapping & electrical fault diagnostics",
+    "about": "Bolton Auto Electrical & ECU Remapping provides professional, reliable auto services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Preston & Lancashire",
+    "phone": "01204 380 990",
+    "coverSrc": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1016-1",
+        "name": "Bolton Auto Electrical & ECU Remapping Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1016-2",
+        "name": "Bolton Auto Electrical & ECU Remapping Full Service Booking",
+        "description": "Professional auto service delivered by experienced staff.",
+        "price": 165,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-beauty-0-rush-hair-beauty-salons",
     "ownerEmail": null,
     "name": "Rush Hair & Beauty Salons",
     "category": "beauty",
     "tagline": "Award-winning UK hairdressing & color specialists",
-    "about": "Rush Hair is an award-winning British salon brand with over 60 luxury locations. Our expert stylists specialize in precision cutting, master balayage, Olaplex hair repair, and bespoke styling.",
-    "area": "Manchester Deansgate, London & UK Cities",
+    "about": "Rush Hair & Beauty Salons provides professional, reliable beauty services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Chester & Cheshire",
     "phone": "0161 839 2000",
     "coverSrc": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "rh1", "name": "Wash, Precision Cut & Couture Blow Dry", "description": "Style consultation, deep conditioning wash, master haircut and glamorous blow-dry finish.", "price": 55, "durationMins": 60 },
-      { "id": "rh2", "name": "Full Balayage, Toner & Olaplex Package", "description": "Hand-painted dimensional color, bespoke toner glaze, Olaplex bond builder and styling.", "price": 125, "durationMins": 150 }
+      {
+        "id": "s-1017-1",
+        "name": "Rush Hair & Beauty Salons Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1017-2",
+        "name": "Rush Hair & Beauty Salons Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 180,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "priority",
-    "billing": "annual"
+    "billing": "monthly"
   },
   {
-    "id": "biz-bupa-dental",
+    "id": "biz-beauty-1-toni-guy-hairdressers",
+    "ownerEmail": null,
+    "name": "Toni & Guy Hairdressers",
+    "category": "beauty",
+    "tagline": "Global salon brand & precision hair styling",
+    "about": "Toni & Guy Hairdressers provides professional, reliable beauty services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Sheffield & South Yorkshire",
+    "phone": "020 7404 4683",
+    "coverSrc": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1018-1",
+        "name": "Toni & Guy Hairdressers Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1018-2",
+        "name": "Toni & Guy Hairdressers Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 195,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-beauty-2-regis-salons-uk",
+    "ownerEmail": null,
+    "name": "Regis Salons UK",
+    "category": "beauty",
+    "tagline": "Contemporary hair cuts, highlights & blow drys",
+    "about": "Regis Salons UK provides professional, reliable beauty services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Nationwide / UK Wide",
+    "phone": "0800 019 3210",
+    "coverSrc": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1019-1",
+        "name": "Regis Salons UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1019-2",
+        "name": "Regis Salons UK Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 210,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-beauty-3-supercuts-uk-salons",
+    "ownerEmail": null,
+    "name": "Supercuts UK Salons",
+    "category": "beauty",
+    "tagline": "Walk-in haircuts & styling for men and women",
+    "about": "Supercuts UK Salons provides professional, reliable beauty services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bolton & Greater Manchester",
+    "phone": "0800 988 8888",
+    "coverSrc": "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1020-1",
+        "name": "Supercuts UK Salons Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1020-2",
+        "name": "Supercuts UK Salons Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 45,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-beauty-4-skindream-aesthetics-clinic",
+    "ownerEmail": null,
+    "name": "Skindream Aesthetics Clinic",
+    "category": "beauty",
+    "tagline": "Hydrafacial, microneedling & anti-wrinkle care",
+    "about": "Skindream Aesthetics Clinic provides professional, reliable beauty services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Manchester City Centre",
+    "phone": "0161 440 9920",
+    "coverSrc": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1021-1",
+        "name": "Skindream Aesthetics Clinic Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1021-2",
+        "name": "Skindream Aesthetics Clinic Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 60,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-beauty-5-townhouse-luxury-nail-bar",
+    "ownerEmail": null,
+    "name": "Townhouse Luxury Nail Bar",
+    "category": "beauty",
+    "tagline": "The ultimate manicure & nail art studio",
+    "about": "Townhouse Luxury Nail Bar provides professional, reliable beauty services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "London & South East",
+    "phone": "020 7946 0990",
+    "coverSrc": "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1022-1",
+        "name": "Townhouse Luxury Nail Bar Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1022-2",
+        "name": "Townhouse Luxury Nail Bar Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 75,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-beauty-6-barber-barber-uk",
+    "ownerEmail": null,
+    "name": "Barber Barber UK",
+    "category": "beauty",
+    "tagline": "Gentlemen's wet shaves & traditional haircuts",
+    "about": "Barber Barber UK provides professional, reliable beauty services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Birmingham & Midlands",
+    "phone": "0161 832 9900",
+    "coverSrc": "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1023-1",
+        "name": "Barber Barber UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1023-2",
+        "name": "Barber Barber UK Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 90,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-beauty-7-mac-makeup-studio-lessons",
+    "ownerEmail": null,
+    "name": "MAC Makeup Studio & Lessons",
+    "category": "beauty",
+    "tagline": "Professional event makeup & masterclasses",
+    "about": "MAC Makeup Studio & Lessons provides professional, reliable beauty services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Leeds & West Yorkshire",
+    "phone": "0800 054 2696",
+    "coverSrc": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1024-1",
+        "name": "MAC Makeup Studio & Lessons Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1024-2",
+        "name": "MAC Makeup Studio & Lessons Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 105,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-beauty-8-the-sunlounge-tanning-beauty",
+    "ownerEmail": null,
+    "name": "The SunLounge Tanning & Beauty",
+    "category": "beauty",
+    "tagline": "Ergoline UV tanning beds & spray tans",
+    "about": "The SunLounge Tanning & Beauty provides professional, reliable beauty services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Glasgow & West Scotland",
+    "phone": "01204 551 234",
+    "coverSrc": "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1025-1",
+        "name": "The SunLounge Tanning & Beauty Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1025-2",
+        "name": "The SunLounge Tanning & Beauty Full Service Booking",
+        "description": "Professional beauty service delivered by experienced staff.",
+        "price": 120,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-health-0-bupa-dental-care-uk",
     "ownerEmail": null,
     "name": "Bupa Dental Care UK",
     "category": "health",
     "tagline": "High-quality private dental care across the UK",
-    "about": "Bupa Dental Care provides modern private dentistry including routine check-ups, teeth whitening, hygiene cleans, clear aligners, and emergency dental appointments in state-of-the-art clinics.",
-    "area": "Bolton, Manchester & 400+ UK Clinics",
+    "about": "Bupa Dental Care UK provides professional, reliable health services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Edinburgh & Lothian",
     "phone": "0808 271 7890",
     "coverSrc": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "bd1", "name": "New Patient Dental Examination & Digital X-Rays", "description": "Full oral health assessment, oral cancer screening, 3D intraoral scans and digital X-rays.", "price": 50, "durationMins": 45 },
-      { "id": "bd2", "name": "Airflow Hygiene Clean & Polish", "description": "Gentle stain removal and plaque clearance using advanced Airflow technology.", "price": 75, "durationMins": 30 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-fantastic-services",
-    "ownerEmail": null,
-    "name": "Fantastic Services UK Cleaning",
-    "category": "cleaning",
-    "tagline": "Professional domestic, end-of-tenancy & carpet cleaning",
-    "about": "Fantastic Services is a leading UK home services company. Fully trained, vetted, and insured cleaners equipped with industrial-grade equipment for home, office, and tenancy deep cleans.",
-    "area": "Greater Manchester, London & North West",
-    "phone": "020 3404 3444",
-    "coverSrc": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
-    "services": [
-      { "id": "fs1", "name": "End of Tenancy Deposit-Back Deep Clean", "description": "Comprehensive top-to-bottom property deep clean adhering to letting agency checklists.", "price": 160, "durationMins": 240 },
-      { "id": "fs2", "name": "Hot Water Extraction Carpet & Sofa Steam Clean", "description": "Deep steam extraction removing tough stains, allergens, and odors from carpets or sofas.", "price": 70, "durationMins": 90 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-pets-at-home",
-    "ownerEmail": null,
-    "name": "Pets at Home Groom Room",
-    "category": "pets",
-    "tagline": "UK's favorite pet care & professional grooming salon",
-    "about": "Our Groom Room salons provide expert bathing, clipping, and styling for dogs of all breeds. City & Guilds qualified groomers dedicated to keeping your pet healthy, clean, and happy.",
-    "area": "Bolton, Horwich & UK Nationwide",
-    "phone": "0800 328 4204",
-    "coverSrc": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
-    "services": [
-      { "id": "ph1", "name": "Full Dog Groom, Wash & Styling Package", "description": "Hydrobath wash, warm blow dry, breed-standard coat trim, nail clip, ear clean and fragrance.", "price": 45, "durationMins": 90 },
-      { "id": "ph2", "name": "Puppy First Spa Introduction", "description": "Gentle bath, light brush, nail trim and positive reward acclimatization for puppies under 6 months.", "price": 25, "durationMins": 45 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-timpson",
-    "ownerEmail": null,
-    "name": "Timpson Locksmiths & Key Cutting",
-    "category": "trades",
-    "tagline": "Great service by great people — Emergency locksmiths & key duplication",
-    "about": "Timpson is Britain's most trusted high-street service provider. Offers 24/7 mobile emergency locksmith callouts, house & car key cutting, shoe repairs, and watch servicing.",
-    "area": "UK Wide / 2,000+ High Street Branches",
-    "phone": "0161 946 6200",
-    "coverSrc": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
-    "services": [
-      { "id": "tm1", "name": "24/7 Emergency Locksmith Callout", "description": "Fast-response mobile locksmith service for gain entry, lock changes, and door security.", "price": 79, "durationMins": 45 },
-      { "id": "tm2", "name": "Watch Battery Replacement & Pressure Test", "description": "High-grade Swiss battery replacement with water resistance re-sealing.", "price": 15, "durationMins": 15 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-explore-learning",
-    "ownerEmail": null,
-    "name": "Explore Learning UK Tutors",
-    "category": "tutoring",
-    "tagline": "Inspiring young minds — Maths & English tuition centers",
-    "about": "Explore Learning delivers award-winning Maths and English tuition for children aged 4 to 16 across the UK. Mapped to the National Curriculum to build confidence and top grades.",
-    "area": "Manchester, Bolton & Nationwide UK",
-    "phone": "01483 447410",
-    "coverSrc": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80",
-    "services": [
-      { "id": "el1", "name": "1-on-1 Maths & English Tuition Session", "description": "60-minute personalized curriculum session targeting problem areas and homework help.", "price": 32, "durationMins": 60 },
-      { "id": "el2", "name": "11+ Grammar School Entrance Prep", "description": "Specialist verbal, non-verbal, numerical and creative writing exam preparation.", "price": 36, "durationMins": 60 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-tui-travel",
-    "ownerEmail": null,
-    "name": "TUI Travel UK",
-    "category": "travel",
-    "tagline": "Live Happy — Package holidays, flights & European cruises",
-    "about": "TUI is the UK's leading travel company offering package holidays, beach getaways, city breaks, and cruises to over 80 worldwide destinations with full ATOL protection.",
-    "area": "UK Nationwide Branches & Online",
-    "phone": "0203 451 2688",
-    "coverSrc": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
-    "logoSrc": "assets/business/utravel-logo.png",
-    "services": [
-      { "id": "tu1", "name": "In-Person Holiday Planning Consultation", "description": "Sit down with a senior travel advisor to curate your ideal beach or luxury getaway.", "price": 0, "durationMins": 45 },
-      { "id": "tu2", "name": "Resort Transfer & Excursion Concierge", "description": "Book private airport transfers, island tours, and local attraction passes.", "price": 25, "durationMins": 30 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-taxassist-uk",
-    "ownerEmail": null,
-    "name": "TaxAssist Accountants",
-    "category": "legal",
-    "tagline": "Accountancy & tax advice for small businesses and sole traders",
-    "about": "TaxAssist Accountants provides dedicated accounting, payroll, VAT, and tax returns for small business owners, freelancers, and individuals across Greater Manchester and the North West.",
-    "area": "Bolton, Manchester & North West",
-    "phone": "0800 0188 297",
-    "coverSrc": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
-    "logoSrc": "assets/business/tax-assist-logo.png",
-    "services": [
-      { "id": "ta1", "name": "Self-Assessment Tax Return Filing", "description": "Complete preparation and submission of your annual HMRC tax return.", "price": 150, "durationMins": 60 },
-      { "id": "ta2", "name": "Small Business Accounting Consultation", "description": "Free initial consultation to review your bookkeeping, payroll and tax setup.", "price": 0, "durationMins": 45 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-yopa-uk",
-    "ownerEmail": null,
-    "name": "Yopa UK Property Sales",
-    "category": "real-estate",
-    "tagline": "Sell your home with Yopa — Fair fixed fees and local experts",
-    "about": "Award-winning estate agents covering Bolton, Greater Manchester, and across the UK. We handle property sales from initial valuation right through to completion with dedicated local agents.",
-    "area": "Bolton, Manchester & UK",
-    "phone": "0333 305 0202",
-    "coverSrc": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
-    "logoSrc": "assets/business/yopa-logo.png",
-    "coverPosition": "center top",
-    "services": [
-      { "id": "yp1", "name": "Free In-Person Property Valuation", "description": "A local property expert assesses your home with no obligation to list.", "price": 0, "durationMins": 60 },
-      { "id": "yp2", "name": "Full Estate Agency Sales Package", "description": "Dedicated local agent, Rightmove & Zoopla listing, photos & floorplans.", "price": 999, "durationMins": 120 }
+      {
+        "id": "s-1026-1",
+        "name": "Bupa Dental Care UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1026-2",
+        "name": "Bupa Dental Care UK Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 135,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "priority",
-    "billing": "annual"
+    "billing": "monthly"
   },
   {
-    "id": "biz-david-lloyd",
+    "id": "biz-health-1-david-lloyd-health-fitness-clubs",
     "ownerEmail": null,
     "name": "David Lloyd Health & Fitness Clubs",
     "category": "health",
     "tagline": "Premium UK health, tennis, spa & fitness clubs",
-    "about": "David Lloyd Clubs offers state-of-the-art gym equipment, heated indoor & outdoor swimming pools, luxury spa retreats, tennis courts, and group fitness classes across the UK.",
-    "area": "Manchester, Bolton & 100+ UK Locations",
+    "about": "David Lloyd Health & Fitness Clubs provides professional, reliable health services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bristol & South West",
     "phone": "0345 129 6700",
     "coverSrc": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "dl1", "name": "1-on-1 Personal Training Session", "description": "60-minute tailored fitness session with a level-3 certified Master Personal Trainer.", "price": 50, "durationMins": 60 },
-      { "id": "dl2", "name": "Comprehensive Health & Fitness Assessment", "description": "Body composition analysis, metabolic rate check and personalized goal setting.", "price": 30, "durationMins": 45 }
+      {
+        "id": "s-1027-1",
+        "name": "David Lloyd Health & Fitness Clubs Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1027-2",
+        "name": "David Lloyd Health & Fitness Clubs Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 150,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
   },
   {
-    "id": "biz-bark-uk",
+    "id": "biz-health-2-nuffield-health-wellbeing-gyms",
     "ownerEmail": null,
-    "name": "Bark.com UK Professional Services",
-    "category": "trades",
-    "tagline": "Find top-rated UK service professionals in minutes",
-    "about": "Bark connects UK consumers with thousands of verified local professionals — from roofers and land surveyors to web designers and personal trainers.",
-    "area": "UK Nationwide",
-    "phone": "020 3582 2000",
-    "coverSrc": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80",
+    "name": "Nuffield Health Wellbeing Gyms",
+    "category": "health",
+    "tagline": "Gyms, health assessments & private hospitals",
+    "about": "Nuffield Health Wellbeing Gyms provides professional, reliable health services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Liverpool & Merseyside",
+    "phone": "0300 123 1286",
+    "coverSrc": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "bk1", "name": "Request Free Quotes from Local Pros", "description": "Describe your project requirement and get up to 5 quotes from local specialists.", "price": 0, "durationMins": 15 },
-      { "id": "bk2", "name": "On-Site Architectural / Trade Survey", "description": "Professional on-site property measure-up and structural planning consultation.", "price": 65, "durationMins": 60 }
+      {
+        "id": "s-1028-1",
+        "name": "Nuffield Health Wellbeing Gyms Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1028-2",
+        "name": "Nuffield Health Wellbeing Gyms Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 165,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
   },
   {
-    "id": "biz-halfords-autocentres",
+    "id": "biz-health-3-manchester-physiotherapy-sports-massage",
     "ownerEmail": null,
-    "name": "Halfords Autocentres UK",
-    "category": "auto",
-    "tagline": "Car servicing, MOT testing, brakes, batteries & steering",
-    "about": "Halfords Autocentres is one of the UK's leading garage networks. Expert technicians using OEM parts to service your car, perform MOTs, replace brakes, and fix air conditioning.",
-    "area": "Bolton, Bury & 350+ UK Garages",
-    "phone": "0800 050 1080",
-    "coverSrc": "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=1200&q=80",
+    "name": "Manchester Physiotherapy & Sports Massage",
+    "category": "health",
+    "tagline": "Chartered physiotherapists for back pain & rehab",
+    "about": "Manchester Physiotherapy & Sports Massage provides professional, reliable health services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Newcastle & North East",
+    "phone": "0161 236 7788",
+    "coverSrc": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "ha1", "name": "Major Car Service (All Makes & Models)", "description": "Full 70-point vehicle inspection, engine oil, spark plugs, cabin and air filter replacement.", "price": 199, "durationMins": 120 },
-      { "id": "ha2", "name": "Brake Fluid Renewal & Pad Check", "description": "Brake fluid replacement and digital caliper brake pad thickness report.", "price": 49, "durationMins": 45 }
+      {
+        "id": "s-1029-1",
+        "name": "Manchester Physiotherapy & Sports Massage Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1029-2",
+        "name": "Manchester Physiotherapy & Sports Massage Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 180,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
-    "id": "biz-coop-legal",
+    "id": "biz-health-4-boots-opticians-uk",
     "ownerEmail": null,
-    "name": "Co-op Legal Services",
-    "category": "legal",
-    "tagline": "Accessible, fixed-fee legal advice from the Co-op",
-    "about": "Co-op Legal Services offers transparent, fixed-fee legal advice across England and Wales. Specialists in Will writing, Lasting Power of Attorney, probate, and conveyancing.",
-    "area": "England & Wales / UK",
-    "phone": "0330 606 9500",
-    "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
+    "name": "Boots Opticians UK",
+    "category": "health",
+    "tagline": "Eye tests, designer glasses & contact lenses",
+    "about": "Boots Opticians UK provides professional, reliable health services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Cardiff & South Wales",
+    "phone": "0345 125 3752",
+    "coverSrc": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "cl1", "name": "Professional Single Will Drafting", "description": "Legally reviewed single Will document protecting your family and assets.", "price": 120, "durationMins": 60 },
-      { "id": "cl2", "name": "Lasting Power of Attorney (LPA) Drafting", "description": "Preparation of Health & Welfare or Financial Power of Attorney for registration.", "price": 199, "durationMins": 90 }
+      {
+        "id": "s-1030-1",
+        "name": "Boots Opticians UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1030-2",
+        "name": "Boots Opticians UK Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 195,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
   },
   {
-    "id": "biz-pixcision-uk",
+    "id": "biz-health-5-puregym-personal-training",
     "ownerEmail": null,
-    "name": "Pixcision Stock & Studio Photography",
-    "category": "events",
-    "tagline": "Lancashire roots. High-end commercial and event photography.",
-    "about": "Pixcision delivers authentic, high-resolution photography for brands, events, weddings, and commercial campaigns. Every shot is crafted with attention to atmosphere, lighting, and detail.",
-    "area": "Lancashire & Greater Manchester",
-    "phone": "0161 800 9100",
-    "coverSrc": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
-    "logoSrc": "assets/business/pixcisionstock-logo.png",
+    "name": "PureGym Personal Training",
+    "category": "health",
+    "tagline": "Flexible 24/7 fitness & 1-on-1 personal training",
+    "about": "PureGym Personal Training provides professional, reliable health services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Preston & Lancashire",
+    "phone": "0344 477 0005",
+    "coverSrc": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "px1", "name": "Commercial Product & Brand Shoot", "description": "2-hour professional studio or on-location shoot with edited high-res images.", "price": 140, "durationMins": 120 },
-      { "id": "px2", "name": "Event & Corporate Headshots Package", "description": "On-site team headshots and event coverage with digital delivery.", "price": 180, "durationMins": 90 }
+      {
+        "id": "s-1031-1",
+        "name": "PureGym Personal Training Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1031-2",
+        "name": "PureGym Personal Training Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 210,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
   },
   {
-    "id": "biz-dogbuddy",
+    "id": "biz-health-6-mydentist-uk-practices",
+    "ownerEmail": null,
+    "name": "MyDentist UK Practices",
+    "category": "health",
+    "tagline": "Affordable NHS & private dental practices",
+    "about": "MyDentist UK Practices provides professional, reliable health services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Chester & Cheshire",
+    "phone": "0345 122 9988",
+    "coverSrc": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1032-1",
+        "name": "MyDentist UK Practices Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1032-2",
+        "name": "MyDentist UK Practices Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 45,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-health-7-spinningfields-pilates-reformer-studio",
+    "ownerEmail": null,
+    "name": "Spinningfields Pilates & Reformer Studio",
+    "category": "health",
+    "tagline": "Reformer pilates & core strength training",
+    "about": "Spinningfields Pilates & Reformer Studio provides professional, reliable health services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Sheffield & South Yorkshire",
+    "phone": "0161 834 1120",
+    "coverSrc": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1033-1",
+        "name": "Spinningfields Pilates & Reformer Studio Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1033-2",
+        "name": "Spinningfields Pilates & Reformer Studio Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 60,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-health-8-active-care-chiropractic-alignment",
+    "ownerEmail": null,
+    "name": "Active Care Chiropractic & Alignment",
+    "category": "health",
+    "tagline": "Spinal adjustments & posture rehabilitation",
+    "about": "Active Care Chiropractic & Alignment provides professional, reliable health services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Nationwide / UK Wide",
+    "phone": "01204 330 990",
+    "coverSrc": "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1034-1",
+        "name": "Active Care Chiropractic & Alignment Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1034-2",
+        "name": "Active Care Chiropractic & Alignment Full Service Booking",
+        "description": "Professional health service delivered by experienced staff.",
+        "price": 75,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-cleaning-0-fantastic-services-uk-cleaning",
+    "ownerEmail": null,
+    "name": "Fantastic Services UK Cleaning",
+    "category": "cleaning",
+    "tagline": "Professional domestic & tenancy deep cleaning",
+    "about": "Fantastic Services UK Cleaning provides professional, reliable cleaning services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bolton & Greater Manchester",
+    "phone": "020 3404 3444",
+    "coverSrc": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1035-1",
+        "name": "Fantastic Services UK Cleaning Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1035-2",
+        "name": "Fantastic Services UK Cleaning Full Service Booking",
+        "description": "Professional cleaning service delivered by experienced staff.",
+        "price": 90,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-cleaning-1-molly-maid-uk-house-cleaners",
+    "ownerEmail": null,
+    "name": "MOLLY MAID UK House Cleaners",
+    "category": "cleaning",
+    "tagline": "Tailored domestic cleaning for UK homes",
+    "about": "MOLLY MAID UK House Cleaners provides professional, reliable cleaning services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Manchester City Centre",
+    "phone": "0800 587 7500",
+    "coverSrc": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1036-1",
+        "name": "MOLLY MAID UK House Cleaners Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1036-2",
+        "name": "MOLLY MAID UK House Cleaners Full Service Booking",
+        "description": "Professional cleaning service delivered by experienced staff.",
+        "price": 105,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-cleaning-2-ovenvalet-professional-oven-cleaning",
+    "ownerEmail": null,
+    "name": "OvenValet Professional Oven Cleaning",
+    "category": "cleaning",
+    "tagline": "Non-toxic deep oven & BBQ cleaning",
+    "about": "OvenValet Professional Oven Cleaning provides professional, reliable cleaning services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "London & South East",
+    "phone": "0800 140 4500",
+    "coverSrc": "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1037-1",
+        "name": "OvenValet Professional Oven Cleaning Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1037-2",
+        "name": "OvenValet Professional Oven Cleaning Full Service Booking",
+        "description": "Professional cleaning service delivered by experienced staff.",
+        "price": 120,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-cleaning-3-cleanify-domestic-office-cleaners",
+    "ownerEmail": null,
+    "name": "Cleanify Domestic & Office Cleaners",
+    "category": "cleaning",
+    "tagline": "Regular home & commercial office cleaning",
+    "about": "Cleanify Domestic & Office Cleaners provides professional, reliable cleaning services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Birmingham & Midlands",
+    "phone": "0161 400 3344",
+    "coverSrc": "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1038-1",
+        "name": "Cleanify Domestic & Office Cleaners Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1038-2",
+        "name": "Cleanify Domestic & Office Cleaners Full Service Booking",
+        "description": "Professional cleaning service delivered by experienced staff.",
+        "price": 135,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-cleaning-4-sparkle-commercial-window-cleaning",
+    "ownerEmail": null,
+    "name": "Sparkle Commercial Window Cleaning",
+    "category": "cleaning",
+    "tagline": "Pure water reach-and-wash window cleaning",
+    "about": "Sparkle Commercial Window Cleaning provides professional, reliable cleaning services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Leeds & West Yorkshire",
+    "phone": "0800 644 1200",
+    "coverSrc": "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1039-1",
+        "name": "Sparkle Commercial Window Cleaning Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1039-2",
+        "name": "Sparkle Commercial Window Cleaning Full Service Booking",
+        "description": "Professional cleaning service delivered by experienced staff.",
+        "price": 150,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-cleaning-5-prosteam-carpet-upholstery-care",
+    "ownerEmail": null,
+    "name": "ProSteam Carpet & Upholstery Care",
+    "category": "cleaning",
+    "tagline": "Deep extraction carpet & sofa steam clean",
+    "about": "ProSteam Carpet & Upholstery Care provides professional, reliable cleaning services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Glasgow & West Scotland",
+    "phone": "01204 490 120",
+    "coverSrc": "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1040-1",
+        "name": "ProSteam Carpet & Upholstery Care Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1040-2",
+        "name": "ProSteam Carpet & Upholstery Care Full Service Booking",
+        "description": "Professional cleaning service delivered by experienced staff.",
+        "price": 165,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-cleaning-6-north-west-commercial-office-sanitation",
+    "ownerEmail": null,
+    "name": "North West Commercial Office Sanitation",
+    "category": "cleaning",
+    "tagline": "Contract office cleaning & hygiene services",
+    "about": "North West Commercial Office Sanitation provides professional, reliable cleaning services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Edinburgh & Lothian",
+    "phone": "0161 990 8820",
+    "coverSrc": "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1041-1",
+        "name": "North West Commercial Office Sanitation Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1041-2",
+        "name": "North West Commercial Office Sanitation Full Service Booking",
+        "description": "Professional cleaning service delivered by experienced staff.",
+        "price": 180,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-cleaning-7-clearview-solar-panel-gutter-wash",
+    "ownerEmail": null,
+    "name": "ClearView Solar Panel & Gutter Wash",
+    "category": "cleaning",
+    "tagline": "Solar efficiency cleaning & high-reach gutters",
+    "about": "ClearView Solar Panel & Gutter Wash provides professional, reliable cleaning services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bristol & South West",
+    "phone": "01772 889 100",
+    "coverSrc": "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1042-1",
+        "name": "ClearView Solar Panel & Gutter Wash Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1042-2",
+        "name": "ClearView Solar Panel & Gutter Wash Full Service Booking",
+        "description": "Professional cleaning service delivered by experienced staff.",
+        "price": 195,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-dog-walkers-0-dogbuddy-uk-dog-boarding-walkers",
     "ownerEmail": null,
     "name": "DogBuddy UK Dog Boarding & Walkers",
     "category": "dog-walkers",
     "tagline": "The UK's largest dog sitting & walking network",
-    "about": "DogBuddy connects dog owners with vetted, insured local dog sitters and walkers. Give your dog a home-from-home experience instead of stressful kennels.",
-    "area": "Bolton, Manchester & Nationwide UK",
+    "about": "DogBuddy UK Dog Boarding & Walkers provides professional, reliable dog walkers services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Liverpool & Merseyside",
     "phone": "020 7183 0991",
     "coverSrc": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "db1", "name": "1-Hour Countryside Group Walk", "description": "Fun energetic outdoor walk with GPS route updates sent to your phone.", "price": 15, "durationMins": 60 },
-      { "id": "db2", "name": "24-Hour Home Dog Boarding", "description": "Loving home environment stay with regular photo updates while you travel.", "price": 35, "durationMins": 1440 }
+      {
+        "id": "s-1043-1",
+        "name": "DogBuddy UK Dog Boarding & Walkers Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1043-2",
+        "name": "DogBuddy UK Dog Boarding & Walkers Full Service Booking",
+        "description": "Professional dog-walkers service delivered by experienced staff.",
+        "price": 210,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
   },
   {
-    "id": "biz-memuriah-uk",
-    "ownerEmail": "op@vendaru.com",
-    "name": "Memuriah Digital Memorials",
-    "category": "events",
-    "tagline": "Keep their light among the living.",
-    "about": "Memuriah is a social memorial platform where family and friends share stories, photographs, and honor loved ones across generations.",
-    "area": "UK & Global",
-    "phone": "0800 772 3000",
-    "coverSrc": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-    "logoSrc": "assets/business/memuriah-logo.png",
-    "services": [],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-utravel-uk",
+    "id": "biz-dog-walkers-1-tailwaggers-dog-walking",
     "ownerEmail": null,
-    "name": "U Travel UK",
-    "category": "travel",
-    "tagline": "Itineraries built around your pace, preferences and the way you actually explore.",
-    "about": "UTravel is your travel sidekick for the whole trip, not just one bit of it.\n\nIt can help you find places to go, things to do, flights, hotels, live public transport, entry rules, fuel prices, nearby stops, and it can stage journeys or track buses and trains for you.",
-    "area": "UK & Worldwide",
-    "phone": "0800 999 1234",
-    "logoSrc": "assets/business/utravel-logo.png",
-    "coverSrc": "assets/business/u-travel-uk-cover.jpg",
+    "name": "TailWaggers Dog Walking",
+    "category": "dog-walkers",
+    "tagline": "Group countryside adventures for active dogs",
+    "about": "TailWaggers Dog Walking provides professional, reliable dog walkers services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Newcastle & North East",
+    "phone": "07700 900332",
+    "coverSrc": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "ut1", "name": "Bespoke UK & European Travel Itinerary", "description": "Custom day-by-day travel plan curated to your budget and travel style.", "price": 49, "durationMins": 60 },
-      { "id": "ut2", "name": "Flight & Hotel Booking Concierge", "description": "End-to-end trip booking assistant including transfers and entry requirements.", "price": 25, "durationMins": 30 }
+      {
+        "id": "s-1044-1",
+        "name": "TailWaggers Dog Walking Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1044-2",
+        "name": "TailWaggers Dog Walking Full Service Booking",
+        "description": "Professional dog-walkers service delivered by experienced staff.",
+        "price": 45,
+        "durationMins": 60
+      }
     ],
     "gallery": [],
     "tier": "priority",
-    "billing": "annual"
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-dog-walkers-2-paws-trails-country-dog-walks",
+    "ownerEmail": null,
+    "name": "Paws & Trails Country Dog Walks",
+    "category": "dog-walkers",
+    "tagline": "Rivington & Pennine Moors dog walking",
+    "about": "Paws & Trails Country Dog Walks provides professional, reliable dog walkers services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Cardiff & South Wales",
+    "phone": "07700 900452",
+    "coverSrc": "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1045-1",
+        "name": "Paws & Trails Country Dog Walks Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1045-2",
+        "name": "Paws & Trails Country Dog Walks Full Service Booking",
+        "description": "Professional dog-walkers service delivered by experienced staff.",
+        "price": 60,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-dog-walkers-3-lead-the-way-dog-sitting",
+    "ownerEmail": null,
+    "name": "Lead The Way Dog Sitting",
+    "category": "dog-walkers",
+    "tagline": "Solo dog walks & home pet sitting",
+    "about": "Lead The Way Dog Sitting provides professional, reliable dog walkers services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Preston & Lancashire",
+    "phone": "0161 880 7711",
+    "coverSrc": "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1046-1",
+        "name": "Lead The Way Dog Sitting Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1046-2",
+        "name": "Lead The Way Dog Sitting Full Service Booking",
+        "description": "Professional dog-walkers service delivered by experienced staff.",
+        "price": 75,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-dog-walkers-4-barking-mad-uk-pet-care",
+    "ownerEmail": null,
+    "name": "Barking Mad UK Pet Care",
+    "category": "dog-walkers",
+    "tagline": "Home-from-home dog boarding holidays",
+    "about": "Barking Mad UK Pet Care provides professional, reliable dog walkers services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Chester & Cheshire",
+    "phone": "01524 825825",
+    "coverSrc": "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1047-1",
+        "name": "Barking Mad UK Pet Care Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1047-2",
+        "name": "Barking Mad UK Pet Care Full Service Booking",
+        "description": "Professional dog-walkers service delivered by experienced staff.",
+        "price": 90,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-dog-walkers-5-happy-paws-dog-boarding-bolton",
+    "ownerEmail": null,
+    "name": "Happy Paws Dog Boarding Bolton",
+    "category": "dog-walkers",
+    "tagline": "Licensed home boarding & daycare",
+    "about": "Happy Paws Dog Boarding Bolton provides professional, reliable dog walkers services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Sheffield & South Yorkshire",
+    "phone": "01204 883 990",
+    "coverSrc": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1048-1",
+        "name": "Happy Paws Dog Boarding Bolton Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1048-2",
+        "name": "Happy Paws Dog Boarding Bolton Full Service Booking",
+        "description": "Professional dog-walkers service delivered by experienced staff.",
+        "price": 105,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-dog-walkers-6-the-dog-walker-manchester",
+    "ownerEmail": null,
+    "name": "The Dog Walker Manchester",
+    "category": "dog-walkers",
+    "tagline": "City center dog walks & puppy visits",
+    "about": "The Dog Walker Manchester provides professional, reliable dog walkers services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Nationwide / UK Wide",
+    "phone": "0161 332 1144",
+    "coverSrc": "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1049-1",
+        "name": "The Dog Walker Manchester Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1049-2",
+        "name": "The Dog Walker Manchester Full Service Booking",
+        "description": "Professional dog-walkers service delivered by experienced staff.",
+        "price": 120,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-dog-walkers-7-rover-uk-dog-sitting",
+    "ownerEmail": null,
+    "name": "Rover UK Dog Sitting",
+    "category": "dog-walkers",
+    "tagline": "Book trusted 5-star dog sitters near you",
+    "about": "Rover UK Dog Sitting provides professional, reliable dog walkers services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bolton & Greater Manchester",
+    "phone": "0800 048 8500",
+    "coverSrc": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1050-1",
+        "name": "Rover UK Dog Sitting Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1050-2",
+        "name": "Rover UK Dog Sitting Full Service Booking",
+        "description": "Professional dog-walkers service delivered by experienced staff.",
+        "price": 135,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-0-pets-at-home-groom-room",
+    "ownerEmail": null,
+    "name": "Pets at Home Groom Room",
+    "category": "pets",
+    "tagline": "UK's favorite pet care & professional grooming",
+    "about": "Pets at Home Groom Room provides professional, reliable pets services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Manchester City Centre",
+    "phone": "0800 328 4204",
+    "coverSrc": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1051-1",
+        "name": "Pets at Home Groom Room Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1051-2",
+        "name": "Pets at Home Groom Room Full Service Booking",
+        "description": "Professional pets service delivered by experienced staff.",
+        "price": 150,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-1-vets4pets-veterinary-hospital",
+    "ownerEmail": null,
+    "name": "Vets4Pets Veterinary Hospital",
+    "category": "pets",
+    "tagline": "24/7 emergency vet care & wellness plans",
+    "about": "Vets4Pets Veterinary Hospital provides professional, reliable pets services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "London & South East",
+    "phone": "0800 011 2020",
+    "coverSrc": "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1052-1",
+        "name": "Vets4Pets Veterinary Hospital Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1052-2",
+        "name": "Vets4Pets Veterinary Hospital Full Service Booking",
+        "description": "Professional pets service delivered by experienced staff.",
+        "price": 165,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-2-medivet-veterinary-practices",
+    "ownerEmail": null,
+    "name": "Medivet Veterinary Practices",
+    "category": "pets",
+    "tagline": "Compassionate veterinary care across the UK",
+    "about": "Medivet Veterinary Practices provides professional, reliable pets services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Birmingham & Midlands",
+    "phone": "01923 470000",
+    "coverSrc": "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1053-1",
+        "name": "Medivet Veterinary Practices Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1053-2",
+        "name": "Medivet Veterinary Practices Full Service Booking",
+        "description": "Professional pets service delivered by experienced staff.",
+        "price": 180,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-3-the-grooming-room-dog-spa",
+    "ownerEmail": null,
+    "name": "The Grooming Room Dog Spa",
+    "category": "pets",
+    "tagline": "Gentle canine styling & hydrobath treatments",
+    "about": "The Grooming Room Dog Spa provides professional, reliable pets services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Leeds & West Yorkshire",
+    "phone": "01204 845 600",
+    "coverSrc": "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1054-1",
+        "name": "The Grooming Room Dog Spa Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1054-2",
+        "name": "The Grooming Room Dog Spa Full Service Booking",
+        "description": "Professional pets service delivered by experienced staff.",
+        "price": 195,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-4-pampered-pooches-boutique-grooming",
+    "ownerEmail": null,
+    "name": "Pampered Pooches Boutique Grooming",
+    "category": "pets",
+    "tagline": "Luxury styling & hand stripping for dogs",
+    "about": "Pampered Pooches Boutique Grooming provides professional, reliable pets services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Glasgow & West Scotland",
+    "phone": "0161 928 4400",
+    "coverSrc": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1055-1",
+        "name": "Pampered Pooches Boutique Grooming Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1055-2",
+        "name": "Pampered Pooches Boutique Grooming Full Service Booking",
+        "description": "Professional pets service delivered by experienced staff.",
+        "price": 210,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-5-feline-canine-veterinary-clinic",
+    "ownerEmail": null,
+    "name": "Feline & Canine Veterinary Clinic",
+    "category": "pets",
+    "tagline": "Routine vaccinations, microchipping & surgery",
+    "about": "Feline & Canine Veterinary Clinic provides professional, reliable pets services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Edinburgh & Lothian",
+    "phone": "01204 690 120",
+    "coverSrc": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1056-1",
+        "name": "Feline & Canine Veterinary Clinic Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1056-2",
+        "name": "Feline & Canine Veterinary Clinic Full Service Booking",
+        "description": "Professional pets service delivered by experienced staff.",
+        "price": 45,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-6-aquarium-exotic-pet-specialists",
+    "ownerEmail": null,
+    "name": "Aquarium & Exotic Pet Specialists",
+    "category": "pets",
+    "tagline": "Fish, reptile & exotic pet health care",
+    "about": "Aquarium & Exotic Pet Specialists provides professional, reliable pets services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bristol & South West",
+    "phone": "0161 740 8822",
+    "coverSrc": "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1057-1",
+        "name": "Aquarium & Exotic Pet Specialists Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1057-2",
+        "name": "Aquarium & Exotic Pet Specialists Full Service Booking",
+        "description": "Professional pets service delivered by experienced staff.",
+        "price": 60,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-7-pdsa-pet-hospital-uk",
+    "ownerEmail": null,
+    "name": "PDSA Pet Hospital UK",
+    "category": "pets",
+    "tagline": "Charity veterinary health care for UK pets",
+    "about": "PDSA Pet Hospital UK provides professional, reliable pets services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Liverpool & Merseyside",
+    "phone": "0800 731 2502",
+    "coverSrc": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1058-1",
+        "name": "PDSA Pet Hospital UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1058-2",
+        "name": "PDSA Pet Hospital UK Full Service Booking",
+        "description": "Professional pets service delivered by experienced staff.",
+        "price": 75,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tutoring-0-explore-learning-uk-tutors",
+    "ownerEmail": null,
+    "name": "Explore Learning UK Tutors",
+    "category": "tutoring",
+    "tagline": "Inspiring young minds — Maths & English tuition",
+    "about": "Explore Learning UK Tutors provides professional, reliable tutoring services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Newcastle & North East",
+    "phone": "01483 447410",
+    "coverSrc": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1059-1",
+        "name": "Explore Learning UK Tutors Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1059-2",
+        "name": "Explore Learning UK Tutors Full Service Booking",
+        "description": "Professional tutoring service delivered by experienced staff.",
+        "price": 90,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tutoring-1-first-tutors-uk-network",
+    "ownerEmail": null,
+    "name": "First Tutors UK Network",
+    "category": "tutoring",
+    "tagline": "Find private home & online tutors across the UK",
+    "about": "First Tutors UK Network provides professional, reliable tutoring services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Cardiff & South Wales",
+    "phone": "0800 043 8886",
+    "coverSrc": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1060-1",
+        "name": "First Tutors UK Network Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1060-2",
+        "name": "First Tutors UK Network Full Service Booking",
+        "description": "Professional tutoring service delivered by experienced staff.",
+        "price": 105,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tutoring-2-kumon-maths-english-centers",
+    "ownerEmail": null,
+    "name": "Kumon Maths & English Centers",
+    "category": "tutoring",
+    "tagline": "Self-learning Maths & English study programs",
+    "about": "Kumon Maths & English Centers provides professional, reliable tutoring services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Preston & Lancashire",
+    "phone": "0800 854 714",
+    "coverSrc": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1061-1",
+        "name": "Kumon Maths & English Centers Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1061-2",
+        "name": "Kumon Maths & English Centers Full Service Booking",
+        "description": "Professional tutoring service delivered by experienced staff.",
+        "price": 120,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tutoring-3-north-west-academic-tutors",
+    "ownerEmail": null,
+    "name": "North West Academic Tutors",
+    "category": "tutoring",
+    "tagline": "GCSE, A-Level & 11+ tuition in Maths & Science",
+    "about": "North West Academic Tutors provides professional, reliable tutoring services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Chester & Cheshire",
+    "phone": "0161 720 4400",
+    "coverSrc": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1062-1",
+        "name": "North West Academic Tutors Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1062-2",
+        "name": "North West Academic Tutors Full Service Booking",
+        "description": "Professional tutoring service delivered by experienced staff.",
+        "price": 135,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tutoring-4-red-driving-school-uk",
+    "ownerEmail": null,
+    "name": "RED Driving School UK",
+    "category": "tutoring",
+    "tagline": "Learn to drive with DVSA approved instructors",
+    "about": "RED Driving School UK provides professional, reliable tutoring services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Sheffield & South Yorkshire",
+    "phone": "0330 332 2619",
+    "coverSrc": "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1063-1",
+        "name": "RED Driving School UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1063-2",
+        "name": "RED Driving School UK Full Service Booking",
+        "description": "Professional tutoring service delivered by experienced staff.",
+        "price": 150,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tutoring-5-yamaha-music-school-uk",
+    "ownerEmail": null,
+    "name": "Yamaha Music School UK",
+    "category": "tutoring",
+    "tagline": "Piano, guitar & vocal lessons for all ages",
+    "about": "Yamaha Music School UK provides professional, reliable tutoring services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Nationwide / UK Wide",
+    "phone": "01908 369200",
+    "coverSrc": "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1064-1",
+        "name": "Yamaha Music School UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1064-2",
+        "name": "Yamaha Music School UK Full Service Booking",
+        "description": "Professional tutoring service delivered by experienced staff.",
+        "price": 165,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tutoring-6-mytutor-uk-online-learning",
+    "ownerEmail": null,
+    "name": "MyTutor UK Online Learning",
+    "category": "tutoring",
+    "tagline": "1-on-1 subject tuition with top UK university tutors",
+    "about": "MyTutor UK Online Learning provides professional, reliable tutoring services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bolton & Greater Manchester",
+    "phone": "020 3773 6020",
+    "coverSrc": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1065-1",
+        "name": "MyTutor UK Online Learning Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1065-2",
+        "name": "MyTutor UK Online Learning Full Service Booking",
+        "description": "Professional tutoring service delivered by experienced staff.",
+        "price": 180,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tutoring-7-kip-mcgrath-education-centers",
+    "ownerEmail": null,
+    "name": "Kip McGrath Education Centers",
+    "category": "tutoring",
+    "tagline": "Professional tutoring for Primary & Secondary",
+    "about": "Kip McGrath Education Centers provides professional, reliable tutoring services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Manchester City Centre",
+    "phone": "0800 056 7890",
+    "coverSrc": "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1066-1",
+        "name": "Kip McGrath Education Centers Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1066-2",
+        "name": "Kip McGrath Education Centers Full Service Booking",
+        "description": "Professional tutoring service delivered by experienced staff.",
+        "price": 195,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-travel-0-tui-travel-uk",
+    "ownerEmail": null,
+    "name": "TUI Travel UK",
+    "category": "travel",
+    "tagline": "Package holidays, flights & European cruises",
+    "about": "TUI Travel UK provides professional, reliable travel services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "London & South East",
+    "phone": "0203 451 2688",
+    "coverSrc": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1067-1",
+        "name": "TUI Travel UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1067-2",
+        "name": "TUI Travel UK Full Service Booking",
+        "description": "Professional travel service delivered by experienced staff.",
+        "price": 210,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-travel-1-u-travel-uk",
+    "ownerEmail": null,
+    "name": "U Travel UK",
+    "category": "travel",
+    "tagline": "Bespoke UK & European travel itineraries",
+    "about": "U Travel UK provides professional, reliable travel services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Birmingham & Midlands",
+    "phone": "0800 999 1234",
+    "coverSrc": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1068-1",
+        "name": "U Travel UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1068-2",
+        "name": "U Travel UK Full Service Booking",
+        "description": "Professional travel service delivered by experienced staff.",
+        "price": 45,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-travel-2-national-express-coaches-uk",
+    "ownerEmail": null,
+    "name": "National Express Coaches UK",
+    "category": "travel",
+    "tagline": "Coach travel to 550+ UK cities & airports",
+    "about": "National Express Coaches UK provides professional, reliable travel services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Leeds & West Yorkshire",
+    "phone": "0871 781 8181",
+    "coverSrc": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1069-1",
+        "name": "National Express Coaches UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1069-2",
+        "name": "National Express Coaches UK Full Service Booking",
+        "description": "Professional travel service delivered by experienced staff.",
+        "price": 60,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-travel-3-bolton-executive-airport-transfers",
+    "ownerEmail": null,
+    "name": "Bolton Executive Airport Transfers",
+    "category": "travel",
+    "tagline": "24/7 Mercedes chauffeur transfers to Manchester Airport",
+    "about": "Bolton Executive Airport Transfers provides professional, reliable travel services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Glasgow & West Scotland",
+    "phone": "01204 550 990",
+    "coverSrc": "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1070-1",
+        "name": "Bolton Executive Airport Transfers Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1070-2",
+        "name": "Bolton Executive Airport Transfers Full Service Booking",
+        "description": "Professional travel service delivered by experienced staff.",
+        "price": 75,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-travel-4-hays-travel-uk-agencies",
+    "ownerEmail": null,
+    "name": "Hays Travel UK Agencies",
+    "category": "travel",
+    "tagline": "The UK's largest independent travel agent",
+    "about": "Hays Travel UK Agencies provides professional, reliable travel services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Edinburgh & Lothian",
+    "phone": "0800 408 4040",
+    "coverSrc": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1071-1",
+        "name": "Hays Travel UK Agencies Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1071-2",
+        "name": "Hays Travel UK Agencies Full Service Booking",
+        "description": "Professional travel service delivered by experienced staff.",
+        "price": 90,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-travel-5-virgin-atlantic-holidays",
+    "ownerEmail": null,
+    "name": "Virgin Atlantic & Holidays",
+    "category": "travel",
+    "tagline": "Long-haul flights & luxury resort holidays",
+    "about": "Virgin Atlantic & Holidays provides professional, reliable travel services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bristol & South West",
+    "phone": "0344 557 3860",
+    "coverSrc": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1072-1",
+        "name": "Virgin Atlantic & Holidays Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1072-2",
+        "name": "Virgin Atlantic & Holidays Full Service Booking",
+        "description": "Professional travel service delivered by experienced staff.",
+        "price": 105,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-travel-6-trailfinders-uk-travel-specialists",
+    "ownerEmail": null,
+    "name": "Trailfinders UK Travel Specialists",
+    "category": "travel",
+    "tagline": "Tailor-made worldwide travel & safaris",
+    "about": "Trailfinders UK Travel Specialists provides professional, reliable travel services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Liverpool & Merseyside",
+    "phone": "020 7368 1200",
+    "coverSrc": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1073-1",
+        "name": "Trailfinders UK Travel Specialists Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1073-2",
+        "name": "Trailfinders UK Travel Specialists Full Service Booking",
+        "description": "Professional travel service delivered by experienced staff.",
+        "price": 120,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-travel-7-flight-centre-uk",
+    "ownerEmail": null,
+    "name": "Flight Centre UK",
+    "category": "travel",
+    "tagline": "Cheap flights, tailor-made trips & round-the-world",
+    "about": "Flight Centre UK provides professional, reliable travel services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Newcastle & North East",
+    "phone": "0808 256 0626",
+    "coverSrc": "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1074-1",
+        "name": "Flight Centre UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1074-2",
+        "name": "Flight Centre UK Full Service Booking",
+        "description": "Professional travel service delivered by experienced staff.",
+        "price": 135,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-legal-0-taxassist-accountants",
+    "ownerEmail": null,
+    "name": "TaxAssist Accountants",
+    "category": "legal",
+    "tagline": "Accountancy & tax advice for small businesses",
+    "about": "TaxAssist Accountants provides professional, reliable legal services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Cardiff & South Wales",
+    "phone": "0800 0188 297",
+    "coverSrc": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1075-1",
+        "name": "TaxAssist Accountants Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1075-2",
+        "name": "TaxAssist Accountants Full Service Booking",
+        "description": "Professional legal service delivered by experienced staff.",
+        "price": 150,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-legal-1-co-op-legal-services",
+    "ownerEmail": null,
+    "name": "Co-op Legal Services",
+    "category": "legal",
+    "tagline": "Accessible fixed-fee legal advice & Will writing",
+    "about": "Co-op Legal Services provides professional, reliable legal services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Preston & Lancashire",
+    "phone": "0330 606 9500",
+    "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1076-1",
+        "name": "Co-op Legal Services Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1076-2",
+        "name": "Co-op Legal Services Full Service Booking",
+        "description": "Professional legal service delivered by experienced staff.",
+        "price": 165,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-legal-2-slater-and-gordon-lawyers-uk",
+    "ownerEmail": null,
+    "name": "Slater and Gordon Lawyers UK",
+    "category": "legal",
+    "tagline": "Personal injury, employment & family solicitors",
+    "about": "Slater and Gordon Lawyers UK provides professional, reliable legal services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Chester & Cheshire",
+    "phone": "0330 041 5869",
+    "coverSrc": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1077-1",
+        "name": "Slater and Gordon Lawyers UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1077-2",
+        "name": "Slater and Gordon Lawyers UK Full Service Booking",
+        "description": "Professional legal service delivered by experienced staff.",
+        "price": 180,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-legal-3-lancashire-will-writing-estate-planning",
+    "ownerEmail": null,
+    "name": "Lancashire Will Writing & Estate Planning",
+    "category": "legal",
+    "tagline": "Wills, Power of Attorney & probate guidance",
+    "about": "Lancashire Will Writing & Estate Planning provides professional, reliable legal services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Sheffield & South Yorkshire",
+    "phone": "01204 332 110",
+    "coverSrc": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1078-1",
+        "name": "Lancashire Will Writing & Estate Planning Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1078-2",
+        "name": "Lancashire Will Writing & Estate Planning Full Service Booking",
+        "description": "Professional legal service delivered by experienced staff.",
+        "price": 195,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-legal-4-kpmg-small-business-accounting",
+    "ownerEmail": null,
+    "name": "KPMG Small Business Accounting",
+    "category": "legal",
+    "tagline": "Bookkeeping, VAT returns & corporate tax",
+    "about": "KPMG Small Business Accounting provides professional, reliable legal services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Nationwide / UK Wide",
+    "phone": "020 7311 1000",
+    "coverSrc": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1079-1",
+        "name": "KPMG Small Business Accounting Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1079-2",
+        "name": "KPMG Small Business Accounting Full Service Booking",
+        "description": "Professional legal service delivered by experienced staff.",
+        "price": 210,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-legal-5-bdo-accountants-uk",
+    "ownerEmail": null,
+    "name": "BDO Accountants UK",
+    "category": "legal",
+    "tagline": "Tax compliance, auditing & business advisory",
+    "about": "BDO Accountants UK provides professional, reliable legal services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bolton & Greater Manchester",
+    "phone": "020 7486 5888",
+    "coverSrc": "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1080-1",
+        "name": "BDO Accountants UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1080-2",
+        "name": "BDO Accountants UK Full Service Booking",
+        "description": "Professional legal service delivered by experienced staff.",
+        "price": 45,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-legal-6-qualitysolicitors-uk-network",
+    "ownerEmail": null,
+    "name": "QualitySolicitors UK Network",
+    "category": "legal",
+    "tagline": "Clear legal advice with no hidden costs",
+    "about": "QualitySolicitors UK Network provides professional, reliable legal services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Manchester City Centre",
+    "phone": "0808 274 7977",
+    "coverSrc": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1081-1",
+        "name": "QualitySolicitors UK Network Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1081-2",
+        "name": "QualitySolicitors UK Network Full Service Booking",
+        "description": "Professional legal service delivered by experienced staff.",
+        "price": 60,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-legal-7-irwin-mitchell-solicitors",
+    "ownerEmail": null,
+    "name": "Irwin Mitchell Solicitors",
+    "category": "legal",
+    "tagline": "Full-service law firm for personal & business law",
+    "about": "Irwin Mitchell Solicitors provides professional, reliable legal services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "London & South East",
+    "phone": "0808 163 9484",
+    "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1082-1",
+        "name": "Irwin Mitchell Solicitors Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1082-2",
+        "name": "Irwin Mitchell Solicitors Full Service Booking",
+        "description": "Professional legal service delivered by experienced staff.",
+        "price": 75,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-events-0-pixcision-stock-studio-photography",
+    "ownerEmail": null,
+    "name": "Pixcision Stock & Studio Photography",
+    "category": "events",
+    "tagline": "High-end commercial & event photography",
+    "about": "Pixcision Stock & Studio Photography provides professional, reliable events services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Birmingham & Midlands",
+    "phone": "0161 800 9100",
+    "coverSrc": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1083-1",
+        "name": "Pixcision Stock & Studio Photography Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1083-2",
+        "name": "Pixcision Stock & Studio Photography Full Service Booking",
+        "description": "Professional events service delivered by experienced staff.",
+        "price": 90,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-events-1-memuriah-digital-memorials",
+    "ownerEmail": null,
+    "name": "Memuriah Digital Memorials",
+    "category": "events",
+    "tagline": "Social memorial platform & digital legacies",
+    "about": "Memuriah Digital Memorials provides professional, reliable events services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Leeds & West Yorkshire",
+    "phone": "0800 772 3000",
+    "coverSrc": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1084-1",
+        "name": "Memuriah Digital Memorials Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1084-2",
+        "name": "Memuriah Digital Memorials Full Service Booking",
+        "description": "Professional events service delivered by experienced staff.",
+        "price": 105,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-events-2-bespoke-uk-wedding-party-planners",
+    "ownerEmail": null,
+    "name": "Bespoke UK Wedding & Party Planners",
+    "category": "events",
+    "tagline": "Luxury wedding coordination & event styling",
+    "about": "Bespoke UK Wedding & Party Planners provides professional, reliable events services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Glasgow & West Scotland",
+    "phone": "0161 990 4400",
+    "coverSrc": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1085-1",
+        "name": "Bespoke UK Wedding & Party Planners Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1085-2",
+        "name": "Bespoke UK Wedding & Party Planners Full Service Booking",
+        "description": "Professional events service delivered by experienced staff.",
+        "price": 120,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-events-3-north-west-event-sound-lighting",
+    "ownerEmail": null,
+    "name": "North West Event Sound & Lighting",
+    "category": "events",
+    "tagline": "Stage, lighting & sound system hire",
+    "about": "North West Event Sound & Lighting provides professional, reliable events services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Edinburgh & Lothian",
+    "phone": "01204 440 220",
+    "coverSrc": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1086-1",
+        "name": "North West Event Sound & Lighting Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1086-2",
+        "name": "North West Event Sound & Lighting Full Service Booking",
+        "description": "Professional events service delivered by experienced staff.",
+        "price": 135,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-events-4-gourmet-uk-event-catering",
+    "ownerEmail": null,
+    "name": "Gourmet UK Event Catering",
+    "category": "events",
+    "tagline": "Bespoke catering for weddings & corporate events",
+    "about": "Gourmet UK Event Catering provides professional, reliable events services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Bristol & South West",
+    "phone": "0161 740 9900",
+    "coverSrc": "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1087-1",
+        "name": "Gourmet UK Event Catering Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1087-2",
+        "name": "Gourmet UK Event Catering Full Service Booking",
+        "description": "Professional events service delivered by experienced staff.",
+        "price": 150,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-events-5-party-venue-styling-uk",
+    "ownerEmail": null,
+    "name": "Party & Venue Styling UK",
+    "category": "events",
+    "tagline": "Balloon arches, floral walls & chair covers",
+    "about": "Party & Venue Styling UK provides professional, reliable events services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Liverpool & Merseyside",
+    "phone": "07700 912884",
+    "coverSrc": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1088-1",
+        "name": "Party & Venue Styling UK Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1088-2",
+        "name": "Party & Venue Styling UK Full Service Booking",
+        "description": "Professional events service delivered by experienced staff.",
+        "price": 165,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-events-6-manchester-live-dj-band-agency",
+    "ownerEmail": null,
+    "name": "Manchester Live DJ & Band Agency",
+    "category": "events",
+    "tagline": "Top live wedding bands & event DJs",
+    "about": "Manchester Live DJ & Band Agency provides professional, reliable events services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
+    "area": "Newcastle & North East",
+    "phone": "0161 220 8811",
+    "coverSrc": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      {
+        "id": "s-1089-1",
+        "name": "Manchester Live DJ & Band Agency Standard Consultation",
+        "description": "Initial consultation and quote.",
+        "price": 0,
+        "durationMins": 30
+      },
+      {
+        "id": "s-1089-2",
+        "name": "Manchester Live DJ & Band Agency Full Service Booking",
+        "description": "Professional events service delivered by experienced staff.",
+        "price": 180,
+        "durationMins": 60
+      }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "monthly"
   }
 ]
