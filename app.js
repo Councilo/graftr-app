@@ -1582,9 +1582,11 @@ function renderShopperBrowse() {
   const count = cartCount();
   const total = cartTotal();
   const summaryBar = count > 0
-    ? `<div class="press" data-action="goBasket" style="position:sticky;bottom:14px;background:#141414;color:#fff;border-radius:16px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin-top:14px;box-shadow:0 10px 24px rgba(0,0,0,0.2)">
-        <span style="font-size:13.5px;font-weight:700">${count} item${count > 1 ? 's' : ''} · £${total.toFixed(2)}</span>
-        <span style="font-size:13.5px;font-weight:700">View basket ›</span>
+    // Compact pill sized to its own content and pinned to the left, rather than
+    // a full-width bar spanning the column.
+    ? `<div class="press" data-action="goBasket" style="position:sticky;bottom:14px;align-self:flex-start;max-width:100%;background:#141414;color:#fff;border-radius:22px;padding:9px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;margin-top:14px;box-shadow:0 8px 20px rgba(0,0,0,0.2);white-space:nowrap">
+        <span style="font-size:12px;font-weight:600">${count} item${count > 1 ? 's' : ''} · £${total.toFixed(2)}</span>
+        <span style="font-size:12px;font-weight:600;opacity:0.6">View basket ›</span>
       </div>`
     : '';
 
