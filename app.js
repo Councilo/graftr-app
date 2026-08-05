@@ -2190,6 +2190,11 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
   const open = linked ? `data-action="openBusiness" data-arg="${b.id}"` : '';
   const shell = `${SERVICE_CARD_SHELL}${linked ? ';cursor:pointer' : ''}`;
 
+  // Same logo tile on both cards, just sized to suit.
+  const avatarHtml = (size, radius) => b.logoSrc
+    ? `<span style="width:${size}px;height:${size}px;border-radius:${radius}px;flex:0 0 auto;background:#f2f2f2 center/cover url('${b.logoSrc}')"></span>`
+    : `<span style="width:${size}px;height:${size}px;border-radius:${radius}px;flex:0 0 auto;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:${Math.round(size / 3)}px;font-weight:600">${escapeHtml(initials)}</span>`;
+
   if (variant === 'large') {
     // Banner falls back to the first piece of their work, then to a plain
     // tile — a business with no photos yet still gets a full-size card.
@@ -2202,27 +2207,28 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
         <div style="height:110px;background:${banner ? `#eef0ee url('${banner}') ${focal}/cover no-repeat` : '#eef0ee'};display:flex;align-items:center;justify-content:center">
           ${banner ? '' : `<span style="font-size:32px;opacity:0.3">${cat ? cat.emoji : '🏪'}</span>`}
         </div>
-        <div style="padding:14px 16px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
-            <span style="font-size:15.5px;font-weight:700;color:#141414;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.name)}</span>
-            ${cheapest !== undefined
-              ? `<span style="font-size:13px;color:#6b6b6b;flex:0 0 auto">from £${cheapest.toFixed(2)}</span>`
-              : `<span style="opacity:0.4;flex:0 0 auto">›</span>`}
+        <!-- Logo sits with the text beneath the banner, so the brand mark
+             reads the same way it does on the compact card. -->
+        <div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+          ${avatarHtml(46, 12)}
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+              <span style="font-size:15.5px;font-weight:700;color:#141414;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.name)}</span>
+              ${cheapest !== undefined
+                ? `<span style="font-size:13px;color:#6b6b6b;flex:0 0 auto">from £${cheapest.toFixed(2)}</span>`
+                : `<span style="opacity:0.4;flex:0 0 auto">›</span>`}
+            </div>
+            <div style="font-size:13px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.tagline || (cat ? cat.label : ''))}</div>
+            <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">${meta}</div>
           </div>
-          <div style="font-size:13px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.tagline || (cat ? cat.label : ''))}</div>
-          <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">${meta}</div>
         </div>
       </div>`;
   }
 
-  const avatar = b.logoSrc
-    ? `<span style="width:52px;height:52px;border-radius:14px;flex:0 0 auto;background:#f2f2f2 center/cover url('${b.logoSrc}')"></span>`
-    : `<span style="width:52px;height:52px;border-radius:14px;flex:0 0 auto;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">${escapeHtml(initials)}</span>`;
-
   return `
     <div class="${linked ? 'press ' : ''}shop-card" ${open} style="${shell}">
       <div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
-        ${avatar}
+        ${avatarHtml(52, 14)}
         <div style="flex:1;min-width:0">
           <div style="font-size:15px;font-weight:600;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.name)}</div>
           <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.tagline || (cat ? cat.label : ''))}</div>
