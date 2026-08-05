@@ -48,6 +48,116 @@ function makeSvgLogo(name, index) {
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }
 
+const customWebsites = {
+  "Checkatrade Verified Trades": "https://www.checkatrade.com",
+  "MyBuilder UK": "https://www.mybuilder.com",
+  "Timpson Locksmiths & Key Cutting": "https://www.timpson.co.uk",
+  "Apex Gas & Plumbing Engineers": "https://www.apexplumbing.co.uk",
+  "Precision Joinery & Bespoke Alcoves": "https://www.precisionjoinery.co.uk",
+  "Vanguard Security Systems & CCTV": "https://www.vanguardsecurity.co.uk",
+  "North West Electrical & Rewiring": "https://www.nwelectrical.co.uk",
+  "Bolton Roofing & Heritage Slate Repairs": "https://www.boltonroofing.co.uk",
+  "Fresh Coat Decorating & Plastering": "https://www.freshcoatdecorating.co.uk",
+  "Lancashire Architectural Design Studio": "https://www.lancsarchitecture.co.uk",
+  "Purplebricks Estate Agents": "https://www.purplebricks.co.uk",
+  "Yopa UK Property Sales": "https://www.yopa.co.uk",
+  "Yopa Estate Agents": "https://www.yopa.co.uk",
+  "Savills Luxury Property": "https://www.savills.co.uk",
+  "Foxtons London & South East": "https://www.foxtons.co.uk",
+  "Belvoir Lettings & Property Management": "https://www.belvoir.co.uk",
+  "Bridgfords North West Estate Agents": "https://www.bridgfords.co.uk",
+  "Connells Estate Agents": "https://www.connells.co.uk",
+  "Winkworth UK Property Consultants": "https://www.winkworth.co.uk",
+  "Kwik Fit Tyres & Autocentres": "https://www.kwik-fit.com",
+  "Halfords Autocentres UK": "https://www.halfords.com",
+  "ProDrive Mobile Detailing": "https://www.prodrivedetailing.co.uk",
+  "RAC Approved Mobile Servicing": "https://www.rac.co.uk",
+  "AA Mobile Mechanic Service": "https://www.theaa.com",
+  "National Tyres & Autocare": "https://www.national.co.uk",
+  "Autoglass UK Windscreen Repair": "https://www.autoglass.co.uk",
+  "ChipsAway SMART Car Body Repairs": "https://www.chipsaway.co.uk",
+  "Bolton Auto Electrical & ECU Remapping": "https://www.boltonautoelec.co.uk",
+  "Rush Hair & Beauty Salons": "https://www.rush.co.uk",
+  "Toni & Guy Hairdressers": "https://www.toniandguy.com",
+  "Regis Salons UK": "https://www.regissalons.co.uk",
+  "Supercuts UK Salons": "https://www.supercuts.co.uk",
+  "Skindream Aesthetics Clinic": "https://www.skindream.co.uk",
+  "Townhouse Luxury Nail Bar": "https://www.townhouse.co.uk",
+  "Barber Barber UK": "https://www.barberbarberuk.com",
+  "MAC Makeup Studio & Lessons": "https://www.maccosmetics.co.uk",
+  "The SunLounge Tanning & Beauty": "https://www.thesunlounge.co.uk",
+  "Bupa Dental Care UK": "https://www.bupa.co.uk/dental",
+  "David Lloyd Health & Fitness Clubs": "https://www.davidlloyd.co.uk",
+  "Nuffield Health Wellbeing Gyms": "https://www.nuffieldhealth.com",
+  "Manchester Physiotherapy & Sports Massage": "https://www.manchesterphysio.co.uk",
+  "Boots Opticians UK": "https://www.boots.com/opticians",
+  "PureGym Personal Training": "https://www.puregym.com",
+  "MyDentist UK Practices": "https://www.mydentist.co.uk",
+  "Spinningfields Pilates & Reformer Studio": "https://www.spinningfieldspilates.co.uk",
+  "Active Care Chiropractic & Alignment": "https://www.activecarechiro.co.uk",
+  "Fantastic Services UK Cleaning": "https://www.fantasticservices.com",
+  "MOLLY MAID UK House Cleaners": "https://www.mollymaid.co.uk",
+  "OvenValet Professional Oven Cleaning": "https://www.ovenvalet.co.uk",
+  "Cleanify Domestic & Office Cleaners": "https://www.cleanify.co.uk",
+  "Sparkle Commercial Window Cleaning": "https://www.sparklewindows.co.uk",
+  "ProSteam Carpet & Upholstery Care": "https://www.prosteamcarpet.co.uk",
+  "North West Commercial Office Sanitation": "https://www.nwofficeclean.co.uk",
+  "ClearView Solar Panel & Gutter Wash": "https://www.clearviewguttering.co.uk",
+  "DogBuddy UK Dog Boarding & Walkers": "https://www.dogbuddy.com",
+  "TailWaggers Dog Walking": "https://www.tailwaggers.co.uk",
+  "Paws & Trails Country Dog Walks": "https://www.pawsandtrails.co.uk",
+  "Lead The Way Dog Sitting": "https://www.leadtheway.co.uk",
+  "Barking Mad UK Pet Care": "https://www.barkingmad.uk.com",
+  "Happy Paws Dog Boarding Bolton": "https://www.happypawsbolton.co.uk",
+  "The Dog Walker Manchester": "https://www.thedogwalkermanchester.co.uk",
+  "Rover UK Dog Sitting": "https://www.rover.com/uk",
+  "Pets at Home Groom Room": "https://www.petsathome.com/groom-room",
+  "Vets4Pets Veterinary Hospital": "https://www.vets4pets.com",
+  "Medivet Veterinary Practices": "https://www.medivet.co.uk",
+  "The Grooming Room Dog Spa": "https://www.thegroomingroom.co.uk",
+  "Pampered Pooches Boutique Grooming": "https://www.pamperedpooches.co.uk",
+  "Feline & Canine Veterinary Clinic": "https://www.felinecaninevet.co.uk",
+  "Aquarium & Exotic Pet Specialists": "https://www.exoticpetspecialists.co.uk",
+  "PDSA Pet Hospital UK": "https://www.pdsa.org.uk",
+  "Explore Learning UK Tutors": "https://www.explorelearning.co.uk",
+  "First Tutors UK Network": "https://www.firsttutors.com/uk",
+  "Kumon Maths & English Centers": "https://www.kumon.co.uk",
+  "North West Academic Tutors": "https://www.nwacademictutors.co.uk",
+  "RED Driving School UK": "https://www.reddrivingschool.com",
+  "Yamaha Music School UK": "https://uk.yamaha.com",
+  "MyTutor UK Online Learning": "https://www.mytutor.co.uk",
+  "Kip McGrath Education Centers": "https://www.kipmcgrath.co.uk",
+  "TUI Travel UK": "https://www.tui.co.uk",
+  "U Travel UK": "https://www.utravel.uk",
+  "National Express Coaches UK": "https://www.nationalexpress.com",
+  "Bolton Executive Airport Transfers": "https://www.boltonexecutive.co.uk",
+  "Hays Travel UK Agencies": "https://www.haystravel.co.uk",
+  "Virgin Atlantic & Holidays": "https://www.virginholidays.co.uk",
+  "Trailfinders UK Travel Specialists": "https://www.trailfinders.com",
+  "Flight Centre UK": "https://www.flightcentre.co.uk",
+  "TaxAssist Accountants": "https://www.taxassist.co.uk",
+  "Co-op Legal Services": "https://www.cooplegalservices.co.uk",
+  "Slater and Gordon Lawyers UK": "https://www.slatergordon.co.uk",
+  "Lancashire Will Writing & Estate Planning": "https://www.lancashirewills.co.uk",
+  "KPMG Small Business Accounting": "https://home.kpmg/uk",
+  "BDO Accountants UK": "https://www.bdo.co.uk",
+  "QualitySolicitors UK Network": "https://www.qualitysolicitors.com",
+  "Irwin Mitchell Solicitors": "https://www.irwinmitchell.com",
+  "Pixcision Stock & Studio Photography": "https://www.pixcision.com",
+  "Memuriah Digital Memorials": "https://www.memuriah.com",
+  "Bespoke UK Wedding & Party Planners": "https://www.bespokeukweddings.co.uk",
+  "North West Event Sound & Lighting": "https://www.nweventsound.co.uk",
+  "Gourmet UK Event Catering": "https://www.gourmetukcatering.co.uk",
+  "Party & Venue Styling UK": "https://www.partystyling.co.uk",
+  "Manchester Live DJ & Band Agency": "https://www.manchesterlivedjs.co.uk"
+};
+
+function getWebUrl(name) {
+  if (customWebsites[name]) return customWebsites[name];
+  const clean = name.toLowerCase().replace(/[^a-z0-9]+/g, '');
+  return `https://www.${clean}.co.uk`;
+}
+
 // Custom local logo overrides for key brand assets already in assets/business/
 const localLogos = {
   "Yopa Estate Agents": "assets/business/yopa-logo.png",
@@ -329,6 +439,7 @@ let counter = 1000;
 data.forEach(item => {
   const logo = localLogos[item.name] || makeSvgLogo(item.name, counter);
   const cover = localCovers[item.name] || item.coverSrc;
+  const web = getWebUrl(item.name);
   list.push({
     id: `biz-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
     ownerEmail: null,
@@ -338,6 +449,7 @@ data.forEach(item => {
     about: item.about,
     area: item.area,
     phone: item.phone,
+    websiteUrl: web,
     logoSrc: logo,
     coverSrc: cover,
     services: item.services.map((s, idx) => ({ id: `s-${counter}-${idx}`, ...s })),
@@ -357,6 +469,7 @@ for (const cat of categories) {
     if (!list.some(b => b.name.toLowerCase() === it.name.toLowerCase())) {
       const logo = localLogos[it.name] || makeSvgLogo(it.name, counter);
       const cover = localCovers[it.name] || it.cover;
+      const web = getWebUrl(it.name);
       list.push({
         id: `biz-${slug}`,
         ownerEmail: null,
@@ -366,6 +479,7 @@ for (const cat of categories) {
         about: `${it.name} provides professional, reliable ${cat.replace('-', ' ')} services tailored for clients in ${ukCities[counter % ukCities.length]} and across the United Kingdom. Fully insured and highly rated.`,
         area: ukCities[counter % ukCities.length],
         phone: it.phone,
+        websiteUrl: web,
         logoSrc: logo,
         coverSrc: cover,
         services: [

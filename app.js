@@ -608,7 +608,7 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 11;
+const BUSINESS_SEED_VERSION = 12;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
 // Verified UK Business Directory listings.
@@ -622,6 +622,7 @@ const SEED_BUSINESSES = [
     "about": "Checkatrade thoroughly checks and vets UK tradespeople so you can hire with total peace of mind. Over 12 background checks conducted on every electrician, plumber, and builder.",
     "area": "Nationwide / UK Wide",
     "phone": "0800 015 4550",
+    "websiteUrl": "https://www.checkatrade.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNWPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -653,6 +654,7 @@ const SEED_BUSINESSES = [
     "about": "Finding a great builder, plumber, or electrician shouldn't be a gamble. MyBuilder matches your project with vetted local tradespeople backed by customer reviews.",
     "area": "UK Nationwide",
     "phone": "0800 018 8297",
+    "websiteUrl": "https://www.mybuilder.com",
     "logoSrc": "assets/business/mybuilder-logo.png",
     "coverSrc": "assets/business/mybuilder-cover.jpg",
     "services": [
@@ -684,6 +686,7 @@ const SEED_BUSINESSES = [
     "about": "Timpson is Britain's most trusted high-street service provider. Offers 24/7 mobile emergency locksmith callouts, house & car key cutting, and watch servicing.",
     "area": "UK Wide / 2,000+ Branches",
     "phone": "0161 946 6200",
+    "websiteUrl": "https://www.timpson.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRMPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -715,6 +718,7 @@ const SEED_BUSINESSES = [
     "about": "Apex Gas & Plumbing offers 24/7 emergency response, boiler installations, central heating repairs, and Gas Safe safety certificates for homeowners and landlords.",
     "area": "Bolton & Greater Manchester",
     "phone": "0800 321 9900",
+    "websiteUrl": "https://www.apexplumbing.co.uk",
     "logoSrc": "assets/business/apex-plumbing-logo.png",
     "coverSrc": "assets/business/apex-plumbing-cover.jpg",
     "services": [
@@ -746,6 +750,7 @@ const SEED_BUSINESSES = [
     "about": "Master carpenters creating hand-built fitted wardrobes, alcove shelving, media walls, and custom timber furniture for UK homes.",
     "area": "Manchester, Bolton & Altrincham",
     "phone": "0161 941 2200",
+    "websiteUrl": "https://www.precisionjoinery.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBKPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1534349762230-e0cadf78f5da?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -777,6 +782,7 @@ const SEED_BUSINESSES = [
     "about": "Vanguard installs high-definition CCTV camera systems, wireless intruder alarms, and video doorbells for homes and businesses across the UK.",
     "area": "Lancashire & Greater Manchester",
     "phone": "0800 999 4433",
+    "websiteUrl": "https://www.vanguardsecurity.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlZTPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -808,6 +814,7 @@ const SEED_BUSINESSES = [
     "about": "NICEIC registered electricians specializing in consumer unit fuse box upgrades, home rewires, EV car charger installation, and EICR landlord safety certificates.",
     "area": "Bolton, Wigan & Salford",
     "phone": "01204 492 880",
+    "websiteUrl": "https://www.nwelectrical.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5XPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -839,6 +846,7 @@ const SEED_BUSINESSES = [
     "about": "Family-run roofing contractors with 25+ years experience repairing slate roofs, tile roofs, flat rubber roofs, fascias, soffits, and gutters.",
     "area": "Bolton, Horwich & Bury",
     "phone": "01204 654 321",
+    "websiteUrl": "https://www.boltonroofing.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJSPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -870,6 +878,7 @@ const SEED_BUSINESSES = [
     "about": "Professional painter decorators providing clean, meticulous wall painting, wallpaper hanging, and smooth plaster skimming for homes and offices.",
     "area": "Greater Manchester & Cheshire",
     "phone": "0161 320 8840",
+    "websiteUrl": "https://www.freshcoatdecorating.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZDPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -901,6 +910,7 @@ const SEED_BUSINESSES = [
     "about": "RIBA chartered architects assisting homeowners with single-story rear extensions, double-story side extensions, loft conversions, and local council planning submissions.",
     "area": "Preston, Bolton & Manchester",
     "phone": "01772 443 110",
+    "websiteUrl": "https://www.lancsarchitecture.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkxBPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -932,6 +942,7 @@ const SEED_BUSINESSES = [
     "about": "Purplebricks Estate Agents provides professional, reliable real estate services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
     "area": "Glasgow & West Scotland",
     "phone": "0800 810 8008",
+    "websiteUrl": "https://www.purplebricks.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBFPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -963,6 +974,7 @@ const SEED_BUSINESSES = [
     "about": "Yopa UK Property Sales provides professional, reliable real estate services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
     "area": "Edinburgh & Lothian",
     "phone": "0333 305 0202",
+    "websiteUrl": "https://www.yopa.co.uk",
     "logoSrc": "assets/business/yopa-logo.png",
     "coverSrc": "assets/business/yopa-cover.jpg",
     "services": [
@@ -994,6 +1006,7 @@ const SEED_BUSINESSES = [
     "about": "Savills Luxury Property provides professional, reliable real estate services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bristol & South West",
     "phone": "020 7409 8885",
+    "websiteUrl": "https://www.savills.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNMPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1025,6 +1038,7 @@ const SEED_BUSINESSES = [
     "about": "Foxtons London & South East provides professional, reliable real estate services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
     "area": "Liverpool & Merseyside",
     "phone": "020 7893 6000",
+    "websiteUrl": "https://www.foxtons.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZMPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1056,6 +1070,7 @@ const SEED_BUSINESSES = [
     "about": "Belvoir Lettings & Property Management provides professional, reliable real estate services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
     "area": "Newcastle & North East",
     "phone": "01204 522 244",
+    "websiteUrl": "https://www.belvoir.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJMPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1087,6 +1102,7 @@ const SEED_BUSINESSES = [
     "about": "Bridgfords North West Estate Agents provides professional, reliable real estate services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
     "area": "Cardiff & South Wales",
     "phone": "0161 834 8822",
+    "websiteUrl": "https://www.bridgfords.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJOPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1118,6 +1134,7 @@ const SEED_BUSINESSES = [
     "about": "Connells Estate Agents provides professional, reliable real estate services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Preston & Lancashire",
     "phone": "0800 083 4567",
+    "websiteUrl": "https://www.connells.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNFPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1149,6 +1166,7 @@ const SEED_BUSINESSES = [
     "about": "Winkworth UK Property Consultants provides professional, reliable real estate services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Chester & Cheshire",
     "phone": "020 7355 2244",
+    "websiteUrl": "https://www.winkworth.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPldQPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1180,6 +1198,7 @@ const SEED_BUSINESSES = [
     "about": "Kwik Fit Tyres & Autocentres provides professional, reliable auto services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Sheffield & South Yorkshire",
     "phone": "0800 222 111",
+    "websiteUrl": "https://www.kwik-fit.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPktGPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1211,6 +1230,7 @@ const SEED_BUSINESSES = [
     "about": "Halfords Autocentres UK provides professional, reliable auto services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
     "area": "Nationwide / UK Wide",
     "phone": "0800 050 1080",
+    "websiteUrl": "https://www.halfords.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhBPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1242,6 +1262,7 @@ const SEED_BUSINESSES = [
     "about": "ProDrive Mobile Detailing provides professional, reliable auto services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bolton & Greater Manchester",
     "phone": "07700 912384",
+    "websiteUrl": "https://www.prodrivedetailing.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBNPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1273,6 +1294,7 @@ const SEED_BUSINESSES = [
     "about": "RAC Approved Mobile Servicing provides professional, reliable auto services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
     "area": "Manchester City Centre",
     "phone": "0330 159 1111",
+    "websiteUrl": "https://www.rac.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJBPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1304,6 +1326,7 @@ const SEED_BUSINESSES = [
     "about": "AA Mobile Mechanic Service provides professional, reliable auto services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
     "area": "London & South East",
     "phone": "0800 88 77 66",
+    "websiteUrl": "https://www.theaa.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkFNPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1335,6 +1358,7 @@ const SEED_BUSINESSES = [
     "about": "National Tyres & Autocare provides professional, reliable auto services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
     "area": "Birmingham & Midlands",
     "phone": "0800 626 666",
+    "websiteUrl": "https://www.national.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5UPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1366,6 +1390,7 @@ const SEED_BUSINESSES = [
     "about": "Autoglass UK Windscreen Repair provides professional, reliable auto services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Leeds & West Yorkshire",
     "phone": "0800 36 36 36",
+    "websiteUrl": "https://www.autoglass.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkFXPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1397,6 +1422,7 @@ const SEED_BUSINESSES = [
     "about": "ChipsAway SMART Car Body Repairs provides professional, reliable auto services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
     "area": "Glasgow & West Scotland",
     "phone": "0800 145 5118",
+    "websiteUrl": "https://www.chipsaway.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNTPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1428,6 +1454,7 @@ const SEED_BUSINESSES = [
     "about": "Bolton Auto Electrical & ECU Remapping provides professional, reliable auto services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
     "area": "Edinburgh & Lothian",
     "phone": "01204 380 990",
+    "websiteUrl": "https://www.boltonautoelec.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJBPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1459,6 +1486,7 @@ const SEED_BUSINESSES = [
     "about": "Rush Hair & Beauty Salons provides professional, reliable beauty services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bristol & South West",
     "phone": "0161 839 2000",
+    "websiteUrl": "https://www.rush.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJIPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1490,6 +1518,7 @@ const SEED_BUSINESSES = [
     "about": "Toni & Guy Hairdressers provides professional, reliable beauty services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
     "area": "Liverpool & Merseyside",
     "phone": "020 7404 4683",
+    "websiteUrl": "https://www.toniandguy.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRHPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1521,6 +1550,7 @@ const SEED_BUSINESSES = [
     "about": "Regis Salons UK provides professional, reliable beauty services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
     "area": "Newcastle & North East",
     "phone": "0800 019 3210",
+    "websiteUrl": "https://www.regissalons.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJTPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1552,6 +1582,7 @@ const SEED_BUSINESSES = [
     "about": "Supercuts UK Salons provides professional, reliable beauty services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
     "area": "Cardiff & South Wales",
     "phone": "0800 988 8888",
+    "websiteUrl": "https://www.supercuts.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNTPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1583,6 +1614,7 @@ const SEED_BUSINESSES = [
     "about": "Skindream Aesthetics Clinic provides professional, reliable beauty services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Preston & Lancashire",
     "phone": "0161 440 9920",
+    "websiteUrl": "https://www.skindream.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNBPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1614,6 +1646,7 @@ const SEED_BUSINESSES = [
     "about": "Townhouse Luxury Nail Bar provides professional, reliable beauty services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Chester & Cheshire",
     "phone": "020 7946 0990",
+    "websiteUrl": "https://www.townhouse.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRMPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1645,6 +1678,7 @@ const SEED_BUSINESSES = [
     "about": "Barber Barber UK provides professional, reliable beauty services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Sheffield & South Yorkshire",
     "phone": "0161 832 9900",
+    "websiteUrl": "https://www.barberbarberuk.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJCPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1676,6 +1710,7 @@ const SEED_BUSINESSES = [
     "about": "MAC Makeup Studio & Lessons provides professional, reliable beauty services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
     "area": "Nationwide / UK Wide",
     "phone": "0800 054 2696",
+    "websiteUrl": "https://www.maccosmetics.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1NPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1707,6 +1742,7 @@ const SEED_BUSINESSES = [
     "about": "The SunLounge Tanning & Beauty provides professional, reliable beauty services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bolton & Greater Manchester",
     "phone": "01204 551 234",
+    "websiteUrl": "https://www.thesunlounge.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNUPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1738,6 +1774,7 @@ const SEED_BUSINESSES = [
     "about": "Bupa Dental Care UK provides professional, reliable health services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
     "area": "Manchester City Centre",
     "phone": "0808 271 7890",
+    "websiteUrl": "https://www.bupa.co.uk/dental",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJEPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1769,6 +1806,7 @@ const SEED_BUSINESSES = [
     "about": "David Lloyd Health & Fitness Clubs provides professional, reliable health services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
     "area": "London & South East",
     "phone": "0345 129 6700",
+    "websiteUrl": "https://www.davidlloyd.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkRMPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1800,6 +1838,7 @@ const SEED_BUSINESSES = [
     "about": "Nuffield Health Wellbeing Gyms provides professional, reliable health services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
     "area": "Birmingham & Midlands",
     "phone": "0300 123 1286",
+    "websiteUrl": "https://www.nuffieldhealth.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5IPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1831,6 +1870,7 @@ const SEED_BUSINESSES = [
     "about": "Manchester Physiotherapy & Sports Massage provides professional, reliable health services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Leeds & West Yorkshire",
     "phone": "0161 236 7788",
+    "websiteUrl": "https://www.manchesterphysio.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1QPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1862,6 +1902,7 @@ const SEED_BUSINESSES = [
     "about": "Boots Opticians UK provides professional, reliable health services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
     "area": "Glasgow & West Scotland",
     "phone": "0345 125 3752",
+    "websiteUrl": "https://www.boots.com/opticians",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJPPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1893,6 +1934,7 @@ const SEED_BUSINESSES = [
     "about": "PureGym Personal Training provides professional, reliable health services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
     "area": "Edinburgh & Lothian",
     "phone": "0344 477 0005",
+    "websiteUrl": "https://www.puregym.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBQPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1924,6 +1966,7 @@ const SEED_BUSINESSES = [
     "about": "MyDentist UK Practices provides professional, reliable health services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bristol & South West",
     "phone": "0345 122 9988",
+    "websiteUrl": "https://www.mydentist.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1QPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1955,6 +1998,7 @@ const SEED_BUSINESSES = [
     "about": "Spinningfields Pilates & Reformer Studio provides professional, reliable health services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
     "area": "Liverpool & Merseyside",
     "phone": "0161 834 1120",
+    "websiteUrl": "https://www.spinningfieldspilates.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNQPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -1986,6 +2030,7 @@ const SEED_BUSINESSES = [
     "about": "Active Care Chiropractic & Alignment provides professional, reliable health services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
     "area": "Newcastle & North East",
     "phone": "01204 330 990",
+    "websiteUrl": "https://www.activecarechiro.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkFDPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2017,6 +2062,7 @@ const SEED_BUSINESSES = [
     "about": "Fantastic Services UK Cleaning provides professional, reliable cleaning services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
     "area": "Cardiff & South Wales",
     "phone": "020 3404 3444",
+    "websiteUrl": "https://www.fantasticservices.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZTPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2048,6 +2094,7 @@ const SEED_BUSINESSES = [
     "about": "MOLLY MAID UK House Cleaners provides professional, reliable cleaning services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Preston & Lancashire",
     "phone": "0800 587 7500",
+    "websiteUrl": "https://www.mollymaid.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1NPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2079,6 +2126,7 @@ const SEED_BUSINESSES = [
     "about": "OvenValet Professional Oven Cleaning provides professional, reliable cleaning services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Chester & Cheshire",
     "phone": "0800 140 4500",
+    "websiteUrl": "https://www.ovenvalet.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk9QPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2110,6 +2158,7 @@ const SEED_BUSINESSES = [
     "about": "Cleanify Domestic & Office Cleaners provides professional, reliable cleaning services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Sheffield & South Yorkshire",
     "phone": "0161 400 3344",
+    "websiteUrl": "https://www.cleanify.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNEPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2141,6 +2190,7 @@ const SEED_BUSINESSES = [
     "about": "Sparkle Commercial Window Cleaning provides professional, reliable cleaning services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
     "area": "Nationwide / UK Wide",
     "phone": "0800 644 1200",
+    "websiteUrl": "https://www.sparklewindows.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNDPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2172,6 +2222,7 @@ const SEED_BUSINESSES = [
     "about": "ProSteam Carpet & Upholstery Care provides professional, reliable cleaning services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bolton & Greater Manchester",
     "phone": "01204 490 120",
+    "websiteUrl": "https://www.prosteamcarpet.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBDPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2203,6 +2254,7 @@ const SEED_BUSINESSES = [
     "about": "North West Commercial Office Sanitation provides professional, reliable cleaning services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
     "area": "Manchester City Centre",
     "phone": "0161 990 8820",
+    "websiteUrl": "https://www.nwofficeclean.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5XPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2234,6 +2286,7 @@ const SEED_BUSINESSES = [
     "about": "ClearView Solar Panel & Gutter Wash provides professional, reliable cleaning services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
     "area": "London & South East",
     "phone": "01772 889 100",
+    "websiteUrl": "https://www.clearviewguttering.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNTPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2265,6 +2318,7 @@ const SEED_BUSINESSES = [
     "about": "DogBuddy UK Dog Boarding & Walkers provides professional, reliable dog walkers services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
     "area": "Birmingham & Midlands",
     "phone": "020 7183 0991",
+    "websiteUrl": "https://www.dogbuddy.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkREPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2296,6 +2350,7 @@ const SEED_BUSINESSES = [
     "about": "TailWaggers Dog Walking provides professional, reliable dog walkers services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Leeds & West Yorkshire",
     "phone": "07700 900332",
+    "websiteUrl": "https://www.tailwaggers.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlREPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2327,6 +2382,7 @@ const SEED_BUSINESSES = [
     "about": "Paws & Trails Country Dog Walks provides professional, reliable dog walkers services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
     "area": "Glasgow & West Scotland",
     "phone": "07700 900452",
+    "websiteUrl": "https://www.pawsandtrails.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBUPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2358,6 +2414,7 @@ const SEED_BUSINESSES = [
     "about": "Lead The Way Dog Sitting provides professional, reliable dog walkers services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
     "area": "Edinburgh & Lothian",
     "phone": "0161 880 7711",
+    "websiteUrl": "https://www.leadtheway.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkxXPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2389,6 +2446,7 @@ const SEED_BUSINESSES = [
     "about": "Barking Mad UK Pet Care provides professional, reliable dog walkers services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bristol & South West",
     "phone": "01524 825825",
+    "websiteUrl": "https://www.barkingmad.uk.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJNPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2420,6 +2478,7 @@ const SEED_BUSINESSES = [
     "about": "Happy Paws Dog Boarding Bolton provides professional, reliable dog walkers services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
     "area": "Liverpool & Merseyside",
     "phone": "01204 883 990",
+    "websiteUrl": "https://www.happypawsbolton.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhQPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2451,6 +2510,7 @@ const SEED_BUSINESSES = [
     "about": "The Dog Walker Manchester provides professional, reliable dog walkers services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
     "area": "Newcastle & North East",
     "phone": "0161 332 1144",
+    "websiteUrl": "https://www.thedogwalkermanchester.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkRXPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2482,6 +2542,7 @@ const SEED_BUSINESSES = [
     "about": "Rover UK Dog Sitting provides professional, reliable dog walkers services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
     "area": "Cardiff & South Wales",
     "phone": "0800 048 8500",
+    "websiteUrl": "https://www.rover.com/uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJEPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2513,6 +2574,7 @@ const SEED_BUSINESSES = [
     "about": "Pets at Home Groom Room provides professional, reliable pets services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Preston & Lancashire",
     "phone": "0800 328 4204",
+    "websiteUrl": "https://www.petsathome.com/groom-room",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBBPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2544,6 +2606,7 @@ const SEED_BUSINESSES = [
     "about": "Vets4Pets Veterinary Hospital provides professional, reliable pets services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Chester & Cheshire",
     "phone": "0800 011 2020",
+    "websiteUrl": "https://www.vets4pets.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlZWPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2575,6 +2638,7 @@ const SEED_BUSINESSES = [
     "about": "Medivet Veterinary Practices provides professional, reliable pets services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Sheffield & South Yorkshire",
     "phone": "01923 470000",
+    "websiteUrl": "https://www.medivet.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1WPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2606,6 +2670,7 @@ const SEED_BUSINESSES = [
     "about": "The Grooming Room Dog Spa provides professional, reliable pets services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
     "area": "Nationwide / UK Wide",
     "phone": "01204 845 600",
+    "websiteUrl": "https://www.thegroomingroom.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkdSPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2637,6 +2702,7 @@ const SEED_BUSINESSES = [
     "about": "Pampered Pooches Boutique Grooming provides professional, reliable pets services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bolton & Greater Manchester",
     "phone": "0161 928 4400",
+    "websiteUrl": "https://www.pamperedpooches.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBQPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2668,6 +2734,7 @@ const SEED_BUSINESSES = [
     "about": "Feline & Canine Veterinary Clinic provides professional, reliable pets services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
     "area": "Manchester City Centre",
     "phone": "01204 690 120",
+    "websiteUrl": "https://www.felinecaninevet.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZDPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2699,6 +2766,7 @@ const SEED_BUSINESSES = [
     "about": "Aquarium & Exotic Pet Specialists provides professional, reliable pets services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
     "area": "London & South East",
     "phone": "0161 740 8822",
+    "websiteUrl": "https://www.exoticpetspecialists.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkFFPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2730,6 +2798,7 @@ const SEED_BUSINESSES = [
     "about": "PDSA Pet Hospital UK provides professional, reliable pets services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
     "area": "Birmingham & Midlands",
     "phone": "0800 731 2502",
+    "websiteUrl": "https://www.pdsa.org.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBQPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2761,6 +2830,7 @@ const SEED_BUSINESSES = [
     "about": "Explore Learning UK Tutors provides professional, reliable tutoring services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Leeds & West Yorkshire",
     "phone": "01483 447410",
+    "websiteUrl": "https://www.explorelearning.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkVMPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2792,6 +2862,7 @@ const SEED_BUSINESSES = [
     "about": "First Tutors UK Network provides professional, reliable tutoring services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
     "area": "Glasgow & West Scotland",
     "phone": "0800 043 8886",
+    "websiteUrl": "https://www.firsttutors.com/uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZUPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2823,6 +2894,7 @@ const SEED_BUSINESSES = [
     "about": "Kumon Maths & English Centers provides professional, reliable tutoring services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
     "area": "Edinburgh & Lothian",
     "phone": "0800 854 714",
+    "websiteUrl": "https://www.kumon.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPktNPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2854,6 +2926,7 @@ const SEED_BUSINESSES = [
     "about": "North West Academic Tutors provides professional, reliable tutoring services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bristol & South West",
     "phone": "0161 720 4400",
+    "websiteUrl": "https://www.nwacademictutors.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5XPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2885,6 +2958,7 @@ const SEED_BUSINESSES = [
     "about": "RED Driving School UK provides professional, reliable tutoring services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
     "area": "Liverpool & Merseyside",
     "phone": "0330 332 2619",
+    "websiteUrl": "https://www.reddrivingschool.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJEPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2916,6 +2990,7 @@ const SEED_BUSINESSES = [
     "about": "Yamaha Music School UK provides professional, reliable tutoring services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
     "area": "Newcastle & North East",
     "phone": "01908 369200",
+    "websiteUrl": "https://uk.yamaha.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPllNPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2947,6 +3022,7 @@ const SEED_BUSINESSES = [
     "about": "MyTutor UK Online Learning provides professional, reliable tutoring services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
     "area": "Cardiff & South Wales",
     "phone": "020 3773 6020",
+    "websiteUrl": "https://www.mytutor.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1PPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -2978,6 +3054,7 @@ const SEED_BUSINESSES = [
     "about": "Kip McGrath Education Centers provides professional, reliable tutoring services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Preston & Lancashire",
     "phone": "0800 056 7890",
+    "websiteUrl": "https://www.kipmcgrath.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPktNPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3009,6 +3086,7 @@ const SEED_BUSINESSES = [
     "about": "TUI Travel UK provides professional, reliable travel services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Chester & Cheshire",
     "phone": "0203 451 2688",
+    "websiteUrl": "https://www.tui.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRUPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3040,6 +3118,7 @@ const SEED_BUSINESSES = [
     "about": "U Travel UK provides professional, reliable travel services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Sheffield & South Yorkshire",
     "phone": "0800 999 1234",
+    "websiteUrl": "https://www.utravel.uk",
     "logoSrc": "assets/business/utravel-logo.png",
     "coverSrc": "assets/business/utravel-cover.jpg",
     "services": [
@@ -3071,6 +3150,7 @@ const SEED_BUSINESSES = [
     "about": "National Express Coaches UK provides professional, reliable travel services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
     "area": "Nationwide / UK Wide",
     "phone": "0871 781 8181",
+    "websiteUrl": "https://www.nationalexpress.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5FPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3102,6 +3182,7 @@ const SEED_BUSINESSES = [
     "about": "Bolton Executive Airport Transfers provides professional, reliable travel services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bolton & Greater Manchester",
     "phone": "01204 550 990",
+    "websiteUrl": "https://www.boltonexecutive.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJFPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3133,6 +3214,7 @@ const SEED_BUSINESSES = [
     "about": "Hays Travel UK Agencies provides professional, reliable travel services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
     "area": "Manchester City Centre",
     "phone": "0800 408 4040",
+    "websiteUrl": "https://www.haystravel.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhUPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3164,6 +3246,7 @@ const SEED_BUSINESSES = [
     "about": "Virgin Atlantic & Holidays provides professional, reliable travel services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
     "area": "London & South East",
     "phone": "0344 557 3860",
+    "websiteUrl": "https://www.virginholidays.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlZBPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3195,6 +3278,7 @@ const SEED_BUSINESSES = [
     "about": "Trailfinders UK Travel Specialists provides professional, reliable travel services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
     "area": "Birmingham & Midlands",
     "phone": "020 7368 1200",
+    "websiteUrl": "https://www.trailfinders.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRUPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3226,6 +3310,7 @@ const SEED_BUSINESSES = [
     "about": "Flight Centre UK provides professional, reliable travel services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Leeds & West Yorkshire",
     "phone": "0808 256 0626",
+    "websiteUrl": "https://www.flightcentre.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZDPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3257,6 +3342,7 @@ const SEED_BUSINESSES = [
     "about": "TaxAssist Accountants provides professional, reliable legal services tailored for clients in Glasgow & West Scotland and across the United Kingdom. Fully insured and highly rated.",
     "area": "Glasgow & West Scotland",
     "phone": "0800 0188 297",
+    "websiteUrl": "https://www.taxassist.co.uk",
     "logoSrc": "assets/business/tax-assist-logo.png",
     "coverSrc": "assets/business/tax-assist-cover.jpg",
     "services": [
@@ -3288,6 +3374,7 @@ const SEED_BUSINESSES = [
     "about": "Co-op Legal Services provides professional, reliable legal services tailored for clients in Edinburgh & Lothian and across the United Kingdom. Fully insured and highly rated.",
     "area": "Edinburgh & Lothian",
     "phone": "0330 606 9500",
+    "websiteUrl": "https://www.cooplegalservices.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNMPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3319,6 +3406,7 @@ const SEED_BUSINESSES = [
     "about": "Slater and Gordon Lawyers UK provides professional, reliable legal services tailored for clients in Bristol & South West and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bristol & South West",
     "phone": "0330 041 5869",
+    "websiteUrl": "https://www.slatergordon.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNHPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3350,6 +3438,7 @@ const SEED_BUSINESSES = [
     "about": "Lancashire Will Writing & Estate Planning provides professional, reliable legal services tailored for clients in Liverpool & Merseyside and across the United Kingdom. Fully insured and highly rated.",
     "area": "Liverpool & Merseyside",
     "phone": "01204 332 110",
+    "websiteUrl": "https://www.lancashirewills.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkxXPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3381,6 +3470,7 @@ const SEED_BUSINESSES = [
     "about": "KPMG Small Business Accounting provides professional, reliable legal services tailored for clients in Newcastle & North East and across the United Kingdom. Fully insured and highly rated.",
     "area": "Newcastle & North East",
     "phone": "020 7311 1000",
+    "websiteUrl": "https://home.kpmg/uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPktTPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3412,6 +3502,7 @@ const SEED_BUSINESSES = [
     "about": "BDO Accountants UK provides professional, reliable legal services tailored for clients in Cardiff & South Wales and across the United Kingdom. Fully insured and highly rated.",
     "area": "Cardiff & South Wales",
     "phone": "020 7486 5888",
+    "websiteUrl": "https://www.bdo.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJBPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3443,6 +3534,7 @@ const SEED_BUSINESSES = [
     "about": "QualitySolicitors UK Network provides professional, reliable legal services tailored for clients in Preston & Lancashire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Preston & Lancashire",
     "phone": "0808 274 7977",
+    "websiteUrl": "https://www.qualitysolicitors.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlFOPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3474,6 +3566,7 @@ const SEED_BUSINESSES = [
     "about": "Irwin Mitchell Solicitors provides professional, reliable legal services tailored for clients in Chester & Cheshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Chester & Cheshire",
     "phone": "0808 163 9484",
+    "websiteUrl": "https://www.irwinmitchell.com",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPklNPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3505,6 +3598,7 @@ const SEED_BUSINESSES = [
     "about": "Pixcision Stock & Studio Photography provides professional, reliable events services tailored for clients in Sheffield & South Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Sheffield & South Yorkshire",
     "phone": "0161 800 9100",
+    "websiteUrl": "https://www.pixcision.com",
     "logoSrc": "assets/business/pixcisionstock-logo.png",
     "coverSrc": "assets/business/pixcisionstock-cover.jpg",
     "services": [
@@ -3536,6 +3630,7 @@ const SEED_BUSINESSES = [
     "about": "Memuriah Digital Memorials provides professional, reliable events services tailored for clients in Nationwide / UK Wide and across the United Kingdom. Fully insured and highly rated.",
     "area": "Nationwide / UK Wide",
     "phone": "0800 772 3000",
+    "websiteUrl": "https://www.memuriah.com",
     "logoSrc": "assets/business/memuriah-logo.png",
     "coverSrc": "assets/business/memuriah-cover.jpg",
     "services": [
@@ -3567,6 +3662,7 @@ const SEED_BUSINESSES = [
     "about": "Bespoke UK Wedding & Party Planners provides professional, reliable events services tailored for clients in Bolton & Greater Manchester and across the United Kingdom. Fully insured and highly rated.",
     "area": "Bolton & Greater Manchester",
     "phone": "0161 990 4400",
+    "websiteUrl": "https://www.bespokeukweddings.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJXPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3598,6 +3694,7 @@ const SEED_BUSINESSES = [
     "about": "North West Event Sound & Lighting provides professional, reliable events services tailored for clients in Manchester City Centre and across the United Kingdom. Fully insured and highly rated.",
     "area": "Manchester City Centre",
     "phone": "01204 440 220",
+    "websiteUrl": "https://www.nweventsound.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5XPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3629,6 +3726,7 @@ const SEED_BUSINESSES = [
     "about": "Gourmet UK Event Catering provides professional, reliable events services tailored for clients in London & South East and across the United Kingdom. Fully insured and highly rated.",
     "area": "London & South East",
     "phone": "0161 740 9900",
+    "websiteUrl": "https://www.gourmetukcatering.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkdFPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3660,6 +3758,7 @@ const SEED_BUSINESSES = [
     "about": "Party & Venue Styling UK provides professional, reliable events services tailored for clients in Birmingham & Midlands and across the United Kingdom. Fully insured and highly rated.",
     "area": "Birmingham & Midlands",
     "phone": "07700 912884",
+    "websiteUrl": "https://www.partystyling.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBWPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -3691,6 +3790,7 @@ const SEED_BUSINESSES = [
     "about": "Manchester Live DJ & Band Agency provides professional, reliable events services tailored for clients in Leeds & West Yorkshire and across the United Kingdom. Fully insured and highly rated.",
     "area": "Leeds & West Yorkshire",
     "phone": "0161 220 8811",
+    "websiteUrl": "https://www.manchesterlivedjs.co.uk",
     "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1MPC90ZXh0Pgo8L3N2Zz4=",
     "coverSrc": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80",
     "services": [
@@ -5465,7 +5565,10 @@ function renderShopperBusiness() {
             <div style="${SERVICE_SECTION_LABEL}">About</div>
             <!-- pre-line keeps the paragraph breaks the owner typed. -->
             <div style="font-size:13.5px;color:#141414;line-height:1.55;margin-top:6px;white-space:pre-line">${escapeHtml(b.about)}</div>
-            ${b.phone ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:9px">${escapeHtml(b.phone)}</div>` : ''}
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;font-size:13px">
+              ${b.phone ? `<div style="color:#6b6b6b;display:flex;align-items:center;gap:4px">📞 <a href="tel:${escapeHtml(b.phone.replace(/\s+/g, ''))}" style="color:#6b6b6b;text-decoration:none">${escapeHtml(b.phone)}</a></div>` : ''}
+              ${b.websiteUrl ? `<div style="display:flex;align-items:center;gap:4px">🌐 <a href="${escapeHtml(b.websiteUrl)}" target="_blank" rel="noopener noreferrer" style="color:#141414;font-weight:600;text-decoration:underline">${escapeHtml(b.websiteUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a></div>` : ''}
+            </div>
           </div>
         </div>` : ''}
 
