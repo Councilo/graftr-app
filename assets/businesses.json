@@ -9,18 +9,19 @@
     "area": "Portsmouth & UK Wide",
     "phone": "0800 015 4550",
     "websiteUrl": "https://www.checkatrade.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkM8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "checkatrade.com",
+    "logoSrc": "https://logo.clearbit.com/checkatrade.com",
     "coverSrc": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3000-0",
+        "id": "s-4000-0",
         "name": "Post a Job & Match Vetted Local Trades",
         "description": "Post your home project and receive quotes from checked local contractors.",
         "price": 0,
         "durationMins": 30
       },
       {
-        "id": "s-3000-1",
+        "id": "s-4000-1",
         "name": "Verified Trade On-Site Inspection",
         "description": "In-person assessment and written estimate by a registered trade.",
         "price": 45,
@@ -31,7 +32,7 @@
       "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -44,18 +45,19 @@
     "area": "London & UK Wide",
     "phone": "0800 018 8297",
     "websiteUrl": "https://www.mybuilder.com",
+    "domain": "mybuilder.com",
     "logoSrc": "assets/business/mybuilder-logo.png",
     "coverSrc": "assets/business/mybuilder-cover.jpg",
     "services": [
       {
-        "id": "s-3001-0",
+        "id": "s-4001-0",
         "name": "Post a Job & Get 3 Verified Quotes",
         "description": "Post details of your building, plumbing or electrical work.",
         "price": 0,
         "durationMins": 30
       },
       {
-        "id": "s-3001-1",
+        "id": "s-4001-1",
         "name": "Building Project Initial Consultation",
         "description": "On-site scope analysis and price breakdown.",
         "price": 35,
@@ -79,18 +81,19 @@
     "area": "Wythenshawe, Manchester & 2,000 UK Branches",
     "phone": "0161 946 6200",
     "websiteUrl": "https://www.timpson.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlQ8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "timpson.co.uk",
+    "logoSrc": "https://logo.clearbit.com/timpson.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3002-0",
+        "id": "s-4002-0",
         "name": "24/7 Emergency Mobile Locksmith Callout",
         "description": "Fast-response mobile locksmith service for gain entry and lock changes.",
         "price": 79,
         "durationMins": 45
       },
       {
-        "id": "s-3002-1",
+        "id": "s-4002-1",
         "name": "Watch Battery Replacement & Pressure Re-Seal",
         "description": "Swiss watch battery replacement with water-resistance testing.",
         "price": 15,
@@ -101,7 +104,7 @@
       "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -114,18 +117,19 @@
     "area": "Sail Street, London & Home Counties",
     "phone": "020 7928 8888",
     "websiteUrl": "https://www.pimlicoplumbers.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "pimlicoplumbers.com",
+    "logoSrc": "https://logo.clearbit.com/pimlicoplumbers.com",
     "coverSrc": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3003-0",
+        "id": "s-4003-0",
         "name": "24/7 Emergency Plumbing Callout",
         "description": "Immediate response for burst pipes, leaks, and central heating failures.",
         "price": 120,
         "durationMins": 60
       },
       {
-        "id": "s-3003-1",
+        "id": "s-4003-1",
         "name": "Boiler Safety Inspection & Gas Service",
         "description": "Complete Gas Safe inspection and boiler tune-up.",
         "price": 95,
@@ -136,7 +140,7 @@
       "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -149,18 +153,19 @@
     "area": "Walsall & UK Wide",
     "phone": "0800 694 4167",
     "websiteUrl": "https://www.homeserve.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkg8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "homeserve.co.uk",
+    "logoSrc": "https://logo.clearbit.com/homeserve.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3004-0",
+        "id": "s-4004-0",
         "name": "Annual Boiler Service & Health Check",
         "description": "Certified Gas Safe inspection and efficiency report.",
         "price": 89,
         "durationMins": 45
       },
       {
-        "id": "s-3004-1",
+        "id": "s-4004-1",
         "name": "Electrical Wiring Diagnostic Survey",
         "description": "Consumer unit and home wiring fault finding.",
         "price": 75,
@@ -184,18 +189,19 @@
     "area": "UK Nationwide",
     "phone": "0800 52 64 89",
     "websiteUrl": "https://www.dyno.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkRQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "dyno.com",
+    "logoSrc": "https://logo.clearbit.com/dyno.com",
     "coverSrc": "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3005-0",
+        "id": "s-4005-0",
         "name": "Emergency Drain Jetting & Clearance",
         "description": "High-pressure water jet unblocking of main sewer and waste pipes.",
         "price": 110,
         "durationMins": 60
       },
       {
-        "id": "s-3005-1",
+        "id": "s-4005-1",
         "name": "CCTV Drain Inspection Camera Survey",
         "description": "HD camera survey to identify root ingress, cracks and blockages.",
         "price": 135,
@@ -206,7 +212,7 @@
       "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -219,18 +225,19 @@
     "area": "Warwick & UK Wide",
     "phone": "0344 871 1525",
     "websiteUrl": "https://www.baxi.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJCPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "baxi.co.uk",
+    "logoSrc": "https://logo.clearbit.com/baxi.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3006-0",
+        "id": "s-4006-0",
         "name": "Baxi Combi Boiler Installation Quote",
         "description": "On-site survey for new A-rated energy efficient Baxi boiler replacement.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3006-1",
+        "id": "s-4006-1",
         "name": "Official Manufacturer Annual Service",
         "description": "Baxi engineer annual maintenance to protect boiler warranty.",
         "price": 99,
@@ -241,7 +248,7 @@
       "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -254,18 +261,19 @@
     "area": "UK Nationwide",
     "phone": "0333 202 9802",
     "websiteUrl": "https://www.britishgas.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJHPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "britishgas.co.uk",
+    "logoSrc": "https://logo.clearbit.com/britishgas.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3007-0",
+        "id": "s-4007-0",
         "name": "Gas Safe Annual Boiler Service",
         "description": "Comprehensive safety inspection and combustion test.",
         "price": 90,
         "durationMins": 45
       },
       {
-        "id": "s-3007-1",
+        "id": "s-4007-1",
         "name": "Smart Hive Thermostat Installation",
         "description": "Supply and professional fitting of wireless Hive heating control.",
         "price": 199,
@@ -289,18 +297,19 @@
     "area": "Yeovil & 800+ UK Stores",
     "phone": "03330 112 112",
     "websiteUrl": "https://www.screwfix.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNUPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "screwfix.com",
+    "logoSrc": "https://logo.clearbit.com/screwfix.com",
     "coverSrc": "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3008-0",
+        "id": "s-4008-0",
         "name": "Trade Account On-Site Click & Collect",
         "description": "1-minute click and collect for professional trade materials.",
         "price": 0,
         "durationMins": 15
       },
       {
-        "id": "s-3008-1",
+        "id": "s-4008-1",
         "name": "Bulk Trade Order Site Delivery",
         "description": "Same-day direct delivery to UK construction sites.",
         "price": 15,
@@ -311,7 +320,7 @@
       "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -324,18 +333,19 @@
     "area": "Northampton & 500+ UK Branches",
     "phone": "0330 123 3846",
     "websiteUrl": "https://www.travisperkins.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "travisperkins.co.uk",
+    "logoSrc": "https://logo.clearbit.com/travisperkins.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3009-0",
+        "id": "s-4009-0",
         "name": "Building Project Material Take-Off & Estimating",
         "description": "Architectural drawing material calculation for site builds.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3009-1",
+        "id": "s-4009-1",
         "name": "Hiab Crane Site Delivery Service",
         "description": "Heavy timber and brick crane unloading directly to site.",
         "price": 25,
@@ -346,7 +356,7 @@
       "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -359,18 +369,19 @@
     "area": "Solihull & UK Wide",
     "phone": "0800 810 8008",
     "websiteUrl": "https://www.purplebricks.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlA8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "purplebricks.co.uk",
+    "logoSrc": "https://logo.clearbit.com/purplebricks.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3010-0",
+        "id": "s-4010-0",
         "name": "Free In-Person Home Valuation",
         "description": "Local estate agent property appraisal and market pricing strategy.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3010-1",
+        "id": "s-4010-1",
         "name": "Full Property Sales Package & Rightmove Listing",
         "description": "Professional photography, floorplan, virtual tour and portal listings.",
         "price": 999,
@@ -394,18 +405,19 @@
     "area": "London & UK Wide",
     "phone": "0333 305 0202",
     "websiteUrl": "https://www.yopa.co.uk",
+    "domain": "yopa.co.uk",
     "logoSrc": "assets/business/yopa-logo.png",
     "coverSrc": "assets/business/yopa-cover.jpg",
     "services": [
       {
-        "id": "s-3011-0",
+        "id": "s-4011-0",
         "name": "Expert Home Appraisal & Valuation",
         "description": "Comprehensive market comparison and property valuation.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3011-1",
+        "id": "s-4011-1",
         "name": "Yopa Fixed Fee Sales Package",
         "description": "Dedicated agent, Rightmove & Zoopla listing, and offer negotiation.",
         "price": 990,
@@ -416,7 +428,7 @@
       "assets/business/yopa-cover.jpg",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -429,18 +441,19 @@
     "area": "Mayfair, London & UK Wide",
     "phone": "020 7409 8885",
     "websiteUrl": "https://www.savills.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "savills.co.uk",
+    "logoSrc": "https://logo.clearbit.com/savills.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3012-0",
+        "id": "s-4012-0",
         "name": "Prime Residential Property Consultation",
         "description": "Discreet valuation and marketing strategy for premium UK properties.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3012-1",
+        "id": "s-4012-1",
         "name": "Bespoke Landlord Property Management",
         "description": "Complete tenancy management and high-net-worth tenant vetting.",
         "price": 150,
@@ -451,7 +464,7 @@
       "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -464,18 +477,19 @@
     "area": "London & South East",
     "phone": "020 7893 6000",
     "websiteUrl": "https://www.foxtons.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZFPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "foxtons.co.uk",
+    "logoSrc": "https://logo.clearbit.com/foxtons.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3013-0",
+        "id": "s-4013-0",
         "name": "London Property Market Valuation",
         "description": "In-depth London property pricing and demand assessment.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3013-1",
+        "id": "s-4013-1",
         "name": "Lettings & Tenant Finder Service",
         "description": "Comprehensive tenant vetting, referencing, and lease drafting.",
         "price": 250,
@@ -499,18 +513,19 @@
     "area": "Grantham & 170+ UK Offices",
     "phone": "01476 570000",
     "websiteUrl": "https://www.belvoir.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "belvoir.co.uk",
+    "logoSrc": "https://logo.clearbit.com/belvoir.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3014-0",
+        "id": "s-4014-0",
         "name": "Landlord Rental Yield Valuation",
         "description": "Rental income assessment and compliance review.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3014-1",
+        "id": "s-4014-1",
         "name": "Full Tenant Management & Rent Protection",
         "description": "Monthly rent collection, inspections, and maintenance cover.",
         "price": 95,
@@ -521,7 +536,7 @@
       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -534,18 +549,19 @@
     "area": "Manchester & North West UK",
     "phone": "0161 834 8822",
     "websiteUrl": "https://www.bridgfords.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJFPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "bridgfords.co.uk",
+    "logoSrc": "https://logo.clearbit.com/bridgfords.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3015-0",
+        "id": "s-4015-0",
         "name": "North West Residential Property Valuation",
         "description": "Local market appraisal by experienced regional estate agents.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3015-1",
+        "id": "s-4015-1",
         "name": "Auction & Fast-Sale Property Consultation",
         "description": "Modern method of auction property advisory.",
         "price": 0,
@@ -556,7 +572,7 @@
       "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -569,18 +585,19 @@
     "area": "Leighton Buzzard & UK Wide",
     "phone": "01525 218500",
     "websiteUrl": "https://www.connells.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkM8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "connells.co.uk",
+    "logoSrc": "https://logo.clearbit.com/connells.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3016-0",
+        "id": "s-4016-0",
         "name": "Home Valuation & Market Appraisal",
         "description": "Expert appraisal for residential sales and lettings.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3016-1",
+        "id": "s-4016-1",
         "name": "Mortgage Advice & Financial Review",
         "description": "Independent mortgage advice across major UK lenders.",
         "price": 0,
@@ -604,18 +621,19 @@
     "area": "Mayfair, London & 100+ UK Offices",
     "phone": "020 7355 2244",
     "websiteUrl": "https://www.winkworth.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPldFPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "winkworth.co.uk",
+    "logoSrc": "https://logo.clearbit.com/winkworth.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3017-0",
+        "id": "s-4017-0",
         "name": "High-End Property Sales Appraisal",
         "description": "Discreet valuation and target buyer marketing plan.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3017-1",
+        "id": "s-4017-1",
         "name": "Bespoke Relocation & Property Search",
         "description": "Tailored property search for buying or renting in top UK postcodes.",
         "price": 250,
@@ -626,7 +644,7 @@
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -639,18 +657,19 @@
     "area": "Broxburn, Scotland & 600+ UK Branches",
     "phone": "0800 222 111",
     "websiteUrl": "https://www.kwik-fit.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPktGPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "kwik-fit.com",
+    "logoSrc": "https://logo.clearbit.com/kwik-fit.com",
     "coverSrc": "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3018-0",
+        "id": "s-4018-0",
         "name": "Class 4 MOT Test",
         "description": "DVSA certified annual car safety inspection.",
         "price": 39.95,
         "durationMins": 45
       },
       {
-        "id": "s-3018-1",
+        "id": "s-4018-1",
         "name": "Premium Tyre Fitting & Laser Alignment",
         "description": "Supply, fitting, wheel balancing and tracking.",
         "price": 85,
@@ -661,7 +680,7 @@
       "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -674,18 +693,19 @@
     "area": "Redditch & 400+ UK Garages",
     "phone": "0800 050 1080",
     "websiteUrl": "https://www.halfords.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhBPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "halfords.com",
+    "logoSrc": "https://logo.clearbit.com/halfords.com",
     "coverSrc": "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3019-0",
+        "id": "s-4019-0",
         "name": "Full Annual Car Service",
         "description": "77-point check including engine oil and filter change.",
         "price": 149,
         "durationMins": 120
       },
       {
-        "id": "s-3019-1",
+        "id": "s-4019-1",
         "name": "Air Conditioning Re-gas (R134a / R1234yf)",
         "description": "Re-gas and refrigerant pressure check for cold cabin air.",
         "price": 59,
@@ -709,18 +729,19 @@
     "area": "Walsall & UK Nationwide",
     "phone": "0330 159 1111",
     "websiteUrl": "https://www.rac.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJCPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "rac.co.uk",
+    "logoSrc": "https://logo.clearbit.com/rac.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3020-0",
+        "id": "s-4020-0",
         "name": "24/7 Mobile Breakdown Callout",
         "description": "Roadside patrol repair or vehicle recovery to local garage.",
         "price": 99,
         "durationMins": 60
       },
       {
-        "id": "s-3020-1",
+        "id": "s-4020-1",
         "name": "Comprehensive Used Car Pre-Purchase Inspection",
         "description": "218-point mechanical and structural car check.",
         "price": 189,
@@ -731,7 +752,7 @@
       "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -744,18 +765,19 @@
     "area": "Basingstoke & UK Wide",
     "phone": "0800 88 77 66",
     "websiteUrl": "https://www.theaa.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkEoPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "theaa.com",
+    "logoSrc": "https://logo.clearbit.com/theaa.com",
     "coverSrc": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3021-0",
+        "id": "s-4021-0",
         "name": "Driveway Mobile Car Service",
         "description": "AA certified mechanic conducts full oil service on your driveway.",
         "price": 139,
         "durationMins": 90
       },
       {
-        "id": "s-3021-1",
+        "id": "s-4021-1",
         "name": "Mobile Battery Replacement & Testing",
         "description": "New Bosch car battery supplied and fitted with 3-year warranty.",
         "price": 95,
@@ -766,7 +788,7 @@
       "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -779,18 +801,19 @@
     "area": "Stockport & 230+ UK Branches",
     "phone": "0800 626 666",
     "websiteUrl": "https://www.national.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5UPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "national.co.uk",
+    "logoSrc": "https://logo.clearbit.com/national.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3022-0",
+        "id": "s-4022-0",
         "name": "4-Wheel Computerized Alignment Check",
         "description": "Laser tracking and camber alignment for even tyre wear.",
         "price": 35,
         "durationMins": 30
       },
       {
-        "id": "s-3022-1",
+        "id": "s-4022-1",
         "name": "Exhaust System & Catalytic Converter Replacement",
         "description": "Supply and fitting of stainless exhaust sections.",
         "price": 120,
@@ -814,18 +837,19 @@
     "area": "Bedford & UK Wide Mobile Vans",
     "phone": "0800 36 36 36",
     "websiteUrl": "https://www.autoglass.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkE8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "autoglass.co.uk",
+    "logoSrc": "https://logo.clearbit.com/autoglass.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3023-0",
+        "id": "s-4023-0",
         "name": "Windscreen Stone Chip Resin Repair",
         "description": "Resin injection repair to prevent stone chips spreading into cracks.",
         "price": 50,
         "durationMins": 30
       },
       {
-        "id": "s-3023-1",
+        "id": "s-4023-1",
         "name": "Full Windscreen Replacement & ADAS Calibration",
         "description": "OEM glass fitting and camera calibration.",
         "price": 195,
@@ -836,7 +860,7 @@
       "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -849,18 +873,19 @@
     "area": "Kidderminster & UK Wide Mobile Specialist",
     "phone": "0800 145 5118",
     "websiteUrl": "https://www.chipsaway.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNDPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "chipsaway.co.uk",
+    "logoSrc": "https://logo.clearbit.com/chipsaway.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3024-0",
+        "id": "s-4024-0",
         "name": "Bumper Scuff & Paint Scratch Repair",
         "description": "Color-matched paint repair for corner bumper scuffs.",
         "price": 110,
         "durationMins": 120
       },
       {
-        "id": "s-3024-1",
+        "id": "s-4024-1",
         "name": "Paintless Dent Removal (PDR)",
         "description": "Specialist dent pull without disturbing original paint factory finish.",
         "price": 75,
@@ -871,7 +896,7 @@
       "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -884,18 +909,19 @@
     "area": "Aston, Birmingham & 250+ UK Branches",
     "phone": "0800 601060",
     "websiteUrl": "https://www.atseuromaster.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkFFPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "atseuromaster.co.uk",
+    "logoSrc": "https://logo.clearbit.com/atseuromaster.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3025-0",
+        "id": "s-4025-0",
         "name": "Michelin / Continental Tyre Fitting",
         "description": "Premium tyre fitting, valve replacement and balance.",
         "price": 90,
         "durationMins": 40
       },
       {
-        "id": "s-3025-1",
+        "id": "s-4025-1",
         "name": "Brake Pads & Discs Safety Check & Replacement",
         "description": "Inspection and replacement of front or rear brake sets.",
         "price": 140,
@@ -919,18 +945,19 @@
     "area": "Manchester & 150+ UK Dealerships",
     "phone": "0330 096 9804",
     "websiteUrl": "https://www.lookers.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkxNPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "lookers.co.uk",
+    "logoSrc": "https://logo.clearbit.com/lookers.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3026-0",
+        "id": "s-4026-0",
         "name": "Manufacturer Approved Scheduled Service",
         "description": "Official brand technician service using genuine manufacturer parts.",
         "price": 199,
         "durationMins": 120
       },
       {
-        "id": "s-3026-1",
+        "id": "s-4026-1",
         "name": "Vehicle Health Check & Video Report",
         "description": "Comprehensive safety inspection with direct technician video walkthrough.",
         "price": 0,
@@ -941,7 +968,7 @@
       "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -954,18 +981,19 @@
     "area": "Croydon, London & 60+ UK Salons",
     "phone": "020 8642 0100",
     "websiteUrl": "https://www.rush.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJIPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "rush.co.uk",
+    "logoSrc": "https://logo.clearbit.com/rush.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3027-0",
+        "id": "s-4027-0",
         "name": "Cut & Blow Dry with Stylist",
         "description": "Personal consultation, shampoo massage, precision haircut and blow dry styling.",
         "price": 55,
         "durationMins": 60
       },
       {
-        "id": "s-3027-1",
+        "id": "s-4027-1",
         "name": "Bespoke Balayage & Olaplex Treatment",
         "description": "Hand-painted balayage highlights with Olaplex bond repair.",
         "price": 135,
@@ -976,7 +1004,7 @@
       "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -989,18 +1017,19 @@
     "area": "London & 400+ Global Salons",
     "phone": "020 7404 4683",
     "websiteUrl": "https://www.toniandguy.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRHPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "toniandguy.com",
+    "logoSrc": "https://logo.clearbit.com/toniandguy.com",
     "coverSrc": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3028-0",
+        "id": "s-4028-0",
         "name": "Creative Hair Cut & Styling",
         "description": "Consultation, precision technical cut and personal finish.",
         "price": 70,
         "durationMins": 60
       },
       {
-        "id": "s-3028-1",
+        "id": "s-4028-1",
         "name": "Full Head Highlights & Gloss",
         "description": "Foil highlights throughout with custom gloss toner.",
         "price": 140,
@@ -1024,18 +1053,19 @@
     "area": "UK Wide High Street Salons",
     "phone": "0800 019 3210",
     "websiteUrl": "https://www.regissalons.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJTPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "regissalons.co.uk",
+    "logoSrc": "https://logo.clearbit.com/regissalons.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3029-0",
+        "id": "s-4029-0",
         "name": "Ladies Wash, Cut & Finish",
         "description": "Shampoo treatment, haircut, and blow dry finish.",
         "price": 45,
         "durationMins": 45
       },
       {
-        "id": "s-3029-1",
+        "id": "s-4029-1",
         "name": "Half Head Foil Highlights",
         "description": "Crown and side highlights with conditioning treatment.",
         "price": 75,
@@ -1046,7 +1076,7 @@
       "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1059,18 +1089,19 @@
     "area": "UK Wide Shopping Centres",
     "phone": "0800 988 8888",
     "websiteUrl": "https://www.supercuts.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlM8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "supercuts.co.uk",
+    "logoSrc": "https://logo.clearbit.com/supercuts.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3030-0",
+        "id": "s-4030-0",
         "name": "Supercut Haircut & Blow Dry",
         "description": "Quick precision haircut and style.",
         "price": 28,
         "durationMins": 30
       },
       {
-        "id": "s-3030-1",
+        "id": "s-4030-1",
         "name": "Men's Clipper Cut & Trim",
         "description": "Clipper fade, scissor top trim and neck clean.",
         "price": 19,
@@ -1081,7 +1112,7 @@
       "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1094,18 +1125,19 @@
     "area": "Birmingham & 50+ UK Clinics",
     "phone": "0333 014 2434",
     "websiteUrl": "https://www.sknclinics.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNDPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "sknclinics.co.uk",
+    "logoSrc": "https://logo.clearbit.com/sknclinics.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3031-0",
+        "id": "s-4031-0",
         "name": "Dermatologist Medical Skin Consultation",
         "description": "In-depth skin assessment for acne, scarring, or pigmentation.",
         "price": 50,
         "durationMins": 45
       },
       {
-        "id": "s-3031-1",
+        "id": "s-4031-1",
         "name": "HydraFacial Deep Cleansing Treatment",
         "description": "Patented 6-step medical facial for glowing, hydrated skin.",
         "price": 120,
@@ -1129,18 +1161,19 @@
     "area": "Fitzrovia, London & UK Wide",
     "phone": "020 7946 0990",
     "websiteUrl": "https://www.townhouse.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlROPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "townhouse.co.uk",
+    "logoSrc": "https://logo.clearbit.com/townhouse.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3032-0",
+        "id": "s-4032-0",
         "name": "Signature Gel Manicure",
         "description": "Nail shaping, cuticle care, long-lasting gel polish and hand massage.",
         "price": 48,
         "durationMins": 45
       },
       {
-        "id": "s-3032-1",
+        "id": "s-4032-1",
         "name": "Townhouse Luxury Pedicure",
         "description": "Foot soak, exfoliation, nail care and gel polish finish.",
         "price": 62,
@@ -1151,7 +1184,7 @@
       "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1164,18 +1197,19 @@
     "area": "Deansgate, Manchester & London",
     "phone": "0161 832 9900",
     "websiteUrl": "https://www.barberbarberuk.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJCPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "barberbarberuk.com",
+    "logoSrc": "https://logo.clearbit.com/barberbarberuk.com",
     "coverSrc": "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3033-0",
+        "id": "s-4033-0",
         "name": "Bespoke Gents Haircut & Style",
         "description": "Consultation, precision wash, scissor cut and hair tonic finish.",
         "price": 35,
         "durationMins": 40
       },
       {
-        "id": "s-3033-1",
+        "id": "s-4033-1",
         "name": "Traditional Hot Towel Cut-Throat Shave",
         "description": "Pre-shave oils, hot towels, razor shave and cold towel finish.",
         "price": 40,
@@ -1186,7 +1220,7 @@
       "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1199,18 +1233,19 @@
     "area": "London & UK Retail Stores",
     "phone": "0800 054 2696",
     "websiteUrl": "https://www.maccosmetics.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1DPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "maccosmetics.co.uk",
+    "logoSrc": "https://logo.clearbit.com/maccosmetics.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3034-0",
+        "id": "s-4034-0",
         "name": "Full Focus 60-Minute Makeup Application",
         "description": "Bespoke full-face makeup application by a certified M·A·C Artist.",
         "price": 60,
         "durationMins": 60
       },
       {
-        "id": "s-3034-1",
+        "id": "s-4034-1",
         "name": "1-on-1 Makeup Technique Masterclass",
         "description": "Learn professional contouring, eye makeup, and skin prep techniques.",
         "price": 75,
@@ -1234,18 +1269,19 @@
     "area": "Croydon & 300+ UK Stores",
     "phone": "0345 671 0709",
     "websiteUrl": "https://www.superdrug.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNCPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "superdrug.com",
+    "logoSrc": "https://logo.clearbit.com/superdrug.com",
     "coverSrc": "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3035-0",
+        "id": "s-4035-0",
         "name": "Eyebrow Threading & Tinting",
         "description": "Precision cotton thread shaping and semi-permanent brow tinting.",
         "price": 18,
         "durationMins": 20
       },
       {
-        "id": "s-3035-1",
+        "id": "s-4035-1",
         "name": "Lash Lift & Tint",
         "description": "Natural lash curling and dark tint for fluttery lashes.",
         "price": 45,
@@ -1256,7 +1292,7 @@
       "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1269,18 +1305,19 @@
     "area": "London & 400+ UK Dental Practices",
     "phone": "0808 271 7890",
     "websiteUrl": "https://www.bupa.co.uk/dental",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJEPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "bupa.co.uk",
+    "logoSrc": "https://logo.clearbit.com/bupa.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3036-0",
+        "id": "s-4036-0",
         "name": "New Patient Dental Examination & X-Rays",
         "description": "Full oral health examination, gum health check and digital X-rays.",
         "price": 65,
         "durationMins": 30
       },
       {
-        "id": "s-3036-1",
+        "id": "s-4036-1",
         "name": "Hygienist Scale & Airflow Polish",
         "description": "Professional tartar removal, stain removal, and gum polishing.",
         "price": 78,
@@ -1291,7 +1328,7 @@
       "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1304,18 +1341,19 @@
     "area": "Hatfield & 100+ UK Clubs",
     "phone": "0345 129 6700",
     "websiteUrl": "https://www.davidlloyd.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkRMPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "davidlloyd.co.uk",
+    "logoSrc": "https://logo.clearbit.com/davidlloyd.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3037-0",
+        "id": "s-4037-0",
         "name": "Personal Trainer 1-on-1 Session",
         "description": "Bespoke fitness assessment and tailored workout coaching.",
         "price": 50,
         "durationMins": 60
       },
       {
-        "id": "s-3037-1",
+        "id": "s-4037-1",
         "name": "Spa Retreat Day Pass & Hydrotherapy Access",
         "description": "Access to thermal spa, Himalayan salt sauna, and hydro pools.",
         "price": 85,
@@ -1339,18 +1377,19 @@
     "area": "Epsom & 114 UK Wellbeing Centres",
     "phone": "0300 123 1286",
     "websiteUrl": "https://www.nuffieldhealth.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5IPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "nuffieldhealth.com",
+    "logoSrc": "https://logo.clearbit.com/nuffieldhealth.com",
     "coverSrc": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3038-0",
+        "id": "s-4038-0",
         "name": "Comprehensive Health MOT Assessment",
         "description": "Blood glucose, cholesterol, body composition, and cardiac health test.",
         "price": 195,
         "durationMins": 60
       },
       {
-        "id": "s-3038-1",
+        "id": "s-4038-1",
         "name": "Chartered Physiotherapy Assessment & Treatment",
         "description": "In-depth musculoskeletal assessment and joint rehab therapy.",
         "price": 72,
@@ -1361,7 +1400,7 @@
       "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1374,18 +1413,19 @@
     "area": "Nottingham & 550+ UK Practices",
     "phone": "0345 125 3752",
     "websiteUrl": "https://www.boots.com/opticians",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJPPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "boots.com",
+    "logoSrc": "https://logo.clearbit.com/boots.com",
     "coverSrc": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3039-0",
+        "id": "s-4039-0",
         "name": "Advanced Eye Test with OCT 3D Scan",
         "description": "Comprehensive vision test plus 3D retinal health scanning.",
         "price": 35,
         "durationMins": 30
       },
       {
-        "id": "s-3039-1",
+        "id": "s-4039-1",
         "name": "Contact Lens Consultation & Free Trial",
         "description": "Fitting consultation and trial lenses for daily or monthly wear.",
         "price": 25,
@@ -1396,7 +1436,7 @@
       "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1409,18 +1449,19 @@
     "area": "Leeds & 340+ UK Gyms",
     "phone": "0344 477 0005",
     "websiteUrl": "https://www.puregym.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlA8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "puregym.com",
+    "logoSrc": "https://logo.clearbit.com/puregym.com",
     "coverSrc": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3040-0",
+        "id": "s-4040-0",
         "name": "1-on-1 Personal Trainer Induction & Plan",
         "description": "Goal setting, fitness testing, and 4-week gym program.",
         "price": 40,
         "durationMins": 60
       },
       {
-        "id": "s-3040-1",
+        "id": "s-4040-1",
         "name": "Body Composition InBody Scan & Review",
         "description": "Biometric body fat, muscle mass and visceral health analysis.",
         "price": 15,
@@ -1444,18 +1485,19 @@
     "area": "Kearsley, Greater Manchester & 500+ Practices",
     "phone": "0345 122 9988",
     "websiteUrl": "https://www.mydentist.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPns8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "mydentist.co.uk",
+    "logoSrc": "https://logo.clearbit.com/mydentist.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3041-0",
+        "id": "s-4041-0",
         "name": "Private Routine Dental Check-Up",
         "description": "Full tooth exam, oral cancer check and advice.",
         "price": 49,
         "durationMins": 20
       },
       {
-        "id": "s-3041-1",
+        "id": "s-4041-1",
         "name": "Professional Boutique Teeth Whitening",
         "description": "Custom whitening trays and dentist-prescribed peroxide gel.",
         "price": 299,
@@ -1466,7 +1508,7 @@
       "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1479,18 +1521,19 @@
     "area": "Solihull, West Midlands",
     "phone": "0800 011 9800",
     "websiteUrl": "https://www.gymshark.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkdMPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "gymshark.com",
+    "logoSrc": "https://logo.clearbit.com/gymshark.com",
     "coverSrc": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3042-0",
+        "id": "s-4042-0",
         "name": "Elite Strength & Conditioning Coaching",
         "description": "Biomechanical lifting analysis and powerlifting coaching.",
         "price": 65,
         "durationMins": 60
       },
       {
-        "id": "s-3042-1",
+        "id": "s-4042-1",
         "name": "Recovery Cryotherapy & Infrared Sauna Session",
         "description": "Whole-body cryo chamber and infrared muscle recovery.",
         "price": 45,
@@ -1501,7 +1544,7 @@
       "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1514,18 +1557,19 @@
     "area": "Croydon & 230+ UK Locations",
     "phone": "0300 303 4800",
     "websiteUrl": "https://www.thegymgroup.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkc8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "thegymgroup.com",
+    "logoSrc": "https://logo.clearbit.com/thegymgroup.com",
     "coverSrc": "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3043-0",
+        "id": "s-4043-0",
         "name": "Personalized Gym Starter Workout Session",
         "description": "1-on-1 machine guidance and workout plan.",
         "price": 30,
         "durationMins": 45
       },
       {
-        "id": "s-3043-1",
+        "id": "s-4043-1",
         "name": "Group Functional Fitness Class Pass",
         "description": "High-intensity functional training group class.",
         "price": 10,
@@ -1549,18 +1593,19 @@
     "area": "Guernsey & 900+ UK Stores",
     "phone": "0808 172 0072",
     "websiteUrl": "https://www.specsavers.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNPPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "specsavers.co.uk",
+    "logoSrc": "https://logo.clearbit.com/specsavers.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3044-0",
+        "id": "s-4044-0",
         "name": "Comprehensive Eye Test & Retinal Photography",
         "description": "Digital retinal photography eye exam.",
         "price": 25,
         "durationMins": 25
       },
       {
-        "id": "s-3044-1",
+        "id": "s-4044-1",
         "name": "Free Hearing Assessment & Hearing Aid Trial",
         "description": "Comprehensive hearing check by registered audiologist.",
         "price": 0,
@@ -1571,7 +1616,7 @@
       "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1584,18 +1629,19 @@
     "area": "London & UK Nationwide",
     "phone": "020 3404 3444",
     "websiteUrl": "https://www.fantasticservices.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZTPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "fantasticservices.com",
+    "logoSrc": "https://logo.clearbit.com/fantasticservices.com",
     "coverSrc": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3045-0",
+        "id": "s-4045-0",
         "name": "End of Tenancy Guaranteed Deep Clean",
         "description": "Full deposit-back guarantee cleaning including oven and inside cupboards.",
         "price": 185,
         "durationMins": 240
       },
       {
-        "id": "s-3045-1",
+        "id": "s-4045-1",
         "name": "Professional Carpet Hot Water Extraction",
         "description": "Deep steam carpet cleaning to remove stubborn stains and allergens.",
         "price": 65,
@@ -1606,7 +1652,7 @@
       "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1619,18 +1665,19 @@
     "area": "Maidenhead & 70+ UK Franchises",
     "phone": "0800 587 7500",
     "websiteUrl": "https://www.mollymaid.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1NPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "mollymaid.co.uk",
+    "logoSrc": "https://logo.clearbit.com/mollymaid.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3046-0",
+        "id": "s-4046-0",
         "name": "Free In-Home Cleaning Price Estimate",
         "description": "In-person walkthrough to customize your home cleaning schedule.",
         "price": 0,
         "durationMins": 30
       },
       {
-        "id": "s-3046-1",
+        "id": "s-4046-1",
         "name": "Regular Weekly House Cleaning Visit",
         "description": "Dusting, vacuuming, kitchen sanitation and bathroom scrubbing.",
         "price": 56,
@@ -1654,18 +1701,19 @@
     "area": "Wokingham & 100+ UK Franchises",
     "phone": "0800 140 4500",
     "websiteUrl": "https://www.ovenu.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk9PPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "ovenu.co.uk",
+    "logoSrc": "https://logo.clearbit.com/ovenu.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3047-0",
+        "id": "s-4047-0",
         "name": "Single Oven Deep Clean & Degrease",
         "description": "Complete disassembly, rack soaking, door glass cleaning.",
         "price": 65,
         "durationMins": 90
       },
       {
-        "id": "s-3047-1",
+        "id": "s-4047-1",
         "name": "Range Cooker / AGA Complete Valet",
         "description": "Eco-friendly deep valet of multi-oven range cookers.",
         "price": 110,
@@ -1676,7 +1724,7 @@
       "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1689,18 +1737,19 @@
     "area": "Manchester & North West UK",
     "phone": "0161 400 3344",
     "websiteUrl": "https://www.cleanzer.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNEPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "cleanzer.co.uk",
+    "logoSrc": "https://logo.clearbit.com/cleanzer.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3048-0",
+        "id": "s-4048-0",
         "name": "Fortnightly Home Clean Visit",
         "description": "2-hour thorough cleaning of living areas, kitchen and bathrooms.",
         "price": 36,
         "durationMins": 120
       },
       {
-        "id": "s-3048-1",
+        "id": "s-4048-1",
         "name": "Office Daily After-Hours Clean",
         "description": "Desk sanitization, bin emptying, floor washing and kitchen hygiene.",
         "price": 45,
@@ -1711,7 +1760,7 @@
       "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1724,18 +1773,19 @@
     "area": "UK Wide Commercial Cleaning",
     "phone": "0800 644 1200",
     "websiteUrl": "https://www.windowcleanuk.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPldDPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "windowcleanuk.com",
+    "logoSrc": "https://logo.clearbit.com/windowcleanuk.com",
     "coverSrc": "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3049-0",
+        "id": "s-4049-0",
         "name": "Residential Pure Water Exterior Window Wash",
         "description": "Pure water wash of all exterior glass, frames and sills.",
         "price": 30,
         "durationMins": 45
       },
       {
-        "id": "s-3049-1",
+        "id": "s-4049-1",
         "name": "Solar Panel De-ionised Water Wash",
         "description": "Efficiency restoration wash of roof solar panels.",
         "price": 75,
@@ -1759,18 +1809,19 @@
     "area": "UK Wide Franchises",
     "phone": "0800 328 2626",
     "websiteUrl": "https://www.safeclean.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNCPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "safeclean.co.uk",
+    "logoSrc": "https://logo.clearbit.com/safeclean.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3050-0",
+        "id": "s-4050-0",
         "name": "3-Seater Sofa Fabric Deep Clean & Guard",
         "description": "Stain extraction and fabric stain protection guard application.",
         "price": 95,
         "durationMins": 90
       },
       {
-        "id": "s-3050-1",
+        "id": "s-4050-1",
         "name": "Curtain In-Situ Dry Clean",
         "description": "Professional curtain cleaning while still hanging on rails.",
         "price": 80,
@@ -1781,7 +1832,7 @@
       "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1794,18 +1845,19 @@
     "area": "Manchester City Centre",
     "phone": "0161 990 8820",
     "websiteUrl": "https://www.commercialcleanuk.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNDPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "commercialcleanuk.co.uk",
+    "logoSrc": "https://logo.clearbit.com/commercialcleanuk.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3051-0",
+        "id": "s-4051-0",
         "name": "Office Deep Sanitization & Fogging",
         "description": "Antimicrobial surface fogging and touchpoint sterilization.",
         "price": 150,
         "durationMins": 120
       },
       {
-        "id": "s-3051-1",
+        "id": "s-4051-1",
         "name": "Hard Floor Scrubbing & Buffer Polishing",
         "description": "Deep scrub and high-shine polish for vinyl and marble floors.",
         "price": 120,
@@ -1816,7 +1868,7 @@
       "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1829,18 +1881,19 @@
     "area": "Crawley & UK Nationwide",
     "phone": "0808 256 2850",
     "websiteUrl": "https://www.rentokil-hygiene.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJIPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "rentokil-hygiene.co.uk",
+    "logoSrc": "https://logo.clearbit.com/rentokil-hygiene.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3052-0",
+        "id": "s-4052-0",
         "name": "Commercial Kitchen Extraction & Duct Clean",
         "description": "TR19 certified grease removal from commercial kitchen canopies and ductwork.",
         "price": 350,
         "durationMins": 300
       },
       {
-        "id": "s-3052-1",
+        "id": "s-4052-1",
         "name": "Washroom Hygiene Unit Installation & Service",
         "description": "Sanitary bin exchange and automated air freshener fitting.",
         "price": 45,
@@ -1864,18 +1917,19 @@
     "area": "Kirkby Lonsdale & 70+ UK Franchises",
     "phone": "01524 825825",
     "websiteUrl": "https://www.barkingmad.uk.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJNPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "barkingmad.uk.com",
+    "logoSrc": "https://logo.clearbit.com/barkingmad.uk.com",
     "coverSrc": "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3053-0",
+        "id": "s-4053-0",
         "name": "Home Dog Boarding Meet & Greet",
         "description": "In-home initial consultation to match your dog with the ideal host family.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3053-1",
+        "id": "s-4053-1",
         "name": "Per Night Home Dog Boarding Holiday",
         "description": "24/7 home care, walks, feeding and photo updates while you're away.",
         "price": 38,
@@ -1886,7 +1940,7 @@
       "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1899,18 +1953,19 @@
     "area": "London & UK Nationwide Network",
     "phone": "0800 048 8500",
     "websiteUrl": "https://www.rover.com/uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "rover.com",
+    "logoSrc": "https://logo.clearbit.com/rover.com",
     "coverSrc": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3054-0",
+        "id": "s-4054-0",
         "name": "60-Minute Country Dog Walk",
         "description": "1-on-1 energetic walk with real-time GPS map tracking and photo updates.",
         "price": 20,
         "durationMins": 60
       },
       {
-        "id": "s-3054-1",
+        "id": "s-4054-1",
         "name": "In-Home Drop-In Pet Visit",
         "description": "30-minute visit for feeding, fresh water, letting out, and playtime.",
         "price": 15,
@@ -1921,7 +1976,7 @@
       "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1934,18 +1989,19 @@
     "area": "Hungerford & 100+ UK Branches",
     "phone": "01635 295055",
     "websiteUrl": "https://welovepets.care",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPldMPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "welovepets.care",
+    "logoSrc": "https://logo.clearbit.com/welovepets.care",
     "coverSrc": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3055-0",
+        "id": "s-4055-0",
         "name": "Group Park & Countryside Walk",
         "description": "Small group walk (max 4 dogs) in safe countryside locations.",
         "price": 16,
         "durationMins": 60
       },
       {
-        "id": "s-3055-1",
+        "id": "s-4055-1",
         "name": "Puppy Visit & Socialization Service",
         "description": "Midday visit for young puppies needing garden breaks and feed.",
         "price": 14,
@@ -1969,18 +2025,19 @@
     "area": "London & UK Wide",
     "phone": "020 3322 7338",
     "websiteUrl": "https://tailster.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "tailster.com",
+    "logoSrc": "https://logo.clearbit.com/tailster.com",
     "coverSrc": "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3056-0",
+        "id": "s-4056-0",
         "name": "Regular Midday Solo Dog Walk",
         "description": "Solo walk tailored to your dog's pace and energy levels.",
         "price": 18,
         "durationMins": 45
       },
       {
-        "id": "s-3056-1",
+        "id": "s-4056-1",
         "name": "Overnight House Sitting Service",
         "description": "Sitter stays in your home to keep your pet comfortable.",
         "price": 45,
@@ -1991,7 +2048,7 @@
       "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2004,18 +2061,19 @@
     "area": "UK Nationwide",
     "phone": "020 3808 6848",
     "websiteUrl": "https://gudog.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkdEPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "gudog.co.uk",
+    "logoSrc": "https://logo.clearbit.com/gudog.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3057-0",
+        "id": "s-4057-0",
         "name": "Full Day Doggy Daycare",
         "description": "Supervised play, walks and companionship in a quiet home environment.",
         "price": 30,
         "durationMins": 480
       },
       {
-        "id": "s-3057-1",
+        "id": "s-4057-1",
         "name": "1-Hour Energetic Park Walk",
         "description": "On-leash or off-leash park exercise session.",
         "price": 17,
@@ -2026,7 +2084,7 @@
       "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2039,18 +2097,19 @@
     "area": "London & UK Wide",
     "phone": "0800 011 9988",
     "websiteUrl": "https://www.pawshake.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBEPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "pawshake.co.uk",
+    "logoSrc": "https://logo.clearbit.com/pawshake.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3058-0",
+        "id": "s-4058-0",
         "name": "Dog Walk & Paw Clean",
         "description": "Fun exercise walk followed by towel dry and paw clean.",
         "price": 18,
         "durationMins": 60
       },
       {
-        "id": "s-3058-1",
+        "id": "s-4058-1",
         "name": "Cat Feeding & Litter Box Visit",
         "description": "Daily home visit to feed cats, clean litter trays, and give cuddles.",
         "price": 12,
@@ -2074,18 +2133,19 @@
     "area": "Andover & 50+ UK Franchises",
     "phone": "01264 326362",
     "websiteUrl": "https://www.petpals.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "petpals.com",
+    "logoSrc": "https://logo.clearbit.com/petpals.com",
     "coverSrc": "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3059-0",
+        "id": "s-4059-0",
         "name": "Petpals Signature Countryside Walk",
         "description": "60-minute walk through woodland or parks.",
         "price": 17.5,
         "durationMins": 60
       },
       {
-        "id": "s-3059-1",
+        "id": "s-4059-1",
         "name": "Pet Taxi & Vet Appointment Transport",
         "description": "Safe transport in caged, air-conditioned vehicle to vet appointments.",
         "price": 25,
@@ -2096,7 +2156,7 @@
       "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2109,18 +2169,19 @@
     "area": "Chorlton, Manchester",
     "phone": "0161 332 1144",
     "websiteUrl": "https://scampsandscoundrels.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNTPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "scampsandscoundrels.co.uk",
+    "logoSrc": "https://logo.clearbit.com/scampsandscoundrels.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3060-0",
+        "id": "s-4060-0",
         "name": "Chorlton Meadows Pack Adventure Walk",
         "description": "Group walk through Chorlton Water Park and Meadows.",
         "price": 15,
         "durationMins": 60
       },
       {
-        "id": "s-3060-1",
+        "id": "s-4060-1",
         "name": "Puppy Socialization & Toilet Break Visit",
         "description": "Targeted visit for young pups requiring garden play.",
         "price": 13,
@@ -2131,7 +2192,7 @@
       "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2144,18 +2205,19 @@
     "area": "Handforth, Cheshire & 300+ UK Salons",
     "phone": "0800 328 4204",
     "websiteUrl": "https://www.petsathome.com/groom-room",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBBPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "petsathome.com",
+    "logoSrc": "https://logo.clearbit.com/petsathome.com",
     "coverSrc": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3061-0",
+        "id": "s-4061-0",
         "name": "Full Dog Groom, Style & Nail Trim",
         "description": "Hydrobath wash, blow dry, coat cut to breed standard, ear clean and nail clip.",
         "price": 45,
         "durationMins": 90
       },
       {
-        "id": "s-3061-1",
+        "id": "s-4061-1",
         "name": "Puppy First Bath & Pamper Session",
         "description": "Gentle introduction bath, brush, and coat trim for puppies up to 6 months.",
         "price": 25,
@@ -2179,18 +2241,19 @@
     "area": "Handforth & 440+ UK Practices",
     "phone": "0800 011 2020",
     "websiteUrl": "https://www.vets4pets.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlZWPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "vets4pets.com",
+    "logoSrc": "https://logo.clearbit.com/vets4pets.com",
     "coverSrc": "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3062-0",
+        "id": "s-4062-0",
         "name": "Full Veterinary Health Consultation",
         "description": "Comprehensive health examination by registered MRCVS veterinarian.",
         "price": 48,
         "durationMins": 20
       },
       {
-        "id": "s-3062-1",
+        "id": "s-4062-1",
         "name": "Pet Annual Booster Vaccination & Flea/Wormer",
         "description": "Core annual vaccine booster plus 3-month parasite prevention.",
         "price": 65,
@@ -2201,7 +2264,7 @@
       "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2214,18 +2277,19 @@
     "area": "Watford & 400+ UK Practices",
     "phone": "01923 470000",
     "websiteUrl": "https://www.medivet.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk1WPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "medivet.co.uk",
+    "logoSrc": "https://logo.clearbit.com/medivet.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3063-0",
+        "id": "s-4063-0",
         "name": "24/7 Emergency Vet Consultation",
         "description": "Immediate out-of-hours veterinary emergency triage.",
         "price": 120,
         "durationMins": 30
       },
       {
-        "id": "s-3063-1",
+        "id": "s-4063-1",
         "name": "Canine Ultrasonic Dental Scale & Polish",
         "description": "General anesthesia tooth cleaning, scaling, and polishing.",
         "price": 220,
@@ -2236,7 +2300,7 @@
       "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2249,18 +2313,19 @@
     "area": "Telford & 48 UK Pet Hospitals",
     "phone": "0800 731 2502",
     "websiteUrl": "https://www.pdsa.org.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "pdsa.org.uk",
+    "logoSrc": "https://logo.clearbit.com/pdsa.org.uk",
     "coverSrc": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3064-0",
+        "id": "s-4064-0",
         "name": "Pet Health & Wellbeing Consultation",
         "description": "Clinical exam and preventive care guidance.",
         "price": 35,
         "durationMins": 20
       },
       {
-        "id": "s-3064-1",
+        "id": "s-4064-1",
         "name": "Microchip Implantation & Registration",
         "description": "ISO compliant electronic microchip fitting.",
         "price": 15,
@@ -2284,18 +2349,19 @@
     "area": "Diss, Norfolk & 500+ UK Practices",
     "phone": "01379 658000",
     "websiteUrl": "https://www.cvsukltd.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNWPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "cvsukltd.co.uk",
+    "logoSrc": "https://logo.clearbit.com/cvsukltd.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3065-0",
+        "id": "s-4065-0",
         "name": "Senior Pet Wellness Screening & Blood Test",
         "description": "Comprehensive organ function blood panel for senior dogs & cats.",
         "price": 95,
         "durationMins": 30
       },
       {
-        "id": "s-3065-1",
+        "id": "s-4065-1",
         "name": "Orthopedic Specialist Referral Consultation",
         "description": "Expert consultation for joint problems or ligament injuries.",
         "price": 180,
@@ -2306,7 +2372,7 @@
       "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2319,18 +2385,19 @@
     "area": "Solihull & UK Specialist Hospitals",
     "phone": "0121 712 7050",
     "websiteUrl": "https://www.linnaeusgroup.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkxWPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "linnaeusgroup.co.uk",
+    "logoSrc": "https://logo.clearbit.com/linnaeusgroup.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3066-0",
+        "id": "s-4066-0",
         "name": "Cardiology Echocardiogram Ultrasound Scan",
         "description": "Advanced heart ultrasound by European veterinary specialist.",
         "price": 350,
         "durationMins": 60
       },
       {
-        "id": "s-3066-1",
+        "id": "s-4066-1",
         "name": "MRI Neurological Scan & Report",
         "description": "High-field magnetic resonance imaging scan.",
         "price": 950,
@@ -2341,7 +2408,7 @@
       "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2354,18 +2421,19 @@
     "area": "Waltham Abbey & 100+ UK Superstores",
     "phone": "01992 700500",
     "websiteUrl": "https://www.jollyes.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkpQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "jollyes.co.uk",
+    "logoSrc": "https://logo.clearbit.com/jollyes.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3067-0",
+        "id": "s-4067-0",
         "name": "In-Store Community Vet Vaccine Clinic",
         "description": "Affordable routine pet vaccinations and flea treatments.",
         "price": 32,
         "durationMins": 15
       },
       {
-        "id": "s-3067-1",
+        "id": "s-4067-1",
         "name": "Pet Nutrition & Weight Management Advice",
         "description": "Free dietary advice and weight monitoring for dogs & cats.",
         "price": 0,
@@ -2389,18 +2457,19 @@
     "area": "Battersea, London & Windsor",
     "phone": "020 7622 3626",
     "websiteUrl": "https://www.battersea.org.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJEPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "battersea.org.uk",
+    "logoSrc": "https://logo.clearbit.com/battersea.org.uk",
     "coverSrc": "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3068-0",
+        "id": "s-4068-0",
         "name": "Dog Rehoming Matching Consultation",
         "description": "Meet with rehoming experts to find a rescue dog matching your home.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3068-1",
+        "id": "s-4068-1",
         "name": "Canine Behavior & Training Workshop",
         "description": "Public advice workshop on positive reinforcement dog training.",
         "price": 25,
@@ -2411,7 +2480,7 @@
       "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2424,18 +2493,19 @@
     "area": "Guildford & 140+ UK Tuition Centres",
     "phone": "01483 447410",
     "websiteUrl": "https://www.explorelearning.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkVMPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "explorelearning.co.uk",
+    "logoSrc": "https://logo.clearbit.com/explorelearning.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3069-0",
+        "id": "s-4069-0",
         "name": "Free Academic Trial & Assessment",
         "description": "Mapped assessment in Maths and English to identify learning gaps.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3069-1",
+        "id": "s-4069-1",
         "name": "11+ Exam Preparation Workshop",
         "description": "Verbal and non-verbal reasoning exam technique coaching.",
         "price": 35,
@@ -2446,7 +2516,7 @@
       "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2459,18 +2529,19 @@
     "area": "UK Wide Private Tutor Network",
     "phone": "0800 043 8886",
     "websiteUrl": "https://www.firsttutors.com/uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZUPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "firsttutors.com",
+    "logoSrc": "https://logo.clearbit.com/firsttutors.com",
     "coverSrc": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3070-0",
+        "id": "s-4070-0",
         "name": "1-on-1 GCSE Mathematics Online Lesson",
         "description": "Targeted exam paper preparation and topic review.",
         "price": 38,
         "durationMins": 60
       },
       {
-        "id": "s-3070-1",
+        "id": "s-4070-1",
         "name": "A-Level Physics / Chemistry Tuition Session",
         "description": "Advanced theory and past paper question breakdown.",
         "price": 45,
@@ -2494,18 +2565,19 @@
     "area": "Ealing, London & 600+ UK Centres",
     "phone": "0800 854 714",
     "websiteUrl": "https://www.kumon.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPktFPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "kumon.co.uk",
+    "logoSrc": "https://logo.clearbit.com/kumon.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3071-0",
+        "id": "s-4071-0",
         "name": "Kumon Diagnostic Math Assessment",
         "description": "Initial proficiency test to set baseline study level.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3071-1",
+        "id": "s-4071-1",
         "name": "Monthly Kumon Study Program Membership",
         "description": "Daily study worksheets plus twice-weekly centre instruction.",
         "price": 70,
@@ -2516,7 +2588,7 @@
       "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2529,18 +2601,19 @@
     "area": "London & UK Nationwide",
     "phone": "020 3773 6020",
     "websiteUrl": "https://www.mytutor.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk08L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "mytutor.co.uk",
+    "logoSrc": "https://logo.clearbit.com/mytutor.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3072-0",
+        "id": "s-4072-0",
         "name": "Free 15-Minute Tutor Match Consultation",
         "description": "Video introduction to find a compatible university subject tutor.",
         "price": 0,
         "durationMins": 15
       },
       {
-        "id": "s-3072-1",
+        "id": "s-4072-1",
         "name": "1-on-1 Interactive Online Tutorial",
         "description": "Live video session with interactive whiteboard and shared notes.",
         "price": 32,
@@ -2551,7 +2624,7 @@
       "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2564,18 +2637,19 @@
     "area": "Billingham & UK Wide Instructors",
     "phone": "0330 332 2619",
     "websiteUrl": "https://www.reddrivingschool.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJEPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "reddrivingschool.com",
+    "logoSrc": "https://logo.clearbit.com/reddrivingschool.com",
     "coverSrc": "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3073-0",
+        "id": "s-4073-0",
         "name": "2-Hour Manual / Automatic Driving Lesson",
         "description": "DVSA syllabus driving lesson covering maneuvers and test routes.",
         "price": 72,
         "durationMins": 120
       },
       {
-        "id": "s-3073-1",
+        "id": "s-4073-1",
         "name": "10-Hour Prepaid Driving Lesson Block",
         "description": "Discounted block of driving instruction.",
         "price": 340,
@@ -2599,18 +2673,19 @@
     "area": "Basingstoke & UK Wide",
     "phone": "0330 100 7501",
     "websiteUrl": "https://www.bsm.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkIoPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "bsm.co.uk",
+    "logoSrc": "https://logo.clearbit.com/bsm.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3074-0",
+        "id": "s-4074-0",
         "name": "Single 1-Hour Driving Lesson",
         "description": "Confidence building lesson on quiet residential roads.",
         "price": 36,
         "durationMins": 60
       },
       {
-        "id": "s-3074-1",
+        "id": "s-4074-1",
         "name": "Mock DVSA Practical Driving Test",
         "description": "Realistic practice test conducted under official exam conditions.",
         "price": 50,
@@ -2621,7 +2696,7 @@
       "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2634,18 +2709,19 @@
     "area": "UK Wide 200+ Tuition Centres",
     "phone": "0800 056 7890",
     "websiteUrl": "https://www.kipmcgrath.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPktNPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "kipmcgrath.co.uk",
+    "logoSrc": "https://logo.clearbit.com/kipmcgrath.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3075-0",
+        "id": "s-4075-0",
         "name": "Free Educational Assessment by Qualified Teacher",
         "description": "Evaluation of reading, comprehension, and math skills.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3075-1",
+        "id": "s-4075-1",
         "name": "In-Centre Weekly 80-Minute Session",
         "description": "Small group setting with individualized learning computer tasks.",
         "price": 34,
@@ -2656,7 +2732,7 @@
       "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2669,18 +2745,19 @@
     "area": "Fleetwood & Lancashire",
     "phone": "01253 877990",
     "websiteUrl": "https://www.fleetwooddrivingschool.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZEPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "fleetwooddrivingschool.co.uk",
+    "logoSrc": "https://logo.clearbit.com/fleetwooddrivingschool.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3076-0",
+        "id": "s-4076-0",
         "name": "1.5 Hour Lancashire Coastal Lesson",
         "description": "Dual-carriageway and junction driving tuition.",
         "price": 50,
         "durationMins": 90
       },
       {
-        "id": "s-3076-1",
+        "id": "s-4076-1",
         "name": "Pass Plus Advanced Post-Test Course",
         "description": "Motorway driving, night driving, and adverse weather tuition.",
         "price": 210,
@@ -2704,18 +2781,19 @@
     "area": "Luton & 300+ Travel Agencies",
     "phone": "0203 451 2688",
     "websiteUrl": "https://www.tui.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlRUPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "tui.co.uk",
+    "logoSrc": "https://logo.clearbit.com/tui.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3077-0",
+        "id": "s-4077-0",
         "name": "Travel Clinic Holiday Planning Consultation",
         "description": "Face-to-face holiday booking assistance with a TUI travel expert.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3077-1",
+        "id": "s-4077-1",
         "name": "Airport Lounge Pass Booking",
         "description": "Fast-track security and VIP lounge access at major UK airports.",
         "price": 35,
@@ -2726,7 +2804,7 @@
       "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2739,18 +2817,19 @@
     "area": "London & UK Wide",
     "phone": "0800 999 1234",
     "websiteUrl": "https://www.utravel.uk",
+    "domain": "utravel.uk",
     "logoSrc": "assets/business/utravel-logo.png",
     "coverSrc": "assets/business/utravel-cover.jpg",
     "services": [
       {
-        "id": "s-3078-0",
+        "id": "s-4078-0",
         "name": "Bespoke European Itinerary Consultation",
         "description": "Tailored multi-city holiday itinerary design.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3078-1",
+        "id": "s-4078-1",
         "name": "Private Villa & Yacht Charter Booking",
         "description": "Exclusive luxury accommodation sourcing.",
         "price": 150,
@@ -2761,7 +2840,7 @@
       "assets/business/utravel-cover.jpg",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2774,18 +2853,19 @@
     "area": "Digbeth, Birmingham & 550+ UK Routes",
     "phone": "0871 781 8181",
     "websiteUrl": "https://www.nationalexpress.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPk5FPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "nationalexpress.com",
+    "logoSrc": "https://logo.clearbit.com/nationalexpress.com",
     "coverSrc": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3079-0",
+        "id": "s-4079-0",
         "name": "Airport Direct Coach Transfer Ticket",
         "description": "Direct coach transfer to Heathrow, Gatwick, Manchester or Stansted.",
         "price": 18,
         "durationMins": 120
       },
       {
-        "id": "s-3079-1",
+        "id": "s-4079-1",
         "name": "Intercity Return Coach Ticket",
         "description": "Comfortable intercity coach travel with free Wi-Fi and power sockets.",
         "price": 25,
@@ -2809,18 +2889,19 @@
     "area": "Sunderland & 450+ UK Branches",
     "phone": "0800 408 4040",
     "websiteUrl": "https://www.haystravel.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhUPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "haystravel.co.uk",
+    "logoSrc": "https://logo.clearbit.com/haystravel.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3080-0",
+        "id": "s-4080-0",
         "name": "Worldwide Cruise & Tour Consultation",
         "description": "In-store consultation to compare worldwide ocean and river cruises.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3080-1",
+        "id": "s-4080-1",
         "name": "Foreign Currency Exchange Commission-Free",
         "description": "Euros, Dollars and 50+ currencies available for branch pickup.",
         "price": 0,
@@ -2831,7 +2912,7 @@
       "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2844,18 +2925,19 @@
     "area": "Crawley, West Sussex & UK Wide",
     "phone": "0344 557 3860",
     "websiteUrl": "https://www.virginholidays.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlZBPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "virginholidays.co.uk",
+    "logoSrc": "https://logo.clearbit.com/virginholidays.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3081-0",
+        "id": "s-4081-0",
         "name": "Orlando & Caribbean Holiday Design",
         "description": "Tailor-made Disney theme park or luxury beach resort trip planning.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3081-1",
+        "id": "s-4081-1",
         "name": "Upper Class Flight Upgrade Consultation",
         "description": "Lie-flat seat booking and Clubhouse lounge access advisory.",
         "price": 0,
@@ -2866,7 +2948,7 @@
       "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2879,18 +2961,19 @@
     "area": "Kensington, London & 40+ UK Centres",
     "phone": "020 7368 1200",
     "websiteUrl": "https://www.trailfinders.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlQ8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "trailfinders.com",
+    "logoSrc": "https://logo.clearbit.com/trailfinders.com",
     "coverSrc": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3082-0",
+        "id": "s-4082-0",
         "name": "Australia & New Zealand Fly-Drive Itinerary",
         "description": "Custom multi-stop flight, motorhome or hotel itinerary design.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3082-1",
+        "id": "s-4082-1",
         "name": "African Safari & Wildlife Tour Package",
         "description": "Expert safari lodge reservation and private guide booking.",
         "price": 0,
@@ -2914,18 +2997,19 @@
     "area": "London & 80+ UK Travel Shops",
     "phone": "0808 256 0626",
     "websiteUrl": "https://www.flightcentre.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFlMWI0YiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiM2MzY2ZjEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkZDPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "flightcentre.co.uk",
+    "logoSrc": "https://logo.clearbit.com/flightcentre.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3083-0",
+        "id": "s-4083-0",
         "name": "Round-the-World Multi-Stop Flight Quote",
         "description": "Complex airfare route optimization and luggage allowance advice.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3083-1",
+        "id": "s-4083-1",
         "name": "Business Class International Airfare Search",
         "description": "Discounted corporate and premium cabin fare search.",
         "price": 0,
@@ -2936,7 +3020,7 @@
       "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2949,18 +3033,19 @@
     "area": "Euston, London & Airports",
     "phone": "020 7387 8888",
     "websiteUrl": "https://www.addisonlee.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzFjMTkxNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNlYzQ4OTkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkFMPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "addisonlee.com",
+    "logoSrc": "https://logo.clearbit.com/addisonlee.com",
     "coverSrc": "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3084-0",
+        "id": "s-4084-0",
         "name": "London Airport Executive Mercedes Transfer",
         "description": "Flight tracking, meet-and-greet in arrivals hall, and Wi-Fi ride.",
         "price": 85,
         "durationMins": 60
       },
       {
-        "id": "s-3084-1",
+        "id": "s-4084-1",
         "name": "Full Day Executive Driver & Chauffeur Hire",
         "description": "Dedicated driver for business meetings or events.",
         "price": 380,
@@ -2971,7 +3056,7 @@
       "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2984,18 +3069,19 @@
     "area": "Norwich & 250+ UK Offices",
     "phone": "0800 0188 297",
     "websiteUrl": "https://www.taxassist.co.uk",
+    "domain": "taxassist.co.uk",
     "logoSrc": "assets/business/tax-assist-logo.png",
     "coverSrc": "assets/business/tax-assist-cover.jpg",
     "services": [
       {
-        "id": "s-3085-0",
+        "id": "s-4085-0",
         "name": "Free Small Business Initial Tax Review",
         "description": "Review of business structure, allowable expenses, and tax efficiency.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3085-1",
+        "id": "s-4085-1",
         "name": "Self-Assessment Tax Return Preparation",
         "description": "Complete income tax calculation and online HMRC filing.",
         "price": 175,
@@ -3019,18 +3105,19 @@
     "area": "Bristol & Manchester",
     "phone": "0330 606 9500",
     "websiteUrl": "https://www.cooplegalservices.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNMPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "cooplegalservices.co.uk",
+    "logoSrc": "https://logo.clearbit.com/cooplegalservices.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3086-0",
+        "id": "s-4086-0",
         "name": "Standard Single Will Drafting",
         "description": "Fixed-fee legally binding Will drafted by specialist solicitor.",
         "price": 150,
         "durationMins": 45
       },
       {
-        "id": "s-3086-1",
+        "id": "s-4086-1",
         "name": "Lasting Power of Attorney (LPA) Drafting",
         "description": "Health/Welfare or Property/Financial LPA preparation.",
         "price": 240,
@@ -3041,7 +3128,7 @@
       "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3054,18 +3141,19 @@
     "area": "Manchester & London",
     "phone": "0330 041 5869",
     "websiteUrl": "https://www.slatergordon.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNHPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "slatergordon.co.uk",
+    "logoSrc": "https://logo.clearbit.com/slatergordon.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3087-0",
+        "id": "s-4087-0",
         "name": "No-Win No-Fee Personal Injury Claim Assessment",
         "description": "Free legal evaluation of accident or workplace injury claims.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3087-1",
+        "id": "s-4087-1",
         "name": "Employment Contract & Redundancy Consultation",
         "description": "Review of settlement agreements and employment disputes.",
         "price": 150,
@@ -3076,7 +3164,7 @@
       "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3089,18 +3177,19 @@
     "area": "Canary Wharf, London & 20 UK Offices",
     "phone": "020 7311 1000",
     "websiteUrl": "https://home.kpmg/uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPks8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "home.kpmg",
+    "logoSrc": "https://logo.clearbit.com/home.kpmg",
     "coverSrc": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3088-0",
+        "id": "s-4088-0",
         "name": "Corporate Tax Advisory & Structure Review",
         "description": "Corporate tax optimization and international compliance.",
         "price": 450,
         "durationMins": 90
       },
       {
-        "id": "s-3088-1",
+        "id": "s-4088-1",
         "name": "ESG & Sustainability Business Audit",
         "description": "Assessment of corporate environmental footprint and ESG reporting.",
         "price": 600,
@@ -3124,18 +3213,19 @@
     "area": "Marylebone, London & 18 UK Offices",
     "phone": "020 7486 5888",
     "websiteUrl": "https://www.bdo.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkJMPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "bdo.co.uk",
+    "logoSrc": "https://logo.clearbit.com/bdo.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3089-0",
+        "id": "s-4089-0",
         "name": "R&D Tax Credits Assessment & Claim Filing",
         "description": "Identification of qualifying innovation costs for HMRC tax relief.",
         "price": 350,
         "durationMins": 90
       },
       {
-        "id": "s-3089-1",
+        "id": "s-4089-1",
         "name": "Statutory Financial Audit Planning",
         "description": "Comprehensive corporate audit strategy and risk evaluation.",
         "price": 500,
@@ -3146,7 +3236,7 @@
       "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3159,18 +3249,19 @@
     "area": "UK Wide Law Firm Network",
     "phone": "0808 274 7977",
     "websiteUrl": "https://www.qualitysolicitors.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE0MTQxNCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlE8L3RleHQ+Cjwvc3ZnPg==",
+    "domain": "qualitysolicitors.com",
+    "logoSrc": "https://logo.clearbit.com/qualitysolicitors.com",
     "coverSrc": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3090-0",
+        "id": "s-4090-0",
         "name": "Same-Day Initial Legal Consultation",
         "description": "First 45-minute consultation with a local qualified solicitor.",
         "price": 99,
         "durationMins": 45
       },
       {
-        "id": "s-3090-1",
+        "id": "s-4090-1",
         "name": "Residential Property Conveyancing Estimate",
         "description": "Fixed fee quote for property purchasing or selling legal work.",
         "price": 0,
@@ -3181,7 +3272,7 @@
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3194,18 +3285,19 @@
     "area": "Sheffield & 15 UK Offices",
     "phone": "0808 163 9484",
     "websiteUrl": "https://www.irwinmitchell.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiMxMGI5ODEiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPklNPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "irwinmitchell.com",
+    "logoSrc": "https://logo.clearbit.com/irwinmitchell.com",
     "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3091-0",
+        "id": "s-4091-0",
         "name": "Medical Negligence Free Claim Assessment",
         "description": "Specialist evaluation of NHS or private healthcare negligence.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-3091-1",
+        "id": "s-4091-1",
         "name": "Complex Trust & High-Net-Worth Estate Planning",
         "description": "Tax planning and inheritance trust structure design.",
         "price": 350,
@@ -3229,18 +3321,19 @@
     "area": "Northampton & 13 UK Offices",
     "phone": "0370 086 3000",
     "websiteUrl": "https://www.shoosmiths.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzE4MTgxYiIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmNTllMGIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlNMPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "shoosmiths.co.uk",
+    "logoSrc": "https://logo.clearbit.com/shoosmiths.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3092-0",
+        "id": "s-4092-0",
         "name": "Commercial Contract Review & Drafting",
         "description": "B2B contract, SLA, and terms & conditions legal review.",
         "price": 295,
         "durationMins": 60
       },
       {
-        "id": "s-3092-1",
+        "id": "s-4092-1",
         "name": "Commercial Property Lease Negotiations",
         "description": "Landlord and tenant lease negotiation for retail and office spaces.",
         "price": 400,
@@ -3251,7 +3344,7 @@
       "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3264,18 +3357,19 @@
     "area": "MediaCityUK, Salford & Manchester",
     "phone": "0161 800 9100",
     "websiteUrl": "https://www.pixcision.com",
+    "domain": "pixcision.com",
     "logoSrc": "assets/business/pixcisionstock-logo.png",
     "coverSrc": "assets/business/pixcisionstock-cover.jpg",
     "services": [
       {
-        "id": "s-3093-0",
+        "id": "s-4093-0",
         "name": "Corporate Studio Headshot Session",
         "description": "Studio lighting, 3 retouched high-res digital images.",
         "price": 95,
         "durationMins": 45
       },
       {
-        "id": "s-3093-1",
+        "id": "s-4093-1",
         "name": "Half-Day Event Photography Coverage",
         "description": "4 hours of candid event coverage with full digital gallery release.",
         "price": 350,
@@ -3286,7 +3380,7 @@
       "assets/business/pixcisionstock-cover.jpg",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3299,18 +3393,19 @@
     "area": "London & UK Wide",
     "phone": "0800 772 3000",
     "websiteUrl": "https://www.memuriah.com",
+    "domain": "memuriah.com",
     "logoSrc": "assets/business/memuriah-logo.png",
     "coverSrc": "assets/business/memuriah-cover.jpg",
     "services": [
       {
-        "id": "s-3094-0",
+        "id": "s-4094-0",
         "name": "Lifetime Digital Memorial Page Creation",
         "description": "Permanent online tribute page with photo gallery, video, and memory guestbook.",
         "price": 79,
         "durationMins": 30
       },
       {
-        "id": "s-3094-1",
+        "id": "s-4094-1",
         "name": "Weatherproof Brass QR Memorial Plaque",
         "description": "Laser-engraved brass plaque linking directly to online memorial.",
         "price": 129,
@@ -3334,18 +3429,19 @@
     "area": "Manchester & Cheshire",
     "phone": "0161 990 4400",
     "websiteUrl": "https://www.hoptonevents.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzAyODRjNyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkhXPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "hoptonevents.co.uk",
+    "logoSrc": "https://logo.clearbit.com/hoptonevents.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3095-0",
+        "id": "s-4095-0",
         "name": "Wedding Full Design & Coordination Consultation",
         "description": "In-depth concept design, budget creation, and supplier matching.",
         "price": 150,
         "durationMins": 90
       },
       {
-        "id": "s-3095-1",
+        "id": "s-4095-1",
         "name": "On-the-Day Wedding Management",
         "description": "12 hours of discreet coordination on your wedding day.",
         "price": 750,
@@ -3356,7 +3452,7 @@
       "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3369,18 +3465,19 @@
     "area": "South Elmsall, Yorkshire",
     "phone": "01977 659500",
     "websiteUrl": "https://www.productionpark.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzA1OTY2OSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlBQPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "productionpark.co.uk",
+    "logoSrc": "https://logo.clearbit.com/productionpark.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3096-0",
+        "id": "s-4096-0",
         "name": "Festival Stage & Audio Tech Planning",
         "description": "3D CAD stage design and acoustic sound coverage assessment.",
         "price": 250,
         "durationMins": 120
       },
       {
-        "id": "s-3096-1",
+        "id": "s-4096-1",
         "name": "Indoor Concert LED Video Wall Rental",
         "description": "High-resolution 4K modular LED screen rigging.",
         "price": 850,
@@ -3391,7 +3488,7 @@
       "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3404,18 +3501,19 @@
     "area": "Wimbledon, London & Iconic UK Venues",
     "phone": "020 8812 3200",
     "websiteUrl": "https://www.rhubarb.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlJIPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "rhubarb.co.uk",
+    "logoSrc": "https://logo.clearbit.com/rhubarb.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3097-0",
+        "id": "s-4097-0",
         "name": "3-Course Gourmet Dinner Tasting for 2",
         "description": "Private chef tasting session to finalize wedding or banquet menu.",
         "price": 120,
         "durationMins": 120
       },
       {
-        "id": "s-3097-1",
+        "id": "s-4097-1",
         "name": "Bespoke Event Canapé & Cocktail Package",
         "description": "Luxury hand-crafted hot & cold canapés with sommelier paired wines.",
         "price": 45,
@@ -3439,18 +3537,19 @@
     "area": "Bury, Greater Manchester",
     "phone": "0161 773 8444",
     "websiteUrl": "https://www.qubeevents.co.uk",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iI2I5MWMxYyIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPlFFPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "qubeevents.co.uk",
+    "logoSrc": "https://logo.clearbit.com/qubeevents.co.uk",
     "coverSrc": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3098-0",
+        "id": "s-4098-0",
         "name": "Showroom Design Consultation & Moodboard",
         "description": "Explore table centerpieces, lighting, and floral arches in person.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-3098-1",
+        "id": "s-4098-1",
         "name": "Luxury Floral Arch & Flower Wall Installation",
         "description": "On-site delivery and styling of fresh or silk floral photo backdrops.",
         "price": 350,
@@ -3461,7 +3560,7 @@
       "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3474,18 +3573,19 @@
     "area": "London & UK Nationwide",
     "phone": "020 8829 1180",
     "websiteUrl": "https://www.contrabandevents.com",
-    "logoSrc": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiB2aWV3Qm94PSIwIDAgMTIwIDEyMCI+CiAgPHJlY3Qgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIHJ4PSIzMCIgZmlsbD0iIzBmNzY2ZSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjQ4IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLW9wYWNpdHk9IjAuNSIgZmlsbD0ibm9uZSIvPgogIDx0ZXh0IHg9IjYwIiB5PSI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZmZmZiIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJ1NlZ29lIFVJJywgUm9ib3RvLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iLTEiPkNFPC90ZXh0Pgo8L3N2Zz4=",
+    "domain": "contrabandevents.com",
+    "logoSrc": "https://logo.clearbit.com/contrabandevents.com",
     "coverSrc": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-3099-0",
+        "id": "s-4099-0",
         "name": "4-Piece Live Party Band 2x 45-Min Sets",
         "description": "Professional cover band with PA system and stage lighting.",
         "price": 950,
         "durationMins": 240
       },
       {
-        "id": "s-3099-1",
+        "id": "s-4099-1",
         "name": "Corporate Event DJ & Saxophone Duo",
         "description": "Club DJ paired with live roaming saxophonist.",
         "price": 650,
@@ -3496,7 +3596,7 @@
       "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   }
 ]
