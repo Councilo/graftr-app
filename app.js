@@ -283,6 +283,12 @@ const PENDING_ORDER_KEY = 'graftr_pending_order';
 // so an order is logged the same way regardless of how payment happened.
 function finalizeOrder(snapshot) {
   const newId = '#' + Math.floor(4824 + Math.random() * 100);
+
+  // A scheduled order waits out of the courier pool until its window is close.
+  // If the chosen slot is already within the lead time it just goes live now.
+  const scheduledAt = snapshot.scheduledAt || null;
+  const holdUntilLater = !!scheduledAt && Date.now() < scheduledAt - SCHEDULE_RELEASE_LEAD_MS;
+
   const newOrder = {
     id: newId,
     merchant: 'Morrisons Daily',
@@ -292,11 +298,12 @@ function finalizeOrder(snapshot) {
     subtotal: snapshot.subtotal,
     deliveryFee: snapshot.deliveryFee,
     total: snapshot.subtotal + snapshot.deliveryFee,
-    status: 'Pending Courier Acceptance',
+    status: holdUntilLater ? 'Scheduled' : 'Pending Courier Acceptance',
     address: snapshot.address,
     courier: null,
     tip: 0,
-    scheduledFor: snapshot.scheduledFor || null,
+    scheduledAt,
+    scheduledFor: scheduledAt ? scheduleLabelFor(scheduledAt) : null,
     loyaltyDiscount: snapshot.loyaltyDiscount || 0,
   };
   state.orders.unshift(newOrder);
@@ -311,19 +318,31 @@ function finalizeOrder(snapshot) {
   state.cart = {};
   state.showCheckoutModal = false;
   state.mode = 'shopper';
+
+  // Don't carry the schedule over into the next basket.
+  state.deliveryLater = false;
+  state.deliverySlot = null;
+  state.deliveryDayOffset = 0;
+
   saveLoggedOrders();
   state.shopperInbox.unshift({
     tag: 'Order Alert',
-    text: `Order ${newOrder.id} confirmed — £${newOrder.total.toFixed(2)}. We're finding you a courier.`,
+    text: holdUntilLater
+      ? `Order ${newOrder.id} scheduled for ${newOrder.scheduledFor} — £${newOrder.total.toFixed(2)}. We'll line up a courier nearer the time.`
+      : `Order ${newOrder.id} confirmed — £${newOrder.total.toFixed(2)}. We're finding you a courier.`,
     createdAt: Date.now(),
     read: false,
   });
-  state.courierInbox.unshift({
-    tag: 'Job alert',
-    text: `New job available: ${newOrder.merchant} → ${newOrder.address}, £${newOrder.deliveryFee.toFixed(2)}`,
-    createdAt: Date.now(),
-    read: false,
-  });
+  // A scheduled order isn't offered to couriers yet — that alert fires when it
+  // is released, otherwise they'd see a job they can't start for two days.
+  if (!holdUntilLater) {
+    state.courierInbox.unshift({
+      tag: 'Job alert',
+      text: `New job available: ${newOrder.merchant} → ${newOrder.address}, £${newOrder.deliveryFee.toFixed(2)}`,
+      createdAt: Date.now(),
+      read: false,
+    });
+  }
   saveInbox();
   state.screen = 'shopper-inbox';
   render();
@@ -1634,6 +1653,79 @@ function selectedDeliveryLabel() {
   return `${deliveryDayLabel(state.deliveryDayOffset)} ${state.deliverySlot.split('–')[0]}`;
 }
 
+// The order needs a real point in time, not a label: "Tomorrow 09:00" stops
+// being true the moment tomorrow arrives, and nothing can be scheduled off it.
+function selectedDeliveryTimestamp() {
+  if (!state.deliveryLater || !state.deliverySlot) return null;
+  const hour = parseInt(state.deliverySlot.slice(0, 2), 10);
+  if (Number.isNaN(hour)) return null;
+  const d = new Date();
+  d.setDate(d.getDate() + (state.deliveryDayOffset || 0));
+  d.setHours(hour, 0, 0, 0);
+  return d.getTime();
+}
+
+// Display label derived from the stored timestamp, so an order placed today
+// for tomorrow still reads correctly when you open the app tomorrow.
+function scheduleLabelFor(ts) {
+  if (!ts) return null;
+  const d = new Date(ts);
+  const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
+  const dayStart = new Date(ts); dayStart.setHours(0, 0, 0, 0);
+  const days = Math.round((dayStart - midnight) / 86400000);
+  const dayLabel = days === 0 ? 'Today'
+    : days === 1 ? 'Tomorrow'
+    : days === -1 ? 'Yesterday'
+    : d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const pad = (h) => String(h).padStart(2, '0');
+  return `${dayLabel} ${pad(d.getHours())}:00–${pad(d.getHours() + 1)}:00`;
+}
+
+// A scheduled order joins the courier pool this far before its window opens —
+// enough lead time to shop the items and travel.
+const SCHEDULE_RELEASE_LEAD_MS = 45 * 60 * 1000;
+
+function isScheduledOrder(o) {
+  return !!o && o.status === 'Scheduled';
+}
+
+function scheduleReleaseAt(o) {
+  return o && o.scheduledAt ? o.scheduledAt - SCHEDULE_RELEASE_LEAD_MS : 0;
+}
+
+// Flips scheduled orders into the live courier pool once their window is near.
+// Returns true if anything changed so the caller can re-render.
+function releaseDueScheduledOrders() {
+  const now = Date.now();
+  let changed = false;
+
+  state.orders.forEach((o) => {
+    if (!isScheduledOrder(o) || !o.scheduledAt) return;
+    if (now < scheduleReleaseAt(o)) return;
+
+    o.status = 'Pending Courier Acceptance';
+    changed = true;
+
+    // The alerts fire now rather than at order time — this is the point where
+    // a courier can actually do something with it.
+    state.shopperInbox.unshift({
+      tag: 'Order Alert',
+      text: `Your scheduled order ${o.id} is being prepared for ${scheduleLabelFor(o.scheduledAt)}. We're finding you a courier.`,
+      createdAt: Date.now(),
+      read: false,
+    });
+    state.courierInbox.unshift({
+      tag: 'Job alert',
+      text: `Scheduled job due ${scheduleLabelFor(o.scheduledAt)}: ${o.merchant} → ${o.address}, £${(o.deliveryFee || 0).toFixed(2)}`,
+      createdAt: Date.now(),
+      read: false,
+    });
+  });
+
+  if (changed) { saveLoggedOrders(); saveInbox(); }
+  return changed;
+}
+
 function renderDeliverySlotPicker() {
   if (!state.deliveryLater) return '';
 
@@ -2828,6 +2920,7 @@ function startVoiceRecognition() {
 }
 
 function renderShopperTrackingSection(currentOrder) {
+  const isScheduled = currentOrder.status === 'Scheduled';
   const isPending = currentOrder.status === 'Pending Courier Acceptance';
   const isPacking = currentOrder.status === 'Packing';
   const isOutForDelivery = currentOrder.status === 'Out for Delivery';
@@ -2849,13 +2942,15 @@ function renderShopperTrackingSection(currentOrder) {
   const progressPct = Math.max(0, ((doneCount - 1) / (steps.length - 1)) * 100);
 
   const isLiveGpsActive = isOutForDelivery;
-  const mapBadgeText = isPending
-    ? '⏳ WAITING FOR COURIER'
-    : isPacking
-      ? '🏬 STORE PACKING IN PROGRESS'
-      : isOutForDelivery
-        ? '🟢 LIVE GPS TRACKING'
-        : '🏠 DELIVERED';
+  const mapBadgeText = isScheduled
+    ? `SCHEDULED · ${(scheduleLabelFor(currentOrder.scheduledAt) || currentOrder.scheduledFor || '').toUpperCase()}`
+    : isPending
+      ? '⏳ WAITING FOR COURIER'
+      : isPacking
+        ? '🏬 STORE PACKING IN PROGRESS'
+        : isOutForDelivery
+          ? '🟢 LIVE GPS TRACKING'
+          : '🏠 DELIVERED';
 
   const itemsList = (currentOrder.items && currentOrder.items.length > 0)
     ? currentOrder.items
@@ -2910,7 +3005,10 @@ function renderShopperTrackingSection(currentOrder) {
   ) : '';
 
   let etaLabel;
-  if (isPending) etaLabel = 'Pending';
+  // A scheduled order has no courier and no route yet, so there's nothing to
+  // estimate — show the booked window instead of a spinning "Calculating…".
+  if (isScheduled) etaLabel = scheduleLabelFor(currentOrder.scheduledAt) || currentOrder.scheduledFor || 'Scheduled';
+  else if (isPending) etaLabel = 'Pending';
   else if (isDelivered) etaLabel = 'Delivered ✓';
   else if (isCancelled) etaLabel = 'Cancelled';
   else etaLabel = state.liveEtaMinutes ? `~${state.liveEtaMinutes} min` : 'Calculating…';
@@ -2941,10 +3039,14 @@ function renderShopperTrackingSection(currentOrder) {
       <!-- 2. Middle Section: Courier Driver & Live ETA Bar -->
       <div style="background:#141414;color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.16);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:18px">🚴</div>
+          <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.16);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:18px">${isScheduled ? '🗓' : '🚴'}</div>
           <div>
-            <div style="font-size:13.5px;font-weight:700">${currentOrder.courier || 'Alex (Assigned Courier)'}</div>
-            <div style="font-size:11px;opacity:0.7">Heading to ${escapeHtml((currentOrder.address || state.userProfile.address).split(',')[0])}</div>
+            <!-- Nobody is assigned to a scheduled order yet, so don't claim a
+                 courier is on their way to you. -->
+            <div style="font-size:13.5px;font-weight:700">${isScheduled ? 'Delivery booked' : (currentOrder.courier || 'Alex (Assigned Courier)')}</div>
+            <div style="font-size:11px;opacity:0.7">${isScheduled
+              ? 'A courier is assigned nearer the time'
+              : `Heading to ${escapeHtml((currentOrder.address || state.userProfile.address).split(',')[0])}`}</div>
           </div>
         </div>
         <div style="text-align:right">
@@ -2986,6 +3088,8 @@ function orderRowsHtml(orders) {
     const isCancelled = o.status === 'Cancelled';
     const isDelivered = o.status === 'Delivered';
     const isClosed = isCancelled || isDelivered;
+    // Recomputed from the timestamp so "Tomorrow" doesn't go stale overnight.
+    const slotLabel = scheduleLabelFor(o.scheduledAt) || o.scheduledFor || '';
 
     return `
       <div style="padding:13px 0;${index > 0 ? 'border-top:1px solid #f0f0f0;' : ''}">
@@ -2994,7 +3098,7 @@ function orderRowsHtml(orders) {
           <div style="font-size:14px;font-weight:600;color:#141414;flex:0 0 auto">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
         </div>
         <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">
-          ${o.id} · ${itemCount} item${itemCount > 1 ? 's' : ''} · ${escapeHtml(o.status)}${o.scheduledFor ? ` · ${escapeHtml(o.scheduledFor)}` : ''}
+          ${o.id} · ${itemCount} item${itemCount > 1 ? 's' : ''} · ${escapeHtml(o.status)}${slotLabel ? ` · ${escapeHtml(slotLabel)}` : ''}
         </div>
         <div style="display:flex;gap:16px;margin-top:9px">
           ${!isClosed ? `
@@ -3124,7 +3228,9 @@ async function initGraftrLiveMap() {
   L.polyline(streetRoutePath, { color: '#141414', weight: 5, opacity: 0.9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
 
   // COURIER VISIBILITY RULE: Only show courier marker IF accepted!
-  const isAccepted = currentOrder && currentOrder.status !== 'Pending Courier Acceptance';
+  const isAccepted = currentOrder
+    && currentOrder.status !== 'Pending Courier Acceptance'
+    && currentOrder.status !== 'Scheduled';
 
   if (isAccepted) {
     let liveGps = state.courierLiveGps;
@@ -3158,7 +3264,7 @@ let etaUpdateInterval = null;
 // the live Leaflet map to refresh a number.
 async function updateLiveEta() {
   const currentOrder = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
-  if (!currentOrder || currentOrder.status === 'Pending Courier Acceptance' || currentOrder.status === 'Delivered' || currentOrder.status === 'Cancelled') {
+  if (!currentOrder || currentOrder.status === 'Pending Courier Acceptance' || currentOrder.status === 'Scheduled' || currentOrder.status === 'Delivered' || currentOrder.status === 'Cancelled') {
     return;
   }
   try {
@@ -3582,7 +3688,7 @@ const actions = {
       loyaltyUsed: freeUsed,
       loyaltyDiscount: loyaltyDiscount(),
       address: `${state.userProfile.address}, ${state.userProfile.postcode}`,
-      scheduledFor: selectedDeliveryLabel(),
+      scheduledAt: selectedDeliveryTimestamp(),
     };
 
     state.placingOrder = true;
@@ -4206,5 +4312,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   checkStripeRedirectResult();
+
+  // Scheduled orders join the courier pool on their own once the window is
+  // near, including for slots that came due while the app was closed.
+  releaseDueScheduledOrders();
+  setInterval(() => { if (releaseDueScheduledOrders()) render(); }, 30000);
+
   render();
 });
