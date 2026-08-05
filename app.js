@@ -160,6 +160,52 @@ function saveLoggedOrders() {
   try { localStorage.setItem('graftr_logged_orders', JSON.stringify(state.orders)); } catch(e){}
 }
 
+// ---- Loyalty card -------------------------------------------------------
+// A stamp per delivered order of £30+. Stamps are derived from the orders
+// themselves rather than kept as a counter, so an order that's cancelled or
+// never delivered simply stops counting — nothing to unwind by hand. Only the
+// number already spent on rewards is stored.
+const LOYALTY_MIN_ORDER = 30;
+const LOYALTY_STAMPS_PER_REWARD = 6;
+const LOYALTY_REWARD_MAX = 5;
+
+function loadLoyaltyRedeemed() {
+  try {
+    const saved = localStorage.getItem('graftr_loyalty');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed.redeemed === 'number') return Math.max(0, parsed.redeemed);
+    }
+  } catch (e) { /* ignore corrupt storage */ }
+  return 0;
+}
+
+function saveLoyalty() {
+  try {
+    localStorage.setItem('graftr_loyalty', JSON.stringify({ redeemed: state.loyaltyRedeemed }));
+  } catch (e) { /* ignore write failure */ }
+}
+
+function qualifyingOrderCount() {
+  return (state.orders || []).filter(o =>
+    o.status === 'Delivered' && (o.total || 0) >= LOYALTY_MIN_ORDER
+  ).length;
+}
+
+function loyaltyState() {
+  const earned = qualifyingOrderCount();
+  const spent = (state.loyaltyRedeemed || 0) * LOYALTY_STAMPS_PER_REWARD;
+  // If stamps vanish (an order was cancelled after a reward was claimed) the
+  // balance can go negative — clamp so the card never shows nonsense.
+  const available = Math.max(0, earned - spent);
+  return {
+    earned,
+    stamps: available % LOYALTY_STAMPS_PER_REWARD,
+    rewardsReady: Math.floor(available / LOYALTY_STAMPS_PER_REWARD),
+    redeemed: state.loyaltyRedeemed || 0,
+  };
+}
+
 function loadCourierStats() {
   try {
     const saved = localStorage.getItem('graftr_courier_stats');
@@ -404,6 +450,8 @@ const state = {
   deliveryLater: false,
   deliveryDayOffset: 0,
   deliverySlot: null,
+  loyaltyRedeemed: loadLoyaltyRedeemed(),
+  showLoyaltyPicker: false,
   ...loadInbox(),
   basketCheckedOut: false,
   trackStep: 2,
@@ -1939,46 +1987,53 @@ function renderCheckoutModal() {
   const grandTotal = subtotal + deliveryFee;
   const p = state.userProfile;
 
-  const itemsListHtml = lines.map(l => `
-    <div style="display:flex;justify-content:space-between;font-size:13px">
-      <span>${l.qty}x ${escapeHtml(l.product.name)}</span>
-      <span style="font-weight:600">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
+  const cardShell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#fff;padding:4px 16px 14px';
+  const sectionLabel = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
+  const summaryRow = 'display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#6b6b6b;padding:3px 0';
+
+  const itemsListHtml = lines.map((l, i) => `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
+      <span style="font-size:13.5px;color:#141414;min-width:0">${l.qty} × ${escapeHtml(l.product.name)}</span>
+      <span style="font-size:13.5px;font-weight:600;flex:0 0 auto">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
     </div>
   `).join('');
 
   return `
     <div class="graftr-modal-overlay">
       <div class="graftr-modal-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e5e5;padding-bottom:12px">
-          <div>
-            <div style="font-size:17px;font-weight:800">Checkout &amp; Order Review</div>
-            <div style="font-size:12px;opacity:0.6">Morrisons Daily</div>
-          </div>
-          <button data-action="closeCheckoutModal" style="background:none;border:none;font-size:20px;cursor:pointer">✕</button>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:19px;font-weight:700;color:#141414">Checkout</div>
+          <button data-action="closeCheckoutModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b;padding:2px 6px;line-height:1">✕</button>
         </div>
 
-        <!-- Delivery Address Box -->
-        <div style="background:#fafafa;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px">
-          <div style="min-width:0">
-            <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">Deliver to</div>
+        <!-- Delivery address -->
+        <div style="${cardShell}">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${sectionLabel}">
+            <span>Deliver to</span>
+            <button type="button" data-action="openAddressModal" style="background:none;border:none;padding:0;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;font-family:inherit">Change</button>
+          </div>
+          <div style="margin-top:5px;min-width:0">
             ${missing.length
-              ? `<div style="font-size:13.5px;color:#141414;margin-top:3px;line-height:1.5">We need your ${missing.map(f => f.label.toLowerCase()).join(', ')} before this order can go through.</div>`
-              : `<div style="font-size:14px;font-weight:600;margin-top:2px">${escapeHtml(p.name || 'Your address')}</div>
-                 <div style="font-size:13px;color:#6b6b6b">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
-                 <div style="font-size:13px;color:#6b6b6b">${escapeHtml(p.phone)}</div>
-                 ${p.instructions ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">Note: ${escapeHtml(p.instructions)}</div>` : ''}`}
+              ? `<div style="font-size:13.5px;color:#141414;line-height:1.5">We need your ${missing.map(f => f.label.toLowerCase()).join(', ')} before this order can go through.</div>`
+              : `<div style="font-size:14px;color:#141414;line-height:1.5">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
+                 <div style="font-size:13px;color:#6b6b6b;margin-top:3px">${escapeHtml(p.name || '')}${p.name && p.phone ? ' · ' : ''}${escapeHtml(p.phone || '')}</div>
+                 ${p.instructions ? `<div style="font-size:13px;color:#6b6b6b;margin-top:3px">Note: ${escapeHtml(p.instructions)}</div>` : ''}`}
           </div>
-          <button type="button" data-action="openAddressModal" style="background:#fff;border:1px solid #d4d4d4;padding:6px 10px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer">Change</button>
         </div>
 
-        <!-- Items Summary -->
-        <div style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#6b6b6b">ORDER SUMMARY (${cartCount()} items)</div>
+        <!-- Order summary -->
+        <div style="${cardShell}">
+          <div style="${sectionLabel}">Order summary (${cartCount()} item${cartCount() === 1 ? '' : 's'})</div>
           ${itemsListHtml}
-          <div style="border-top:1px dashed #e5e5e5;padding-top:8px;margin-top:4px;display:flex;flex-direction:column;gap:4px">
-            <div style="display:flex;justify-content:space-between;font-size:12.5px;opacity:0.7"><span>Subtotal</span><span>£${subtotal.toFixed(2)}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12.5px;opacity:0.7"><span>Delivery Fee (Fast 15-min)</span><span>£${deliveryFee.toFixed(2)}</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;margin-top:4px;padding-top:4px;border-top:1px solid #141414"><span>Total Amount</span><span>£${grandTotal.toFixed(2)}</span></div>
+          <div style="border-top:1px solid #f0f0f0;padding-top:10px;margin-top:2px">
+            <div style="${summaryRow}"><span>Subtotal</span><span>£${subtotal.toFixed(2)}</span></div>
+            <div style="${summaryRow}"><span>Delivery</span><span>£${deliveryFee.toFixed(2)}</span></div>
+            ${state.deliveryLater && selectedDeliveryLabel()
+              ? `<div style="${summaryRow}"><span>Scheduled</span><span>${escapeHtml(selectedDeliveryLabel())}</span></div>`
+              : ''}
+            <div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;font-weight:600;color:#141414;padding-top:9px;margin-top:5px;border-top:1px solid #f0f0f0">
+              <span>Total</span><span>£${grandTotal.toFixed(2)}</span>
+            </div>
           </div>
         </div>
 
@@ -1989,13 +2044,13 @@ function renderCheckoutModal() {
         ` : ''}
 
         ${missing.length
-          ? `<button type="button" data-action="openAddressModal" style="background:#141414;color:#fff;border:none;padding:16px;border-radius:18px;font-weight:600;font-size:15px;cursor:pointer;margin-top:4px;font-family:inherit">
+          ? `<button type="button" data-action="openAddressModal" style="background:#141414;color:#fff;border:none;padding:15px;border-radius:16px;font-weight:600;font-size:14.5px;cursor:pointer;margin-top:2px;font-family:inherit">
                Add your details to continue
              </button>`
-          : `<button type="button" data-action="placeOrder" ${state.placingOrder ? 'disabled' : ''} style="background:${state.placingOrder ? 'rgba(20,20,20,0.4)' : '#141414'};color:#fff;border:none;padding:16px;border-radius:18px;font-weight:600;font-size:15px;cursor:${state.placingOrder ? 'default' : 'pointer'};margin-top:4px;font-family:inherit">
+          : `<button type="button" data-action="placeOrder" ${state.placingOrder ? 'disabled' : ''} style="background:${state.placingOrder ? 'rgba(20,20,20,0.35)' : '#141414'};color:#fff;border:none;padding:15px;border-radius:16px;font-weight:600;font-size:14.5px;cursor:${state.placingOrder ? 'default' : 'pointer'};margin-top:2px;font-family:inherit">
                ${state.placingOrder
                  ? 'Redirecting to secure checkout…'
-                 : `${state.checkoutError ? 'Try again' : 'Pay &amp; place order'} · £${grandTotal.toFixed(2)}`}
+                 : `${state.checkoutError ? 'Try again' : 'Pay & place order'} · £${grandTotal.toFixed(2)}`}
              </button>`}
       </div>
     </div>
@@ -2044,6 +2099,81 @@ function renderTermsModal() {
       </div>
     </div>
   `;
+}
+
+// The one place the brand pink is allowed back into an otherwise monochrome
+// UI — it's the loyalty card, so it should look like a card in your wallet.
+function renderLoyaltyCard() {
+  const l = loyaltyState();
+  const ready = l.rewardsReady > 0;
+
+  const dots = Array.from({ length: LOYALTY_STAMPS_PER_REWARD }, (_, i) => {
+    const filled = i < l.stamps;
+    return `<span style="width:26px;height:26px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;
+      background:${filled ? '#141414' : 'rgba(20,20,20,0.07)'};color:${filled ? '#fff' : 'rgba(20,20,20,0.35)'};
+      border:1.5px solid ${filled ? '#141414' : 'rgba(20,20,20,0.12)'}">${filled ? '' : i + 1}</span>`;
+  }).join('');
+
+  const toGo = LOYALTY_STAMPS_PER_REWARD - l.stamps;
+
+  return `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#ffcbe1;overflow:hidden">
+      <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <span style="font-size:12.5px;font-weight:600;color:rgba(20,20,20,0.65)">Vendaru loyalty</span>
+          <span style="font-size:12.5px;color:rgba(20,20,20,0.65)">${l.stamps}/${LOYALTY_STAMPS_PER_REWARD}</span>
+        </div>
+
+        <div style="display:flex;gap:7px;justify-content:space-between">${dots}</div>
+
+        ${ready
+          ? `<div>
+               <div style="font-size:14px;font-weight:600;color:#141414">Free item unlocked${l.rewardsReady > 1 ? ` ×${l.rewardsReady}` : ''}</div>
+               <div style="font-size:12.5px;color:rgba(20,20,20,0.65);margin-top:2px;line-height:1.45">Pick anything up to £${LOYALTY_REWARD_MAX}.00 — it's added to your basket free.</div>
+             </div>
+             <button type="button" data-action="openLoyaltyPicker" style="background:#141414;color:#fff;border:none;padding:11px;border-radius:12px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit">
+               Choose your free item
+             </button>`
+          : `<div style="font-size:12.5px;color:rgba(20,20,20,0.7);line-height:1.45">
+               ${toGo} more order${toGo === 1 ? '' : 's'} over £${LOYALTY_MIN_ORDER} to unlock a free item worth up to £${LOYALTY_REWARD_MAX}.00. Stamps land once an order is delivered.
+             </div>`}
+
+        ${l.redeemed > 0
+          ? `<div style="font-size:12px;color:rgba(20,20,20,0.55)">${l.redeemed} reward${l.redeemed === 1 ? '' : 's'} claimed so far</div>`
+          : ''}
+      </div>
+    </div>`;
+}
+
+// Free-item picker: only things at or under the reward cap.
+function renderLoyaltyPickerModal() {
+  if (!state.showLoyaltyPicker) return '';
+  const eligible = PRODUCTS
+    .filter(p => p.estimated_price_gbp <= LOYALTY_REWARD_MAX)
+    .sort((a, b) => b.estimated_price_gbp - a.estimated_price_gbp);
+
+  return `
+    <div class="graftr-modal-overlay" style="z-index:99998;justify-content:center;align-items:center;padding:24px">
+      <div style="width:100%;max-width:370px;max-height:100%;overflow-y:auto;background:#fff;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:17px;font-weight:700;color:#141414">Choose your free item</div>
+          <button type="button" data-action="closeLoyaltyPicker" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b;padding:2px 6px;line-height:1">✕</button>
+        </div>
+        <div style="font-size:13px;color:#6b6b6b;line-height:1.5;margin-top:-6px">Anything up to £${LOYALTY_REWARD_MAX}.00, on us.</div>
+        <div style="display:flex;flex-direction:column">
+          ${eligible.map((p, i) => `
+            <button type="button" data-action="redeemLoyaltyItem" data-arg="${p.id}" style="display:flex;align-items:center;gap:11px;text-align:left;background:none;border:none;padding:10px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : ''}cursor:pointer;font-family:inherit;width:100%">
+              <span style="width:38px;height:38px;border-radius:10px;flex:0 0 auto;background:#f2f2f2 center/cover url('${state.productImages[p.id] || p.image}')"></span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-size:13.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(p.name)}</span>
+                <span style="display:block;font-size:12.5px;color:#6b6b6b">${escapeHtml(p.weight_or_volume || '')}</span>
+              </span>
+              <span style="font-size:13px;color:#6b6b6b;flex:0 0 auto">£${p.estimated_price_gbp.toFixed(2)}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderShopperAccount() {
@@ -2135,6 +2265,8 @@ function renderShopperAccount() {
           : `<div style="font-size:13.5px;color:#6b6b6b;line-height:1.5">No delivery address saved yet. You'll need one before you can order.</div>`}
       </div>
     </div>
+
+    ${renderLoyaltyCard()}
 
     <!-- Help -->
     <div class="shop-card" style="${cardStyle}">
@@ -2959,6 +3091,7 @@ function render() {
   const checkoutModal = renderCheckoutModal();
   const authModal = renderAuthModal();
   const termsModal = renderTermsModal();
+  const loyaltyPicker = renderLoyaltyPickerModal();
 
   root.innerHTML = `
     <div class="app-scroll" style="flex:1;overflow:auto;padding-top:calc(56px + env(safe-area-inset-top, 0px));${bottomPad}">${content}</div>
@@ -2968,6 +3101,7 @@ function render() {
     ${checkoutModal}
     ${authModal}
     ${termsModal}
+    ${loyaltyPicker}
   `;
 
   if (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) {
@@ -3687,6 +3821,34 @@ const actions = {
   },
   setDeliverySlot: (slot) => {
     state.deliverySlot = slot;
+    render();
+  },
+  openLoyaltyPicker: () => {
+    if (loyaltyState().rewardsReady < 1) return;
+    state.showLoyaltyPicker = true;
+    render();
+  },
+  closeLoyaltyPicker: () => { state.showLoyaltyPicker = false; render(); },
+  redeemLoyaltyItem: (productId) => {
+    const l = loyaltyState();
+    if (l.rewardsReady < 1) return;                       // nothing to spend
+    const product = PRODUCTS.find(p => String(p.id) === String(productId));
+    if (!product || product.estimated_price_gbp > LOYALTY_REWARD_MAX) return;
+
+    state.loyaltyRedeemed = (state.loyaltyRedeemed || 0) + 1;
+    saveLoyalty();
+    state.cart[product.id] = (state.cart[product.id] || 0) + 1;
+    state.showLoyaltyPicker = false;
+
+    state.shopperInbox.unshift({
+      tag: 'Loyalty',
+      text: `Reward claimed — ${product.name} added to your basket free.`,
+      createdAt: Date.now(),
+      read: false,
+    });
+    saveInbox();
+
+    state.screen = 'shopper-basket';
     render();
   },
   toggleCourierRead: (i) => { state.courierInbox[i].read = !state.courierInbox[i].read; saveInbox(); render(); },
