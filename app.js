@@ -1808,6 +1808,10 @@ function renderShopperShop() {
   `;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+    <!-- Brand mark, centred. Swapping assets/brand/logo.svg changes it here too. -->
+    <div style="display:flex;justify-content:center;padding:2px 0">
+      <img src="assets/brand/logo.svg" alt="Vendaru" style="height:26px;width:auto;display:block" />
+    </div>
     <div style="font-size:15px;opacity:0.55;font-weight:600">Good afternoon</div>
     <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:11px 16px">
       <span style="opacity:0.4;font-size:15px">⌕</span>
