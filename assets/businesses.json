@@ -1,33 +1,217 @@
 [
   {
-    "id": "biz-utravel",
+    "id": "biz-purplebricks",
     "ownerEmail": null,
-    "name": "U Travel UK",
-    "category": "travel",
-    "tagline": "Itineraries built around your pace, preferences and the way you actually explore.",
-    "about": "UTravel is your travel sidekick for the whole trip, not just one bit of it.\n\nIt can help you find places to go, things to do, flights, hotels, live public transport, entry rules, fuel prices, nearby stops, and it can stage journeys or track buses and trains for you.\n\nThink of it as a practical mate who handles the details and surfaces the best UK and global options.",
-    "area": "UK & Worldwide",
-    "phone": "0800 999 1234",
-    "logoSrc": "assets/business/utravel-logo.png",
-    "coverSrc": "assets/business/u-travel-uk-cover.jpg",
+    "name": "Purplebricks Estate Agents",
+    "category": "real-estate",
+    "tagline": "The UK's leading online estate agent — Fair fixed fees",
+    "about": "Purplebricks is the UK's leading online estate agency. We combine local property experts with transparent online technology to help you sell your home quickly and smoothly across Greater Manchester and nationwide.",
+    "area": "Bolton, Manchester & UK Nationwide",
+    "phone": "0800 810 8008",
+    "coverSrc": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+    "logoSrc": "assets/business/yopa-logo.png",
+    "coverPosition": "center top",
     "services": [
-      { "id": "ut1", "name": "Bespoke UK & European Travel Itinerary", "description": "Custom day-by-day travel plan curated to your budget and travel style.", "price": 49, "durationMins": 60 },
-      { "id": "ut2", "name": "Flight & Hotel Booking Concierge", "description": "End-to-end trip booking assistant including transfers and entry requirements.", "price": 25, "durationMins": 30 }
+      { "id": "pb1", "name": "Free In-Person Home Valuation", "description": "A local UK property expert evaluates your property with no obligation to sell.", "price": 0, "durationMins": 60 },
+      { "id": "pb2", "name": "Full UK House Sales Package", "description": "Includes Rightmove & Zoopla listing, professional photography, floorplans and 24/7 offer management.", "price": 999, "durationMins": 120 }
     ],
     "gallery": [],
     "tier": "priority",
     "billing": "annual"
   },
   {
-    "id": "biz-yopa",
+    "id": "biz-kwikfit",
     "ownerEmail": null,
-    "name": "Yopa Estate Agents",
+    "name": "Kwik Fit Tyres & Autocentres",
+    "category": "auto",
+    "tagline": "The UK's number 1 tyre & MOT specialist",
+    "about": "With over 600 centres across the UK, Kwik Fit provides expert tyre replacement, MOT testing, brake repairs, batteries, air conditioning re-gas, and full engine servicing for all vehicle makes.",
+    "area": "Bolton, Manchester & 600+ UK Locations",
+    "phone": "0800 222 111",
+    "coverSrc": "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "kf1", "name": "Official MOT Test & Vehicle Inspection", "description": "DVSA-certificated MOT inspection covering safety, brakes, emissions and lights.", "price": 45, "durationMins": 45 },
+      { "id": "kf2", "name": "Full Engine Service & Oil Replacement", "description": "Comprehensive 50-point engine check, fresh Mobil oil, filter renewal and fluid top-up.", "price": 149, "durationMins": 90 },
+      { "id": "kf3", "name": "Premium Mobile Tyre Fitting & Balancing", "description": "New Goodyear or Michelin tyre supplied and fitted at your home or workplace.", "price": 89, "durationMins": 45 }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "annual"
+  },
+  {
+    "id": "biz-checkatrade",
+    "ownerEmail": null,
+    "name": "Checkatrade Verified Tradespeople",
+    "category": "trades",
+    "tagline": "Where reputation matters — Find vetted UK builders & plumbers",
+    "about": "Checkatrade thoroughly checks and vets UK tradespeople so you can hire with total peace of mind. Over 12 background checks conducted on every electrician, plumber, and builder listed.",
+    "area": "UK Nationwide",
+    "phone": "0800 015 4550",
+    "coverSrc": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "ct1", "name": "Post a Job & Receive 3 Verified Quotes", "description": "Post your home improvement project and matched vetted local trades contact you.", "price": 0, "durationMins": 30 },
+      { "id": "ct2", "name": "Verified Trade Site Survey & Estimate", "description": "In-person technical assessment by a top-rated Checkatrade registered contractor.", "price": 45, "durationMins": 45 }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "annual"
+  },
+  {
+    "id": "biz-rush-hair",
+    "ownerEmail": null,
+    "name": "Rush Hair & Beauty Salons",
+    "category": "beauty",
+    "tagline": "Award-winning UK hairdressing & color specialists",
+    "about": "Rush Hair is an award-winning British salon brand with over 60 luxury locations. Our expert stylists specialize in precision cutting, master balayage, Olaplex hair repair, and bespoke styling.",
+    "area": "Manchester Deansgate, London & UK Cities",
+    "phone": "0161 839 2000",
+    "coverSrc": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "rh1", "name": "Wash, Precision Cut & Couture Blow Dry", "description": "Style consultation, deep conditioning wash, master haircut and glamorous blow-dry finish.", "price": 55, "durationMins": 60 },
+      { "id": "rh2", "name": "Full Balayage, Toner & Olaplex Package", "description": "Hand-painted dimensional color, bespoke toner glaze, Olaplex bond builder and styling.", "price": 125, "durationMins": 150 }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "annual"
+  },
+  {
+    "id": "biz-bupa-dental",
+    "ownerEmail": null,
+    "name": "Bupa Dental Care UK",
+    "category": "health",
+    "tagline": "High-quality private dental care across the UK",
+    "about": "Bupa Dental Care provides modern private dentistry including routine check-ups, teeth whitening, hygiene cleans, clear aligners, and emergency dental appointments in state-of-the-art clinics.",
+    "area": "Bolton, Manchester & 400+ UK Clinics",
+    "phone": "0808 271 7890",
+    "coverSrc": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "bd1", "name": "New Patient Dental Examination & Digital X-Rays", "description": "Full oral health assessment, oral cancer screening, 3D intraoral scans and digital X-rays.", "price": 50, "durationMins": 45 },
+      { "id": "bd2", "name": "Airflow Hygiene Clean & Polish", "description": "Gentle stain removal and plaque clearance using advanced Airflow technology.", "price": 75, "durationMins": 30 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-fantastic-services",
+    "ownerEmail": null,
+    "name": "Fantastic Services UK Cleaning",
+    "category": "cleaning",
+    "tagline": "Professional domestic, end-of-tenancy & carpet cleaning",
+    "about": "Fantastic Services is a leading UK home services company. Fully trained, vetted, and insured cleaners equipped with industrial-grade equipment for home, office, and tenancy deep cleans.",
+    "area": "Greater Manchester, London & North West",
+    "phone": "020 3404 3444",
+    "coverSrc": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "fs1", "name": "End of Tenancy Deposit-Back Deep Clean", "description": "Comprehensive top-to-bottom property deep clean adhering to letting agency checklists.", "price": 160, "durationMins": 240 },
+      { "id": "fs2", "name": "Hot Water Extraction Carpet & Sofa Steam Clean", "description": "Deep steam extraction removing tough stains, allergens, and odors from carpets or sofas.", "price": 70, "durationMins": 90 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pets-at-home",
+    "ownerEmail": null,
+    "name": "Pets at Home Groom Room",
+    "category": "pets",
+    "tagline": "UK's favorite pet care & professional grooming salon",
+    "about": "Our Groom Room salons provide expert bathing, clipping, and styling for dogs of all breeds. City & Guilds qualified groomers dedicated to keeping your pet healthy, clean, and happy.",
+    "area": "Bolton, Horwich & UK Nationwide",
+    "phone": "0800 328 4204",
+    "coverSrc": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "ph1", "name": "Full Dog Groom, Wash & Styling Package", "description": "Hydrobath wash, warm blow dry, breed-standard coat trim, nail clip, ear clean and fragrance.", "price": 45, "durationMins": 90 },
+      { "id": "ph2", "name": "Puppy First Spa Introduction", "description": "Gentle bath, light brush, nail trim and positive reward acclimatization for puppies under 6 months.", "price": 25, "durationMins": 45 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-timpson",
+    "ownerEmail": null,
+    "name": "Timpson Locksmiths & Key Cutting",
+    "category": "trades",
+    "tagline": "Great service by great people — Emergency locksmiths & key duplication",
+    "about": "Timpson is Britain's most trusted high-street service provider. Offers 24/7 mobile emergency locksmith callouts, house & car key cutting, shoe repairs, and watch servicing.",
+    "area": "UK Wide / 2,000+ High Street Branches",
+    "phone": "0161 946 6200",
+    "coverSrc": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "tm1", "name": "24/7 Emergency Locksmith Callout", "description": "Fast-response mobile locksmith service for gain entry, lock changes, and door security.", "price": 79, "durationMins": 45 },
+      { "id": "tm2", "name": "Watch Battery Replacement & Pressure Test", "description": "High-grade Swiss battery replacement with water resistance re-sealing.", "price": 15, "durationMins": 15 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-explore-learning",
+    "ownerEmail": null,
+    "name": "Explore Learning UK Tutors",
+    "category": "tutoring",
+    "tagline": "Inspiring young minds — Maths & English tuition centers",
+    "about": "Explore Learning delivers award-winning Maths and English tuition for children aged 4 to 16 across the UK. Mapped to the National Curriculum to build confidence and top grades.",
+    "area": "Manchester, Bolton & Nationwide UK",
+    "phone": "01483 447410",
+    "coverSrc": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "el1", "name": "1-on-1 Maths & English Tuition Session", "description": "60-minute personalized curriculum session targeting problem areas and homework help.", "price": 32, "durationMins": 60 },
+      { "id": "el2", "name": "11+ Grammar School Entrance Prep", "description": "Specialist verbal, non-verbal, numerical and creative writing exam preparation.", "price": 36, "durationMins": 60 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-tui-travel",
+    "ownerEmail": null,
+    "name": "TUI Travel UK",
+    "category": "travel",
+    "tagline": "Live Happy — Package holidays, flights & European cruises",
+    "about": "TUI is the UK's leading travel company offering package holidays, beach getaways, city breaks, and cruises to over 80 worldwide destinations with full ATOL protection.",
+    "area": "UK Nationwide Branches & Online",
+    "phone": "0203 451 2688",
+    "coverSrc": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
+    "logoSrc": "assets/business/utravel-logo.png",
+    "services": [
+      { "id": "tu1", "name": "In-Person Holiday Planning Consultation", "description": "Sit down with a senior travel advisor to curate your ideal beach or luxury getaway.", "price": 0, "durationMins": 45 },
+      { "id": "tu2", "name": "Resort Transfer & Excursion Concierge", "description": "Book private airport transfers, island tours, and local attraction passes.", "price": 25, "durationMins": 30 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-taxassist-uk",
+    "ownerEmail": null,
+    "name": "TaxAssist Accountants",
+    "category": "legal",
+    "tagline": "Accountancy & tax advice for small businesses and sole traders",
+    "about": "TaxAssist Accountants provides dedicated accounting, payroll, VAT, and tax returns for small business owners, freelancers, and individuals across Greater Manchester and the North West.",
+    "area": "Bolton, Manchester & North West",
+    "phone": "0800 0188 297",
+    "coverSrc": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
+    "logoSrc": "assets/business/tax-assist-logo.png",
+    "services": [
+      { "id": "ta1", "name": "Self-Assessment Tax Return Filing", "description": "Complete preparation and submission of your annual HMRC tax return.", "price": 150, "durationMins": 60 },
+      { "id": "ta2", "name": "Small Business Accounting Consultation", "description": "Free initial consultation to review your bookkeeping, payroll and tax setup.", "price": 0, "durationMins": 45 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-yopa-uk",
+    "ownerEmail": null,
+    "name": "Yopa UK Property Sales",
     "category": "real-estate",
     "tagline": "Sell your home with Yopa — Fair fixed fees and local experts",
     "about": "Award-winning estate agents covering Bolton, Greater Manchester, and across the UK. We handle property sales from initial valuation right through to completion with dedicated local agents.",
     "area": "Bolton, Manchester & UK",
     "phone": "0333 305 0202",
-    "coverSrc": "assets/business/yopa-cover.jpg",
+    "coverSrc": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
     "logoSrc": "assets/business/yopa-logo.png",
     "coverPosition": "center top",
     "services": [
@@ -39,45 +223,79 @@
     "billing": "annual"
   },
   {
-    "id": "biz-mybuilder",
+    "id": "biz-david-lloyd",
     "ownerEmail": null,
-    "name": "MyBuilder UK",
+    "name": "David Lloyd Health & Fitness Clubs",
+    "category": "health",
+    "tagline": "Premium UK health, tennis, spa & fitness clubs",
+    "about": "David Lloyd Clubs offers state-of-the-art gym equipment, heated indoor & outdoor swimming pools, luxury spa retreats, tennis courts, and group fitness classes across the UK.",
+    "area": "Manchester, Bolton & 100+ UK Locations",
+    "phone": "0345 129 6700",
+    "coverSrc": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "dl1", "name": "1-on-1 Personal Training Session", "description": "60-minute tailored fitness session with a level-3 certified Master Personal Trainer.", "price": 50, "durationMins": 60 },
+      { "id": "dl2", "name": "Comprehensive Health & Fitness Assessment", "description": "Body composition analysis, metabolic rate check and personalized goal setting.", "price": 30, "durationMins": 45 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-bark-uk",
+    "ownerEmail": null,
+    "name": "Bark.com UK Professional Services",
     "category": "trades",
-    "tagline": "The reliable way to hire verified tradespeople",
-    "about": "Finding a great builder, plumber, or electrician shouldn't be a gamble. MyBuilder matches your project with vetted local tradespeople, backed by customer reviews and verified work history.",
-    "area": "Nationwide / UK",
-    "phone": "0800 018 8297",
-    "logoSrc": "assets/business/mybuilder-logo.png",
-    "coverSrc": "assets/business/mybuilder-cover.jpg",
+    "tagline": "Find top-rated UK service professionals in minutes",
+    "about": "Bark connects UK consumers with thousands of verified local professionals — from roofers and land surveyors to web designers and personal trainers.",
+    "area": "UK Nationwide",
+    "phone": "020 3582 2000",
+    "coverSrc": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "mb1", "name": "Post a Job & Match Local Trades", "description": "Post your home improvement project and receive quotes from vetted local builders.", "price": 0, "durationMins": 30 },
-      { "id": "mb2", "name": "Trade Consultation & Estimate", "description": "On-site assessment by a certified local contractor.", "price": 35, "durationMins": 45 }
+      { "id": "bk1", "name": "Request Free Quotes from Local Pros", "description": "Describe your project requirement and get up to 5 quotes from local specialists.", "price": 0, "durationMins": 15 },
+      { "id": "bk2", "name": "On-Site Architectural / Trade Survey", "description": "Professional on-site property measure-up and structural planning consultation.", "price": 65, "durationMins": 60 }
     ],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
   },
   {
-    "id": "biz-taxassist",
+    "id": "biz-halfords-autocentres",
     "ownerEmail": null,
-    "name": "TaxAssist Accountants",
-    "category": "legal",
-    "tagline": "Accountancy & tax advice for small businesses and sole traders",
-    "about": "TaxAssist Accountants provides dedicated accounting, payroll, VAT, and tax returns for small business owners, freelancers, and individuals across Greater Manchester and the North West.",
-    "area": "Bolton, Manchester & North West",
-    "phone": "0800 0188 297",
-    "coverSrc": "assets/business/tax-assist-cover.jpg",
-    "logoSrc": "assets/business/tax-assist-logo.png",
+    "name": "Halfords Autocentres UK",
+    "category": "auto",
+    "tagline": "Car servicing, MOT testing, brakes, batteries & steering",
+    "about": "Halfords Autocentres is one of the UK's leading garage networks. Expert technicians using OEM parts to service your car, perform MOTs, replace brakes, and fix air conditioning.",
+    "area": "Bolton, Bury & 350+ UK Garages",
+    "phone": "0800 050 1080",
+    "coverSrc": "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "ta1", "name": "Self-Assessment Tax Return Filing", "description": "Complete preparation and submission of your annual HMRC tax return.", "price": 150, "durationMins": 60 },
-      { "id": "ta2", "name": "Small Business Accounting Consultation", "description": "Free initial consultation to review your bookkeeping, payroll and tax setup.", "price": 0, "durationMins": 45 }
+      { "id": "ha1", "name": "Major Car Service (All Makes & Models)", "description": "Full 70-point vehicle inspection, engine oil, spark plugs, cabin and air filter replacement.", "price": 199, "durationMins": 120 },
+      { "id": "ha2", "name": "Brake Fluid Renewal & Pad Check", "description": "Brake fluid replacement and digital caliper brake pad thickness report.", "price": 49, "durationMins": 45 }
     ],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
   },
   {
-    "id": "biz-pixcision",
+    "id": "biz-coop-legal",
+    "ownerEmail": null,
+    "name": "Co-op Legal Services",
+    "category": "legal",
+    "tagline": "Accessible, fixed-fee legal advice from the Co-op",
+    "about": "Co-op Legal Services offers transparent, fixed-fee legal advice across England and Wales. Specialists in Will writing, Lasting Power of Attorney, probate, and conveyancing.",
+    "area": "England & Wales / UK",
+    "phone": "0330 606 9500",
+    "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
+    "services": [
+      { "id": "cl1", "name": "Professional Single Will Drafting", "description": "Legally reviewed single Will document protecting your family and assets.", "price": 120, "durationMins": 60 },
+      { "id": "cl2", "name": "Lasting Power of Attorney (LPA) Drafting", "description": "Preparation of Health & Welfare or Financial Power of Attorney for registration.", "price": 199, "durationMins": 90 }
+    ],
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
+  },
+  {
+    "id": "biz-pixcision-uk",
     "ownerEmail": null,
     "name": "Pixcision Stock & Studio Photography",
     "category": "events",
@@ -85,7 +303,7 @@
     "about": "Pixcision delivers authentic, high-resolution photography for brands, events, weddings, and commercial campaigns. Every shot is crafted with attention to atmosphere, lighting, and detail.",
     "area": "Lancashire & Greater Manchester",
     "phone": "0161 800 9100",
-    "coverSrc": "assets/business/pixcisionstock-cover.jpg",
+    "coverSrc": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
     "logoSrc": "assets/business/pixcisionstock-logo.png",
     "services": [
       { "id": "px1", "name": "Commercial Product & Brand Shoot", "description": "2-hour professional studio or on-location shoot with edited high-res images.", "price": 140, "durationMins": 120 },
@@ -96,184 +314,25 @@
     "billing": "monthly"
   },
   {
-    "id": "biz-apex-plumbing",
+    "id": "biz-dogbuddy",
     "ownerEmail": null,
-    "name": "Apex Gas & Plumbing Engineers",
-    "category": "trades",
-    "tagline": "Gas Safe registered plumbers serving Bolton and Greater Manchester",
-    "about": "Apex Gas & Plumbing offers 24/7 emergency response, boiler installations, central heating repairs, and Gas Safe safety certificates for homeowners and landlords.",
-    "area": "Bolton, Bury, Wigan & Manchester",
-    "phone": "0800 321 9900",
-    "coverSrc": "assets/business/apex-plumbing-cover.jpg",
-    "logoSrc": "assets/business/apex-plumbing-logo.png",
-    "services": [
-      { "id": "ap1", "name": "Boiler Service & Gas Safety Certificate (CP12)", "description": "Full annual gas boiler inspection, efficiency check and landlord CP12 cert.", "price": 75, "durationMins": 45 },
-      { "id": "ap2", "name": "Emergency Plumbing & Leak Repair", "description": "Fast-response callout for burst pipes, leaking radiators, or blocked drainage.", "price": 85, "durationMins": 60 },
-      { "id": "ap3", "name": "Central Heating Radiator Power Flush", "description": "Comprehensive chemical flush to clear sludge and restore heating efficiency.", "price": 220, "durationMins": 180 }
-    ],
-    "gallery": [],
-    "tier": "priority",
-    "billing": "annual"
-  },
-  {
-    "id": "biz-prestige-clean",
-    "ownerEmail": null,
-    "name": "Prestige Cleaning & End of Tenancy",
-    "category": "cleaning",
-    "tagline": "Spotless domestic, office and end-of-tenancy deep cleaning",
-    "about": "Prestige Cleaning provides professional deep cleaning services across Greater Manchester and Cheshire. Fully insured cleaners using eco-friendly non-toxic products.",
-    "area": "Bolton, Manchester & Cheshire",
-    "phone": "0161 490 8820",
-    "services": [
-      { "id": "pc1", "name": "End of Tenancy Deep Clean (1-2 Bed)", "description": "Full deposit-back deep clean covering kitchen, oven, bathrooms and floors.", "price": 140, "durationMins": 240 },
-      { "id": "pc2", "name": "2-Hour Regular Domestic House Clean", "description": "Dusting, vacuuming, mopping, bathroom and kitchen sanitation.", "price": 40, "durationMins": 120 },
-      { "id": "pc3", "name": "Carpet & Upholstery Steam Clean", "description": "Deep hot-water extraction steam clean for living room carpets or sofas.", "price": 65, "durationMins": 90 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-paws-trails",
-    "ownerEmail": null,
-    "name": "Paws & Trails Country Dog Walks",
+    "name": "DogBuddy UK Dog Boarding & Walkers",
     "category": "dog-walkers",
-    "tagline": "Energetic countryside group and solo dog walking",
-    "about": "Paws & Trails takes your dogs on exciting country walks around Rivington, Horwich, and the West Pennine Moors. Fully insured, DBS checked, and canine first-aid certified.",
-    "area": "Bolton, Horwich & Rivington",
-    "phone": "07700 900452",
+    "tagline": "The UK's largest dog sitting & walking network",
+    "about": "DogBuddy connects dog owners with vetted, insured local dog sitters and walkers. Give your dog a home-from-home experience instead of stressful kennels.",
+    "area": "Bolton, Manchester & Nationwide UK",
+    "phone": "020 7183 0991",
+    "coverSrc": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80",
     "services": [
-      { "id": "pt1", "name": "1-Hour Countryside Group Walk", "description": "Fun off-lead or on-lead countryside pack walk with pick-up and drop-off.", "price": 14, "durationMins": 60 },
-      { "id": "pt2", "name": "45-Minute Solo Dog Walk", "description": "Dedicated one-on-one walking session tailored for nervous or senior dogs.", "price": 18, "durationMins": 45 },
-      { "id": "pt3", "name": "Overnight Home Pet Sitting", "description": "In-home care keeping your pet in their familiar routine while you are away.", "price": 35, "durationMins": 1440 }
+      { "id": "db1", "name": "1-Hour Countryside Group Walk", "description": "Fun energetic outdoor walk with GPS route updates sent to your phone.", "price": 15, "durationMins": 60 },
+      { "id": "db2", "name": "24-Hour Home Dog Boarding", "description": "Loving home environment stay with regular photo updates while you travel.", "price": 35, "durationMins": 1440 }
     ],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
   },
   {
-    "id": "biz-hair-aesthetics",
-    "ownerEmail": null,
-    "name": "The Hair & Styling Lounge",
-    "category": "beauty",
-    "tagline": "Modern hair coloring, balayage, and precision styling",
-    "about": "Premier salon specializing in bespoke hair coloring, master balayage, Olaplex treatments, and precision cutting in a stylish, relaxed environment.",
-    "area": "Bolton & Manchester City Centre",
-    "phone": "0161 832 9900",
-    "services": [
-      { "id": "ha1", "name": "Cut, Wash & Signature Blow Dry", "description": "In-depth consultation, luxury shampoo treatment, cut and styling.", "price": 45, "durationMins": 60 },
-      { "id": "ha2", "name": "Full Balayage & Olaplex Treatment Package", "description": "Hand-painted highlights, toner, Olaplex bond repair, and blow dry.", "price": 110, "durationMins": 150 },
-      { "id": "ha3", "name": "Gel Nails & Manicure", "description": "Nail shaping, cuticle care, long-lasting gel polish finish.", "price": 32, "durationMins": 45 }
-    ],
-    "gallery": [],
-    "tier": "priority",
-    "billing": "annual"
-  },
-  {
-    "id": "biz-mobile-mechanic",
-    "ownerEmail": null,
-    "name": "North West Mobile Mechanics",
-    "category": "auto",
-    "tagline": "Vehicle servicing, diagnostics and repairs at your home or workplace",
-    "about": "Skip the garage waiting room. Our dealer-trained mobile mechanics bring full OBD-II computer diagnostics, servicing, battery replacements, and brake repairs straight to your driveway.",
-    "area": "Bolton, Bury, Salford & Manchester",
-    "phone": "01204 892 100",
-    "services": [
-      { "id": "mm1", "name": "Mobile Computer Diagnostics & Fault Scan", "description": "Full electronic vehicle code read, engine light diagnosis, and live data check.", "price": 45, "durationMins": 45 },
-      { "id": "mm2", "name": "Full Engine Service (Oil & All Filters)", "description": "Castrol oil change, air, fuel, and cabin filter renewal with service light reset.", "price": 135, "durationMins": 90 },
-      { "id": "mm3", "name": "Mobile Brake Pads Replacement (Front or Rear)", "description": "Quality Brembo or Bosch brake pad replacement fitted at your home.", "price": 95, "durationMins": 60 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-nw-tutors",
-    "ownerEmail": null,
-    "name": "North West Academic Tutors",
-    "category": "tutoring",
-    "tagline": "Expert 1-on-1 GCSE, A-Level & 11+ tuition in Maths, English & Science",
-    "about": "Qualified UK teachers offering personalized home and online tutoring. Proven track record of boosting student exam grades and confidence across AQA, Edexcel, and OCR curricula.",
-    "area": "Greater Manchester & Online UK",
-    "phone": "0161 720 4400",
-    "services": [
-      { "id": "nt1", "name": "1-on-1 GCSE / A-Level Tuition Session", "description": "60-minute subject session tailored to target weaknesses and exam technique.", "price": 35, "durationMins": 60 },
-      { "id": "nt2", "name": "Eleven Plus (11+) Entrance Exam Prep", "description": "Verbal and non-verbal reasoning, English and Maths intensive prep.", "price": 38, "durationMins": 60 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-grooming-room",
-    "ownerEmail": null,
-    "name": "The Grooming Room Dog Spa",
-    "category": "pets",
-    "tagline": "Gentle canine pampering, styling, and hydrobath treatments",
-    "about": "Experienced pet groomers providing a calm, stress-free grooming environment for dogs of all sizes and breeds. Using natural hypoallergenic shampoos.",
-    "area": "Bromley Cross, Bolton",
-    "phone": "01204 845 600",
-    "services": [
-      { "id": "gr1", "name": "Full Breed Groom & Warm Hydrobath", "description": "Bath, fluff dry, hair styling/clipping, nail trim, ear cleaning and spritz.", "price": 42, "durationMins": 90 },
-      { "id": "gr2", "name": "Puppy First Spa Experience", "description": "Gentle bath, light brush, nail trim and positive reward introduction.", "price": 25, "durationMins": 45 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-precision-joinery",
-    "ownerEmail": null,
-    "name": "Precision Joinery & Bespoke Alcoves",
-    "category": "trades",
-    "tagline": "Custom fitted wardrobes, alcove units, and architectural joinery",
-    "about": "Master carpenters creating hand-built fitted wardrobes, alcove shelving, media walls, and custom timber furniture for traditional and contemporary UK homes.",
-    "area": "Manchester, Bolton & Altrincham",
-    "phone": "0161 941 2200",
-    "services": [
-      { "id": "pj1", "name": "Design & Quote Consultation", "description": "On-site measurement, material selection, and 3D design estimate.", "price": 0, "durationMins": 45 },
-      { "id": "pj2", "name": "Internal Door Hanging & Fitting", "description": "Precision fitting of solid or hollow interior timber doors including ironmongery.", "price": 60, "durationMins": 90 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-manchester-physio",
-    "ownerEmail": null,
-    "name": "Manchester Physiotherapy & Sports Massage",
-    "category": "health",
-    "tagline": "Chartered physiotherapists for back pain, joint injury & sports rehab",
-    "about": "HCPC registered physiotherapists helping you recover from injury, chronic back pain, or surgery. Evidence-based treatment including manual therapy and exercise rehabilitation.",
-    "area": "Manchester City Centre & Bolton",
-    "phone": "0161 236 7788",
-    "services": [
-      { "id": "mp1", "name": "Initial Physiotherapy Assessment & Treatment", "description": "Full physical assessment, diagnosis, manual treatment and exercise plan.", "price": 55, "durationMins": 45 },
-      { "id": "mp2", "name": "Deep Tissue Sports Massage Session", "description": "Targeted deep tissue work to relieve muscle tension, tightness and fatigue.", "price": 45, "durationMins": 45 }
-    ],
-    "gallery": [],
-    "tier": "priority",
-    "billing": "annual"
-  },
-  {
-    "id": "biz-lancs-wills",
-    "ownerEmail": null,
-    "name": "Lancashire Will Writing & Estate Planning",
-    "category": "legal",
-    "tagline": "Protect your family's future with professionally drafted Wills & LPAs",
-    "about": "Institute of Professional Willwriters members offering clear, compassionate estate planning. Protect your home and assets with legally binding Wills and Power of Attorney.",
-    "area": "Bolton, Preston & North West",
-    "phone": "01204 332 110",
-    "services": [
-      { "id": "lw1", "name": "Single Will Drafting & Legal Review", "description": "Comprehensive single Will drafted to protect your estate and beneficiaries.", "price": 95, "durationMins": 60 },
-      { "id": "lw2", "name": "Lasting Power of Attorney (Property & Financial)", "description": "Complete legal drafting and registration guidance for LPA documents.", "price": 195, "durationMins": 90 }
-    ],
-    "gallery": [],
-    "tier": "featured",
-    "billing": "monthly"
-  },
-  {
-    "id": "biz-memuriah",
+    "id": "biz-memuriah-uk",
     "ownerEmail": "op@vendaru.com",
     "name": "Memuriah Digital Memorials",
     "category": "events",
@@ -281,11 +340,30 @@
     "about": "Memuriah is a social memorial platform where family and friends share stories, photographs, and honor loved ones across generations.",
     "area": "UK & Global",
     "phone": "0800 772 3000",
-    "coverSrc": "assets/business/memuriah-cover.jpg",
+    "coverSrc": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
     "logoSrc": "assets/business/memuriah-logo.png",
     "services": [],
     "gallery": [],
     "tier": "featured",
     "billing": "monthly"
+  },
+  {
+    "id": "biz-utravel-uk",
+    "ownerEmail": null,
+    "name": "U Travel UK",
+    "category": "travel",
+    "tagline": "Itineraries built around your pace, preferences and the way you actually explore.",
+    "about": "UTravel is your travel sidekick for the whole trip, not just one bit of it.\n\nIt can help you find places to go, things to do, flights, hotels, live public transport, entry rules, fuel prices, nearby stops, and it can stage journeys or track buses and trains for you.",
+    "area": "UK & Worldwide",
+    "phone": "0800 999 1234",
+    "logoSrc": "assets/business/utravel-logo.png",
+    "coverSrc": "assets/business/u-travel-uk-cover.jpg",
+    "services": [
+      { "id": "ut1", "name": "Bespoke UK & European Travel Itinerary", "description": "Custom day-by-day travel plan curated to your budget and travel style.", "price": 49, "durationMins": 60 },
+      { "id": "ut2", "name": "Flight & Hotel Booking Concierge", "description": "End-to-end trip booking assistant including transfers and entry requirements.", "price": 25, "durationMins": 30 }
+    ],
+    "gallery": [],
+    "tier": "priority",
+    "billing": "annual"
   }
 ]
