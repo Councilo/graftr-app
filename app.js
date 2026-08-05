@@ -501,6 +501,18 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // businesses created through /business are stored alongside these.
 const SEED_BUSINESSES = [
   {
+    // Details as supplied by the owner. Priced services are added from the
+    // /business dashboard rather than hard-coded here.
+    id: 'biz-yopa', ownerEmail: null, name: 'Yopa',
+    category: 'real-estate', tagline: 'Sell your home with Yopa',
+    about: "Online estate agents covering Bolton and the surrounding area, handling sales from valuation through to completion. Book a free valuation below or call the team direct.",
+    area: 'Bolton & Greater Manchester', phone: '0333 305 0202',
+    services: [
+      { id: 's1', name: 'Free property valuation', description: 'A local agent values your home, with no obligation to list.', price: 0, durationMins: 60 },
+    ],
+    gallery: [],
+  },
+  {
     id: 'biz-halliwell-homes', ownerEmail: null, name: 'Halliwell Homes',
     category: 'real-estate', tagline: 'Independent Bolton estate agents',
     about: "Family-run agents covering Halliwell, Astley Bridge and Heaton since 2009. We handle valuations, viewings and full lettings management, and we answer the phone ourselves.",
