@@ -611,6 +611,48 @@ body::-webkit-scrollbar {
 
 
 
+
+/* Category rail across the top of Shop. Scrolls sideways so adding a category
+   makes the rail longer rather than squeezing every tile narrower. */
+.cat-rail {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.cat-tile {
+  flex: 0 0 auto;
+  width: 62px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.cat-tile:active {
+  transform: scale(0.97);
+}
+
+.cat-tile-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto;
+  border: 1.5px solid rgba(20, 20, 20, 0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+.cat-tile-label {
+  display: block;
+  font-size: 10px;
+  margin-top: 4px;
+  line-height: 1.25;
+  color: #141414;
+}
+
 /* Business directory — square logo tiles laid out like app icons on a phone
    home screen. Four a row on a phone, six on desktop. */
 .app-grid {
@@ -721,6 +763,24 @@ body::-webkit-scrollbar {
      cards — they run the full width above the grid. */
   .page-cards > *:not(.shop-card) {
     grid-column: 1 / -1;
+  }
+
+  /* Roomier tiles now there is width for them. 98px keeps all ten inside a
+     full-width rail so nothing needs scrolling to. */
+  .cat-tile {
+    width: 98px;
+  }
+
+  .cat-tile-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    font-size: 30px;
+  }
+
+  .cat-tile-label {
+    font-size: 12.5px;
+    margin-top: 8px;
   }
 
   /* Six a row rather than thirteen tiny ones across a wide column. */

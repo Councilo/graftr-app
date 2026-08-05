@@ -505,16 +505,18 @@ function roleHome(role) {
 // the shopping does.
 // ---------------------------------------------------------------------------
 
+// Ordered by how often people actually look for them, since this order drives
+// the row across the top of the Shop page.
 const SERVICE_CATEGORIES = [
+  { id: 'trades', label: 'Trades', emoji: '🔧' },
   { id: 'real-estate', label: 'Real estate', emoji: '🏠' },
   { id: 'pets', label: 'Pets', emoji: '🐾' },
-  { id: 'dog-walkers', label: 'Dog walkers', emoji: '🐕' },
   { id: 'cleaning', label: 'Cleaning', emoji: '🧽' },
-  { id: 'trades', label: 'Trades', emoji: '🔧' },
   { id: 'beauty', label: 'Hair & beauty', emoji: '💇' },
+  { id: 'dog-walkers', label: 'Dog walkers', emoji: '🐕' },
   { id: 'tutoring', label: 'Tutoring', emoji: '📚' },
-  { id: 'events', label: 'Events', emoji: '🎉' },
   { id: 'travel', label: 'Travel', emoji: '✈️' },
+  { id: 'events', label: 'Events', emoji: '🎉' },
 ];
 
 function serviceCategory(id) {
@@ -2496,13 +2498,8 @@ function renderShopperShop() {
           <button type="button" data-action="goAllServices" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">See all</button>
         </div>
         <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Book trusted businesses near you and pay in the same basket.</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px">
-          ${SERVICE_CATEGORIES.map(c => `
-            <div class="press" data-action="goServiceCategory" data-arg="${c.id}" style="display:flex;align-items:center;gap:9px;border:1.5px solid rgba(20,20,20,0.12);border-radius:12px;padding:10px 11px;cursor:pointer;min-width:0">
-              <span style="font-size:16px;flex:0 0 auto">${c.emoji}</span>
-              <span style="font-size:12.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.label}</span>
-            </div>`).join('')}
-        </div>
+        <!-- The category grid that used to sit here is now the rail at the top
+             of the page, so this card just points into the directory. -->
         <a href="${BUSINESS_PATH}" style="display:block;text-align:center;margin-top:12px;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>
       </div>
     </div>
@@ -2520,13 +2517,18 @@ function renderShopperShop() {
       <span style="opacity:0.4;font-size:15px">⌕</span>
       <input id="shop-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery)}" placeholder="Search shops, groceries, essentials..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
     </div>
-    <div style="display:flex;gap:6px">
-      <div class="press" data-action="goBrowseCategory" data-arg="Grocery" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🛒</div><div style="font-size:10px;margin-top:3px">Groceries</div></div>
-      <div class="press" data-action="goBrowseCategory" data-arg="Health" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">💊</div><div style="font-size:10px;margin-top:3px">Health</div></div>
-      <div class="press" data-action="goBrowseCategory" data-arg="Snacks" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🍿</div><div style="font-size:10px;margin-top:3px">Snacks</div></div>
-      <div class="press" data-action="goBrowseCategory" data-arg="Alcohol" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🍷</div><div style="font-size:10px;margin-top:3px">Alcohol</div></div>
-      <div class="press" data-action="goBrowseCategory" data-arg="Pets" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🐾</div><div style="font-size:10px;margin-top:3px">Pet</div></div>
-    </div>
+    <div class="cat-rail slot-scroll">
+      <!-- Groceries first, then the service categories in order of how often
+           people look for them. Scrolls sideways rather than shrinking. -->
+      <div class="cat-tile" data-action="goBrowseCategory" data-arg="Grocery">
+        <span class="cat-tile-icon">🛒</span>
+        <span class="cat-tile-label">Groceries</span>
+      </div>
+      ${SERVICE_CATEGORIES.map(c => `
+      <div class="cat-tile" data-action="goServiceCategory" data-arg="${c.id}">
+        <span class="cat-tile-icon">${c.emoji}</span>
+        <span class="cat-tile-label">${c.label}</span>
+      </div>`).join('')}    </div>
     ${body}
   </div>`;
 }
