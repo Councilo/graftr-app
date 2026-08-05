@@ -608,7 +608,7 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 15;
+const BUSINESS_SEED_VERSION = 16;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
 // Verified UK Business Directory listings.
@@ -628,14 +628,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4000-0",
+        "id": "s-5000-0",
         "name": "Post a Job & Match Vetted Local Trades",
         "description": "Post your home project and receive quotes from checked local contractors.",
         "price": 0,
         "durationMins": 30
       },
       {
-        "id": "s-4000-1",
+        "id": "s-5000-1",
         "name": "Verified Trade On-Site Inspection",
         "description": "In-person assessment and written estimate by a registered trade.",
         "price": 45,
@@ -644,7 +644,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -664,14 +666,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "assets/business/mybuilder-cover.jpg",
     "services": [
       {
-        "id": "s-4001-0",
+        "id": "s-5001-0",
         "name": "Post a Job & Get 3 Verified Quotes",
         "description": "Post details of your building, plumbing or electrical work.",
         "price": 0,
         "durationMins": 30
       },
       {
-        "id": "s-4001-1",
+        "id": "s-5001-1",
         "name": "Building Project Initial Consultation",
         "description": "On-site scope analysis and price breakdown.",
         "price": 35,
@@ -680,9 +682,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "assets/business/mybuilder-cover.jpg",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -700,14 +704,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4002-0",
+        "id": "s-5002-0",
         "name": "24/7 Emergency Mobile Locksmith Callout",
         "description": "Fast-response mobile locksmith service for gain entry and lock changes.",
         "price": 79,
         "durationMins": 45
       },
       {
-        "id": "s-4002-1",
+        "id": "s-5002-1",
         "name": "Watch Battery Replacement & Pressure Re-Seal",
         "description": "Swiss watch battery replacement with water-resistance testing.",
         "price": 15,
@@ -716,9 +720,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -736,14 +742,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4003-0",
+        "id": "s-5003-0",
         "name": "24/7 Emergency Plumbing Callout",
         "description": "Immediate response for burst pipes, leaks, and central heating failures.",
         "price": 120,
         "durationMins": 60
       },
       {
-        "id": "s-4003-1",
+        "id": "s-5003-1",
         "name": "Boiler Safety Inspection & Gas Service",
         "description": "Complete Gas Safe inspection and boiler tune-up.",
         "price": 95,
@@ -752,7 +758,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -772,14 +780,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4004-0",
+        "id": "s-5004-0",
         "name": "Annual Boiler Service & Health Check",
         "description": "Certified Gas Safe inspection and efficiency report.",
         "price": 89,
         "durationMins": 45
       },
       {
-        "id": "s-4004-1",
+        "id": "s-5004-1",
         "name": "Electrical Wiring Diagnostic Survey",
         "description": "Consumer unit and home wiring fault finding.",
         "price": 75,
@@ -788,9 +796,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -808,14 +818,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4005-0",
+        "id": "s-5005-0",
         "name": "Emergency Drain Jetting & Clearance",
         "description": "High-pressure water jet unblocking of main sewer and waste pipes.",
         "price": 110,
         "durationMins": 60
       },
       {
-        "id": "s-4005-1",
+        "id": "s-5005-1",
         "name": "CCTV Drain Inspection Camera Survey",
         "description": "HD camera survey to identify root ingress, cracks and blockages.",
         "price": 135,
@@ -824,9 +834,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -844,14 +856,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4006-0",
+        "id": "s-5006-0",
         "name": "Baxi Combi Boiler Installation Quote",
         "description": "On-site survey for new A-rated energy efficient Baxi boiler replacement.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4006-1",
+        "id": "s-5006-1",
         "name": "Official Manufacturer Annual Service",
         "description": "Baxi engineer annual maintenance to protect boiler warranty.",
         "price": 99,
@@ -860,6 +872,8 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
@@ -880,14 +894,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4007-0",
+        "id": "s-5007-0",
         "name": "Gas Safe Annual Boiler Service",
         "description": "Comprehensive safety inspection and combustion test.",
         "price": 90,
         "durationMins": 45
       },
       {
-        "id": "s-4007-1",
+        "id": "s-5007-1",
         "name": "Smart Hive Thermostat Installation",
         "description": "Supply and professional fitting of wireless Hive heating control.",
         "price": 199,
@@ -896,9 +910,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -916,14 +932,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4008-0",
+        "id": "s-5008-0",
         "name": "Trade Account On-Site Click & Collect",
         "description": "1-minute click and collect for professional trade materials.",
         "price": 0,
         "durationMins": 15
       },
       {
-        "id": "s-4008-1",
+        "id": "s-5008-1",
         "name": "Bulk Trade Order Site Delivery",
         "description": "Same-day direct delivery to UK construction sites.",
         "price": 15,
@@ -932,9 +948,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -952,14 +970,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4009-0",
+        "id": "s-5009-0",
         "name": "Building Project Material Take-Off & Estimating",
         "description": "Architectural drawing material calculation for site builds.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4009-1",
+        "id": "s-5009-1",
         "name": "Hiab Crane Site Delivery Service",
         "description": "Heavy timber and brick crane unloading directly to site.",
         "price": 25,
@@ -968,7 +986,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -988,14 +1008,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4010-0",
+        "id": "s-5010-0",
         "name": "Free In-Person Home Valuation",
         "description": "Local estate agent property appraisal and market pricing strategy.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4010-1",
+        "id": "s-5010-1",
         "name": "Full Property Sales Package & Rightmove Listing",
         "description": "Professional photography, floorplan, virtual tour and portal listings.",
         "price": 999,
@@ -1004,9 +1024,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1024,14 +1046,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "assets/business/yopa-cover.jpg",
     "services": [
       {
-        "id": "s-4011-0",
+        "id": "s-5011-0",
         "name": "Expert Home Appraisal & Valuation",
         "description": "Comprehensive market comparison and property valuation.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4011-1",
+        "id": "s-5011-1",
         "name": "Yopa Fixed Fee Sales Package",
         "description": "Dedicated agent, Rightmove & Zoopla listing, and offer negotiation.",
         "price": 990,
@@ -1040,9 +1062,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "assets/business/yopa-cover.jpg",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1060,14 +1084,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4012-0",
+        "id": "s-5012-0",
         "name": "Prime Residential Property Consultation",
         "description": "Discreet valuation and marketing strategy for premium UK properties.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4012-1",
+        "id": "s-5012-1",
         "name": "Bespoke Landlord Property Management",
         "description": "Complete tenancy management and high-net-worth tenant vetting.",
         "price": 150,
@@ -1076,7 +1100,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1096,14 +1122,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4013-0",
+        "id": "s-5013-0",
         "name": "London Property Market Valuation",
         "description": "In-depth London property pricing and demand assessment.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4013-1",
+        "id": "s-5013-1",
         "name": "Lettings & Tenant Finder Service",
         "description": "Comprehensive tenant vetting, referencing, and lease drafting.",
         "price": 250,
@@ -1112,9 +1138,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1132,14 +1160,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4014-0",
+        "id": "s-5014-0",
         "name": "Landlord Rental Yield Valuation",
         "description": "Rental income assessment and compliance review.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4014-1",
+        "id": "s-5014-1",
         "name": "Full Tenant Management & Rent Protection",
         "description": "Monthly rent collection, inspections, and maintenance cover.",
         "price": 95,
@@ -1148,9 +1176,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1168,14 +1198,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4015-0",
+        "id": "s-5015-0",
         "name": "North West Residential Property Valuation",
         "description": "Local market appraisal by experienced regional estate agents.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4015-1",
+        "id": "s-5015-1",
         "name": "Auction & Fast-Sale Property Consultation",
         "description": "Modern method of auction property advisory.",
         "price": 0,
@@ -1184,7 +1214,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1204,14 +1236,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4016-0",
+        "id": "s-5016-0",
         "name": "Home Valuation & Market Appraisal",
         "description": "Expert appraisal for residential sales and lettings.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4016-1",
+        "id": "s-5016-1",
         "name": "Mortgage Advice & Financial Review",
         "description": "Independent mortgage advice across major UK lenders.",
         "price": 0,
@@ -1220,9 +1252,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1240,14 +1274,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4017-0",
+        "id": "s-5017-0",
         "name": "High-End Property Sales Appraisal",
         "description": "Discreet valuation and target buyer marketing plan.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4017-1",
+        "id": "s-5017-1",
         "name": "Bespoke Relocation & Property Search",
         "description": "Tailored property search for buying or renting in top UK postcodes.",
         "price": 250,
@@ -1256,9 +1290,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1276,14 +1312,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4018-0",
+        "id": "s-5018-0",
         "name": "Class 4 MOT Test",
         "description": "DVSA certified annual car safety inspection.",
         "price": 39.95,
         "durationMins": 45
       },
       {
-        "id": "s-4018-1",
+        "id": "s-5018-1",
         "name": "Premium Tyre Fitting & Laser Alignment",
         "description": "Supply, fitting, wheel balancing and tracking.",
         "price": 85,
@@ -1292,7 +1328,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1312,14 +1350,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4019-0",
+        "id": "s-5019-0",
         "name": "Full Annual Car Service",
         "description": "77-point check including engine oil and filter change.",
         "price": 149,
         "durationMins": 120
       },
       {
-        "id": "s-4019-1",
+        "id": "s-5019-1",
         "name": "Air Conditioning Re-gas (R134a / R1234yf)",
         "description": "Re-gas and refrigerant pressure check for cold cabin air.",
         "price": 59,
@@ -1328,9 +1366,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1348,14 +1388,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4020-0",
+        "id": "s-5020-0",
         "name": "24/7 Mobile Breakdown Callout",
         "description": "Roadside patrol repair or vehicle recovery to local garage.",
         "price": 99,
         "durationMins": 60
       },
       {
-        "id": "s-4020-1",
+        "id": "s-5020-1",
         "name": "Comprehensive Used Car Pre-Purchase Inspection",
         "description": "218-point mechanical and structural car check.",
         "price": 189,
@@ -1364,9 +1404,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1384,14 +1426,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4021-0",
+        "id": "s-5021-0",
         "name": "Driveway Mobile Car Service",
         "description": "AA certified mechanic conducts full oil service on your driveway.",
         "price": 139,
         "durationMins": 90
       },
       {
-        "id": "s-4021-1",
+        "id": "s-5021-1",
         "name": "Mobile Battery Replacement & Testing",
         "description": "New Bosch car battery supplied and fitted with 3-year warranty.",
         "price": 95,
@@ -1400,7 +1442,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1420,14 +1464,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4022-0",
+        "id": "s-5022-0",
         "name": "4-Wheel Computerized Alignment Check",
         "description": "Laser tracking and camber alignment for even tyre wear.",
         "price": 35,
         "durationMins": 30
       },
       {
-        "id": "s-4022-1",
+        "id": "s-5022-1",
         "name": "Exhaust System & Catalytic Converter Replacement",
         "description": "Supply and fitting of stainless exhaust sections.",
         "price": 120,
@@ -1436,9 +1480,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1456,14 +1502,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4023-0",
+        "id": "s-5023-0",
         "name": "Windscreen Stone Chip Resin Repair",
         "description": "Resin injection repair to prevent stone chips spreading into cracks.",
         "price": 50,
         "durationMins": 30
       },
       {
-        "id": "s-4023-1",
+        "id": "s-5023-1",
         "name": "Full Windscreen Replacement & ADAS Calibration",
         "description": "OEM glass fitting and camera calibration.",
         "price": 195,
@@ -1472,9 +1518,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1492,14 +1540,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4024-0",
+        "id": "s-5024-0",
         "name": "Bumper Scuff & Paint Scratch Repair",
         "description": "Color-matched paint repair for corner bumper scuffs.",
         "price": 110,
         "durationMins": 120
       },
       {
-        "id": "s-4024-1",
+        "id": "s-5024-1",
         "name": "Paintless Dent Removal (PDR)",
         "description": "Specialist dent pull without disturbing original paint factory finish.",
         "price": 75,
@@ -1508,7 +1556,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1528,14 +1578,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4025-0",
+        "id": "s-5025-0",
         "name": "Michelin / Continental Tyre Fitting",
         "description": "Premium tyre fitting, valve replacement and balance.",
         "price": 90,
         "durationMins": 40
       },
       {
-        "id": "s-4025-1",
+        "id": "s-5025-1",
         "name": "Brake Pads & Discs Safety Check & Replacement",
         "description": "Inspection and replacement of front or rear brake sets.",
         "price": 140,
@@ -1544,9 +1594,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1564,14 +1616,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4026-0",
+        "id": "s-5026-0",
         "name": "Manufacturer Approved Scheduled Service",
         "description": "Official brand technician service using genuine manufacturer parts.",
         "price": 199,
         "durationMins": 120
       },
       {
-        "id": "s-4026-1",
+        "id": "s-5026-1",
         "name": "Vehicle Health Check & Video Report",
         "description": "Comprehensive safety inspection with direct technician video walkthrough.",
         "price": 0,
@@ -1580,9 +1632,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1600,14 +1654,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4027-0",
+        "id": "s-5027-0",
         "name": "Cut & Blow Dry with Stylist",
         "description": "Personal consultation, shampoo massage, precision haircut and blow dry styling.",
         "price": 55,
         "durationMins": 60
       },
       {
-        "id": "s-4027-1",
+        "id": "s-5027-1",
         "name": "Bespoke Balayage & Olaplex Treatment",
         "description": "Hand-painted balayage highlights with Olaplex bond repair.",
         "price": 135,
@@ -1616,7 +1670,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1636,14 +1692,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4028-0",
+        "id": "s-5028-0",
         "name": "Creative Hair Cut & Styling",
         "description": "Consultation, precision technical cut and personal finish.",
         "price": 70,
         "durationMins": 60
       },
       {
-        "id": "s-4028-1",
+        "id": "s-5028-1",
         "name": "Full Head Highlights & Gloss",
         "description": "Foil highlights throughout with custom gloss toner.",
         "price": 140,
@@ -1652,9 +1708,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1672,14 +1730,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4029-0",
+        "id": "s-5029-0",
         "name": "Ladies Wash, Cut & Finish",
         "description": "Shampoo treatment, haircut, and blow dry finish.",
         "price": 45,
         "durationMins": 45
       },
       {
-        "id": "s-4029-1",
+        "id": "s-5029-1",
         "name": "Half Head Foil Highlights",
         "description": "Crown and side highlights with conditioning treatment.",
         "price": 75,
@@ -1688,9 +1746,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1708,14 +1768,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4030-0",
+        "id": "s-5030-0",
         "name": "Supercut Haircut & Blow Dry",
         "description": "Quick precision haircut and style.",
         "price": 28,
         "durationMins": 30
       },
       {
-        "id": "s-4030-1",
+        "id": "s-5030-1",
         "name": "Men's Clipper Cut & Trim",
         "description": "Clipper fade, scissor top trim and neck clean.",
         "price": 19,
@@ -1724,7 +1784,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1744,14 +1806,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4031-0",
+        "id": "s-5031-0",
         "name": "Dermatologist Medical Skin Consultation",
         "description": "In-depth skin assessment for acne, scarring, or pigmentation.",
         "price": 50,
         "durationMins": 45
       },
       {
-        "id": "s-4031-1",
+        "id": "s-5031-1",
         "name": "HydraFacial Deep Cleansing Treatment",
         "description": "Patented 6-step medical facial for glowing, hydrated skin.",
         "price": 120,
@@ -1760,9 +1822,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1780,14 +1844,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4032-0",
+        "id": "s-5032-0",
         "name": "Signature Gel Manicure",
         "description": "Nail shaping, cuticle care, long-lasting gel polish and hand massage.",
         "price": 48,
         "durationMins": 45
       },
       {
-        "id": "s-4032-1",
+        "id": "s-5032-1",
         "name": "Townhouse Luxury Pedicure",
         "description": "Foot soak, exfoliation, nail care and gel polish finish.",
         "price": 62,
@@ -1796,9 +1860,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1816,14 +1882,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4033-0",
+        "id": "s-5033-0",
         "name": "Bespoke Gents Haircut & Style",
         "description": "Consultation, precision wash, scissor cut and hair tonic finish.",
         "price": 35,
         "durationMins": 40
       },
       {
-        "id": "s-4033-1",
+        "id": "s-5033-1",
         "name": "Traditional Hot Towel Cut-Throat Shave",
         "description": "Pre-shave oils, hot towels, razor shave and cold towel finish.",
         "price": 40,
@@ -1832,7 +1898,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1852,14 +1920,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4034-0",
+        "id": "s-5034-0",
         "name": "Full Focus 60-Minute Makeup Application",
         "description": "Bespoke full-face makeup application by a certified M·A·C Artist.",
         "price": 60,
         "durationMins": 60
       },
       {
-        "id": "s-4034-1",
+        "id": "s-5034-1",
         "name": "1-on-1 Makeup Technique Masterclass",
         "description": "Learn professional contouring, eye makeup, and skin prep techniques.",
         "price": 75,
@@ -1868,9 +1936,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1888,14 +1958,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4035-0",
+        "id": "s-5035-0",
         "name": "Eyebrow Threading & Tinting",
         "description": "Precision cotton thread shaping and semi-permanent brow tinting.",
         "price": 18,
         "durationMins": 20
       },
       {
-        "id": "s-4035-1",
+        "id": "s-5035-1",
         "name": "Lash Lift & Tint",
         "description": "Natural lash curling and dark tint for fluttery lashes.",
         "price": 45,
@@ -1904,9 +1974,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -1924,14 +1996,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4036-0",
+        "id": "s-5036-0",
         "name": "New Patient Dental Examination & X-Rays",
         "description": "Full oral health examination, gum health check and digital X-rays.",
         "price": 65,
         "durationMins": 30
       },
       {
-        "id": "s-4036-1",
+        "id": "s-5036-1",
         "name": "Hygienist Scale & Airflow Polish",
         "description": "Professional tartar removal, stain removal, and gum polishing.",
         "price": 78,
@@ -1940,7 +2012,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -1960,14 +2034,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4037-0",
+        "id": "s-5037-0",
         "name": "Personal Trainer 1-on-1 Session",
         "description": "Bespoke fitness assessment and tailored workout coaching.",
         "price": 50,
         "durationMins": 60
       },
       {
-        "id": "s-4037-1",
+        "id": "s-5037-1",
         "name": "Spa Retreat Day Pass & Hydrotherapy Access",
         "description": "Access to thermal spa, Himalayan salt sauna, and hydro pools.",
         "price": 85,
@@ -1976,9 +2050,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -1996,14 +2072,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4038-0",
+        "id": "s-5038-0",
         "name": "Comprehensive Health MOT Assessment",
         "description": "Blood glucose, cholesterol, body composition, and cardiac health test.",
         "price": 195,
         "durationMins": 60
       },
       {
-        "id": "s-4038-1",
+        "id": "s-5038-1",
         "name": "Chartered Physiotherapy Assessment & Treatment",
         "description": "In-depth musculoskeletal assessment and joint rehab therapy.",
         "price": 72,
@@ -2012,9 +2088,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2032,14 +2110,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4039-0",
+        "id": "s-5039-0",
         "name": "Advanced Eye Test with OCT 3D Scan",
         "description": "Comprehensive vision test plus 3D retinal health scanning.",
         "price": 35,
         "durationMins": 30
       },
       {
-        "id": "s-4039-1",
+        "id": "s-5039-1",
         "name": "Contact Lens Consultation & Free Trial",
         "description": "Fitting consultation and trial lenses for daily or monthly wear.",
         "price": 25,
@@ -2048,7 +2126,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2068,14 +2148,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4040-0",
+        "id": "s-5040-0",
         "name": "1-on-1 Personal Trainer Induction & Plan",
         "description": "Goal setting, fitness testing, and 4-week gym program.",
         "price": 40,
         "durationMins": 60
       },
       {
-        "id": "s-4040-1",
+        "id": "s-5040-1",
         "name": "Body Composition InBody Scan & Review",
         "description": "Biometric body fat, muscle mass and visceral health analysis.",
         "price": 15,
@@ -2084,9 +2164,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2104,14 +2186,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4041-0",
+        "id": "s-5041-0",
         "name": "Private Routine Dental Check-Up",
         "description": "Full tooth exam, oral cancer check and advice.",
         "price": 49,
         "durationMins": 20
       },
       {
-        "id": "s-4041-1",
+        "id": "s-5041-1",
         "name": "Professional Boutique Teeth Whitening",
         "description": "Custom whitening trays and dentist-prescribed peroxide gel.",
         "price": 299,
@@ -2120,9 +2202,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2140,14 +2224,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4042-0",
+        "id": "s-5042-0",
         "name": "Elite Strength & Conditioning Coaching",
         "description": "Biomechanical lifting analysis and powerlifting coaching.",
         "price": 65,
         "durationMins": 60
       },
       {
-        "id": "s-4042-1",
+        "id": "s-5042-1",
         "name": "Recovery Cryotherapy & Infrared Sauna Session",
         "description": "Whole-body cryo chamber and infrared muscle recovery.",
         "price": 45,
@@ -2156,7 +2240,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2176,14 +2262,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4043-0",
+        "id": "s-5043-0",
         "name": "Personalized Gym Starter Workout Session",
         "description": "1-on-1 machine guidance and workout plan.",
         "price": 30,
         "durationMins": 45
       },
       {
-        "id": "s-4043-1",
+        "id": "s-5043-1",
         "name": "Group Functional Fitness Class Pass",
         "description": "High-intensity functional training group class.",
         "price": 10,
@@ -2192,9 +2278,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2212,14 +2300,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4044-0",
+        "id": "s-5044-0",
         "name": "Comprehensive Eye Test & Retinal Photography",
         "description": "Digital retinal photography eye exam.",
         "price": 25,
         "durationMins": 25
       },
       {
-        "id": "s-4044-1",
+        "id": "s-5044-1",
         "name": "Free Hearing Assessment & Hearing Aid Trial",
         "description": "Comprehensive hearing check by registered audiologist.",
         "price": 0,
@@ -2228,9 +2316,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2248,14 +2338,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4045-0",
+        "id": "s-5045-0",
         "name": "End of Tenancy Guaranteed Deep Clean",
         "description": "Full deposit-back guarantee cleaning including oven and inside cupboards.",
         "price": 185,
         "durationMins": 240
       },
       {
-        "id": "s-4045-1",
+        "id": "s-5045-1",
         "name": "Professional Carpet Hot Water Extraction",
         "description": "Deep steam carpet cleaning to remove stubborn stains and allergens.",
         "price": 65,
@@ -2264,7 +2354,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2284,14 +2376,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4046-0",
+        "id": "s-5046-0",
         "name": "Free In-Home Cleaning Price Estimate",
         "description": "In-person walkthrough to customize your home cleaning schedule.",
         "price": 0,
         "durationMins": 30
       },
       {
-        "id": "s-4046-1",
+        "id": "s-5046-1",
         "name": "Regular Weekly House Cleaning Visit",
         "description": "Dusting, vacuuming, kitchen sanitation and bathroom scrubbing.",
         "price": 56,
@@ -2300,9 +2392,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2320,14 +2414,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4047-0",
+        "id": "s-5047-0",
         "name": "Single Oven Deep Clean & Degrease",
         "description": "Complete disassembly, rack soaking, door glass cleaning.",
         "price": 65,
         "durationMins": 90
       },
       {
-        "id": "s-4047-1",
+        "id": "s-5047-1",
         "name": "Range Cooker / AGA Complete Valet",
         "description": "Eco-friendly deep valet of multi-oven range cookers.",
         "price": 110,
@@ -2336,9 +2430,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2356,14 +2452,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4048-0",
+        "id": "s-5048-0",
         "name": "Fortnightly Home Clean Visit",
         "description": "2-hour thorough cleaning of living areas, kitchen and bathrooms.",
         "price": 36,
         "durationMins": 120
       },
       {
-        "id": "s-4048-1",
+        "id": "s-5048-1",
         "name": "Office Daily After-Hours Clean",
         "description": "Desk sanitization, bin emptying, floor washing and kitchen hygiene.",
         "price": 45,
@@ -2372,7 +2468,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2392,14 +2490,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4049-0",
+        "id": "s-5049-0",
         "name": "Residential Pure Water Exterior Window Wash",
         "description": "Pure water wash of all exterior glass, frames and sills.",
         "price": 30,
         "durationMins": 45
       },
       {
-        "id": "s-4049-1",
+        "id": "s-5049-1",
         "name": "Solar Panel De-ionised Water Wash",
         "description": "Efficiency restoration wash of roof solar panels.",
         "price": 75,
@@ -2408,9 +2506,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2428,14 +2528,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4050-0",
+        "id": "s-5050-0",
         "name": "3-Seater Sofa Fabric Deep Clean & Guard",
         "description": "Stain extraction and fabric stain protection guard application.",
         "price": 95,
         "durationMins": 90
       },
       {
-        "id": "s-4050-1",
+        "id": "s-5050-1",
         "name": "Curtain In-Situ Dry Clean",
         "description": "Professional curtain cleaning while still hanging on rails.",
         "price": 80,
@@ -2444,9 +2544,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2464,14 +2566,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4051-0",
+        "id": "s-5051-0",
         "name": "Office Deep Sanitization & Fogging",
         "description": "Antimicrobial surface fogging and touchpoint sterilization.",
         "price": 150,
         "durationMins": 120
       },
       {
-        "id": "s-4051-1",
+        "id": "s-5051-1",
         "name": "Hard Floor Scrubbing & Buffer Polishing",
         "description": "Deep scrub and high-shine polish for vinyl and marble floors.",
         "price": 120,
@@ -2480,7 +2582,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2500,14 +2604,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4052-0",
+        "id": "s-5052-0",
         "name": "Commercial Kitchen Extraction & Duct Clean",
         "description": "TR19 certified grease removal from commercial kitchen canopies and ductwork.",
         "price": 350,
         "durationMins": 300
       },
       {
-        "id": "s-4052-1",
+        "id": "s-5052-1",
         "name": "Washroom Hygiene Unit Installation & Service",
         "description": "Sanitary bin exchange and automated air freshener fitting.",
         "price": 45,
@@ -2516,9 +2620,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2536,14 +2642,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4053-0",
+        "id": "s-5053-0",
         "name": "Home Dog Boarding Meet & Greet",
         "description": "In-home initial consultation to match your dog with the ideal host family.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4053-1",
+        "id": "s-5053-1",
         "name": "Per Night Home Dog Boarding Holiday",
         "description": "24/7 home care, walks, feeding and photo updates while you're away.",
         "price": 38,
@@ -2552,9 +2658,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2572,14 +2680,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4054-0",
+        "id": "s-5054-0",
         "name": "60-Minute Country Dog Walk",
         "description": "1-on-1 energetic walk with real-time GPS map tracking and photo updates.",
         "price": 20,
         "durationMins": 60
       },
       {
-        "id": "s-4054-1",
+        "id": "s-5054-1",
         "name": "In-Home Drop-In Pet Visit",
         "description": "30-minute visit for feeding, fresh water, letting out, and playtime.",
         "price": 15,
@@ -2588,7 +2696,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2608,14 +2718,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4055-0",
+        "id": "s-5055-0",
         "name": "Group Park & Countryside Walk",
         "description": "Small group walk (max 4 dogs) in safe countryside locations.",
         "price": 16,
         "durationMins": 60
       },
       {
-        "id": "s-4055-1",
+        "id": "s-5055-1",
         "name": "Puppy Visit & Socialization Service",
         "description": "Midday visit for young puppies needing garden breaks and feed.",
         "price": 14,
@@ -2624,9 +2734,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2644,14 +2756,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4056-0",
+        "id": "s-5056-0",
         "name": "Regular Midday Solo Dog Walk",
         "description": "Solo walk tailored to your dog's pace and energy levels.",
         "price": 18,
         "durationMins": 45
       },
       {
-        "id": "s-4056-1",
+        "id": "s-5056-1",
         "name": "Overnight House Sitting Service",
         "description": "Sitter stays in your home to keep your pet comfortable.",
         "price": 45,
@@ -2660,9 +2772,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2680,14 +2794,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4057-0",
+        "id": "s-5057-0",
         "name": "Full Day Doggy Daycare",
         "description": "Supervised play, walks and companionship in a quiet home environment.",
         "price": 30,
         "durationMins": 480
       },
       {
-        "id": "s-4057-1",
+        "id": "s-5057-1",
         "name": "1-Hour Energetic Park Walk",
         "description": "On-leash or off-leash park exercise session.",
         "price": 17,
@@ -2696,7 +2810,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2716,14 +2832,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4058-0",
+        "id": "s-5058-0",
         "name": "Dog Walk & Paw Clean",
         "description": "Fun exercise walk followed by towel dry and paw clean.",
         "price": 18,
         "durationMins": 60
       },
       {
-        "id": "s-4058-1",
+        "id": "s-5058-1",
         "name": "Cat Feeding & Litter Box Visit",
         "description": "Daily home visit to feed cats, clean litter trays, and give cuddles.",
         "price": 12,
@@ -2732,9 +2848,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2752,14 +2870,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4059-0",
+        "id": "s-5059-0",
         "name": "Petpals Signature Countryside Walk",
         "description": "60-minute walk through woodland or parks.",
         "price": 17.5,
         "durationMins": 60
       },
       {
-        "id": "s-4059-1",
+        "id": "s-5059-1",
         "name": "Pet Taxi & Vet Appointment Transport",
         "description": "Safe transport in caged, air-conditioned vehicle to vet appointments.",
         "price": 25,
@@ -2768,9 +2886,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1534361960057-19889db98d18?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2788,14 +2908,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4060-0",
+        "id": "s-5060-0",
         "name": "Chorlton Meadows Pack Adventure Walk",
         "description": "Group walk through Chorlton Water Park and Meadows.",
         "price": 15,
         "durationMins": 60
       },
       {
-        "id": "s-4060-1",
+        "id": "s-5060-1",
         "name": "Puppy Socialization & Toilet Break Visit",
         "description": "Targeted visit for young pups requiring garden play.",
         "price": 13,
@@ -2804,7 +2924,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2824,14 +2946,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4061-0",
+        "id": "s-5061-0",
         "name": "Full Dog Groom, Style & Nail Trim",
         "description": "Hydrobath wash, blow dry, coat cut to breed standard, ear clean and nail clip.",
         "price": 45,
         "durationMins": 90
       },
       {
-        "id": "s-4061-1",
+        "id": "s-5061-1",
         "name": "Puppy First Bath & Pamper Session",
         "description": "Gentle introduction bath, brush, and coat trim for puppies up to 6 months.",
         "price": 25,
@@ -2840,9 +2962,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2860,14 +2984,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4062-0",
+        "id": "s-5062-0",
         "name": "Full Veterinary Health Consultation",
         "description": "Comprehensive health examination by registered MRCVS veterinarian.",
         "price": 48,
         "durationMins": 20
       },
       {
-        "id": "s-4062-1",
+        "id": "s-5062-1",
         "name": "Pet Annual Booster Vaccination & Flea/Wormer",
         "description": "Core annual vaccine booster plus 3-month parasite prevention.",
         "price": 65,
@@ -2876,9 +3000,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -2896,14 +3022,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4063-0",
+        "id": "s-5063-0",
         "name": "24/7 Emergency Vet Consultation",
         "description": "Immediate out-of-hours veterinary emergency triage.",
         "price": 120,
         "durationMins": 30
       },
       {
-        "id": "s-4063-1",
+        "id": "s-5063-1",
         "name": "Canine Ultrasonic Dental Scale & Polish",
         "description": "General anesthesia tooth cleaning, scaling, and polishing.",
         "price": 220,
@@ -2912,7 +3038,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -2932,14 +3060,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4064-0",
+        "id": "s-5064-0",
         "name": "Pet Health & Wellbeing Consultation",
         "description": "Clinical exam and preventive care guidance.",
         "price": 35,
         "durationMins": 20
       },
       {
-        "id": "s-4064-1",
+        "id": "s-5064-1",
         "name": "Microchip Implantation & Registration",
         "description": "ISO compliant electronic microchip fitting.",
         "price": 15,
@@ -2948,9 +3076,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -2968,14 +3098,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4065-0",
+        "id": "s-5065-0",
         "name": "Senior Pet Wellness Screening & Blood Test",
         "description": "Comprehensive organ function blood panel for senior dogs & cats.",
         "price": 95,
         "durationMins": 30
       },
       {
-        "id": "s-4065-1",
+        "id": "s-5065-1",
         "name": "Orthopedic Specialist Referral Consultation",
         "description": "Expert consultation for joint problems or ligament injuries.",
         "price": 180,
@@ -2984,9 +3114,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3004,14 +3136,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4066-0",
+        "id": "s-5066-0",
         "name": "Cardiology Echocardiogram Ultrasound Scan",
         "description": "Advanced heart ultrasound by European veterinary specialist.",
         "price": 350,
         "durationMins": 60
       },
       {
-        "id": "s-4066-1",
+        "id": "s-5066-1",
         "name": "MRI Neurological Scan & Report",
         "description": "High-field magnetic resonance imaging scan.",
         "price": 950,
@@ -3020,7 +3152,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3040,14 +3174,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4067-0",
+        "id": "s-5067-0",
         "name": "In-Store Community Vet Vaccine Clinic",
         "description": "Affordable routine pet vaccinations and flea treatments.",
         "price": 32,
         "durationMins": 15
       },
       {
-        "id": "s-4067-1",
+        "id": "s-5067-1",
         "name": "Pet Nutrition & Weight Management Advice",
         "description": "Free dietary advice and weight monitoring for dogs & cats.",
         "price": 0,
@@ -3056,9 +3190,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544568100-847a948585b9?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3076,14 +3212,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4068-0",
+        "id": "s-5068-0",
         "name": "Dog Rehoming Matching Consultation",
         "description": "Meet with rehoming experts to find a rescue dog matching your home.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4068-1",
+        "id": "s-5068-1",
         "name": "Canine Behavior & Training Workshop",
         "description": "Public advice workshop on positive reinforcement dog training.",
         "price": 25,
@@ -3092,9 +3228,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3112,14 +3250,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4069-0",
+        "id": "s-5069-0",
         "name": "Free Academic Trial & Assessment",
         "description": "Mapped assessment in Maths and English to identify learning gaps.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4069-1",
+        "id": "s-5069-1",
         "name": "11+ Exam Preparation Workshop",
         "description": "Verbal and non-verbal reasoning exam technique coaching.",
         "price": 35,
@@ -3128,7 +3266,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3148,14 +3288,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4070-0",
+        "id": "s-5070-0",
         "name": "1-on-1 GCSE Mathematics Online Lesson",
         "description": "Targeted exam paper preparation and topic review.",
         "price": 38,
         "durationMins": 60
       },
       {
-        "id": "s-4070-1",
+        "id": "s-5070-1",
         "name": "A-Level Physics / Chemistry Tuition Session",
         "description": "Advanced theory and past paper question breakdown.",
         "price": 45,
@@ -3164,9 +3304,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3184,14 +3326,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4071-0",
+        "id": "s-5071-0",
         "name": "Kumon Diagnostic Math Assessment",
         "description": "Initial proficiency test to set baseline study level.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4071-1",
+        "id": "s-5071-1",
         "name": "Monthly Kumon Study Program Membership",
         "description": "Daily study worksheets plus twice-weekly centre instruction.",
         "price": 70,
@@ -3200,9 +3342,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3220,14 +3364,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4072-0",
+        "id": "s-5072-0",
         "name": "Free 15-Minute Tutor Match Consultation",
         "description": "Video introduction to find a compatible university subject tutor.",
         "price": 0,
         "durationMins": 15
       },
       {
-        "id": "s-4072-1",
+        "id": "s-5072-1",
         "name": "1-on-1 Interactive Online Tutorial",
         "description": "Live video session with interactive whiteboard and shared notes.",
         "price": 32,
@@ -3236,7 +3380,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3256,14 +3402,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4073-0",
+        "id": "s-5073-0",
         "name": "2-Hour Manual / Automatic Driving Lesson",
         "description": "DVSA syllabus driving lesson covering maneuvers and test routes.",
         "price": 72,
         "durationMins": 120
       },
       {
-        "id": "s-4073-1",
+        "id": "s-5073-1",
         "name": "10-Hour Prepaid Driving Lesson Block",
         "description": "Discounted block of driving instruction.",
         "price": 340,
@@ -3272,9 +3418,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3292,14 +3440,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4074-0",
+        "id": "s-5074-0",
         "name": "Single 1-Hour Driving Lesson",
         "description": "Confidence building lesson on quiet residential roads.",
         "price": 36,
         "durationMins": 60
       },
       {
-        "id": "s-4074-1",
+        "id": "s-5074-1",
         "name": "Mock DVSA Practical Driving Test",
         "description": "Realistic practice test conducted under official exam conditions.",
         "price": 50,
@@ -3308,9 +3456,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3328,14 +3478,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4075-0",
+        "id": "s-5075-0",
         "name": "Free Educational Assessment by Qualified Teacher",
         "description": "Evaluation of reading, comprehension, and math skills.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4075-1",
+        "id": "s-5075-1",
         "name": "In-Centre Weekly 80-Minute Session",
         "description": "Small group setting with individualized learning computer tasks.",
         "price": 34,
@@ -3344,7 +3494,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3364,14 +3516,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4076-0",
+        "id": "s-5076-0",
         "name": "1.5 Hour Lancashire Coastal Lesson",
         "description": "Dual-carriageway and junction driving tuition.",
         "price": 50,
         "durationMins": 90
       },
       {
-        "id": "s-4076-1",
+        "id": "s-5076-1",
         "name": "Pass Plus Advanced Post-Test Course",
         "description": "Motorway driving, night driving, and adverse weather tuition.",
         "price": 210,
@@ -3380,9 +3532,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3400,14 +3554,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4077-0",
+        "id": "s-5077-0",
         "name": "Travel Clinic Holiday Planning Consultation",
         "description": "Face-to-face holiday booking assistance with a TUI travel expert.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4077-1",
+        "id": "s-5077-1",
         "name": "Airport Lounge Pass Booking",
         "description": "Fast-track security and VIP lounge access at major UK airports.",
         "price": 35,
@@ -3416,9 +3570,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3436,14 +3592,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "assets/business/utravel-cover.jpg",
     "services": [
       {
-        "id": "s-4078-0",
+        "id": "s-5078-0",
         "name": "Bespoke European Itinerary Consultation",
         "description": "Tailored multi-city holiday itinerary design.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4078-1",
+        "id": "s-5078-1",
         "name": "Private Villa & Yacht Charter Booking",
         "description": "Exclusive luxury accommodation sourcing.",
         "price": 150,
@@ -3452,7 +3608,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "assets/business/utravel-cover.jpg",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3472,14 +3630,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4079-0",
+        "id": "s-5079-0",
         "name": "Airport Direct Coach Transfer Ticket",
         "description": "Direct coach transfer to Heathrow, Gatwick, Manchester or Stansted.",
         "price": 18,
         "durationMins": 120
       },
       {
-        "id": "s-4079-1",
+        "id": "s-5079-1",
         "name": "Intercity Return Coach Ticket",
         "description": "Comfortable intercity coach travel with free Wi-Fi and power sockets.",
         "price": 25,
@@ -3488,9 +3646,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3508,14 +3668,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4080-0",
+        "id": "s-5080-0",
         "name": "Worldwide Cruise & Tour Consultation",
         "description": "In-store consultation to compare worldwide ocean and river cruises.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4080-1",
+        "id": "s-5080-1",
         "name": "Foreign Currency Exchange Commission-Free",
         "description": "Euros, Dollars and 50+ currencies available for branch pickup.",
         "price": 0,
@@ -3524,9 +3684,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3544,14 +3706,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4081-0",
+        "id": "s-5081-0",
         "name": "Orlando & Caribbean Holiday Design",
         "description": "Tailor-made Disney theme park or luxury beach resort trip planning.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4081-1",
+        "id": "s-5081-1",
         "name": "Upper Class Flight Upgrade Consultation",
         "description": "Lie-flat seat booking and Clubhouse lounge access advisory.",
         "price": 0,
@@ -3560,7 +3722,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3580,14 +3744,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4082-0",
+        "id": "s-5082-0",
         "name": "Australia & New Zealand Fly-Drive Itinerary",
         "description": "Custom multi-stop flight, motorhome or hotel itinerary design.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4082-1",
+        "id": "s-5082-1",
         "name": "African Safari & Wildlife Tour Package",
         "description": "Expert safari lodge reservation and private guide booking.",
         "price": 0,
@@ -3596,9 +3760,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3616,14 +3782,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4083-0",
+        "id": "s-5083-0",
         "name": "Round-the-World Multi-Stop Flight Quote",
         "description": "Complex airfare route optimization and luggage allowance advice.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4083-1",
+        "id": "s-5083-1",
         "name": "Business Class International Airfare Search",
         "description": "Discounted corporate and premium cabin fare search.",
         "price": 0,
@@ -3632,9 +3798,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3652,14 +3820,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4084-0",
+        "id": "s-5084-0",
         "name": "London Airport Executive Mercedes Transfer",
         "description": "Flight tracking, meet-and-greet in arrivals hall, and Wi-Fi ride.",
         "price": 85,
         "durationMins": 60
       },
       {
-        "id": "s-4084-1",
+        "id": "s-5084-1",
         "name": "Full Day Executive Driver & Chauffeur Hire",
         "description": "Dedicated driver for business meetings or events.",
         "price": 380,
@@ -3668,7 +3836,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1476514525535-ce74f45814d1?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3688,14 +3858,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "assets/business/tax-assist-cover.jpg",
     "services": [
       {
-        "id": "s-4085-0",
+        "id": "s-5085-0",
         "name": "Free Small Business Initial Tax Review",
         "description": "Review of business structure, allowable expenses, and tax efficiency.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4085-1",
+        "id": "s-5085-1",
         "name": "Self-Assessment Tax Return Preparation",
         "description": "Complete income tax calculation and online HMRC filing.",
         "price": 175,
@@ -3704,9 +3874,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "assets/business/tax-assist-cover.jpg",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3724,14 +3896,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4086-0",
+        "id": "s-5086-0",
         "name": "Standard Single Will Drafting",
         "description": "Fixed-fee legally binding Will drafted by specialist solicitor.",
         "price": 150,
         "durationMins": 45
       },
       {
-        "id": "s-4086-1",
+        "id": "s-5086-1",
         "name": "Lasting Power of Attorney (LPA) Drafting",
         "description": "Health/Welfare or Property/Financial LPA preparation.",
         "price": 240,
@@ -3740,9 +3912,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3760,14 +3934,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4087-0",
+        "id": "s-5087-0",
         "name": "No-Win No-Fee Personal Injury Claim Assessment",
         "description": "Free legal evaluation of accident or workplace injury claims.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4087-1",
+        "id": "s-5087-1",
         "name": "Employment Contract & Redundancy Consultation",
         "description": "Review of settlement agreements and employment disputes.",
         "price": 150,
@@ -3776,7 +3950,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3796,14 +3972,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4088-0",
+        "id": "s-5088-0",
         "name": "Corporate Tax Advisory & Structure Review",
         "description": "Corporate tax optimization and international compliance.",
         "price": 450,
         "durationMins": 90
       },
       {
-        "id": "s-4088-1",
+        "id": "s-5088-1",
         "name": "ESG & Sustainability Business Audit",
         "description": "Assessment of corporate environmental footprint and ESG reporting.",
         "price": 600,
@@ -3812,9 +3988,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3832,14 +4010,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4089-0",
+        "id": "s-5089-0",
         "name": "R&D Tax Credits Assessment & Claim Filing",
         "description": "Identification of qualifying innovation costs for HMRC tax relief.",
         "price": 350,
         "durationMins": 90
       },
       {
-        "id": "s-4089-1",
+        "id": "s-5089-1",
         "name": "Statutory Financial Audit Planning",
         "description": "Comprehensive corporate audit strategy and risk evaluation.",
         "price": 500,
@@ -3848,9 +4026,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3868,14 +4048,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4090-0",
+        "id": "s-5090-0",
         "name": "Same-Day Initial Legal Consultation",
         "description": "First 45-minute consultation with a local qualified solicitor.",
         "price": 99,
         "durationMins": 45
       },
       {
-        "id": "s-4090-1",
+        "id": "s-5090-1",
         "name": "Residential Property Conveyancing Estimate",
         "description": "Fixed fee quote for property purchasing or selling legal work.",
         "price": 0,
@@ -3884,7 +4064,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -3904,14 +4086,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4091-0",
+        "id": "s-5091-0",
         "name": "Medical Negligence Free Claim Assessment",
         "description": "Specialist evaluation of NHS or private healthcare negligence.",
         "price": 0,
         "durationMins": 45
       },
       {
-        "id": "s-4091-1",
+        "id": "s-5091-1",
         "name": "Complex Trust & High-Net-Worth Estate Planning",
         "description": "Tax planning and inheritance trust structure design.",
         "price": 350,
@@ -3920,9 +4102,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -3940,14 +4124,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4092-0",
+        "id": "s-5092-0",
         "name": "Commercial Contract Review & Drafting",
         "description": "B2B contract, SLA, and terms & conditions legal review.",
         "price": 295,
         "durationMins": 60
       },
       {
-        "id": "s-4092-1",
+        "id": "s-5092-1",
         "name": "Commercial Property Lease Negotiations",
         "description": "Landlord and tenant lease negotiation for retail and office spaces.",
         "price": 400,
@@ -3956,9 +4140,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -3976,14 +4162,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "assets/business/pixcisionstock-cover.jpg",
     "services": [
       {
-        "id": "s-4093-0",
+        "id": "s-5093-0",
         "name": "Corporate Studio Headshot Session",
         "description": "Studio lighting, 3 retouched high-res digital images.",
         "price": 95,
         "durationMins": 45
       },
       {
-        "id": "s-4093-1",
+        "id": "s-5093-1",
         "name": "Half-Day Event Photography Coverage",
         "description": "4 hours of candid event coverage with full digital gallery release.",
         "price": 350,
@@ -3992,7 +4178,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "assets/business/pixcisionstock-cover.jpg",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -4012,14 +4200,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "assets/business/memuriah-cover.jpg",
     "services": [
       {
-        "id": "s-4094-0",
+        "id": "s-5094-0",
         "name": "Lifetime Digital Memorial Page Creation",
         "description": "Permanent online tribute page with photo gallery, video, and memory guestbook.",
         "price": 79,
         "durationMins": 30
       },
       {
-        "id": "s-4094-1",
+        "id": "s-5094-1",
         "name": "Weatherproof Brass QR Memorial Plaque",
         "description": "Laser-engraved brass plaque linking directly to online memorial.",
         "price": 129,
@@ -4028,9 +4216,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "assets/business/memuriah-cover.jpg",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -4048,14 +4238,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4095-0",
+        "id": "s-5095-0",
         "name": "Wedding Full Design & Coordination Consultation",
         "description": "In-depth concept design, budget creation, and supplier matching.",
         "price": 150,
         "durationMins": 90
       },
       {
-        "id": "s-4095-1",
+        "id": "s-5095-1",
         "name": "On-the-Day Wedding Management",
         "description": "12 hours of discreet coordination on your wedding day.",
         "price": 750,
@@ -4064,9 +4254,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -4084,14 +4276,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4096-0",
+        "id": "s-5096-0",
         "name": "Festival Stage & Audio Tech Planning",
         "description": "3D CAD stage design and acoustic sound coverage assessment.",
         "price": 250,
         "durationMins": 120
       },
       {
-        "id": "s-4096-1",
+        "id": "s-5096-1",
         "name": "Indoor Concert LED Video Wall Rental",
         "description": "High-resolution 4K modular LED screen rigging.",
         "price": 850,
@@ -4100,7 +4292,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
@@ -4120,14 +4314,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4097-0",
+        "id": "s-5097-0",
         "name": "3-Course Gourmet Dinner Tasting for 2",
         "description": "Private chef tasting session to finalize wedding or banquet menu.",
         "price": 120,
         "durationMins": 120
       },
       {
-        "id": "s-4097-1",
+        "id": "s-5097-1",
         "name": "Bespoke Event Canapé & Cocktail Package",
         "description": "Luxury hand-crafted hot & cold canapés with sommelier paired wines.",
         "price": 45,
@@ -4136,9 +4330,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "featured",
+    "tier": "priority",
     "billing": "monthly"
   },
   {
@@ -4156,14 +4352,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4098-0",
+        "id": "s-5098-0",
         "name": "Showroom Design Consultation & Moodboard",
         "description": "Explore table centerpieces, lighting, and floral arches in person.",
         "price": 0,
         "durationMins": 60
       },
       {
-        "id": "s-4098-1",
+        "id": "s-5098-1",
         "name": "Luxury Floral Arch & Flower Wall Installation",
         "description": "On-site delivery and styling of fresh or silk floral photo backdrops.",
         "price": 350,
@@ -4172,9 +4368,11 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80"
     ],
-    "tier": "priority",
+    "tier": "featured",
     "billing": "monthly"
   },
   {
@@ -4192,14 +4390,14 @@ const SEED_BUSINESSES = [
     "coverSrc": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
-        "id": "s-4099-0",
+        "id": "s-5099-0",
         "name": "4-Piece Live Party Band 2x 45-Min Sets",
         "description": "Professional cover band with PA system and stage lighting.",
         "price": 950,
         "durationMins": 240
       },
       {
-        "id": "s-4099-1",
+        "id": "s-5099-1",
         "name": "Corporate Event DJ & Saxophone Duo",
         "description": "Club DJ paired with live roaming saxophonist.",
         "price": 650,
@@ -4208,7 +4406,9 @@ const SEED_BUSINESSES = [
     ],
     "gallery": [
       "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "featured",
     "billing": "monthly"
