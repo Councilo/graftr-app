@@ -772,7 +772,8 @@ body::-webkit-scrollbar {
 
   .floating-tab {
     gap: 5px;
-    font-size: 11px;
+    /* tabStyle() sets font-size inline, so this needs to win */
+    font-size: 11px !important;
     padding: 11px 6px;
     border-radius: 14px;
     transition: background 0.12s ease;
