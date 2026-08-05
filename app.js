@@ -5569,10 +5569,13 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(res => (res.ok ? res.json() : null))
     .then(list => {
       if (!Array.isArray(list) || !list.length) return;
-      const known = new Set(state.businesses.map(b => b.id));
-      const added = list.filter(b => b && b.id && !known.has(b.id));
-      if (!added.length) return;
-      state.businesses = state.businesses.concat(added);
+      // Published entries win over the in-code seeds of the same id, so this
+      // file is the source of truth and the seeds are only a fallback for when
+      // it hasn't been deployed yet.
+      const published = new Map(list.filter(b => b && b.id).map(b => [b.id, b]));
+      state.businesses = state.businesses
+        .map(b => published.get(b.id) || b)
+        .concat(list.filter(b => b && b.id && !state.businesses.some(x => x.id === b.id)));
       render();
     })
     .catch(() => { /* no published file yet */ });
