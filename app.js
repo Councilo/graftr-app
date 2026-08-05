@@ -1898,12 +1898,14 @@ function renderShopperBrowse() {
   const total = cartTotal();
   const summaryBar = count > 0
     // Compact bar sized to its own content and pinned to the left, rather than
-    // a full-width bar spanning the column. 14px radius to match the Checkout
-    // button rather than being a full pill.
+    // a full-width bar spanning the column. 14px radius and a fixed 36px height
+    // to match the Checkout button it leads to — set explicitly rather than via
+    // padding, since this bar's text is smaller and wouldn't land on the same
+    // height on its own.
     // translateY drops it 19px so its centre lines up with the AI button's.
     // The sticky offset can't go lower on its own — the scroll container's
     // 110px bottom padding clamps it well above the AI button.
-    ? `<div class="press" data-action="goBasket" style="position:sticky;bottom:14px;transform:translateY(19px);align-self:flex-start;max-width:100%;background:#141414;color:#fff;border-radius:14px;padding:9px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;margin-top:14px;box-shadow:0 8px 20px rgba(0,0,0,0.2);white-space:nowrap">
+    ? `<div class="press" data-action="goBasket" style="position:sticky;bottom:14px;transform:translateY(19px);align-self:flex-start;max-width:100%;height:36px;box-sizing:border-box;background:#141414;color:#fff;border-radius:14px;padding:0 14px;display:flex;align-items:center;gap:9px;cursor:pointer;margin-top:14px;box-shadow:0 8px 20px rgba(0,0,0,0.2);white-space:nowrap">
         <span style="font-size:12px;font-weight:600">${count} item${count > 1 ? 's' : ''} · £${total.toFixed(2)}</span>
         <span style="font-size:12px;font-weight:600;opacity:0.6">View basket ›</span>
       </div>`
