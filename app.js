@@ -636,8 +636,24 @@ function businessById(id) {
   return (state.businesses || []).find(b => b.id === id) || null;
 }
 
+// A listing is only public once it has a name — creating one starts a draft,
+// and an unnamed draft must never show up in front of customers.
+function isBusinessLive(b) {
+  return !!(b && String(b.name || '').trim());
+}
+
 function businessesInCategory(categoryId) {
-  return (state.businesses || []).filter(b => b.category === categoryId);
+  return (state.businesses || []).filter(b => b.category === categoryId && isBusinessLive(b));
+}
+
+// Newest listings first, for the main screen. Seeds have no createdAt, so they
+// sort behind anything a real business has just published.
+function recentBusinesses(limit) {
+  return (state.businesses || [])
+    .filter(isBusinessLive)
+    .slice()
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+    .slice(0, limit || 4);
 }
 
 // The listing owned by whoever is signed in on /business, if they've made one.
@@ -730,6 +746,7 @@ const state = {
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
   businessTab: 'page',             // business dashboard section
   businessEditor: null,            // working copy while editing the listing
+  businessNotice: null,            // confirmation shown after saving/publishing
   placingOrder: false,
   checkoutError: null,
   scannerStatus: null,
@@ -2315,6 +2332,16 @@ function renderShopperShop() {
         <a href="${BUSINESS_PATH}" style="display:block;text-align:center;margin-top:12px;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>
       </div>
     </div>
+
+    <!-- Newly published listings surface here, not only inside their category,
+         so a business that has just signed up is visible straight away. -->
+    ${(() => {
+      const recent = recentBusinesses(4);
+      if (!recent.length) return '';
+      return `
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">New on Vendaru</div>
+        ${recent.map(b => businessCardHtml(b)).join('')}`;
+    })()}
   `;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
@@ -3962,7 +3989,23 @@ function renderBusinessDashboard() {
 
   if (tab === 'page') {
     const e = state.businessEditor || mine;
+    const live = isBusinessLive(mine);
     body = `
+      <!-- Whether customers can see them yet, stated plainly. -->
+      <div class="shop-card" style="${shell}">
+        <div style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div style="min-width:0">
+            <div style="font-size:14px;font-weight:600;color:#141414">${live ? 'Your page is live' : 'Draft — not visible yet'}</div>
+            <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.45">
+              ${live
+                ? `Customers can find you on the home screen and under ${serviceCategory(mine.category) ? escapeHtml(serviceCategory(mine.category).label) : 'your category'}.`
+                : 'Add a business name and save to publish your page.'}
+            </div>
+          </div>
+          <span style="flex:0 0 auto;width:10px;height:10px;border-radius:50%;background:${live ? '#2e7d4f' : 'rgba(20,20,20,0.25)'}"></span>
+        </div>
+      </div>
+
       <div class="shop-card" style="${shell}">
         <div style="padding:4px 16px 14px">
           <div style="${label}">How your card looks</div>
@@ -4116,6 +4159,13 @@ function renderBusinessDashboard() {
         <div style="font-size:25px;font-weight:700;color:#141414">${titles[tab] || 'Your business'}</div>
         <button type="button" data-action="logout" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Log out</button>
       </div>
+
+      ${state.businessNotice ? `
+        <div style="border:1.5px solid ${state.businessNotice.tone === 'ok' ? 'rgba(46,125,79,0.35)' : 'rgba(20,20,20,0.15)'};border-radius:16px;padding:13px 15px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:${state.businessNotice.tone === 'ok' ? '#f2f9f5' : '#fafafa'}">
+          <div style="font-size:13px;color:#141414;line-height:1.5;min-width:0">${escapeHtml(state.businessNotice.text)}</div>
+          <button type="button" data-action="dismissBusinessNotice" style="background:none;border:none;font-size:16px;cursor:pointer;color:#6b6b6b;padding:0 2px;line-height:1;flex:0 0 auto">✕</button>
+        </div>` : ''}
+
       ${body}
     </div>`;
 }
@@ -4809,12 +4859,35 @@ const actions = {
   },
   saveBusiness: () => {
     const mine = myBusiness();
-    if (!mine || !state.businessEditor) { render(); return; }
-    Object.assign(mine, state.businessEditor);
+    if (!mine) { render(); return; }
+
+    const wasLive = isBusinessLive(mine);
+    if (state.businessEditor) Object.assign(mine, state.businessEditor);
     state.businessEditor = null;
+
+    if (!isBusinessLive(mine)) {
+      state.businessNotice = { tone: 'warn', text: 'Add a business name before your page can go live.' };
+      render();
+      return;
+    }
+
+    const cat = serviceCategory(mine.category);
+    if (!wasLive) {
+      // First time it has everything it needs to be public.
+      mine.publishedAt = Date.now();
+      mine.createdAt = mine.createdAt || Date.now();
+      state.businessNotice = {
+        tone: 'ok',
+        text: `Your page is live. ${mine.name} now appears on the Vendaru home screen and under ${cat ? cat.label : 'your category'}.`,
+      };
+    } else {
+      state.businessNotice = { tone: 'ok', text: 'Changes saved — your page has been updated.' };
+    }
+
     saveBusinesses();
     render();
   },
+  dismissBusinessNotice: () => { state.businessNotice = null; render(); },
   addService: () => {
     const mine = myBusiness();
     if (!mine) return;
