@@ -14,6 +14,27 @@ const ukCities = [
   'Chester & Cheshire', 'Sheffield & South Yorkshire', 'Nationwide / UK Wide'
 ];
 
+// Custom local logo overrides for key brand assets already in assets/business/
+const localLogos = {
+  "Yopa UK Property Sales": "assets/business/yopa-logo.png",
+  "MyBuilder UK": "assets/business/mybuilder-logo.png",
+  "U Travel UK": "assets/business/utravel-logo.png",
+  "TaxAssist Accountants": "assets/business/tax-assist-logo.png",
+  "Pixcision Stock & Studio Photography": "assets/business/pixcisionstock-logo.png",
+  "Memuriah Digital Memorials": "assets/business/memuriah-logo.png",
+  "Apex Gas & Plumbing Engineers": "assets/business/apex-plumbing-logo.png"
+};
+
+const localCovers = {
+  "U Travel UK": "assets/business/utravel-cover.jpg",
+  "Yopa UK Property Sales": "assets/business/yopa-cover.jpg",
+  "MyBuilder UK": "assets/business/mybuilder-cover.jpg",
+  "TaxAssist Accountants": "assets/business/tax-assist-cover.jpg",
+  "Pixcision Stock & Studio Photography": "assets/business/pixcisionstock-cover.jpg",
+  "Memuriah Digital Memorials": "assets/business/memuriah-cover.jpg",
+  "Apex Gas & Plumbing Engineers": "assets/business/apex-plumbing-cover.jpg"
+};
+
 const data = [
   // 1-10 Trades
   {
@@ -265,15 +286,41 @@ const categoryDetails = {
 };
 
 // Build up to 100
-let list = [...data];
+let list = [];
 let counter = 1000;
 
+// Add initial custom trades
+data.forEach(item => {
+  const logo = localLogos[item.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=141414&color=ffffff&size=200&bold=true`;
+  const cover = localCovers[item.name] || item.coverSrc;
+  list.push({
+    id: `biz-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    ownerEmail: null,
+    name: item.name,
+    category: item.category,
+    tagline: item.tagline,
+    about: item.about,
+    area: item.area,
+    phone: item.phone,
+    logoSrc: logo,
+    coverSrc: cover,
+    services: item.services.map((s, idx) => ({ id: `s-${counter}-${idx}`, ...s })),
+    gallery: [],
+    tier: 'featured',
+    billing: 'monthly'
+  });
+  counter++;
+});
+
+// Add all category items
 for (const cat of categories) {
   const items = categoryDetails[cat] || [];
   for (let i = 0; i < items.length; i++) {
     const it = items[i];
     const slug = cat + '-' + i + '-' + it.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     if (!list.some(b => b.name.toLowerCase() === it.name.toLowerCase())) {
+      const logo = localLogos[it.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(it.name)}&background=141414&color=ffffff&size=200&bold=true`;
+      const cover = localCovers[it.name] || it.cover;
       list.push({
         id: `biz-${slug}`,
         ownerEmail: null,
@@ -283,10 +330,11 @@ for (const cat of categories) {
         about: `${it.name} provides professional, reliable ${cat.replace('-', ' ')} services tailored for clients in ${ukCities[counter % ukCities.length]} and across the United Kingdom. Fully insured and highly rated.`,
         area: ukCities[counter % ukCities.length],
         phone: it.phone,
-        coverSrc: it.cover,
+        logoSrc: logo,
+        coverSrc: cover,
         services: [
-          { id: `s-${counter}-1`, name: `${it.name} Standard Consultation`, description: "Initial consultation and quote.", price: 0, durationMins: 30 },
-          { id: `s-${counter}-2`, name: `${it.name} Full Service Booking`, description: `Professional ${cat} service delivered by experienced staff.`, price: 45 + (counter % 12) * 15, durationMins: 60 }
+          { id: `s-${counter}-1`, name: `${it.name} Consultation & Estimate`, description: "In-depth initial consultation and bespoke price estimate.", price: 0, durationMins: 30 },
+          { id: `s-${counter}-2`, name: `${it.name} Standard Package`, description: `Complete ${cat.replace('-', ' ')} service delivered by qualified UK professionals.`, price: 45 + (counter % 12) * 15, durationMins: 60 }
         ],
         gallery: [],
         tier: (counter % 3 === 0) ? 'priority' : 'featured',
@@ -299,4 +347,4 @@ for (const cat of categories) {
 
 // Exactly 100 total
 fs.writeFileSync(path.join(__dirname, 'assets', 'businesses.json'), JSON.stringify(list, null, 2), 'utf8');
-console.log(`Generated ${list.length} unique UK businesses into assets/businesses.json`);
+console.log(`Generated ${list.length} unique UK businesses with logoSrc & coverSrc into assets/businesses.json`);
