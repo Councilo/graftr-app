@@ -1951,9 +1951,17 @@ function renderShopperBasket() {
     </div>`
     : '';
 
+  // The free item is chosen here rather than on Account — it lands in this
+  // basket, so the card only shows up once there's a reward waiting.
+  const loyaltyCard = loyaltyState().rewardsReady > 0 ? renderLoyaltyCard('basket') : '';
+
   return `
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-      <div style="font-size:25px;font-weight:700;color:#141414">Basket</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div style="font-size:25px;font-weight:700;color:#141414">Basket</div>
+        <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
+      </div>
+      ${loyaltyCard}
       ${basketBox}
       ${savedCard}
       ${activeOrdersCard}
@@ -2161,7 +2169,9 @@ function renderTermsModal() {
 
 // The one place the brand pink is allowed back into an otherwise monochrome
 // UI — it's the loyalty card, so it should look like a card in your wallet.
-function renderLoyaltyCard() {
+// `context` is 'account' (progress, points you at the basket) or 'basket'
+// (where the free item is actually chosen, since that's the shopping cart).
+function renderLoyaltyCard(context = 'account') {
   const l = loyaltyState();
   const ready = l.rewardsReady > 0;
 
@@ -2178,30 +2188,39 @@ function renderLoyaltyCard() {
 
   const toGo = LOYALTY_STAMPS_PER_REWARD - l.stamps;
 
+  // Same shell, section label and footer-row-with-a-pill as every other card;
+  // only the fill colour is the brand pink.
+  const cardShell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#ffcbe1';
+  const sectionLabel = 'font-size:12.5px;font-weight:600;color:rgba(20,20,20,0.6);padding:13px 0 0';
+  const pill = 'background:#141414;color:#fff;border-radius:14px;padding:10px 18px;font-weight:600;font-size:13.5px;cursor:pointer;flex:0 0 auto';
+
+  const footer = ready
+    ? `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid rgba(20,20,20,0.1);padding-top:13px;margin-top:13px">
+         <span style="font-size:12.5px;color:rgba(20,20,20,0.7);line-height:1.45">
+           Free item unlocked${l.rewardsReady > 1 ? ` ×${l.rewardsReady}` : ''} · up to £${LOYALTY_REWARD_MAX}.00
+         </span>
+         ${context === 'basket'
+           ? `<div class="press" data-action="openLoyaltyPicker" style="${pill}">Choose item</div>`
+           : `<div class="press" data-action="goBasket" style="${pill}">Go to basket</div>`}
+       </div>`
+    : `<div style="font-size:12.5px;color:rgba(20,20,20,0.7);line-height:1.45;border-top:1px solid rgba(20,20,20,0.1);padding-top:13px;margin-top:13px">
+         ${toGo} more order${toGo === 1 ? '' : 's'} over £${LOYALTY_MIN_ORDER} to unlock a free item worth up to £${LOYALTY_REWARD_MAX}.00. Stamps land once an order is delivered.
+       </div>`;
+
   return `
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#ffcbe1;overflow:hidden">
-      <div style="padding:15px 16px;display:flex;flex-direction:column;gap:11px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
-          <span style="font-size:12.5px;font-weight:600;color:rgba(20,20,20,0.65)">Vendaru loyalty</span>
-          <span style="font-size:12.5px;color:rgba(20,20,20,0.65)">${shown}/${LOYALTY_STAMPS_PER_REWARD}</span>
+    <div class="shop-card" style="${cardShell}">
+      <div style="padding:4px 16px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${sectionLabel}">
+          <span>Vendaru loyalty</span>
+          <span style="font-weight:500">${shown}/${LOYALTY_STAMPS_PER_REWARD}</span>
         </div>
 
-        <div style="display:flex;gap:7px;justify-content:space-between">${dots}</div>
+        <div style="display:flex;gap:7px;justify-content:space-between;margin-top:13px">${dots}</div>
 
-        ${ready
-          ? `<div>
-               <div style="font-size:14px;font-weight:600;color:#141414">Free item unlocked${l.rewardsReady > 1 ? ` ×${l.rewardsReady}` : ''}</div>
-               <div style="font-size:12.5px;color:rgba(20,20,20,0.65);margin-top:2px;line-height:1.45">Pick anything up to £${LOYALTY_REWARD_MAX}.00 — it's added to your basket free.</div>
-             </div>
-             <button type="button" data-action="openLoyaltyPicker" style="background:#141414;color:#fff;border:none;padding:11px;border-radius:12px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit">
-               Choose your free item
-             </button>`
-          : `<div style="font-size:12.5px;color:rgba(20,20,20,0.7);line-height:1.45">
-               ${toGo} more order${toGo === 1 ? '' : 's'} over £${LOYALTY_MIN_ORDER} to unlock a free item worth up to £${LOYALTY_REWARD_MAX}.00. Stamps land once an order is delivered.
-             </div>`}
+        ${footer}
 
         ${l.redeemed > 0
-          ? `<div style="font-size:12px;color:rgba(20,20,20,0.55)">${l.redeemed} reward${l.redeemed === 1 ? '' : 's'} claimed so far</div>`
+          ? `<div style="font-size:12px;color:rgba(20,20,20,0.55);margin-top:9px">${l.redeemed} reward${l.redeemed === 1 ? '' : 's'} claimed so far</div>`
           : ''}
       </div>
     </div>`;
