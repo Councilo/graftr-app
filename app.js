@@ -1683,7 +1683,7 @@ function scheduleLabelFor(ts) {
 
 // Drawn rather than an emoji: 🗓 renders as a lopsided spiral-bound pad on
 // Windows and doesn't sit straight in a circle.
-const CALENDAR_ICON_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+const CALENDAR_ICON_SVG = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <rect x="3" y="5" width="18" height="16" rx="3" />
   <path d="M3 10h18M8 3v4M16 3v4" />
 </svg>`;
@@ -3046,7 +3046,12 @@ function renderShopperTrackingSection(currentOrder) {
       <!-- 2. Middle Section: Courier Driver & Live ETA Bar -->
       <div style="background:#141414;color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.16);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:18px">${isScheduled ? CALENDAR_ICON_SVG : '🚴'}</div>
+          ${isScheduled
+            // No disc behind the calendar — the long two-line label squeezed it
+            // into an oval. Bare icon instead.
+            ? `<div style="flex:0 0 auto;color:#ffffff;display:flex;align-items:center;justify-content:center">${CALENDAR_ICON_SVG}</div>`
+            // flex:0 0 auto so this one can't get squashed out of round either.
+            : `<div style="width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:rgba(255,255,255,0.16);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:18px">🚴</div>`}
           <div>
             <!-- Nobody is assigned to a scheduled order yet, so don't claim a
                  courier is on their way to you. -->
