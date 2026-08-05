@@ -488,6 +488,7 @@ const SERVICE_CATEGORIES = [
   { id: 'beauty', label: 'Hair & beauty', emoji: '💇' },
   { id: 'tutoring', label: 'Tutoring', emoji: '📚' },
   { id: 'events', label: 'Events', emoji: '🎉' },
+  { id: 'travel', label: 'Travel', emoji: '✈️' },
 ];
 
 function serviceCategory(id) {
@@ -500,11 +501,25 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 2;
+const BUSINESS_SEED_VERSION = 3;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
 // Real listings only. The fictional demo businesses were retired in v2.
 const SEED_BUSINESSES = [
+  {
+    // Artwork lives in assets/business/ rather than inline: the uploaded cover
+    // was 1.2MB, which as a data URI would have been shipped in this file to
+    // every visitor before the page could render.
+    id: 'biz-utravel', ownerEmail: null, name: 'U travel uk',
+    category: 'travel',
+    tagline: 'Itineraries built around your pace, preferences and the way you actually explore.',
+    about: "UTravel is your travel sidekick for the whole trip, not just one bit of it.\n\nIt can help you find places to go, things to do, flights, hotels, live public transport, entry rules, fuel prices, nearby stops, and it can stage journeys or track buses and trains for you.\n\nThink of it as a cheeky, practical mate who does the boring bits and surfaces the useful options.",
+    area: 'Global', phone: '',
+    logoSrc: 'assets/business/utravel-logo.png',
+    coverSrc: 'assets/business/utravel-cover.jpg',
+    services: [],
+    gallery: [],
+  },
   {
     // Details as supplied by the owner. Priced services are added from the
     // /business dashboard rather than hard-coded here.
@@ -2169,7 +2184,8 @@ function renderShopperBusiness() {
         <div class="shop-card" style="${SERVICE_CARD_SHELL}">
           <div style="padding:4px 16px 14px">
             <div style="${SERVICE_SECTION_LABEL}">About</div>
-            <div style="font-size:13.5px;color:#141414;line-height:1.55;margin-top:6px">${escapeHtml(b.about)}</div>
+            <!-- pre-line keeps the paragraph breaks the owner typed. -->
+            <div style="font-size:13.5px;color:#141414;line-height:1.55;margin-top:6px;white-space:pre-line">${escapeHtml(b.about)}</div>
             ${b.phone ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:9px">${escapeHtml(b.phone)}</div>` : ''}
           </div>
         </div>` : ''}
