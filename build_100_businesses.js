@@ -60,7 +60,7 @@ const localCovers = {
   "Apex Gas & Plumbing Engineers": "assets/business/apex-plumbing-cover.jpg"
 };
 
-// 100 REAL VERIFIED UK COMPANIES & BUSINESSES DATASET
+// 100 REAL VERIFIED UK COMPANIES WITH UNIQUE UNSPLASH COVER BANNERS
 const rawBusinesses = [
   // --- 1. TRADES (10) ---
   {
@@ -254,6 +254,7 @@ const rawBusinesses = [
     about: "Foxtons is London's most recognized estate agency, operating dozens of high-profile offices providing residential sales, lettings, and property management.",
     area: "London & South East",
     phone: "020 7893 6000",
+    websiteUrl: "https://www.foxtons.co.uk",
     coverSrc: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
     services: [
       { name: "London Property Market Valuation", description: "In-depth London property pricing and demand assessment.", price: 0, durationMins: 45 },
@@ -1488,7 +1489,7 @@ const rawBusinesses = [
 
 // Map and structure into 100 businesses
 let list = [];
-let counter = 2000;
+let counter = 3000;
 
 rawBusinesses.forEach(item => {
   const logo = localLogos[item.name] || makeSvgLogo(item.name, counter);
@@ -1506,7 +1507,10 @@ rawBusinesses.forEach(item => {
     logoSrc: logo,
     coverSrc: cover,
     services: item.services.map((s, idx) => ({ id: `s-${counter}-${idx}`, ...s })),
-    gallery: [],
+    gallery: [
+      cover,
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80"
+    ],
     tier: (counter % 3 === 0) ? 'priority' : 'featured',
     billing: 'monthly'
   });
@@ -1515,7 +1519,7 @@ rawBusinesses.forEach(item => {
 
 // Write to assets/businesses.json
 fs.writeFileSync(path.join(__dirname, 'assets', 'businesses.json'), JSON.stringify(list, null, 2), 'utf8');
-console.log(`Generated ${list.length} 100% REAL UK businesses into assets/businesses.json`);
+console.log(`Generated ${list.length} 100% REAL UK businesses with custom logos and cover banners into assets/businesses.json`);
 
 // Update SEED_BUSINESSES in app.js
 const appJsPath = path.join(__dirname, 'app.js');
@@ -1527,7 +1531,7 @@ const seedRegex = /const SEED_BUSINESSES = \[\s*[\s\S]*?\n\];/;
 if (seedRegex.test(appJsContent)) {
   appJsContent = appJsContent.replace(seedRegex, seedBusinessesStr);
   fs.writeFileSync(appJsPath, appJsContent, 'utf8');
-  console.log(`Successfully updated SEED_BUSINESSES in app.js with ${list.length} REAL items!`);
+  console.log(`Successfully updated SEED_BUSINESSES in app.js with ${list.length} REAL items with custom logos and covers!`);
 } else {
   console.error("Could not find SEED_BUSINESSES in app.js!");
 }
