@@ -405,6 +405,23 @@ function isPaymentBackendUnavailable(res, data) {
 
 function checkStripeRedirectResult() {
   const params = new URLSearchParams(window.location.search);
+
+  // Coming back from subscribing to a listing plan.
+  const plan = params.get('plan');
+  if (plan) {
+    const raw = localStorage.getItem(PENDING_PLAN_KEY);
+    if (plan === 'success' && raw) {
+      try { applyPlan(JSON.parse(raw)); } catch (e) { /* malformed, nothing to apply */ }
+    } else {
+      state.planError = plan === 'cancelled' ? 'Subscription cancelled — you have not been charged.' : null;
+      state.businessTab = 'plan';
+    }
+    state.subscribing = false;
+    try { localStorage.removeItem(PENDING_PLAN_KEY); } catch (e) { /* ignore */ }
+    window.history.replaceState({}, '', window.location.pathname);
+    return;
+  }
+
   const payment = params.get('payment');
   if (!payment) return;
 
@@ -502,6 +519,82 @@ const SERVICE_CATEGORIES = [
 
 function serviceCategory(id) {
   return SERVICE_CATEGORIES.find(c => c.id === id) || null;
+}
+
+// --- listing plans ---------------------------------------------------------
+//
+// What a business pays for is how their card looks and where it sits. Basic is
+// the compact logo-and-text row; Featured upgrades it to the full banner card;
+// Priority additionally pins it above everyone else. Annual is ten months'
+// money for twelve.
+
+const BUSINESS_TIERS = [
+  {
+    id: 'basic', label: 'Basic', monthly: 9, annual: 90, rank: 0,
+    card: 'compact',
+    summary: 'Logo-and-text card in your category',
+    features: ['Listed in your category', 'Compact logo and text card', 'Bookable services and enquiries'],
+  },
+  {
+    id: 'featured', label: 'Featured', monthly: 24, annual: 240, rank: 1,
+    card: 'large',
+    summary: 'Full banner card, shown on the home screen',
+    features: ['Everything in Basic', 'Full-width banner card with your photo', 'Shown on the Vendaru home screen'],
+  },
+  {
+    id: 'priority', label: 'Priority', monthly: 49, annual: 490, rank: 2,
+    card: 'large',
+    summary: 'Banner card pinned above every other listing',
+    features: ['Everything in Featured', 'Pinned to the top of your category', 'First on the home screen'],
+  },
+];
+
+const DEFAULT_TIER = 'basic';
+
+function tierById(id) {
+  return BUSINESS_TIERS.find(t => t.id === id) || BUSINESS_TIERS[0];
+}
+
+function tierOf(business) {
+  return tierById((business && business.tier) || DEFAULT_TIER);
+}
+
+function tierPrice(tier, billing) {
+  return billing === 'annual' ? tier.annual : tier.monthly;
+}
+
+// Higher tiers first, then most recently listed. Used everywhere a set of
+// listings is shown, so paid placement is consistent across the app.
+function byTierThenRecency(a, b) {
+  const diff = tierOf(b).rank - tierOf(a).rank;
+  if (diff !== 0) return diff;
+  return (b.createdAt || 0) - (a.createdAt || 0);
+}
+
+function billingLabel(billing) {
+  return billing === 'annual' ? 'a year' : 'a month';
+}
+
+const PENDING_PLAN_KEY = 'graftr_pending_plan';
+
+// Puts a paid-for plan onto the listing. Called on return from Stripe, or
+// straight away when there's no billing backend to redirect to.
+function applyPlan(pending) {
+  const b = businessById(pending && pending.businessId);
+  if (!b) return false;
+  b.tier = pending.tier;
+  b.billing = pending.billing;
+  b.subscribedAt = Date.now();
+  saveBusinesses();
+  const t = tierById(pending.tier);
+  state.businessNotice = {
+    tone: 'ok',
+    text: `${b.name} is on the ${t.label} plan — £${tierPrice(t, pending.billing)} ${billingLabel(pending.billing)}. ${t.summary}.`,
+  };
+  state.businessTab = 'page';
+  state.planChoice = null;
+  try { localStorage.removeItem(PENDING_PLAN_KEY); } catch (e) { /* ignore */ }
+  return true;
 }
 
 const BUSINESSES_KEY = 'graftr_businesses';
@@ -614,18 +707,23 @@ function isBusinessLive(b) {
   return !!(b && String(b.name || '').trim());
 }
 
+// Paid placement applies here: Priority listings sit above Featured, which sit
+// above Basic, and only then does recency decide.
 function businessesInCategory(categoryId) {
-  return (state.businesses || []).filter(b => b.category === categoryId && isBusinessLive(b));
+  return (state.businesses || [])
+    .filter(b => b.category === categoryId && isBusinessLive(b))
+    .slice()
+    .sort(byTierThenRecency);
 }
 
-// Newest listings first, for the main screen. Seeds have no createdAt, so they
-// sort behind anything a real business has just published.
-function recentBusinesses(limit) {
+// The home screen carries the listings that paid to be seen there. Basic is a
+// category listing only, so it doesn't appear.
+function featuredBusinesses(limit) {
   return (state.businesses || [])
-    .filter(isBusinessLive)
+    .filter(b => isBusinessLive(b) && tierOf(b).rank > 0)
     .slice()
-    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
-    .slice(0, limit || 4);
+    .sort(byTierThenRecency)
+    .slice(0, limit || 6);
 }
 
 // SETUP ONLY. Lets one operator create and edit every listing from /business
@@ -733,6 +831,10 @@ const state = {
   businessNotice: null,            // confirmation shown after saving/publishing
   confirmingBusinessDelete: false, // delete listing is a two-tap action
   adminEditingId: null,            // setup-only: which listing the operator is editing
+  planBilling: 'monthly',          // monthly | annual
+  planChoice: null,                // tier being considered in the picker
+  subscribing: false,
+  planError: null,
   placingOrder: false,
   checkoutError: null,
   scannerStatus: null,
@@ -1029,7 +1131,7 @@ function renderAuthModal() {
         </div>
 
         <button type="button" data-action="confirmEmailAuthSetup" style="width:100%;background:#141414;color:#fff;border:none;padding:15px;border-radius:16px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.18);margin-top:4px">
-          ⚡ ${isLogin ? 'Log In' : 'Create Account'}
+          ${isLogin ? 'Log In' : 'Create Account'}
         </button>
 
         <div style="font-size:12.5px;color:#5c5c5c">
@@ -1372,7 +1474,7 @@ function renderCourierEarnings() {
         
         <div style="font-size:36px;font-weight:900;letter-spacing:-0.5px">£${data.todayTotal.toFixed(2)}</div>
         <div style="font-size:12.5px;color:#d4d4d4;display:flex;align-items:center;gap:6px">
-          <span>⚡ ${data.todayJobs} deliveries completed</span>
+          <span>${data.todayJobs} deliveries completed</span>
           <span>•</span>
           <span>⏱️ ${data.onlineLabel} online</span>
         </div>
@@ -1500,7 +1602,7 @@ function renderCourierEarnings() {
 
       ${data.pendingPayout > 0 ? `
         <button type="button" data-action="cashOut" style="width:100%;margin-top:14px;background:#141414;color:#fff;border:none;border-radius:16px;padding:14px;text-align:center;font-weight:800;font-size:14.5px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.2)">
-          ⚡ Cash Out Now (£${data.pendingPayout.toFixed(2)})
+          Cash Out Now (£${data.pendingPayout.toFixed(2)})
         </button>
       ` : `
         <div style="margin-top:14px;background:#e5e5e5;color:#6b6b6b;border-radius:16px;padding:14px;text-align:center;font-weight:700;font-size:13.5px">
@@ -2077,7 +2179,10 @@ const SERVICE_SECTION_LABEL = 'font-size:12.5px;font-weight:600;color:#6b6b6b;pa
 // The listing card, in two sizes. `compact` is a single row for scanning a
 // category; `large` carries a banner image and sits alongside the shop's own
 // picture cards on the home screen. Both are built here so they can't drift.
-function businessCardHtml(b, { linked = true, variant = 'compact' } = {}) {
+function businessCardHtml(b, { linked = true, variant } = {}) {
+  // Which card you get is what the plan buys, unless a caller forces one
+  // (the dashboard previews both so an owner can see what they'd upgrade to).
+  if (!variant) variant = tierOf(b).card;
   const cat = serviceCategory(b.category);
   const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const cheapest = (b.services || []).filter(s => s.price > 0).map(s => s.price).sort((x, y) => x - y)[0];
@@ -2321,11 +2426,11 @@ function renderShopperShop() {
     <!-- Newly published listings surface here, not only inside their category,
          so a business that has just signed up is visible straight away. -->
     ${(() => {
-      const recent = recentBusinesses(4);
-      if (!recent.length) return '';
+      const featured = featuredBusinesses(6);
+      if (!featured.length) return '';
       return `
-        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">New on Vendaru</div>
-        ${recent.map(b => businessCardHtml(b, { variant: 'large' })).join('')}`;
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">Local businesses</div>
+        ${featured.map(b => businessCardHtml(b)).join('')}`;
     })()}
 
     <!-- Category directory sits at the foot of the page. -->
@@ -3400,7 +3505,7 @@ function processGraftrAiQuery(rawQuery) {
   }
 
   if (query.includes('delivery') || query.includes('fast') || query.includes('time')) {
-    return "⚡ <b>Vendaru Delivery</b>: Standard delivery takes 15–30 minutes directly from your local merchant! You can track your courier live on the order screen.";
+    return "<b>Vendaru Delivery</b>: Standard delivery takes 15–30 minutes directly from your local merchant! You can track your courier live on the order screen.";
   }
 
   if (query.includes('offer') || query.includes('discount') || query.includes('deal')) {
@@ -3992,6 +4097,89 @@ function renderBusinessTabs() {
   </div>`;
 }
 
+// The plan picker. Sits behind the Page tab rather than taking a slot in the
+// tab bar, which is already full.
+function renderBusinessPlanTab(mine, shell, label) {
+  const billing = state.planBilling || 'monthly';
+  const chosen = state.planChoice || (mine.tier || DEFAULT_TIER);
+  const current = mine.tier || null;
+  const chosenTier = tierById(chosen);
+  const isCurrent = current === chosen && (mine.billing || 'monthly') === billing;
+
+  const toggle = (id, text) => `
+    <button type="button" data-action="setPlanBilling" data-arg="${id}" style="flex:1;padding:9px;border-radius:12px;border:none;font-size:12.5px;font-weight:${billing === id ? 600 : 500};cursor:pointer;font-family:inherit;background:${billing === id ? '#fff' : 'transparent'};color:${billing === id ? '#141414' : '#6b6b6b'};box-shadow:${billing === id ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">${text}</button>`;
+
+  return `
+    <div class="shop-card" style="${shell}">
+      <div style="padding:4px 16px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${label}">
+          <span>Your plan</span>
+          <button type="button" data-action="setBusinessTab" data-arg="page" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Done</button>
+        </div>
+        <div style="font-size:13.5px;color:#141414;margin-top:6px;line-height:1.5">
+          ${current
+            ? `You're on <b>${escapeHtml(tierById(current).label)}</b>, billed ${billingLabel(mine.billing || 'monthly')}.`
+            : 'Choose how your listing appears and where it sits.'}
+        </div>
+
+        <div style="display:flex;background:#f2f2f2;border-radius:12px;padding:4px;gap:4px;margin-top:12px">
+          ${toggle('monthly', 'Monthly')}
+          ${toggle('annual', 'Annual · 2 months free')}
+        </div>
+      </div>
+    </div>
+
+    ${BUSINESS_TIERS.map(t => {
+      const on = t.id === chosen;
+      const live = t.id === current;
+      return `
+      <div class="press shop-card" data-action="setPlanChoice" data-arg="${t.id}" style="border:1.5px solid ${on ? '#141414' : 'rgba(20,20,20,0.12)'};border-radius:16px;overflow:hidden;background:#fff;cursor:pointer">
+        <div style="padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+            <span style="font-size:15px;font-weight:600;color:#141414">
+              ${escapeHtml(t.label)}${live ? ' <span style="font-size:12px;font-weight:500;color:#6b6b6b">· current</span>' : ''}
+            </span>
+            <span style="font-size:15px;font-weight:600;color:#141414;flex:0 0 auto">£${tierPrice(t, billing)}<span style="font-size:12px;font-weight:500;color:#6b6b6b">/${billing === 'annual' ? 'yr' : 'mo'}</span></span>
+          </div>
+          <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.45">${escapeHtml(t.summary)}</div>
+          <div style="margin-top:9px">
+            ${t.features.map(f => `<div style="font-size:12.5px;color:#6b6b6b;line-height:1.6">· ${escapeHtml(f)}</div>`).join('')}
+          </div>
+          ${billing === 'annual'
+            ? `<div style="font-size:12px;color:#6b6b6b;margin-top:7px">£${(t.annual / 12).toFixed(2)} a month, paid yearly</div>`
+            : ''}
+        </div>
+      </div>`;
+    }).join('')}
+
+    <div class="shop-card" style="${shell}">
+      <div style="padding:14px 16px">
+        <div style="${label};padding-top:0">How your card will look on ${escapeHtml(chosenTier.label)}</div>
+        <div style="margin-top:10px">${businessCardHtml(mine, { linked: false, variant: chosenTier.card })}</div>
+        ${chosen === 'priority'
+          ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:9px;line-height:1.45">Pinned above every other listing in Events and on the home screen.</div>`
+          : ''}
+      </div>
+    </div>
+
+    ${state.planError ? `
+      <div style="border:1.5px solid rgba(20,20,20,0.15);border-radius:14px;padding:12px 14px;font-size:13px;color:#141414;line-height:1.5">${escapeHtml(state.planError)}</div>
+    ` : ''}
+
+    <button type="button" data-action="subscribePlan" ${state.subscribing || isCurrent ? 'disabled' : ''}
+      style="background:${state.subscribing || isCurrent ? 'rgba(20,20,20,0.35)' : '#141414'};color:#fff;border:none;padding:15px;border-radius:16px;font-weight:600;font-size:14.5px;cursor:${state.subscribing || isCurrent ? 'default' : 'pointer'};font-family:inherit">
+      ${state.subscribing
+        ? 'Opening secure checkout…'
+        : isCurrent
+          ? 'This is your current plan'
+          : `Subscribe · £${tierPrice(chosenTier, billing)} ${billingLabel(billing)}`}
+    </button>
+
+    ${current ? `
+      <button type="button" data-action="cancelPlan" style="background:none;border:none;padding:4px;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Cancel subscription</button>
+    ` : ''}`;
+}
+
 function renderBusinessDashboard() {
   const shell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff';
   const label = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
@@ -4040,6 +4228,24 @@ function renderBusinessDashboard() {
     const e = state.businessEditor || mine;
     const live = isBusinessLive(mine);
     body = `
+      <!-- Plan drives how the card looks and where it ranks, so it's the
+           first thing on the page tab. -->
+      <div class="press shop-card" data-action="setBusinessTab" data-arg="plan" style="${shell};cursor:pointer">
+        <div style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div style="min-width:0">
+            <div style="font-size:14px;font-weight:600;color:#141414">
+              ${mine.tier ? `${escapeHtml(tierOf(mine).label)} plan` : 'Choose a plan'}
+            </div>
+            <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.45">
+              ${mine.tier
+                ? `£${tierPrice(tierOf(mine), mine.billing || 'monthly')} ${billingLabel(mine.billing || 'monthly')} · ${escapeHtml(tierOf(mine).summary)}`
+                : 'Pick how your card looks and where it appears.'}
+            </div>
+          </div>
+          <span style="opacity:0.4;flex:0 0 auto">›</span>
+        </div>
+      </div>
+
       <!-- Whether customers can see them yet, stated plainly. -->
       <div class="shop-card" style="${shell}">
         <div style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
@@ -4174,6 +4380,8 @@ function renderBusinessDashboard() {
           ${galleryGridHtml(mine.gallery, { editable: true })}
         </div>
       </div>`;
+  } else if (tab === 'plan') {
+    body = renderBusinessPlanTab(mine, shell, label);
   } else if (tab === 'messages') {
     const msgs = messagesForBusiness(mine.id);
     body = `
@@ -4244,7 +4452,7 @@ function renderBusinessDashboard() {
         </div>` : ''}`;
   }
 
-  const titles = { page: 'Your page', services: 'Services', gallery: 'Photos', bookings: 'Bookings', messages: 'Activity' };
+  const titles = { page: 'Your page', services: 'Services', gallery: 'Photos', bookings: 'Bookings', messages: 'Activity', plan: 'Your plan' };
 
   return `
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
@@ -4951,6 +5159,72 @@ const actions = {
     state.businessTab = 'page';
     state.businessEditor = null;
     if (ADMIN_MODE) state.adminEditingId = fresh.id;   // edit the new one straight away
+    render();
+  },
+  // --- plans ---------------------------------------------------------------
+  setPlanBilling: (id) => { state.planBilling = String(id); state.planError = null; render(); },
+  setPlanChoice: (id) => { state.planChoice = String(id); state.planError = null; render(); },
+  subscribePlan: async () => {
+    const mine = myBusiness();
+    if (!mine || state.subscribing) return;
+    const billing = state.planBilling || 'monthly';
+    const tier = tierById(state.planChoice || mine.tier || DEFAULT_TIER);
+
+    state.subscribing = true;
+    state.planError = null;
+    render();
+
+    // Held so the plan can be applied when Stripe sends the browser back.
+    const pending = { businessId: mine.id, tier: tier.id, billing };
+    try { localStorage.setItem(PENDING_PLAN_KEY, JSON.stringify(pending)); } catch (e) { /* ignore */ }
+
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription: {
+            name: `Vendaru ${tier.label} listing — ${mine.name}`,
+            amount: tierPrice(tier, billing),
+            interval: billing === 'annual' ? 'year' : 'month',
+          },
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+
+      // No billing backend is the expected setup locally, so apply the plan
+      // directly rather than blocking. A real failure is surfaced instead.
+      if (isPaymentBackendUnavailable(res, data)) {
+        applyPlan(pending);
+        state.subscribing = false;
+        render();
+        return;
+      }
+
+      state.subscribing = false;
+      state.planError = data.error ? `Subscription failed: ${data.error}` : 'Could not start the subscription. Please try again.';
+      try { localStorage.removeItem(PENDING_PLAN_KEY); } catch (e) { /* ignore */ }
+      render();
+    } catch (err) {
+      state.subscribing = false;
+      state.planError = 'Could not reach the billing service. Please try again.';
+      try { localStorage.removeItem(PENDING_PLAN_KEY); } catch (e) { /* ignore */ }
+      render();
+    }
+  },
+  cancelPlan: () => {
+    const mine = myBusiness();
+    if (!mine) return;
+    mine.tier = null;
+    mine.billing = null;
+    mine.subscribedAt = null;
+    saveBusinesses();
+    state.businessNotice = { tone: 'warn', text: 'Subscription cancelled. Your listing drops back to a basic category card.' };
     render();
   },
   adminSelectBusiness: (id) => {

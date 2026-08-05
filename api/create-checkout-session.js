@@ -14,7 +14,37 @@ module.exports = async (req, res) => {
 
   try {
     const stripe = new Stripe(secretKey);
-    const { items, deliveryFee } = req.body || {};
+    const { items, deliveryFee, subscription } = req.body || {};
+    const origin = req.headers.origin || `https://${req.headers.host}`;
+
+    // Listing plans are recurring. price_data carries the interval inline, so
+    // no Price objects need creating in the Stripe dashboard first.
+    if (subscription) {
+      const amount = Number(subscription.amount);
+      const interval = subscription.interval === 'year' ? 'year' : 'month';
+      if (!Number.isFinite(amount) || amount <= 0) {
+        res.status(400).json({ error: 'Invalid subscription amount' });
+        return;
+      }
+
+      const planSession = await stripe.checkout.sessions.create({
+        mode: 'subscription',
+        line_items: [{
+          price_data: {
+            currency: 'gbp',
+            product_data: { name: String(subscription.name || 'Vendaru listing').slice(0, 200) },
+            unit_amount: Math.round(amount * 100),
+            recurring: { interval },
+          },
+          quantity: 1,
+        }],
+        success_url: `${origin}/business?plan=success&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/business?plan=cancelled`,
+      });
+
+      res.status(200).json({ url: planSession.url });
+      return;
+    }
 
     if (!Array.isArray(items) || items.length === 0) {
       res.status(400).json({ error: 'No items provided' });
@@ -40,8 +70,6 @@ module.exports = async (req, res) => {
         quantity: 1,
       });
     }
-
-    const origin = req.headers.origin || `https://${req.headers.host}`;
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',

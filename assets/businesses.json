@@ -11,7 +11,9 @@
     "logoSrc": "assets/business/utravel-logo.png",
     "coverSrc": "assets/business/u-travel-uk-cover.jpg",
     "services": [],
-    "gallery": []
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
   },
   {
     "id": "biz-yopa",
@@ -33,7 +35,9 @@
         "durationMins": 60
       }
     ],
-    "gallery": []
+    "gallery": [],
+    "tier": "featured",
+    "billing": "monthly"
   },
   {
     "id": "biz-msg8faz2",
@@ -49,7 +53,9 @@
     "createdAt": 1785943125326,
     "coverSrc": "assets/business/pixcisionstock-cover.jpg",
     "logoSrc": "assets/business/pixcisionstock-logo.png",
-    "publishedAt": 1785943304743
+    "publishedAt": 1785943304743,
+    "tier": "featured",
+    "billing": "monthly"
   },
   {
     "id": "biz-msg8c5tc",
@@ -65,7 +71,9 @@
     "createdAt": 1785942978672,
     "coverSrc": "assets/business/memuriah-cover.jpg",
     "logoSrc": "assets/business/memuriah-logo.png",
-    "publishedAt": 1785943123033
+    "publishedAt": 1785943123033,
+    "tier": "featured",
+    "billing": "monthly"
   },
   {
     "id": "biz-msg84alc",
@@ -81,7 +89,9 @@
     "createdAt": 1785942611616,
     "logoSrc": "assets/business/mybuilder-logo.png",
     "coverSrc": "assets/business/mybuilder-cover.jpg",
-    "publishedAt": 1785942879526
+    "publishedAt": 1785942879526,
+    "tier": "featured",
+    "billing": "monthly"
   },
   {
     "id": "biz-msg7wci1",
@@ -97,6 +107,8 @@
     "createdAt": 1785942240841,
     "coverSrc": "assets/business/tax-assist-cover.jpg",
     "logoSrc": "assets/business/tax-assist-logo.png",
-    "publishedAt": 1785942502814
+    "publishedAt": 1785942502814,
+    "tier": "featured",
+    "billing": "monthly"
   }
 ]
