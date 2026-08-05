@@ -1733,36 +1733,42 @@ function releaseDueScheduledOrders() {
   return changed;
 }
 
-function renderDeliverySlotPicker() {
-  if (!state.deliveryLater) return '';
-
+// Lives inside the checkout sheet, next to the address it's being delivered to.
+// Takes the sheet's own card styles so it can't drift from the cards around it.
+function renderCheckoutDeliveryCard(cardShell, sectionLabel) {
+  const later = state.deliveryLater;
   const days = [0, 1, 2, 3].filter(o => deliverySlotsFor(o).length > 0);
   const slots = deliverySlotsFor(state.deliveryDayOffset);
 
   const chip = (active) => `flex:0 0 auto;padding:8px 13px;border-radius:20px;font-size:12.5px;font-weight:${active ? 600 : 500};cursor:pointer;white-space:nowrap;border:1.5px solid ${active ? '#141414' : 'rgba(20,20,20,0.15)'};background:${active ? '#141414' : '#fff'};color:${active ? '#fff' : '#141414'};font-family:inherit`;
 
   return `
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#fff;overflow:hidden">
-      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
-          <span style="font-size:12.5px;font-weight:600;color:#6b6b6b">Schedule delivery</span>
-          <button type="button" data-action="setDeliveryNow" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Deliver now</button>
-        </div>
+    <div style="${cardShell}">
+      <div style="${sectionLabel}">Delivery time</div>
 
-        <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px" class="slot-scroll">
-          ${days.map(o => `<button type="button" data-action="setDeliveryDay" data-arg="${o}" style="${chip(o === state.deliveryDayOffset)}">${deliveryDayLabel(o)}</button>`).join('')}
-        </div>
-
-        ${slots.length
-          ? `<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px" class="slot-scroll">
-               ${slots.map(s => `<button type="button" data-action="setDeliverySlot" data-arg="${s}" style="${chip(s === state.deliverySlot)}">${s}</button>`).join('')}
-             </div>`
-          : `<div style="font-size:13px;color:#6b6b6b">No slots left today — pick another day.</div>`}
-
-        ${state.deliverySlot
-          ? `<div style="font-size:13px;color:#6b6b6b">Arriving ${deliveryDayLabel(state.deliveryDayOffset).toLowerCase()} between ${state.deliverySlot}.</div>`
-          : `<div style="font-size:13px;color:#6b6b6b">Choose a time slot.</div>`}
+      <div style="display:flex;gap:7px;margin-top:9px">
+        <button type="button" data-action="setDeliveryNow" style="${chip(!later)}">As soon as possible</button>
+        <button type="button" data-action="setDeliveryLater" style="${chip(later)}">Schedule</button>
       </div>
+
+      ${!later
+        ? `<div style="font-size:13px;color:#6b6b6b;margin-top:9px;line-height:1.5">Arriving in about 15–30 minutes.</div>`
+        : `
+          <div style="display:flex;gap:7px;overflow-x:auto;padding:9px 0 2px" class="slot-scroll">
+            ${days.map(o => `<button type="button" data-action="setDeliveryDay" data-arg="${o}" style="${chip(o === state.deliveryDayOffset)}">${deliveryDayLabel(o)}</button>`).join('')}
+          </div>
+
+          ${slots.length
+            ? `<div style="display:flex;gap:7px;overflow-x:auto;padding:7px 0 2px" class="slot-scroll">
+                 ${slots.map(s => `<button type="button" data-action="setDeliverySlot" data-arg="${s}" style="${chip(s === state.deliverySlot)}">${s}</button>`).join('')}
+               </div>`
+            : `<div style="font-size:13px;color:#6b6b6b;margin-top:9px">No slots left today — pick another day.</div>`}
+
+          <div style="font-size:13px;color:#6b6b6b;margin-top:9px;line-height:1.5">
+            ${state.deliverySlot
+              ? `Arriving ${deliveryDayLabel(state.deliveryDayOffset).toLowerCase()} between ${state.deliverySlot}.`
+              : 'Choose a time slot to continue.'}
+          </div>`}
     </div>`;
 }
 
@@ -1806,7 +1812,6 @@ function renderShopperShop() {
     <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:11px 16px">
       <span style="opacity:0.4;font-size:15px">⌕</span>
       <input id="shop-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery)}" placeholder="Search shops, groceries, essentials..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
-      <span class="press" data-action="toggleDeliveryLater" style="font-size:11.5px;border:1.5px solid rgba(20,20,20,0.15);border-radius:20px;padding:5px 11px;cursor:pointer;white-space:nowrap;font-weight:500">${selectedDeliveryLabel() || (state.deliveryLater ? 'Later' : 'Now')}</span>
     </div>
     <div style="display:flex;gap:6px">
       <div class="press" data-action="goBrowseCategory" data-arg="Grocery" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🛒</div><div style="font-size:10px;margin-top:3px">Groceries</div></div>
@@ -1815,7 +1820,6 @@ function renderShopperShop() {
       <div class="press" data-action="goBrowseCategory" data-arg="Alcohol" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🍷</div><div style="font-size:10px;margin-top:3px">Alcohol</div></div>
       <div class="press" data-action="goBrowseCategory" data-arg="Pets" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🐾</div><div style="font-size:10px;margin-top:3px">Pet</div></div>
     </div>
-    ${renderDeliverySlotPicker()}
     ${body}
   </div>`;
 }
@@ -2205,6 +2209,9 @@ function renderCheckoutModal() {
   const deliveryFee = 1.99;
   const grandTotal = subtotal - discount + deliveryFee;
   const p = state.userProfile;
+  // "Schedule" picked but no slot chosen — otherwise the order would quietly
+  // go out as an immediate one.
+  const needsSlot = state.deliveryLater && !state.deliverySlot;
 
   const cardShell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#fff;padding:4px 16px 14px';
   const sectionLabel = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
@@ -2244,6 +2251,9 @@ function renderCheckoutModal() {
           </div>
         </div>
 
+        <!-- Delivery time -->
+        ${renderCheckoutDeliveryCard(cardShell, sectionLabel)}
+
         <!-- Order summary -->
         <div style="${cardShell}">
           <div style="${sectionLabel}">Order summary (${cartCount()} item${cartCount() === 1 ? '' : 's'})</div>
@@ -2254,9 +2264,6 @@ function renderCheckoutModal() {
               ? `<div style="${summaryRow};color:#c9447a;font-weight:600"><span>Loyalty reward</span><span>−£${discount.toFixed(2)}</span></div>`
               : ''}
             <div style="${summaryRow}"><span>Delivery</span><span>£${deliveryFee.toFixed(2)}</span></div>
-            ${state.deliveryLater && selectedDeliveryLabel()
-              ? `<div style="${summaryRow}"><span>Scheduled</span><span>${escapeHtml(selectedDeliveryLabel())}</span></div>`
-              : ''}
             <div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;font-weight:600;color:#141414;padding-top:9px;margin-top:5px;border-top:1px solid #f0f0f0">
               <span>Total</span><span>£${grandTotal.toFixed(2)}</span>
             </div>
@@ -2273,10 +2280,12 @@ function renderCheckoutModal() {
           ? `<button type="button" data-action="openAddressModal" style="background:#141414;color:#fff;border:none;padding:15px;border-radius:16px;font-weight:600;font-size:14.5px;cursor:pointer;margin-top:2px;font-family:inherit">
                Add your details to continue
              </button>`
-          : `<button type="button" data-action="placeOrder" ${state.placingOrder ? 'disabled' : ''} style="background:${state.placingOrder ? 'rgba(20,20,20,0.35)' : '#141414'};color:#fff;border:none;padding:15px;border-radius:16px;font-weight:600;font-size:14.5px;cursor:${state.placingOrder ? 'default' : 'pointer'};margin-top:2px;font-family:inherit">
+          : `<button type="button" data-action="placeOrder" ${state.placingOrder || needsSlot ? 'disabled' : ''} style="background:${state.placingOrder || needsSlot ? 'rgba(20,20,20,0.35)' : '#141414'};color:#fff;border:none;padding:15px;border-radius:16px;font-weight:600;font-size:14.5px;cursor:${state.placingOrder || needsSlot ? 'default' : 'pointer'};margin-top:2px;font-family:inherit">
                ${state.placingOrder
                  ? 'Redirecting to secure checkout…'
-                 : `${state.checkoutError ? 'Try again' : 'Pay & place order'} · £${grandTotal.toFixed(2)}`}
+                 : needsSlot
+                   ? 'Choose a delivery slot'
+                   : `${state.checkoutError ? 'Try again' : 'Pay & place order'} · £${grandTotal.toFixed(2)}`}
              </button>`}
       </div>
     </div>
@@ -3671,6 +3680,14 @@ const actions = {
       render();
       return;
     }
+
+    // Same belt and braces for scheduling: the button is disabled without a
+    // slot, but never let a "Schedule" order through as an immediate one.
+    if (state.deliveryLater && !state.deliverySlot) {
+      state.checkoutError = 'Choose a delivery slot first.';
+      render();
+      return;
+    }
     const sub = cartTotal();                 // already net of any free items
     const deliveryFee = 1.99;
     const freeUsed = loyaltyPendingFree();
@@ -4080,15 +4097,14 @@ const actions = {
     saveInbox();
     render();
   },
-  toggleDeliveryLater: () => {
-    state.deliveryLater = !state.deliveryLater;
-    if (state.deliveryLater) {
-      // Open on the first day that still has slots, with none pre-picked.
-      state.deliveryDayOffset = [0, 1, 2, 3].find(o => deliverySlotsFor(o).length > 0) ?? 1;
-      state.deliverySlot = null;
-    } else {
-      state.deliverySlot = null;
-    }
+  // A segmented control, not a toggle: pressing the option you're already on
+  // must keep it selected rather than flipping back.
+  setDeliveryLater: () => {
+    if (state.deliveryLater) return;
+    state.deliveryLater = true;
+    // Open on the first day that still has slots, with none pre-picked.
+    state.deliveryDayOffset = [0, 1, 2, 3].find(o => deliverySlotsFor(o).length > 0) ?? 1;
+    state.deliverySlot = null;
     render();
   },
   setDeliveryNow: () => {
