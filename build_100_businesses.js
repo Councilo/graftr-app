@@ -14,6 +14,25 @@ const ukCities = [
   'Chester & Cheshire', 'Sheffield & South Yorkshire', 'Nationwide / UK Wide'
 ];
 
+// Color accents for SVG logo backgrounds
+const bgColors = ['141414', '1e293b', '0f172a', '1e1b4b', '1c1917', '262626', '111827', '09090b'];
+
+function makeSvgLogo(name, bgIndex) {
+  const initials = (name || '?')
+    .split(/\s+/)
+    .filter(w => !['and', '&', 'the', 'uk', 'of'].includes(w.toLowerCase()))
+    .map(w => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || name.slice(0, 2).toUpperCase();
+
+  const bg = bgColors[bgIndex % bgColors.length];
+  
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="%23${bg}"/><circle cx="60" cy="60" r="52" stroke="%23ffffff" stroke-opacity="0.12" stroke-width="3" fill="none"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="-apple-system, system-ui, sans-serif" font-size="42" font-weight="800" letter-spacing="-1">${initials}</text></svg>`;
+  
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
 // Custom local logo overrides for key brand assets already in assets/business/
 const localLogos = {
   "Yopa Estate Agents": "assets/business/yopa-logo.png",
@@ -293,7 +312,7 @@ let counter = 1000;
 
 // Add initial custom trades
 data.forEach(item => {
-  const logo = localLogos[item.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=141414&color=ffffff&size=200&bold=true`;
+  const logo = localLogos[item.name] || makeSvgLogo(item.name, counter);
   const cover = localCovers[item.name] || item.coverSrc;
   list.push({
     id: `biz-${item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
@@ -321,7 +340,7 @@ for (const cat of categories) {
     const it = items[i];
     const slug = cat + '-' + i + '-' + it.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     if (!list.some(b => b.name.toLowerCase() === it.name.toLowerCase())) {
-      const logo = localLogos[it.name] || `https://ui-avatars.com/api/?name=${encodeURIComponent(it.name)}&background=141414&color=ffffff&size=200&bold=true`;
+      const logo = localLogos[it.name] || makeSvgLogo(it.name, counter);
       const cover = localCovers[it.name] || it.cover;
       list.push({
         id: `biz-${slug}`,
