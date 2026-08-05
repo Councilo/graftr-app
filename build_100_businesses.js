@@ -14,23 +14,38 @@ const ukCities = [
   'Chester & Cheshire', 'Sheffield & South Yorkshire', 'Nationwide / UK Wide'
 ];
 
-// Color accents for SVG logo backgrounds
-const bgColors = ['141414', '1e293b', '0f172a', '1e1b4b', '1c1917', '262626', '111827', '09090b'];
+// Rich, vibrant color palettes for SVG logo badges
+const palettes = [
+  { bg: '141414', stroke: '3b82f6', text: 'ffffff' },
+  { bg: '0f172a', stroke: '10b981', text: 'ffffff' },
+  { bg: '18181b', stroke: 'f59e0b', text: 'ffffff' },
+  { bg: '1e1b4b', stroke: '6366f1', text: 'ffffff' },
+  { bg: '1c1917', stroke: 'ec4899', text: 'ffffff' },
+  { bg: '0284c7', stroke: 'ffffff', text: 'ffffff' },
+  { bg: '059669', stroke: 'ffffff', text: 'ffffff' },
+  { bg: '7c3aed', stroke: 'ffffff', text: 'ffffff' },
+  { bg: 'b91c1c', stroke: 'ffffff', text: 'ffffff' },
+  { bg: '0f766e', stroke: 'ffffff', text: 'ffffff' }
+];
 
-function makeSvgLogo(name, bgIndex) {
+function makeSvgLogo(name, index) {
   const initials = (name || '?')
     .split(/\s+/)
-    .filter(w => !['and', '&', 'the', 'uk', 'of'].includes(w.toLowerCase()))
+    .filter(w => !['and', '&', 'the', 'uk', 'of', 'ltd'].includes(w.toLowerCase()))
     .map(w => w[0])
     .join('')
     .slice(0, 2)
     .toUpperCase() || name.slice(0, 2).toUpperCase();
 
-  const bg = bgColors[bgIndex % bgColors.length];
-  
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" rx="24" fill="%23${bg}"/><circle cx="60" cy="60" r="52" stroke="%23ffffff" stroke-opacity="0.12" stroke-width="3" fill="none"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="-apple-system, system-ui, sans-serif" font-size="42" font-weight="800" letter-spacing="-1">${initials}</text></svg>`;
-  
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+  const p = palettes[index % palettes.length];
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <rect width="120" height="120" rx="30" fill="#${p.bg}"/>
+  <circle cx="60" cy="60" r="48" stroke="#${p.stroke}" stroke-width="4" stroke-opacity="0.5" fill="none"/>
+  <text x="60" y="68" text-anchor="middle" fill="#${p.text}" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" letter-spacing="-1">${initials}</text>
+</svg>`;
+
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }
 
 // Custom local logo overrides for key brand assets already in assets/business/
