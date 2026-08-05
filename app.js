@@ -109,24 +109,34 @@ const PRODUCTS = [
 //    (unlike the Stripe secret key, this one isn't a secret).
 const GOOGLE_CLIENT_ID = '310040090151-6llrfgdqkg0vamomn9fdqnbiml3anv5k.apps.googleusercontent.com';
 
+const EMPTY_PROFILE = {
+  name: '', email: '', phone: '', address: '', city: '', postcode: '', instructions: ''
+};
+
+// A new account starts blank. Details arrive from Google or the email sign-up
+// form, and anything still missing is asked for before an order can be placed.
 function loadUserProfile() {
   try {
     const saved = localStorage.getItem('graftr_user_profile');
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed && parsed.address && !parsed.address.includes('Kingsdown')) {
-        return parsed;
-      }
+      if (parsed && typeof parsed === 'object') return Object.assign({}, EMPTY_PROFILE, parsed);
     }
-  } catch(e){}
-  return {
-    name: 'Priya Nair',
-    phone: '+44 7700 900077',
-    address: '541 Halliwell Road',
-    city: 'Bolton',
-    postcode: 'BL1 3PJ',
-    instructions: 'Leave at front door / ring bell'
-  };
+  } catch (e) { /* ignore corrupt storage */ }
+  return Object.assign({}, EMPTY_PROFILE);
+}
+
+// Ordering needs somewhere to deliver to and a way to reach the customer.
+const REQUIRED_PROFILE_FIELDS = [
+  { key: 'email', label: 'Email address' },
+  { key: 'phone', label: 'Mobile number' },
+  { key: 'address', label: 'Street address' },
+  { key: 'postcode', label: 'Postcode' },
+];
+
+function missingProfileFields() {
+  const p = state.userProfile || {};
+  return REQUIRED_PROFILE_FIELDS.filter(f => !String(p[f.key] || '').trim());
 }
 
 function saveUserProfile() {
@@ -237,6 +247,7 @@ function finalizeOrder(snapshot) {
     address: snapshot.address,
     courier: null,
     tip: 0,
+    scheduledFor: snapshot.scheduledFor || null,
   };
   state.orders.unshift(newOrder);
   state.activeOrderId = newId;
@@ -265,9 +276,12 @@ function finalizeOrder(snapshot) {
 // Pay button can't stay stuck on "Redirecting…".
 let redirectWatchdog = null;
 
-// The server answers with this when STRIPE_SECRET_KEY isn't set. That's the
-// expected demo setup rather than a payment failure, so it's treated separately.
-function isStripeUnconfigured(data) {
+// No payment backend at all — either the endpoint isn't deployed (404) or the
+// server has no STRIPE_SECRET_KEY. That's the demo setup, not a failed payment,
+// so the order still goes through as a mock. A real payment error (a decline,
+// a Stripe fault) is a different thing and must not quietly create an order.
+function isPaymentBackendUnavailable(res, data) {
+  if (res && res.status === 404) return true;
   return !!(data && typeof data.error === 'string' && /not configured/i.test(data.error));
 }
 
@@ -388,6 +402,8 @@ const state = {
   packDone: false,
   earningsTab: 'today',
   deliveryLater: false,
+  deliveryDayOffset: 0,
+  deliverySlot: null,
   ...loadInbox(),
   basketCheckedOut: false,
   trackStep: 2,
@@ -1473,6 +1489,65 @@ function renderShopperSearchResults(query) {
   `;
 }
 
+// Scheduled delivery: three days out, hourly slots. Today only offers slots
+// that haven't already passed, so you can't schedule into the past.
+const DELIVERY_SLOT_HOURS = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+function deliveryDayLabel(offset) {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  if (offset === 0) return 'Today';
+  if (offset === 1) return 'Tomorrow';
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+function deliverySlotsFor(offset) {
+  const now = new Date();
+  // Need at least an hour's notice for a slot starting today.
+  const earliest = offset === 0 ? now.getHours() + 1 : 0;
+  return DELIVERY_SLOT_HOURS
+    .filter(h => h >= earliest)
+    .map(h => `${String(h).padStart(2, '0')}:00–${String(h + 1).padStart(2, '0')}:00`);
+}
+
+function selectedDeliveryLabel() {
+  if (!state.deliveryLater || !state.deliverySlot) return null;
+  return `${deliveryDayLabel(state.deliveryDayOffset)} ${state.deliverySlot.split('–')[0]}`;
+}
+
+function renderDeliverySlotPicker() {
+  if (!state.deliveryLater) return '';
+
+  const days = [0, 1, 2, 3].filter(o => deliverySlotsFor(o).length > 0);
+  const slots = deliverySlotsFor(state.deliveryDayOffset);
+
+  const chip = (active) => `flex:0 0 auto;padding:8px 13px;border-radius:20px;font-size:12.5px;font-weight:${active ? 600 : 500};cursor:pointer;white-space:nowrap;border:1.5px solid ${active ? '#141414' : 'rgba(20,20,20,0.15)'};background:${active ? '#141414' : '#fff'};color:${active ? '#fff' : '#141414'};font-family:inherit`;
+
+  return `
+    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#fff;overflow:hidden">
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+          <span style="font-size:12.5px;font-weight:600;color:#6b6b6b">Schedule delivery</span>
+          <button type="button" data-action="setDeliveryNow" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">Deliver now</button>
+        </div>
+
+        <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px" class="slot-scroll">
+          ${days.map(o => `<button type="button" data-action="setDeliveryDay" data-arg="${o}" style="${chip(o === state.deliveryDayOffset)}">${deliveryDayLabel(o)}</button>`).join('')}
+        </div>
+
+        ${slots.length
+          ? `<div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px" class="slot-scroll">
+               ${slots.map(s => `<button type="button" data-action="setDeliverySlot" data-arg="${s}" style="${chip(s === state.deliverySlot)}">${s}</button>`).join('')}
+             </div>`
+          : `<div style="font-size:13px;color:#6b6b6b">No slots left today — pick another day.</div>`}
+
+        ${state.deliverySlot
+          ? `<div style="font-size:13px;color:#6b6b6b">Arriving ${deliveryDayLabel(state.deliveryDayOffset).toLowerCase()} between ${state.deliverySlot}.</div>`
+          : `<div style="font-size:13px;color:#6b6b6b">Choose a time slot.</div>`}
+      </div>
+    </div>`;
+}
+
 function renderShopperShop() {
   const searching = state.searchQuery.trim().length > 0;
   const body = searching
@@ -1513,7 +1588,7 @@ function renderShopperShop() {
     <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:11px 16px">
       <span style="opacity:0.4;font-size:15px">⌕</span>
       <input id="shop-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery)}" placeholder="Search shops, groceries, essentials..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
-      <span class="press" data-action="toggleDeliveryLater" style="font-size:11px;border:1.5px solid #141414;border-radius:20px;padding:5px 10px;cursor:pointer;white-space:nowrap">${state.deliveryLater ? 'Later ▾' : 'Now ▾'}</span>
+      <span class="press" data-action="toggleDeliveryLater" style="font-size:11.5px;border:1.5px solid rgba(20,20,20,0.15);border-radius:20px;padding:5px 11px;cursor:pointer;white-space:nowrap;font-weight:500">${selectedDeliveryLabel() || (state.deliveryLater ? 'Later' : 'Now')}</span>
     </div>
     <div style="display:flex;gap:6px">
       <div class="press" data-action="goBrowseCategory" data-arg="Grocery" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🛒</div><div style="font-size:10px;margin-top:3px">Groceries</div></div>
@@ -1522,6 +1597,7 @@ function renderShopperShop() {
       <div class="press" data-action="goBrowseCategory" data-arg="Alcohol" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🍷</div><div style="font-size:10px;margin-top:3px">Alcohol</div></div>
       <div class="press" data-action="goBrowseCategory" data-arg="Pets" style="flex:1;text-align:center;cursor:pointer"><div style="width:44px;height:44px;margin:0 auto;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px">🐾</div><div style="font-size:10px;margin-top:3px">Pet</div></div>
     </div>
+    ${renderDeliverySlotPicker()}
     ${body}
   </div>`;
 }
@@ -1810,17 +1886,22 @@ function renderAddressModal() {
         </div>
 
         <div class="graftr-input-group">
-          <label>Full Name</label>
-          <input type="text" id="prof-name" data-bind="profile.name" value="${escapeHtml(p.name)}" placeholder="Your Name" />
+          <label>Full name</label>
+          <input type="text" id="prof-name" data-bind="profile.name" value="${escapeHtml(p.name)}" placeholder="Your name" />
         </div>
 
         <div class="graftr-input-group">
-          <label>Phone Number</label>
+          <label>Email address</label>
+          <input type="email" id="prof-email" data-bind="profile.email" value="${escapeHtml(p.email || '')}" placeholder="name@example.com" />
+        </div>
+
+        <div class="graftr-input-group">
+          <label>Mobile number</label>
           <input type="tel" id="prof-phone" data-bind="profile.phone" value="${escapeHtml(p.phone)}" placeholder="+44 7700 900000" />
         </div>
 
         <div class="graftr-input-group">
-          <label>Street Address</label>
+          <label>Street address</label>
           <input type="text" id="prof-address" data-bind="profile.address" value="${escapeHtml(p.address)}" placeholder="123 High Street" />
         </div>
 
@@ -1851,6 +1932,7 @@ function renderAddressModal() {
 
 function renderCheckoutModal() {
   if (!state.showCheckoutModal) return '';
+  const missing = missingProfileFields();
   const lines = cartLines();
   const subtotal = cartTotal();
   const deliveryFee = 1.99;
@@ -1876,12 +1958,15 @@ function renderCheckoutModal() {
         </div>
 
         <!-- Delivery Address Box -->
-        <div style="background:#fafafa;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#6b6b6b">DELIVER TO</div>
-            <div style="font-size:14px;font-weight:700;margin-top:2px">${escapeHtml(p.name)}</div>
-            <div style="font-size:12.5px;opacity:0.8">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
-            ${p.instructions ? `<div style="font-size:11.5px;color:#141414;margin-top:2px">Note: "${escapeHtml(p.instructions)}"</div>` : ''}
+        <div style="background:#fafafa;border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div style="min-width:0">
+            <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">Deliver to</div>
+            ${missing.length
+              ? `<div style="font-size:13.5px;color:#141414;margin-top:3px;line-height:1.5">We need your ${missing.map(f => f.label.toLowerCase()).join(', ')} before this order can go through.</div>`
+              : `<div style="font-size:14px;font-weight:600;margin-top:2px">${escapeHtml(p.name || 'Your address')}</div>
+                 <div style="font-size:13px;color:#6b6b6b">${escapeHtml(p.address)}, ${escapeHtml(p.postcode)}</div>
+                 <div style="font-size:13px;color:#6b6b6b">${escapeHtml(p.phone)}</div>
+                 ${p.instructions ? `<div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">Note: ${escapeHtml(p.instructions)}</div>` : ''}`}
           </div>
           <button type="button" data-action="openAddressModal" style="background:#fff;border:1px solid #d4d4d4;padding:6px 10px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer">Change</button>
         </div>
@@ -1903,11 +1988,15 @@ function renderCheckoutModal() {
           </div>
         ` : ''}
 
-        <button type="button" data-action="placeOrder" ${state.placingOrder ? 'disabled' : ''} style="background:${state.placingOrder ? 'rgba(20,20,20,0.4)' : '#141414'};color:#fff;border:none;padding:16px;border-radius:18px;font-weight:800;font-size:15px;cursor:${state.placingOrder ? 'default' : 'pointer'};box-shadow:0 8px 20px rgba(0,0,0,0.25);margin-top:4px">
-          ${state.placingOrder
-            ? 'Redirecting to secure checkout…'
-            : `${state.checkoutError ? 'Try again' : '🔒 Pay &amp; Place Order'} (£${grandTotal.toFixed(2)})`}
-        </button>
+        ${missing.length
+          ? `<button type="button" data-action="openAddressModal" style="background:#141414;color:#fff;border:none;padding:16px;border-radius:18px;font-weight:600;font-size:15px;cursor:pointer;margin-top:4px;font-family:inherit">
+               Add your details to continue
+             </button>`
+          : `<button type="button" data-action="placeOrder" ${state.placingOrder ? 'disabled' : ''} style="background:${state.placingOrder ? 'rgba(20,20,20,0.4)' : '#141414'};color:#fff;border:none;padding:16px;border-radius:18px;font-weight:600;font-size:15px;cursor:${state.placingOrder ? 'default' : 'pointer'};margin-top:4px;font-family:inherit">
+               ${state.placingOrder
+                 ? 'Redirecting to secure checkout…'
+                 : `${state.checkoutError ? 'Try again' : 'Pay &amp; place order'} · £${grandTotal.toFixed(2)}`}
+             </button>`}
       </div>
     </div>
   `;
@@ -2039,9 +2128,11 @@ function renderShopperAccount() {
         <button type="button" data-action="openAddressModal" style="background:none;border:none;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;font-family:inherit;padding:0">Edit</button>
       </div>
       <div style="padding-bottom:14px">
-        <div style="font-size:14px;color:#141414;line-height:1.5">${escapeHtml(p.address || '541 Halliwell Road')}, ${escapeHtml(p.postcode || 'BL1 3PJ')}</div>
-        <div style="font-size:13px;color:#6b6b6b;margin-top:3px">${escapeHtml(p.city || 'Bolton')}${p.phone ? ' · ' + escapeHtml(p.phone) : ''}</div>
-        ${p.instructions ? `<div style="font-size:13px;color:#6b6b6b;margin-top:6px">Note: ${escapeHtml(p.instructions)}</div>` : ''}
+        ${p.address
+          ? `<div style="font-size:14px;color:#141414;line-height:1.5">${escapeHtml(p.address)}${p.postcode ? ', ' + escapeHtml(p.postcode) : ''}</div>
+             <div style="font-size:13px;color:#6b6b6b;margin-top:3px">${escapeHtml(p.city || '')}${p.city && p.phone ? ' · ' : ''}${escapeHtml(p.phone || '')}</div>
+             ${p.instructions ? `<div style="font-size:13px;color:#6b6b6b;margin-top:6px">Note: ${escapeHtml(p.instructions)}</div>` : ''}`
+          : `<div style="font-size:13.5px;color:#6b6b6b;line-height:1.5">No delivery address saved yet. You'll need one before you can order.</div>`}
       </div>
     </div>
 
@@ -2629,7 +2720,7 @@ function orderRowsHtml(orders) {
           <div style="font-size:14px;font-weight:600;color:#141414;flex:0 0 auto">£${o.total ? o.total.toFixed(2) : '0.00'}</div>
         </div>
         <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">
-          ${o.id} · ${itemCount} item${itemCount > 1 ? 's' : ''} · ${escapeHtml(o.status)}
+          ${o.id} · ${itemCount} item${itemCount > 1 ? 's' : ''} · ${escapeHtml(o.status)}${o.scheduledFor ? ` · ${escapeHtml(o.scheduledFor)}` : ''}
         </div>
         <div style="display:flex;gap:16px;margin-top:9px">
           ${!isClosed ? `
@@ -3176,6 +3267,16 @@ const actions = {
   placeOrder: async () => {
     const lines = cartLines();
     if (lines.length === 0 || state.placingOrder) return;
+
+    // Belt and braces: the button is swapped out when details are missing, but
+    // never let an order through without somewhere to deliver it.
+    const missing = missingProfileFields();
+    if (missing.length) {
+      state.checkoutError = `Add your ${missing.map(f => f.label.toLowerCase()).join(', ')} first.`;
+      state.showAddressModal = true;
+      render();
+      return;
+    }
     const sub = cartTotal();
     const deliveryFee = 1.99;
 
@@ -3184,6 +3285,7 @@ const actions = {
       subtotal: sub,
       deliveryFee,
       address: `${state.userProfile.address}, ${state.userProfile.postcode}`,
+      scheduledFor: selectedDeliveryLabel(),
     };
 
     state.placingOrder = true;
@@ -3215,10 +3317,10 @@ const actions = {
         return;
       }
 
-      // No payment key on the server is the expected demo setup, not a failed
-      // payment — fall through to the mock order. Anything else is a genuine
-      // failure, so surface it instead of quietly creating an order.
-      if (!isStripeUnconfigured(data)) {
+      // No payment backend is the expected demo setup, not a failed payment —
+      // fall through to the mock order. Anything else is a genuine failure, so
+      // surface it instead of quietly creating an order.
+      if (!isPaymentBackendUnavailable(res, data)) {
         state.placingOrder = false;
         state.checkoutError = data.error
           ? `Payment failed: ${data.error}`
@@ -3562,7 +3664,31 @@ const actions = {
     saveInbox();
     render();
   },
-  toggleDeliveryLater: () => { state.deliveryLater = !state.deliveryLater; render(); },
+  toggleDeliveryLater: () => {
+    state.deliveryLater = !state.deliveryLater;
+    if (state.deliveryLater) {
+      // Open on the first day that still has slots, with none pre-picked.
+      state.deliveryDayOffset = [0, 1, 2, 3].find(o => deliverySlotsFor(o).length > 0) ?? 1;
+      state.deliverySlot = null;
+    } else {
+      state.deliverySlot = null;
+    }
+    render();
+  },
+  setDeliveryNow: () => {
+    state.deliveryLater = false;
+    state.deliverySlot = null;
+    render();
+  },
+  setDeliveryDay: (offset) => {
+    state.deliveryDayOffset = Number(offset) || 0;
+    state.deliverySlot = null;   // slots differ per day
+    render();
+  },
+  setDeliverySlot: (slot) => {
+    state.deliverySlot = slot;
+    render();
+  },
   toggleCourierRead: (i) => { state.courierInbox[i].read = !state.courierInbox[i].read; saveInbox(); render(); },
   toggleShopperRead: (i) => { state.shopperInbox[i].read = !state.shopperInbox[i].read; saveInbox(); render(); },
   markAllCourierRead: () => { state.courierInbox.forEach(m => m.read = true); saveInbox(); render(); },
@@ -3659,35 +3785,53 @@ document.addEventListener('DOMContentLoaded', () => {
       actions.submitManualBarcode(state.scanningBarcodeIndex);
     }
   });
+  // Typing used to re-render the whole app on every keystroke — root.innerHTML
+  // was rebuilt, the input destroyed and recreated, then refocused with the
+  // caret restored. That's what made every letter flicker. Most fields only
+  // need their value recorded; the input already shows what you typed. Only
+  // the ones that change other parts of the screen re-render, and those are
+  // debounced so it happens once you pause rather than per letter.
+  let bindRenderTimer = null;
+  const renderKeepingFocus = () => {
+    const el = document.activeElement;
+    const id = el && el.id;
+    const selStart = el && el.selectionStart;
+    const selEnd = el && el.selectionEnd;
+    render();
+    if (!id) return;
+    const same = document.getElementById(id);
+    if (!same) return;
+    same.focus();
+    try { same.setSelectionRange(selStart, selEnd); } catch (err) { /* not text-selectable */ }
+  };
+
   root.addEventListener('input', (e) => {
     const el = e.target.closest('[data-bind]');
     if (!el) return;
     const path = el.dataset.bind;
+    let needsRender = false;
+
     if (path === 'searchQuery') {
       state.searchQuery = el.value;
+      needsRender = true;               // drives the results list
     } else if (path === 'aiInput') {
       state.aiInput = el.value;
     } else if (path === 'manualBarcodeInput') {
       state.manualBarcodeInput = el.value;
     } else if (path.startsWith('profile.')) {
-      const field = path.replace('profile.', '');
-      state.userProfile[field] = el.value;
+      state.userProfile[path.replace('profile.', '')] = el.value;
       saveUserProfile();
     } else {
       const m = /^specialRequest\.(\w+)$/.exec(path);
-      if (m) state.specialRequest[m[1]] = el.value;
-    }
-    const id = el.id;
-    const selStart = el.selectionStart;
-    const selEnd = el.selectionEnd;
-    render();
-    if (id) {
-      const same = document.getElementById(id);
-      if (same) {
-        same.focus();
-        try { same.setSelectionRange(selStart, selEnd); } catch (err) { /* not a text-selectable input */ }
+      if (m) {
+        state.specialRequest[m[1]] = el.value;
+        needsRender = true;             // enables/disables the send button
       }
     }
+
+    if (!needsRender) return;
+    clearTimeout(bindRenderTimer);
+    bindRenderTimer = setTimeout(renderKeepingFocus, 180);
   });
   // Coming back from Stripe via the back button restores this page from the
   // bfcache with its old JS state, which would leave the Pay button disabled

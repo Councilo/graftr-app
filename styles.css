@@ -500,30 +500,60 @@ body::-webkit-scrollbar {
   animation: aiSlideUp 0.25s ease-out;
 }
 
+/* Day/time slot rows scroll sideways without showing a scrollbar. */
+.slot-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.slot-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .graftr-input-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .graftr-input-group label {
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-size: 12.5px;
+  font-weight: 600;
   color: #6b6b6b;
-  letter-spacing: 0.5px;
 }
 
-.graftr-input-group input, .graftr-input-group textarea {
-  border: 1.5px solid #d4d4d4;
+/* box-sizing and width:100% stop the side-by-side City/Postcode pair from
+   overflowing their row once padding and border are counted. 16px type keeps
+   iOS from zooming the viewport when a field is focused. */
+.graftr-input-group input,
+.graftr-input-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid rgba(20, 20, 20, 0.15);
   border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 13.5px;
+  padding: 11px 13px;
+  font-size: 16px;
+  line-height: 1.3;
   font-family: inherit;
+  color: #141414;
+  background: #ffffff;
   outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.12s ease;
 }
 
-.graftr-input-group input:focus, .graftr-input-group textarea:focus {
+.graftr-input-group textarea {
+  resize: vertical;
+  min-height: 62px;
+}
+
+.graftr-input-group input::placeholder,
+.graftr-input-group textarea::placeholder {
+  color: #9a9a9a;
+}
+
+.graftr-input-group input:focus,
+.graftr-input-group textarea:focus {
   border-color: #141414;
 }
 
