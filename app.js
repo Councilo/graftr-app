@@ -2088,27 +2088,51 @@ function renderCheckoutDeliveryCard(cardShell, sectionLabel) {
 const SERVICE_CARD_SHELL = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff';
 const SERVICE_SECTION_LABEL = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
 
-// The listing card. Same object on the category list and at the top of the
-// business's own page, so the two can't drift apart.
-function businessCardHtml(b, { linked = true } = {}) {
+// The listing card, in two sizes. `compact` is a single row for scanning a
+// category; `large` carries a banner image and sits alongside the shop's own
+// picture cards on the home screen. Both are built here so they can't drift.
+function businessCardHtml(b, { linked = true, variant = 'compact' } = {}) {
   const cat = serviceCategory(b.category);
   const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const cheapest = (b.services || []).filter(s => s.price > 0).map(s => s.price).sort((x, y) => x - y)[0];
+  const meta = `${cat ? `${cat.emoji} ${escapeHtml(cat.label)}` : ''}${b.area ? ` · ${escapeHtml(b.area)}` : ''}`;
+  const open = linked ? `data-action="openBusiness" data-arg="${b.id}"` : '';
+  const shell = `${SERVICE_CARD_SHELL}${linked ? ';cursor:pointer' : ''}`;
+
+  if (variant === 'large') {
+    // Banner falls back to the first piece of their work, then to a plain
+    // tile — a business with no photos yet still gets a full-size card.
+    const banner = b.coverSrc || (b.gallery || []).find(Boolean);
+    return `
+      <div class="${linked ? 'press ' : ''}shop-card" ${open} style="${shell}">
+        <div style="height:110px;background:${banner ? `#eef0ee center/cover url('${banner}')` : '#eef0ee'};display:flex;align-items:center;justify-content:center">
+          ${banner ? '' : `<span style="font-size:32px;opacity:0.3">${cat ? cat.emoji : '🏪'}</span>`}
+        </div>
+        <div style="padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
+            <span style="font-size:15.5px;font-weight:700;color:#141414;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.name)}</span>
+            ${cheapest !== undefined
+              ? `<span style="font-size:13px;color:#6b6b6b;flex:0 0 auto">from £${cheapest.toFixed(2)}</span>`
+              : `<span style="opacity:0.4;flex:0 0 auto">›</span>`}
+          </div>
+          <div style="font-size:13px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.tagline || (cat ? cat.label : ''))}</div>
+          <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">${meta}</div>
+        </div>
+      </div>`;
+  }
 
   const avatar = b.logoSrc
     ? `<span style="width:52px;height:52px;border-radius:14px;flex:0 0 auto;background:#f2f2f2 center/cover url('${b.logoSrc}')"></span>`
     : `<span style="width:52px;height:52px;border-radius:14px;flex:0 0 auto;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">${escapeHtml(initials)}</span>`;
 
   return `
-    <div class="${linked ? 'press ' : ''}shop-card" ${linked ? `data-action="openBusiness" data-arg="${b.id}"` : ''} style="${SERVICE_CARD_SHELL}${linked ? ';cursor:pointer' : ''}">
+    <div class="${linked ? 'press ' : ''}shop-card" ${open} style="${shell}">
       <div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
         ${avatar}
         <div style="flex:1;min-width:0">
           <div style="font-size:15px;font-weight:600;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.name)}</div>
           <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.tagline || (cat ? cat.label : ''))}</div>
-          <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">
-            ${cat ? `${cat.emoji} ${escapeHtml(cat.label)}` : ''}${b.area ? ` · ${escapeHtml(b.area)}` : ''}
-          </div>
+          <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">${meta}</div>
         </div>
         ${cheapest !== undefined
           ? `<div style="text-align:right;flex:0 0 auto">
@@ -2205,8 +2229,8 @@ function renderShopperBusiness() {
         <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
       </div>
 
-      <!-- 1. The listing card, exactly as it appears in the category -->
-      ${businessCardHtml(b, { linked: false })}
+      <!-- 1. Their card, full size — this is the top of their page -->
+      ${businessCardHtml(b, { linked: false, variant: 'large' })}
 
       ${b.about ? `
         <div class="shop-card" style="${SERVICE_CARD_SHELL}">
@@ -2340,7 +2364,7 @@ function renderShopperShop() {
       if (!recent.length) return '';
       return `
         <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">New on Vendaru</div>
-        ${recent.map(b => businessCardHtml(b)).join('')}`;
+        ${recent.map(b => businessCardHtml(b, { variant: 'large' })).join('')}`;
     })()}
   `;
 
@@ -4006,10 +4030,18 @@ function renderBusinessDashboard() {
         </div>
       </div>
 
+      <!-- Both sizes previewed: the large one heads their page and the home
+           screen, the small one is what a category listing shows. -->
       <div class="shop-card" style="${shell}">
         <div style="padding:4px 16px 14px">
-          <div style="${label}">How your card looks</div>
-          <div style="margin-top:10px">${businessCardHtml(e, { linked: false })}</div>
+          <div style="${label}">On the home screen &amp; your page</div>
+          <div style="margin-top:10px">${businessCardHtml(e, { linked: false, variant: 'large' })}</div>
+          <label style="display:block;text-align:center;margin-top:10px;font-size:13px;font-weight:500;color:#141414;cursor:pointer;text-decoration:underline;text-underline-offset:2px">
+            ${e.coverSrc ? 'Change banner photo' : 'Add a banner photo'}
+            <input type="file" accept="image/*" data-upload-business-cover style="display:none" />
+          </label>
+          <div style="${label}">In category listings</div>
+          <div style="margin-top:10px">${businessCardHtml(e, { linked: false, variant: 'compact' })}</div>
         </div>
       </div>
 
@@ -5293,6 +5325,21 @@ document.addEventListener('DOMContentLoaded', () => {
           render();
         };
         reader.readAsDataURL(bizLogoInput.files[0]);
+      }
+      return;
+    }
+    const bizCoverInput = e.target.closest('input[type="file"][data-upload-business-cover]');
+    if (bizCoverInput && bizCoverInput.files[0]) {
+      const mine = myBusiness();
+      if (mine) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          mine.coverSrc = reader.result;
+          if (state.businessEditor) state.businessEditor.coverSrc = reader.result;
+          saveBusinesses();
+          render();
+        };
+        reader.readAsDataURL(bizCoverInput.files[0]);
       }
       return;
     }
