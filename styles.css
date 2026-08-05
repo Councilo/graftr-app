@@ -486,6 +486,8 @@ body::-webkit-scrollbar {
   animation: aiFadeIn 0.2s ease-out;
 }
 
+/* Sheets cap their height and let an inner region scroll, so a sheet with a
+   pinned header/footer keeps those visible instead of scrolling them away. */
 .graftr-modal-card {
   background: #ffffff;
   border-top-left-radius: 24px;
@@ -494,10 +496,11 @@ body::-webkit-scrollbar {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-height: 85%;
+  max-height: 88%;
   overflow-y: auto;
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
   animation: aiSlideUp 0.25s ease-out;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Day/time slot rows scroll sideways without showing a scrollbar. */
@@ -543,7 +546,8 @@ body::-webkit-scrollbar {
 }
 
 .graftr-input-group textarea {
-  resize: vertical;
+  /* No drag handle: inside a bottom sheet, resizing fights the pinned footer. */
+  resize: none;
   min-height: 62px;
 }
 

@@ -1966,27 +1966,29 @@ function renderAddressModal() {
   if (!state.showAddressModal) return '';
   const p = state.userProfile;
   const avatarHtml = p.avatarSrc
-    ? `<img src="${p.avatarSrc}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid #141414;box-shadow:0 4px 12px rgba(0,0,0,0.15)" />`
-    : `<div style="width:72px;height:72px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,0.15)">
-        ${((p.name || 'GU')).substring(0,2).toUpperCase()}
+    ? `<img src="${p.avatarSrc}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;flex:0 0 auto" />`
+    : `<div style="width:56px;height:56px;border-radius:50%;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;flex:0 0 auto">
+        ${((p.name || 'Y')).substring(0, 2).toUpperCase()}
       </div>`;
 
   return `
     <div class="graftr-modal-overlay">
-      <div class="graftr-modal-card" style="max-height:85vh;overflow-y:auto">
-        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e5e5;padding-bottom:12px">
-          <div style="font-size:16.5px;font-weight:800;color:#141414">Edit Profile &amp; Delivery Address</div>
-          <button data-action="closeAddressModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b">✕</button>
+      <div class="graftr-modal-card" style="padding:0;gap:0">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 18px 14px;border-bottom:1px solid #f0f0f0;flex:0 0 auto">
+          <div style="font-size:17px;font-weight:700;color:#141414">Edit profile</div>
+          <button data-action="closeAddressModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b;padding:2px 6px;line-height:1">✕</button>
         </div>
 
-        <!-- Profile Avatar Upload Section -->
-        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0;border-bottom:1px dashed #e5e5e5;margin-bottom:12px">
-          ${avatarHtml}
-          <label style="background:#f2f2f2;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px">
-            📷 Upload Profile Photo
-            <input type="file" accept="image/*" data-upload-avatar style="display:none" />
-          </label>
-        </div>
+        <!-- Only the fields scroll; the header and actions stay put, so Save is
+             always reachable instead of sitting below the fold on a phone. -->
+        <div style="flex:1;min-height:0;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:13px">
+          <div style="display:flex;align-items:center;gap:13px">
+            ${avatarHtml}
+            <label style="font-size:13.5px;font-weight:500;color:#141414;cursor:pointer;text-decoration:underline;text-underline-offset:2px">
+              Change photo
+              <input type="file" accept="image/*" data-upload-avatar style="display:none" />
+            </label>
+          </div>
 
         <div class="graftr-input-group">
           <label>Full name</label>
@@ -2009,24 +2011,25 @@ function renderAddressModal() {
         </div>
 
         <div style="display:flex;gap:10px">
-          <div class="graftr-input-group" style="flex:1">
+          <div class="graftr-input-group" style="flex:1;min-width:0">
             <label>City</label>
             <input type="text" id="prof-city" data-bind="profile.city" value="${escapeHtml(p.city)}" placeholder="Bolton" />
           </div>
-          <div class="graftr-input-group" style="flex:1">
+          <div class="graftr-input-group" style="flex:1;min-width:0">
             <label>Postcode</label>
             <input type="text" id="prof-postcode" data-bind="profile.postcode" value="${escapeHtml(p.postcode)}" placeholder="BL1 3PJ" />
           </div>
         </div>
 
-        <div class="graftr-input-group">
-          <label>Delivery Instructions (Optional)</label>
-          <textarea id="prof-instructions" data-bind="profile.instructions" rows="2" placeholder="Leave at door, gate code, etc.">${escapeHtml(p.instructions)}</textarea>
+          <div class="graftr-input-group">
+            <label>Delivery instructions (optional)</label>
+            <textarea id="prof-instructions" data-bind="profile.instructions" rows="2" placeholder="Leave at door, gate code, etc.">${escapeHtml(p.instructions)}</textarea>
+          </div>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:6px">
-          <button type="button" data-action="closeAddressModal" style="flex:1;background:#f2f2f2;border:1px solid #d4d4d4;padding:12px;border-radius:14px;font-weight:700;font-size:13.5px;cursor:pointer">Cancel</button>
-          <button type="button" data-action="saveAddressModal" style="flex:1;background:#141414;color:#fff;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13.5px;cursor:pointer">Save Details</button>
+        <div style="display:flex;gap:10px;padding:14px 18px calc(14px + env(safe-area-inset-bottom, 0px));border-top:1px solid #f0f0f0;flex:0 0 auto">
+          <button type="button" data-action="closeAddressModal" style="flex:1;background:#fff;border:1.5px solid rgba(20,20,20,0.15);padding:13px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit">Cancel</button>
+          <button type="button" data-action="saveAddressModal" style="flex:1;background:#141414;color:#fff;border:none;padding:13px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit">Save</button>
         </div>
       </div>
     </div>
