@@ -40,7 +40,7 @@ const localCovers = {
   "Apex Gas & Plumbing Engineers": "assets/business/apex-plumbing-cover.jpg"
 };
 
-// 100 REAL VERIFIED UK COMPANIES WITH 4 HIGH-RES REAL PHOTOGRAPHS FOR EACH
+// 100 REAL VERIFIED UK COMPANIES WITH 4 ACCURATE REAL PHOTOGRAPHS FOR EACH
 const rawBusinesses = [
   // --- 1. TRADES (10) ---
   {
@@ -191,12 +191,12 @@ const rawBusinesses = [
     area: "UK Nationwide",
     phone: "0333 202 9802",
     websiteUrl: "https://www.britishgas.co.uk",
-    coverSrc: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+    coverSrc: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80",
     photos: [
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
     ],
     services: [
       { name: "Gas Safe Annual Boiler Service", description: "Comprehensive safety inspection and combustion test.", price: 90, durationMins: 45 },
@@ -2080,7 +2080,7 @@ rawBusinesses.forEach((item, index) => {
   const cover = localCovers[item.name] || item.coverSrc;
   
   // 4 high-res real-world photography URLs curated for this company
-  const gallery = item.photos || [
+  const gallery = item.photos && item.photos.length === 4 ? item.photos : [
     cover,
     "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",

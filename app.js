@@ -608,7 +608,7 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 18;
+const BUSINESS_SEED_VERSION = 19;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
 // Verified UK Business Directory listings.
@@ -891,7 +891,7 @@ const SEED_BUSINESSES = [
     "websiteUrl": "https://www.britishgas.co.uk",
     "domain": "britishgas.co.uk",
     "logoSrc": "https://logo.clearbit.com/britishgas.co.uk",
-    "coverSrc": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+    "coverSrc": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1200&q=80",
     "services": [
       {
         "id": "s-5007-0",
@@ -909,10 +909,10 @@ const SEED_BUSINESSES = [
       }
     ],
     "gallery": [
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
     ],
     "tier": "priority",
     "billing": "monthly"
@@ -4601,6 +4601,8 @@ const state = {
   businessMessages: loadBusinessMessages(),
   bookingCart: [],                 // bookings sitting in the basket, unpaid
   servicesCategory: null,          // category being browsed
+  businessSearchCategory: 'all',   // search filter category ('all', 'trades', 'auto', etc.)
+  businessQuickFilter: 'all',      // search filter tag ('all', 'instant', 'verified', 'free')
   activeBusinessId: null,          // business page being viewed
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
   businessTab: 'page',             // business dashboard section
@@ -5786,15 +5788,224 @@ function specialRequestPrompt(prefillQuery) {
 }
 
 function renderShopperSearchResults(query) {
-  const q = query.trim().toLowerCase();
-  const matches = PRODUCTS.filter((p) => p.name.toLowerCase().includes(q));
-  const list = matches.slice(0, 25).map(productRow).join('');
-  const heading = matches.length
-    ? `<div style="font-size:12px;opacity:0.55">${matches.length} result${matches.length > 1 ? 's' : ''} for "${escapeHtml(query)}"</div>`
-    : `<div style="font-size:13px;opacity:0.6">No results for "${escapeHtml(query)}"</div>`;
+  const q = (query || '').trim().toLowerCase();
+  const selectedCat = state.businessSearchCategory || 'all';
+  const selectedFilter = state.businessQuickFilter || 'all';
+
+  // 1. Filter Businesses
+  let matchingBiz = (state.businesses || []).filter(isBusinessLive).filter(b => {
+    // Category match
+    if (selectedCat !== 'all') {
+      if (selectedCat === 'groceries') return false; // Groceries is products only
+      if (b.category !== selectedCat) return false;
+    }
+    // Quick filter match
+    if (selectedFilter === 'instant') {
+      if (!b.services || !b.services.length) return false;
+    } else if (selectedFilter === 'verified') {
+      if (tierOf(b).rank === 0) return false; // Only featured/priority
+    } else if (selectedFilter === 'free') {
+      const hasFree = (b.services || []).some(s => s.price === 0);
+      if (!hasFree) return false;
+    }
+
+    if (!q) return true; // match category/filter only if search text empty
+
+    // Search Query match
+    const nameMatch = (b.name || '').toLowerCase().includes(q);
+    const catObj = serviceCategory(b.category);
+    const catMatch = catObj && catObj.label.toLowerCase().includes(q);
+    const taglineMatch = (b.tagline || '').toLowerCase().includes(q);
+    const aboutMatch = (b.about || '').toLowerCase().includes(q);
+    const areaMatch = (b.area || '').toLowerCase().includes(q);
+    const serviceMatch = (b.services || []).some(s =>
+      (s.name || '').toLowerCase().includes(q) || (s.description || '').toLowerCase().includes(q)
+    );
+
+    return nameMatch || catMatch || taglineMatch || aboutMatch || areaMatch || serviceMatch;
+  });
+
+  // Sort businesses by tier then recency
+  matchingBiz.sort(byTierThenRecency);
+
+  // 2. Filter Bookable Services across businesses
+  let matchingServices = [];
+  if (selectedCat !== 'groceries') {
+    (state.businesses || []).filter(isBusinessLive).forEach(b => {
+      if (selectedCat !== 'all' && b.category !== selectedCat) return;
+      (b.services || []).forEach(s => {
+        if (!q && selectedCat === 'all' && selectedFilter === 'all') return;
+        const sNameMatch = (s.name || '').toLowerCase().includes(q);
+        const sDescMatch = (s.description || '').toLowerCase().includes(q);
+        const bNameMatch = (b.name || '').toLowerCase().includes(q);
+        if (q === '' || sNameMatch || sDescMatch || bNameMatch) {
+          if (selectedFilter === 'free' && s.price > 0) return;
+          matchingServices.push({ business: b, service: s });
+        }
+      });
+    });
+  }
+
+  // 3. Filter Products / Groceries
+  let matchingProducts = [];
+  if (selectedCat === 'all' || selectedCat === 'groceries') {
+    if (q) {
+      matchingProducts = PRODUCTS.filter(p =>
+        p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+      );
+    } else if (selectedCat === 'groceries') {
+      matchingProducts = PRODUCTS.slice(0, 30);
+    }
+  }
+
+  // Quick Category Filter Buttons
+  const categoryButtonsHtml = `
+    <div style="display:flex;gap:7px;overflow-x:auto;padding:4px 0 10px;margin-top:2px" class="slot-scroll">
+      <button type="button" data-action="setSearchCategoryFilter" data-arg="all"
+        style="flex:0 0 auto;padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:${selectedCat === 'all' ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === 'all' ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === 'all' ? '#141414' : '#fff'};color:${selectedCat === 'all' ? '#fff' : '#141414'};font-family:inherit">
+        🌟 All Results
+      </button>
+      <button type="button" data-action="setSearchCategoryFilter" data-arg="groceries"
+        style="flex:0 0 auto;padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:${selectedCat === 'groceries' ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === 'groceries' ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === 'groceries' ? '#141414' : '#fff'};color:${selectedCat === 'groceries' ? '#fff' : '#141414'};font-family:inherit">
+        🛒 Groceries
+      </button>
+      ${SERVICE_CATEGORIES.map(c => `
+        <button type="button" data-action="setSearchCategoryFilter" data-arg="${c.id}"
+          style="flex:0 0 auto;padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:${selectedCat === c.id ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === c.id ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === c.id ? '#141414' : '#fff'};color:${selectedCat === c.id ? '#fff' : '#141414'};font-family:inherit">
+          ${c.emoji} ${escapeHtml(c.label)}
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  // Quick Feature Filters
+  const quickFiltersHtml = `
+    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px" class="slot-scroll">
+      <button type="button" data-action="setQuickFilterTag" data-arg="all"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'all' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'all' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'all' ? '#f0f0f0' : '#fff'};color:#141414;font-family:inherit">
+        All Types
+      </button>
+      <button type="button" data-action="setQuickFilterTag" data-arg="instant"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'instant' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'instant' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'instant' ? '#141414' : '#fff'};color:${selectedFilter === 'instant' ? '#fff' : '#141414'};font-family:inherit">
+        ⚡ Instant Bookable
+      </button>
+      <button type="button" data-action="setQuickFilterTag" data-arg="verified"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'verified' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'verified' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'verified' ? '#141414' : '#fff'};color:${selectedFilter === 'verified' ? '#fff' : '#141414'};font-family:inherit">
+        ⭐ Verified & Featured
+      </button>
+      <button type="button" data-action="setQuickFilterTag" data-arg="free"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'free' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'free' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'free' ? '#141414' : '#fff'};color:${selectedFilter === 'free' ? '#fff' : '#141414'};font-family:inherit">
+        💰 Free Consultation
+      </button>
+    </div>
+  `;
+
+  const totalCount = matchingBiz.length + matchingServices.length + matchingProducts.length;
+
+  const resultHeader = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:600;color:#141414">
+        ${totalCount} result${totalCount === 1 ? '' : 's'} ${q ? `for "${escapeHtml(query)}"` : ''}
+      </div>
+      ${(q || selectedCat !== 'all' || selectedFilter !== 'all') ? `
+        <button type="button" data-action="clearSearchAndFilters" style="background:none;border:none;color:#6b6b6b;font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline">
+          Reset filters ✕
+        </button>
+      ` : ''}
+    </div>
+  `;
+
+  // Render business section
+  let bizSection = '';
+  if (matchingBiz.length > 0) {
+    bizSection = `
+      <div style="margin-bottom:18px">
+        <div style="font-size:12.5px;font-weight:700;color:#6b6b6b;letter-spacing:0.3px;margin-bottom:8px;text-transform:uppercase">
+          Verified Businesses (${matchingBiz.length})
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${matchingBiz.slice(0, 15).map(b => businessCardHtml(b)).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Render bookable services section
+  let serviceSection = '';
+  if (matchingServices.length > 0) {
+    const booked = new Set((state.bookingCart || []).map(x => `${x.businessId}|${x.serviceId}`));
+    serviceSection = `
+      <div style="margin-bottom:18px">
+        <div style="font-size:12.5px;font-weight:700;color:#6b6b6b;letter-spacing:0.3px;margin-bottom:8px;text-transform:uppercase">
+          Bookable Services (${matchingServices.length})
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${matchingServices.slice(0, 12).map(({ business: b, service: s }) => {
+            const cat = serviceCategory(b.category);
+            const isBooked = booked.has(`${b.id}|${s.id}`);
+            return `
+              <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;padding:12px 14px;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px">
+                <div style="flex:1;min-width:0" class="press" data-action="openBusiness" data-arg="${b.id}">
+                  <div style="font-size:13.5px;font-weight:700;color:#141414">${escapeHtml(s.name)}</div>
+                  <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${cat ? cat.emoji : '🏪'} ${escapeHtml(b.name)} ${b.area ? `· ${escapeHtml(b.area)}` : ''}</div>
+                  <div style="font-size:12px;color:#141414;font-weight:600;margin-top:3px">
+                    ${s.price > 0 ? `£${s.price.toFixed(2)}` : 'Free'} ${s.durationMins ? `· ${s.durationMins} mins` : ''}
+                  </div>
+                </div>
+                ${isBooked ? `
+                  <span style="font-size:12px;font-weight:600;color:#6b6b6b;padding:8px 12px">In basket</span>
+                ` : `
+                  <button type="button" class="press" data-action="openBookingPicker" data-arg="${b.id}|${s.id}"
+                    style="background:#141414;color:#fff;border:none;border-radius:12px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;flex:0 0 auto">
+                    Book
+                  </button>
+                `}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Render groceries section
+  let productSection = '';
+  if (matchingProducts.length > 0) {
+    productSection = `
+      <div style="margin-bottom:18px">
+        <div style="font-size:12.5px;font-weight:700;color:#6b6b6b;letter-spacing:0.3px;margin-bottom:8px;text-transform:uppercase">
+          Groceries & Essentials (${matchingProducts.length})
+        </div>
+        <div style="display:flex;flex-direction:column">
+          ${matchingProducts.slice(0, 20).map(productRow).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  const noResults = totalCount === 0 ? `
+    <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+      <div style="padding:24px 16px;text-align:center">
+        <div style="font-size:28px;margin-bottom:6px">🔍</div>
+        <div style="font-size:15px;font-weight:700;color:#141414">No results found</div>
+        <div style="font-size:13px;color:#6b6b6b;margin-top:4px;line-height:1.45">
+          We couldn't find matching businesses or items for "${escapeHtml(query || selectedCat)}".
+        </div>
+        <button type="button" data-action="clearSearchAndFilters" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit">
+          Show all businesses
+        </button>
+      </div>
+    </div>
+  ` : '';
+
   return `
-    ${heading}
-    ${list ? `<div style="display:flex;flex-direction:column">${list}</div>` : ''}
+    ${categoryButtonsHtml}
+    ${quickFiltersHtml}
+    ${resultHeader}
+    ${bizSection}
+    ${serviceSection}
+    ${productSection}
+    ${noResults}
     ${specialRequestPrompt(query)}
   `;
 }
@@ -6048,6 +6259,8 @@ function renderShopperAllServices() {
       </div>`;
   };
 
+  const selectedCat = state.businessSearchCategory || 'all';
+
   return `
     <div class="page" style="padding:0 18px 24px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
@@ -6056,6 +6269,24 @@ function renderShopperAllServices() {
           <div style="font-size:13px;color:#6b6b6b;margin-top:2px">${all.length} business${all.length === 1 ? '' : 'es'} on Vendaru</div>
         </div>
         <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:22px;padding:10px 14px;margin-top:12px;background:#fff">
+        <span style="opacity:0.4;font-size:15px">⌕</span>
+        <input id="services-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery || '')}" placeholder="Search 100 UK services, trades, auto..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
+      </div>
+
+      <div style="display:flex;gap:7px;overflow-x:auto;padding:10px 0 4px" class="slot-scroll">
+        <button type="button" data-action="setSearchCategoryFilter" data-arg="all"
+          style="flex:0 0 auto;padding:6px 12px;border-radius:18px;font-size:12px;font-weight:${selectedCat === 'all' ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === 'all' ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === 'all' ? '#141414' : '#fff'};color:${selectedCat === 'all' ? '#fff' : '#141414'};font-family:inherit">
+          All
+        </button>
+        ${SERVICE_CATEGORIES.map(c => `
+          <button type="button" data-action="setSearchCategoryFilter" data-arg="${c.id}"
+            style="flex:0 0 auto;padding:6px 12px;border-radius:18px;font-size:12px;font-weight:${selectedCat === c.id ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === c.id ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === c.id ? '#141414' : '#fff'};color:${selectedCat === c.id ? '#fff' : '#141414'};font-family:inherit">
+            ${c.emoji} ${escapeHtml(c.label)}
+          </button>
+        `).join('')}
       </div>
 
       ${groups.length
@@ -6242,7 +6473,9 @@ function renderBookingPickerModal() {
 }
 
 function renderShopperShop() {
-  const searching = state.searchQuery.trim().length > 0;
+  const searching = (state.searchQuery || '').trim().length > 0 ||
+                    (state.businessSearchCategory && state.businessSearchCategory !== 'all') ||
+                    (state.businessQuickFilter && state.businessQuickFilter !== 'all');
   const body = searching
     ? renderShopperSearchResults(state.searchQuery)
     : `
@@ -9532,6 +9765,24 @@ const actions = {
     state.specialRequest = {
       productName: '', productUrl: '', storeLocation: '', stockStatus: null, screenshot: null, submitted: false,
     };
+    render();
+  },
+  setSearchCategoryFilter: (catId) => {
+    state.businessSearchCategory = String(catId || 'all');
+    render();
+  },
+  setQuickFilterTag: (tag) => {
+    state.businessQuickFilter = String(tag || 'all');
+    render();
+  },
+  clearSearchAndFilters: () => {
+    state.searchQuery = '';
+    state.businessSearchCategory = 'all';
+    state.businessQuickFilter = 'all';
+    render();
+  },
+  goServiceCategory: (catId) => {
+    state.businessSearchCategory = String(catId || 'all');
     render();
   },
 };
