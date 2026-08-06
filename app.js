@@ -608,7 +608,7 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 19;
+const BUSINESS_SEED_VERSION = 20;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
 // Verified UK Business Directory listings.
@@ -4603,6 +4603,7 @@ const state = {
   servicesCategory: null,          // category being browsed
   businessSearchCategory: 'all',   // search filter category ('all', 'trades', 'auto', etc.)
   businessQuickFilter: 'all',      // search filter tag ('all', 'instant', 'verified', 'free')
+  businessPriceFilter: 'all',      // search price filter ('all', 'free', 'under50', '50to150', 'over150')
   activeBusinessId: null,          // business page being viewed
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
   businessTab: 'page',             // business dashboard section
@@ -5791,6 +5792,16 @@ function renderShopperSearchResults(query) {
   const q = (query || '').trim().toLowerCase();
   const selectedCat = state.businessSearchCategory || 'all';
   const selectedFilter = state.businessQuickFilter || 'all';
+  const selectedPrice = state.businessPriceFilter || 'all';
+
+  const matchesPrice = (price) => {
+    if (selectedPrice === 'all') return true;
+    if (selectedPrice === 'free') return price === 0;
+    if (selectedPrice === 'under50') return price > 0 && price <= 50;
+    if (selectedPrice === '50to150') return price >= 50 && price <= 150;
+    if (selectedPrice === 'over150') return price > 150;
+    return true;
+  };
 
   // 1. Filter Businesses
   let matchingBiz = (state.businesses || []).filter(isBusinessLive).filter(b => {
@@ -5807,6 +5818,12 @@ function renderShopperSearchResults(query) {
     } else if (selectedFilter === 'free') {
       const hasFree = (b.services || []).some(s => s.price === 0);
       if (!hasFree) return false;
+    }
+
+    // Price filter match
+    if (selectedPrice !== 'all') {
+      const hasMatchingPriceService = (b.services || []).some(s => matchesPrice(s.price));
+      if (!hasMatchingPriceService) return false;
     }
 
     if (!q) return true; // match category/filter only if search text empty
@@ -5834,7 +5851,8 @@ function renderShopperSearchResults(query) {
     (state.businesses || []).filter(isBusinessLive).forEach(b => {
       if (selectedCat !== 'all' && b.category !== selectedCat) return;
       (b.services || []).forEach(s => {
-        if (!q && selectedCat === 'all' && selectedFilter === 'all') return;
+        if (!matchesPrice(s.price)) return;
+        if (!q && selectedCat === 'all' && selectedFilter === 'all' && selectedPrice === 'all') return;
         const sNameMatch = (s.name || '').toLowerCase().includes(q);
         const sDescMatch = (s.description || '').toLowerCase().includes(q);
         const bNameMatch = (b.name || '').toLowerCase().includes(q);
@@ -5851,16 +5869,17 @@ function renderShopperSearchResults(query) {
   if (selectedCat === 'all' || selectedCat === 'groceries') {
     if (q) {
       matchingProducts = PRODUCTS.filter(p =>
-        p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+        matchesPrice(p.estimated_price_gbp) &&
+        (p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q))
       );
     } else if (selectedCat === 'groceries') {
-      matchingProducts = PRODUCTS.slice(0, 30);
+      matchingProducts = PRODUCTS.filter(p => matchesPrice(p.estimated_price_gbp)).slice(0, 30);
     }
   }
 
   // Quick Category Filter Buttons
   const categoryButtonsHtml = `
-    <div style="display:flex;gap:7px;overflow-x:auto;padding:4px 0 10px;margin-top:2px" class="slot-scroll">
+    <div style="display:flex;gap:7px;overflow-x:auto;padding:4px 0 8px;margin-top:2px" class="slot-scroll">
       <button type="button" data-action="setSearchCategoryFilter" data-arg="all"
         style="flex:0 0 auto;padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:${selectedCat === 'all' ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === 'all' ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === 'all' ? '#141414' : '#fff'};color:${selectedCat === 'all' ? '#fff' : '#141414'};font-family:inherit">
         🌟 All Results
@@ -5880,7 +5899,7 @@ function renderShopperSearchResults(query) {
 
   // Quick Feature Filters
   const quickFiltersHtml = `
-    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px" class="slot-scroll">
+    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px" class="slot-scroll">
       <button type="button" data-action="setQuickFilterTag" data-arg="all"
         style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'all' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'all' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'all' ? '#f0f0f0' : '#fff'};color:#141414;font-family:inherit">
         All Types
@@ -5900,6 +5919,33 @@ function renderShopperSearchResults(query) {
     </div>
   `;
 
+  // Price Filter Bar
+  const priceFilterHtml = `
+    <div style="display:flex;align-items:center;gap:6px;overflow-x:auto;padding-bottom:10px" class="slot-scroll">
+      <span style="font-size:11.5px;font-weight:700;color:#6b6b6b;flex:0 0 auto">PRICE:</span>
+      <button type="button" data-action="setPriceFilter" data-arg="all"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === 'all' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === 'all' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === 'all' ? '#141414' : '#fff'};color:${selectedPrice === 'all' ? '#fff' : '#141414'};font-family:inherit">
+        Any Price
+      </button>
+      <button type="button" data-action="setPriceFilter" data-arg="free"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === 'free' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === 'free' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === 'free' ? '#141414' : '#fff'};color:${selectedPrice === 'free' ? '#fff' : '#141414'};font-family:inherit">
+        🎁 Free (£0)
+      </button>
+      <button type="button" data-action="setPriceFilter" data-arg="under50"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === 'under50' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === 'under50' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === 'under50' ? '#141414' : '#fff'};color:${selectedPrice === 'under50' ? '#fff' : '#141414'};font-family:inherit">
+        🏷️ Under £50
+      </button>
+      <button type="button" data-action="setPriceFilter" data-arg="50to150"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === '50to150' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === '50to150' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === '50to150' ? '#141414' : '#fff'};color:${selectedPrice === '50to150' ? '#fff' : '#141414'};font-family:inherit">
+        🏷️ £50–£150
+      </button>
+      <button type="button" data-action="setPriceFilter" data-arg="over150"
+        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === 'over150' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === 'over150' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === 'over150' ? '#141414' : '#fff'};color:${selectedPrice === 'over150' ? '#fff' : '#141414'};font-family:inherit">
+        🏷️ £150+
+      </button>
+    </div>
+  `;
+
   const totalCount = matchingBiz.length + matchingServices.length + matchingProducts.length;
 
   const resultHeader = `
@@ -5907,7 +5953,7 @@ function renderShopperSearchResults(query) {
       <div style="font-size:13px;font-weight:600;color:#141414">
         ${totalCount} result${totalCount === 1 ? '' : 's'} ${q ? `for "${escapeHtml(query)}"` : ''}
       </div>
-      ${(q || selectedCat !== 'all' || selectedFilter !== 'all') ? `
+      ${(q || selectedCat !== 'all' || selectedFilter !== 'all' || selectedPrice !== 'all') ? `
         <button type="button" data-action="clearSearchAndFilters" style="background:none;border:none;color:#6b6b6b;font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline">
           Reset filters ✕
         </button>
@@ -6001,6 +6047,7 @@ function renderShopperSearchResults(query) {
   return `
     ${categoryButtonsHtml}
     ${quickFiltersHtml}
+    ${priceFilterHtml}
     ${resultHeader}
     ${bizSection}
     ${serviceSection}
@@ -6475,7 +6522,8 @@ function renderBookingPickerModal() {
 function renderShopperShop() {
   const searching = (state.searchQuery || '').trim().length > 0 ||
                     (state.businessSearchCategory && state.businessSearchCategory !== 'all') ||
-                    (state.businessQuickFilter && state.businessQuickFilter !== 'all');
+                    (state.businessQuickFilter && state.businessQuickFilter !== 'all') ||
+                    (state.businessPriceFilter && state.businessPriceFilter !== 'all');
   const body = searching
     ? renderShopperSearchResults(state.searchQuery)
     : `
@@ -9775,10 +9823,15 @@ const actions = {
     state.businessQuickFilter = String(tag || 'all');
     render();
   },
+  setPriceFilter: (priceRange) => {
+    state.businessPriceFilter = String(priceRange || 'all');
+    render();
+  },
   clearSearchAndFilters: () => {
     state.searchQuery = '';
     state.businessSearchCategory = 'all';
     state.businessQuickFilter = 'all';
+    state.businessPriceFilter = 'all';
     render();
   },
   goServiceCategory: (catId) => {
