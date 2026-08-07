@@ -4764,6 +4764,7 @@ const state = {
   businessMessages: loadBusinessMessages(),
   bookingCart: [],                 // bookings sitting in the basket, unpaid
   servicesCategory: null,          // category being browsed
+  openFavPicker: null,             // category whose chooser is open on the wall
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
   favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
@@ -6124,18 +6125,38 @@ function renderShopperFavourites() {
 
   const slots = SERVICE_CATEGORIES.map(cat => {
     const mine = kept.filter(b => b.category === cat.id);
-    const suggestion = live
+    const choices = live
       .filter(b => b.category === cat.id && !isFavourite(b.id))
-      .sort(byTierThenRecency)[0];
-    return { cat, mine, suggestion };
-  }).filter(s => s.mine.length || s.suggestion);
+      .sort(byTierThenRecency);
+    return { cat, mine, choices };
+  }).filter(s => s.mine.length || s.choices.length);
 
   const filled = slots.filter(s => s.mine.length).length;
 
+  // A compact row for the dropdown: the mark, who they are, what they do. Same
+  // width as the card it will become, so choosing doesn't shift the wall.
+  const choiceRow = (b) => {
+    const fallback = b.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(b.domain)}&sz=64` : '';
+    const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    const mark = b.logoSrc
+      ? `<img class="fav-choice-logo" src="${escapeHtml(b.logoSrc)}" alt="" onload="__fitLogo(this)" onerror="this.onerror=null;${fallback ? `this.src='${fallback}'` : `this.replaceWith(Object.assign(document.createElement('span'),{className:'fav-choice-logo is-initials',textContent:'${escapeHtml(initials)}'}))`}" />`
+      : `<span class="fav-choice-logo is-initials">${escapeHtml(initials)}</span>`;
+    return `
+      <button type="button" class="fav-choice" data-action="pickFavourite" data-arg="${b.id}">
+        ${mark}
+        <span class="fav-choice-text">
+          <span class="fav-choice-name">${escapeHtml(b.name)}</span>
+          <span class="fav-choice-desc">${escapeHtml(b.tagline || (serviceCategory(b.category) || {}).label || '')}</span>
+        </span>
+      </button>`;
+  };
+
   // An empty slot is a card-shaped hole the same size as a filled one, so the
-  // wall keeps its grid whether or not you've filled a place yet. The button
-  // in the middle is the whole target; the links under it are the shortcuts.
-  const emptySlot = (cat, suggestion) => `
+  // wall keeps its grid whether or not a place is taken. The button in the
+  // middle opens a list of who could fill it; picking one makes it a card.
+  const emptySlot = (cat, choices) => {
+    const open = state.openFavPicker === cat.id;
+    return `
     <div class="fav-slot is-empty">
       <div class="fav-slot-head">
         <span class="fav-slot-icon">${cat.emoji}</span>
@@ -6143,16 +6164,13 @@ function renderShopperFavourites() {
       </div>
 
       <div class="fav-empty-card">
-        <button type="button" class="fav-add-btn" data-action="goServiceCategory" data-arg="${cat.id}"
-          title="Add a ${escapeHtml(cat.label.toLowerCase())}" aria-label="Add a ${escapeHtml(cat.label.toLowerCase())}">+</button>
+        <button type="button" class="fav-add-btn${open ? ' is-open' : ''}" data-action="toggleFavPicker" data-arg="${cat.id}"
+          title="Choose a ${escapeHtml(cat.label.toLowerCase())}" aria-label="Choose a ${escapeHtml(cat.label.toLowerCase())}">+</button>
       </div>
 
-      ${suggestion ? `
-        <button type="button" class="fav-fill" data-action="toggleFavourite" data-arg="${suggestion.id}">
-          Add ${escapeHtml(suggestion.name)}
-        </button>` : ''}
-      <button type="button" class="fav-browse" data-action="goServiceCategory" data-arg="${cat.id}">Browse ${escapeHtml(cat.label.toLowerCase())}</button>
+      ${open ? `<div class="fav-choices">${choices.map(choiceRow).join('')}</div>` : ''}
     </div>`;
+  };
 
   return `
     <div class="page" style="padding:0 18px 24px">
@@ -6172,7 +6190,7 @@ function renderShopperFavourites() {
                </div>
                ${s.mine.map(b => businessCardHtml(b, { variant: 'large' })).join('')}
              </div>`
-          : emptySlot(s.cat, s.suggestion)).join('')}
+          : emptySlot(s.cat, s.choices)).join('')}
       </div>
     </div>`;
 }
@@ -10347,6 +10365,20 @@ const actions = {
     state.mode = null;
     state.authRole = PATH_ROLE;
     state.screen = 'login';
+    render();
+  },
+  toggleFavPicker: (catId) => {
+    const id = String(catId);
+    state.openFavPicker = state.openFavPicker === id ? null : id;
+    render();
+  },
+  // Choosing from the list fills the slot and closes it — one gesture.
+  pickFavourite: (id) => {
+    const key = String(id);
+    const list = state.favourites || (state.favourites = []);
+    if (list.indexOf(key) === -1) list.push(key);
+    saveFavourites();
+    state.openFavPicker = null;
     render();
   },
   toggleFavourite: (id) => {
