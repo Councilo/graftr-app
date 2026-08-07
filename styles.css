@@ -732,31 +732,37 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
-/* Dismisses the login screen into signed-out browsing. */
+/* Dismisses the login screen into signed-out browsing. Solid ink rather than
+   grey-on-grey — as a faint 32px mark in a corner it was missable, and it is
+   the only way past the screen. */
 .login-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 32px;
-  height: 32px;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: #f2f2f2;
-  color: #6b6b6b;
+  background: #141414;
+  color: #ffffff;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1;
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
+  box-shadow: 0 4px 12px rgba(20, 20, 20, 0.22);
+  transition: transform 0.08s ease, opacity 0.12s ease;
 }
 
 .login-close:hover {
-  background: #141414;
-  color: #ffffff;
+  opacity: 0.86;
+}
+
+.login-close:active {
+  transform: scale(0.92);
 }
 
 .back-bar-arrow {
@@ -971,14 +977,16 @@ body::-webkit-scrollbar {
   fill: none;
 }
 
-/* Kept: the same glyph, filled and inverted. */
+/* Kept: the same glyph, filled in the logo's pink (#f2c1d8). The outline stays
+   dark — the pink is a pastel, and at 15px on white it needs the edge to read
+   as a heart at all. */
 .biz-card-keep.is-on {
-  background: #141414;
-  color: #ffffff;
+  background: #ffffff;
+  color: #141414;
 }
 
 .biz-card-keep.is-on svg {
-  fill: currentColor;
+  fill: #f2c1d8;
 }
 
 .biz-card-keep:active {
