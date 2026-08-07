@@ -822,36 +822,6 @@ body::-webkit-scrollbar {
   color: #141414;
 }
 
-.biz-card-book {
-  margin-top: 4px;
-  width: 100%;
-  padding: 6px 8px;
-  border: none;
-  border-radius: 10px;
-  background: #141414;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.08s ease, opacity 0.12s ease;
-}
-
-.biz-card-book:hover {
-  opacity: 0.88;
-}
-
-.biz-card-book:active {
-  transform: scale(0.97);
-}
-
-/* Nothing bookable listed — the page is where you ask. */
-.biz-card-book.is-enquire {
-  background: #ffffff;
-  color: #141414;
-  border: 1.5px solid rgba(20, 20, 20, 0.15);
-}
-
 /* Website, Call, Overview. They wrap rather than squeezing, so a narrow card
    stacks them instead of clipping the labels. */
 .biz-card-actions {

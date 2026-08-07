@@ -5958,12 +5958,6 @@ function businessGridCard(b) {
     || (cat ? cat.label : '')
     || (b.services || []).map(s => s.name).join(' · ');
 
-  // Books the cheapest service — the entry point into the listing.
-  const cheapest = (b.services || []).slice().sort((x, y) => x.price - y.price)[0];
-  const bookHtml = cheapest
-    ? `<button type="button" class="biz-card-book" data-action="openBookingPicker" data-arg="${b.id}|${cheapest.id}">Book now</button>`
-    : `<button type="button" class="biz-card-book is-enquire" data-action="openBusiness" data-arg="${b.id}">Enquire</button>`;
-
   // Website and Call are real links — a tel: and an external site — so they are
   // anchors, not actions. The click handler lets any href through rather than
   // firing the card's own action.
@@ -5990,7 +5984,6 @@ function businessGridCard(b) {
         <div class="biz-card-meta">
           <span class="biz-card-rating">4.8 <span style="color:#f59e0b">★</span> <span style="font-weight:400;color:#6b6b6b">(107)</span></span>
         </div>
-        ${bookHtml}
         <div class="biz-card-actions">
           ${site ? `<a class="biz-card-action" href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">🌐 Website</a>` : ''}
           ${tel ? `<a class="biz-card-action" href="${escapeHtml(tel)}">📞 Call</a>` : ''}
