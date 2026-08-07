@@ -6123,22 +6123,26 @@ function renderShopperFavourites() {
 
   const filled = slots.filter(s => s.mine.length).length;
 
+  // An empty slot is a card-shaped hole the same size as a filled one, so the
+  // wall keeps its grid whether or not you've filled a place yet. The button
+  // in the middle is the whole target; the links under it are the shortcuts.
   const emptySlot = (cat, suggestion) => `
     <div class="fav-slot is-empty">
       <div class="fav-slot-head">
         <span class="fav-slot-icon">${cat.emoji}</span>
         <span class="fav-slot-label">${escapeHtml(cat.label)}</span>
       </div>
+
+      <div class="fav-empty-card">
+        <button type="button" class="fav-add-btn" data-action="goServiceCategory" data-arg="${cat.id}"
+          title="Add a ${escapeHtml(cat.label.toLowerCase())}" aria-label="Add a ${escapeHtml(cat.label.toLowerCase())}">+</button>
+      </div>
+
       ${suggestion ? `
-        <div class="fav-suggest">
-          <div class="fav-suggest-text">
-            <div class="fav-suggest-name">${escapeHtml(suggestion.name)}</div>
-            <div class="fav-suggest-note">${escapeHtml(suggestion.tagline || cat.label)}</div>
-          </div>
-          <button type="button" class="fav-add" data-action="toggleFavourite" data-arg="${suggestion.id}" title="Keep ${escapeHtml(suggestion.name)}">+</button>
-        </div>
-        <button type="button" class="fav-browse" data-action="goServiceCategory" data-arg="${cat.id}">Browse ${escapeHtml(cat.label.toLowerCase())}</button>
-      ` : ''}
+        <button type="button" class="fav-fill" data-action="toggleFavourite" data-arg="${suggestion.id}">
+          Add ${escapeHtml(suggestion.name)}
+        </button>` : ''}
+      <button type="button" class="fav-browse" data-action="goServiceCategory" data-arg="${cat.id}">Browse ${escapeHtml(cat.label.toLowerCase())}</button>
     </div>`;
 
   return `
@@ -6157,7 +6161,7 @@ function renderShopperFavourites() {
                  <span class="fav-slot-icon">${s.cat.emoji}</span>
                  <span class="fav-slot-label">${escapeHtml(s.cat.label)}</span>
                </div>
-               ${s.mine.map(businessGridCard).join('')}
+               ${s.mine.map(b => businessCardHtml(b, { variant: 'large' })).join('')}
              </div>`
           : emptySlot(s.cat, s.suggestion)).join('')}
       </div>
