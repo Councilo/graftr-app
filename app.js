@@ -6889,22 +6889,6 @@ function renderShopperShop() {
       </div>
     </div>
 
-    <!-- The shopper's own board. Reads as a prompt until they've kept
-         anything, then as a count of who they have. -->
-    <div class="press shop-card" data-action="goFavourites" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;cursor:pointer">
-      <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div style="min-width:0">
-          <div style="font-size:15.5px;font-weight:700">Your list</div>
-          <div style="font-size:13px;opacity:0.6">
-            ${(state.favourites || []).length
-              ? `${(state.favourites || []).length} kept · your people for jobs around the house`
-              : 'Keep a cleaner, a plumber, a dog walker — ready when you need them'}
-          </div>
-        </div>
-        <span style="opacity:0.4;flex:0 0 auto">›</span>
-      </div>
-    </div>
-
     <!-- One doorway to the other half of the app, rather than listings mixed
          in among the shopping. -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
@@ -7669,9 +7653,25 @@ function renderShopperAccount() {
   const rowValue = 'font-size:13px;color:#6b6b6b;font-weight:400;flex:0 0 auto';
 
   return `
-  <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+  <div class="page page-cards" style="padding:0 18px 24px">
 
     <div style="font-size:25px;font-weight:700;color:#141414">Account</div>
+
+    <!-- Their own board, first thing under the heading: it's the part of the
+         account they'll come back for. -->
+    <div class="press shop-card" data-action="goFavourites" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;cursor:pointer">
+      <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="min-width:0">
+          <div style="font-size:15.5px;font-weight:700">Your list</div>
+          <div style="font-size:13px;opacity:0.6">
+            ${(state.favourites || []).length
+              ? `${(state.favourites || []).length} kept · your people for jobs around the house`
+              : 'Keep a cleaner, a plumber, a dog walker — ready when you need them'}
+          </div>
+        </div>
+        <span style="opacity:0.4;flex:0 0 auto">›</span>
+      </div>
+    </div>
 
     <!-- Profile -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#ffffff;padding:16px;display:flex;flex-direction:row;align-items:center;gap:14px;text-align:left">

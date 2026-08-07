@@ -995,9 +995,11 @@ body::-webkit-scrollbar {
 
 /* The favourites board. One slot per category so it reads as a set of roles
    to fill, not a flat list. */
+/* One slot a row on a phone, two once there's width — the same rhythm the
+   Shop page's cards keep. */
 .fav-board {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: 1fr;
   /* start, not stretch: an empty slot beside a filled one would otherwise be
      dragged to the full height of the tallest card in the row. */
   align-items: start;
@@ -1236,6 +1238,12 @@ body::-webkit-scrollbar {
      to a 200px image; at ~550px each they sit at a sensible shape. */
   .page-cards {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  /* Same two-up rhythm for the favourites slots. */
+  .fav-board {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
   }
