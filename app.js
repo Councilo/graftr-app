@@ -143,6 +143,20 @@ function saveUserProfile() {
   try { localStorage.setItem('graftr_user_profile', JSON.stringify(state.userProfile)); } catch(e){}
 }
 
+// The businesses someone has kept, as ids rather than copies, so a listing
+// that changes its details stays current in their favourites.
+function loadFavourites() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('graftr_favourites') || '[]');
+    if (Array.isArray(saved)) return saved.map(String);
+  } catch (e) { /* ignore corrupt storage */ }
+  return [];
+}
+
+function saveFavourites() {
+  try { localStorage.setItem('graftr_favourites', JSON.stringify(state.favourites)); } catch(e){}
+}
+
 function loadLoggedOrders() {
   try {
     const saved = localStorage.getItem('graftr_logged_orders');
@@ -513,6 +527,7 @@ const SCREEN_ROUTES = [
   { screen: 'shopper-all-services', path: '/services' },
   { screen: 'shopper-services', path: '/services/:category' },
   { screen: 'shopper-business', path: '/listing/:id' },
+  { screen: 'shopper-favourites', path: '/favourites' },
   { screen: 'shopper-basket', path: '/basket' },
   { screen: 'shopper-inbox', path: '/activity' },
   { screen: 'shopper-account', path: '/account' },
@@ -4722,6 +4737,7 @@ const state = {
   bookingCart: [],                 // bookings sitting in the basket, unpaid
   servicesCategory: null,          // category being browsed
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
+  favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
   businessTab: 'page',             // business dashboard section
@@ -5950,6 +5966,8 @@ function backToShop(label = 'Shop') {
 // sitting on it in colour the way the emoji did.
 const ICON_GLOBE = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.2"/><path d="M2.8 10h14.4M10 2.8c2.1 2.3 2.1 12.1 0 14.4M10 2.8c-2.1 2.3-2.1 12.1 0 14.4"/></svg>';
 const ICON_PHONE = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6.6 3.2H4.5A1.5 1.5 0 003 4.8C3 11.4 8.6 17 15.2 17a1.5 1.5 0 001.6-1.5v-2.1a1 1 0 00-.8-1l-2.5-.5a1 1 0 00-1 .4l-.6.9a10.6 10.6 0 01-4.1-4.1l.9-.6a1 1 0 00.4-1L8.6 4a1 1 0 00-1-.8z"/></svg>';
+// fill comes from CSS so the same glyph reads as outline or solid.
+const ICON_HEART = '<svg width="15" height="15" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0110 5.6a3.7 3.7 0 016.8 2.3c0 4.5-6.8 8.6-6.8 8.6z"/></svg>';
 
 // The directory card. Lifted out of the search results so the Services page
 // can lay the same card out when it isn't searching.
@@ -5981,6 +5999,9 @@ function businessGridCard(b) {
     <div class="shop-card press biz-card" data-action="openBusiness" data-arg="${b.id}">
       <div class="biz-card-photo" style="background-image:url('${banner}')">
         ${logoHtml}
+        <button type="button" class="biz-card-keep${isFavourite(b.id) ? ' is-on' : ''}"
+          data-action="toggleFavourite" data-arg="${b.id}"
+          title="${isFavourite(b.id) ? 'Remove from your list' : 'Add to your list'}">${ICON_HEART}</button>
       </div>
 
       <div class="biz-card-body">
@@ -5994,6 +6015,70 @@ function businessGridCard(b) {
           ${tel ? `<a class="biz-card-action" href="${escapeHtml(tel)}">${ICON_PHONE} Call</a>` : ''}
           <button type="button" class="biz-card-action" data-action="openBusiness" data-arg="${b.id}">Overview</button>
         </div>
+      </div>
+    </div>`;
+}
+
+function isFavourite(id) {
+  return (state.favourites || []).indexOf(String(id)) !== -1;
+}
+
+// The favourites board: one slot per category, so it reads as the set of
+// people you'd call for your life rather than an undifferentiated list. A slot
+// you haven't filled suggests the best-ranked business in that category.
+function renderShopperFavourites() {
+  const live = (state.businesses || []).filter(isBusinessLive);
+  const kept = (state.favourites || [])
+    .map(id => live.find(b => String(b.id) === String(id)))
+    .filter(Boolean);
+
+  const slots = SERVICE_CATEGORIES.map(cat => {
+    const mine = kept.filter(b => b.category === cat.id);
+    const suggestion = live
+      .filter(b => b.category === cat.id && !isFavourite(b.id))
+      .sort(byTierThenRecency)[0];
+    return { cat, mine, suggestion };
+  }).filter(s => s.mine.length || s.suggestion);
+
+  const filled = slots.filter(s => s.mine.length).length;
+
+  const emptySlot = (cat, suggestion) => `
+    <div class="fav-slot is-empty">
+      <div class="fav-slot-head">
+        <span class="fav-slot-icon">${cat.emoji}</span>
+        <span class="fav-slot-label">${escapeHtml(cat.label)}</span>
+      </div>
+      ${suggestion ? `
+        <div class="fav-suggest">
+          <div class="fav-suggest-text">
+            <div class="fav-suggest-name">${escapeHtml(suggestion.name)}</div>
+            <div class="fav-suggest-note">${escapeHtml(suggestion.tagline || cat.label)}</div>
+          </div>
+          <button type="button" class="fav-add" data-action="toggleFavourite" data-arg="${suggestion.id}" title="Keep ${escapeHtml(suggestion.name)}">+</button>
+        </div>
+        <button type="button" class="fav-browse" data-action="goServiceCategory" data-arg="${cat.id}">Browse ${escapeHtml(cat.label.toLowerCase())}</button>
+      ` : ''}
+    </div>`;
+
+  return `
+    <div class="page" style="padding:0 18px 24px">
+      <div>
+        <div style="font-size:25px;font-weight:700;color:#141414">Your list</div>
+        <div style="font-size:13px;color:#6b6b6b;margin-top:2px">
+          ${filled ? `${filled} of ${slots.length} slots filled` : 'The people you’d call, kept in one place'}
+        </div>
+      </div>
+
+      <div class="fav-board">
+        ${slots.map(s => s.mine.length
+          ? `<div class="fav-slot">
+               <div class="fav-slot-head">
+                 <span class="fav-slot-icon">${s.cat.emoji}</span>
+                 <span class="fav-slot-label">${escapeHtml(s.cat.label)}</span>
+               </div>
+               ${s.mine.map(businessGridCard).join('')}
+             </div>`
+          : emptySlot(s.cat, s.suggestion)).join('')}
       </div>
     </div>`;
 }
@@ -6696,6 +6781,22 @@ function renderShopperShop() {
       <div style="padding:16px">
         <div style="display:flex;justify-content:space-between"><span style="font-size:15.5px;font-weight:700">Special Requests</span><span style="opacity:0.4">›</span></div>
         <div style="font-size:13px;opacity:0.6">Collection and delivery from any store</div>
+      </div>
+    </div>
+
+    <!-- The shopper's own board. Reads as a prompt until they've kept
+         anything, then as a count of who they have. -->
+    <div class="press shop-card" data-action="goFavourites" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;cursor:pointer">
+      <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="min-width:0">
+          <div style="font-size:15.5px;font-weight:700">Your list</div>
+          <div style="font-size:13px;opacity:0.6">
+            ${(state.favourites || []).length
+              ? `${(state.favourites || []).length} kept · your people for jobs around the house`
+              : 'Keep a cleaner, a plumber, a dog walker — ready when you need them'}
+          </div>
+        </div>
+        <span style="opacity:0.4;flex:0 0 auto">›</span>
       </div>
     </div>
 
@@ -8816,6 +8917,7 @@ const screenRenderers = {
   'shopper-special-request': renderShopperSpecialRequest,
   'shopper-services': renderShopperServices,
   'shopper-all-services': renderShopperAllServices,
+  'shopper-favourites': renderShopperFavourites,
   'shopper-business': renderShopperBusiness,
   'business-dashboard': renderBusinessDashboard,
 };
@@ -10024,50 +10126,14 @@ const actions = {
     state.servicesView = view === 'icons' ? 'icons' : 'cards';
     render();
   },
-
-  // ─── Location selector actions ─────────────────────────────────────────────
-  toggleLocationPicker: () => {
-    state.showLocationPicker = !state.showLocationPicker;
+  goFavourites: () => { state.screen = 'shopper-favourites'; render(); },
+  toggleFavourite: (id) => {
+    const key = String(id);
+    const list = state.favourites || (state.favourites = []);
+    const at = list.indexOf(key);
+    if (at === -1) list.push(key); else list.splice(at, 1);
+    saveFavourites();
     render();
-  },
-  setUserLocation: (city) => {
-    state.userLocation = city || '';
-    state.showLocationPicker = false;
-    localStorage.setItem('graftr_user_location', state.userLocation);
-    render();
-  },
-  detectUserLocation: () => {
-    if (!navigator.geolocation) {
-      state.showLocationPicker = false;
-      render();
-      return;
-    }
-    state.showLocationPicker = false;
-    state.userLocation = '📡 Detecting...';
-    render();
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`)
-          .then(r => r.json())
-          .then(data => {
-            const city = data.address.city || data.address.town || data.address.village || data.address.county || 'Near you';
-            state.userLocation = city;
-            localStorage.setItem('graftr_user_location', city);
-            render();
-          })
-          .catch(() => {
-            state.userLocation = 'Near you';
-            localStorage.setItem('graftr_user_location', 'Near you');
-            render();
-          });
-      },
-      () => {
-        state.userLocation = '';
-        render();
-      },
-      { timeout: 8000 }
-    );
   },
 };
 

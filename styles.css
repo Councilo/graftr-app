@@ -916,6 +916,152 @@ body::-webkit-scrollbar {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
+/* Keep control, top-right of a card photo — opposite corner to the logo. */
+.biz-card-keep {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #141414;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  transition: transform 0.08s ease, background 0.12s ease;
+}
+
+.biz-card-keep svg {
+  fill: none;
+}
+
+/* Kept: the same glyph, filled and inverted. */
+.biz-card-keep.is-on {
+  background: #141414;
+  color: #ffffff;
+}
+
+.biz-card-keep.is-on svg {
+  fill: currentColor;
+}
+
+.biz-card-keep:active {
+  transform: scale(0.9);
+}
+
+/* The favourites board. One slot per category so it reads as a set of roles
+   to fill, not a flat list. */
+.fav-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  /* start, not stretch: an empty slot beside a filled one would otherwise be
+     dragged to the full height of the tallest card in the row. */
+  align-items: start;
+  gap: 14px 12px;
+  margin-top: 4px;
+}
+
+.fav-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fav-slot-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+.fav-slot-icon {
+  font-size: 14px;
+}
+
+/* An unfilled role: dashed, so the board reads as having gaps to close. */
+.fav-slot.is-empty {
+  padding: 12px;
+  border: 1.5px dashed rgba(20, 20, 20, 0.22);
+  border-radius: 18px;
+  background: #fcfcfc;
+}
+
+.fav-suggest {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.fav-suggest-text {
+  min-width: 0;
+}
+
+.fav-suggest-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #141414;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fav-suggest-note {
+  font-size: 11px;
+  color: #6b6b6b;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fav-add {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #141414;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fav-add:active {
+  transform: scale(0.92);
+}
+
+.fav-browse {
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 12px;
+  background: #f2f2f2;
+  color: #141414;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fav-browse:hover {
+  background: #e6e6e6;
+}
+
 /* Cards or icons — the only two ways to view the directory. */
 .view-toggle {
   display: inline-flex;
