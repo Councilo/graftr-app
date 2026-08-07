@@ -486,14 +486,134 @@ const ROLE_PATH = '/courier';
 const BUSINESS_PATH = '/business';
 
 const CURRENT_PATH = window.location.pathname.replace(/\/+$/, '').toLowerCase();
-const PATH_ROLE = CURRENT_PATH === ROLE_PATH ? 'courier'
-  : CURRENT_PATH === BUSINESS_PATH ? 'business'
+// Screens live under the role prefix now (/courier/pack), so the role has to be
+// read from the first segment rather than the whole path.
+const inRole = (base) => CURRENT_PATH === base || CURRENT_PATH.startsWith(base + '/');
+const PATH_ROLE = inRole(ROLE_PATH) ? 'courier'
+  : inRole(BUSINESS_PATH) ? 'business'
   : 'shopper';
 
 function roleHome(role) {
   if (role === 'courier') return ROLE_PATH;
   if (role === 'business') return BUSINESS_PATH;
   return '/';
+}
+
+// ---------------------------------------------------------------------------
+// Routing
+//
+// Every screen has an address, so the URL says where you are, the browser's
+// own back button works, and a link or a refresh lands on the same page.
+// A business page is /listing/<id>, not /business/<id> — /business is the
+// business-owner app and the two must not collide.
+// ---------------------------------------------------------------------------
+const SCREEN_ROUTES = [
+  { screen: 'shopper-shop', path: '/' },
+  { screen: 'shopper-browse', path: '/groceries' },
+  { screen: 'shopper-all-services', path: '/services' },
+  { screen: 'shopper-services', path: '/services/:category' },
+  { screen: 'shopper-business', path: '/listing/:id' },
+  { screen: 'shopper-basket', path: '/basket' },
+  { screen: 'shopper-inbox', path: '/activity' },
+  { screen: 'shopper-account', path: '/account' },
+  { screen: 'shopper-special-request', path: '/special-request' },
+  { screen: 'courier-activity', path: ROLE_PATH },
+  { screen: 'courier-earnings', path: ROLE_PATH + '/earnings' },
+  { screen: 'courier-pack', path: ROLE_PATH + '/pack' },
+  { screen: 'courier-account', path: ROLE_PATH + '/account' },
+  { screen: 'business-dashboard', path: BUSINESS_PATH },
+];
+
+// The owner dashboard is one screen with sections rather than separate
+// screens, so its sections need their own entry: /business is the page
+// itself, everything else hangs off it.
+const BUSINESS_TAB_PATHS = {
+  page: '',
+  services: 'services',
+  gallery: 'photos',
+  bookings: 'bookings',
+  messages: 'activity',
+  plan: 'plan',
+};
+
+function businessTabForSlug(slug) {
+  return Object.keys(BUSINESS_TAB_PATHS).find(tab => BUSINESS_TAB_PATHS[tab] === slug);
+}
+
+function pathForScreen(screen) {
+  if (screen === 'business-dashboard') {
+    const slug = BUSINESS_TAB_PATHS[state.businessTab] || '';
+    return slug ? BUSINESS_PATH + '/' + slug : BUSINESS_PATH;
+  }
+  const route = SCREEN_ROUTES.find(r => r.screen === screen);
+  // login has no address of its own — it stands in for whichever app you
+  // opened, so signing in doesn't change the URL under you.
+  if (!route) return roleHome(state.mode || PATH_ROLE);
+  if (route.path.includes(':category')) {
+    return state.servicesCategory
+      ? '/services/' + encodeURIComponent(state.servicesCategory)
+      : '/services';
+  }
+  if (route.path.includes(':id')) {
+    return state.activeBusinessId
+      ? '/listing/' + encodeURIComponent(state.activeBusinessId)
+      : '/services';
+  }
+  return route.path;
+}
+
+function routeForPath(pathname) {
+  const path = '/' + String(pathname || '').replace(/^\/+|\/+$/g, '').toLowerCase();
+
+  // Checked ahead of the table: /business/photos would otherwise fall through
+  // to no match, and bare /business has to name its section too.
+  if (path === BUSINESS_PATH) return { screen: 'business-dashboard', tab: 'page' };
+  if (path.startsWith(BUSINESS_PATH + '/')) {
+    const tab = businessTabForSlug(path.slice(BUSINESS_PATH.length + 1));
+    return tab ? { screen: 'business-dashboard', tab } : null;
+  }
+
+  for (const route of SCREEN_ROUTES) {
+    if (!route.path.includes(':')) {
+      if (route.path === path) return { screen: route.screen };
+      continue;
+    }
+    const base = route.path.split('/:')[0];
+    if (path.startsWith(base + '/')) {
+      const param = decodeURIComponent(path.slice(base.length + 1));
+      if (param) return { screen: route.screen, param };
+    }
+  }
+  return null;
+}
+
+// Points state at whatever the address bar says. Returns false for an unknown
+// or stale URL — a deleted listing, say — so the caller can leave state alone.
+function applyRoute(pathname) {
+  const match = routeForPath(pathname);
+  if (!match) return false;
+  if (match.screen === 'shopper-services') {
+    if (!serviceCategory(match.param)) return false;
+    state.servicesCategory = match.param;
+  }
+  if (match.screen === 'shopper-business') {
+    if (!businessById(match.param)) return false;
+    state.activeBusinessId = match.param;
+  }
+  if (match.tab) state.businessTab = match.tab;
+  state.screen = match.screen;
+  return true;
+}
+
+// Called at the end of every render. Pushing only when the path actually
+// changes keeps one history entry per navigation, so Back steps through pages
+// rather than through keystrokes.
+function syncUrl() {
+  // file:// has no origin to push against — the pathname is a disk path.
+  if (window.location.protocol === 'file:') return;
+  const path = pathForScreen(state.screen);
+  if (path === window.location.pathname) return;
+  window.history.pushState({ screen: state.screen }, '', path);
 }
 
 // ---------------------------------------------------------------------------
@@ -608,7 +728,7 @@ const BOOKINGS_KEY = 'graftr_bookings';
 // Bumped when the shipped listings change in a way that has to reach browsers
 // that already saved the old set. Storage written before this version is
 // cleared once, so retired demo listings don't linger on anyone's device.
-const BUSINESS_SEED_VERSION = 20;
+const BUSINESS_SEED_VERSION = 26;
 const BUSINESS_SEED_VERSION_KEY = 'graftr_businesses_seed_version';
 
 // Verified UK Business Directory listings.
@@ -4507,7 +4627,7 @@ function featuredBusinesses(limit) {
 // while the accounts are being built, rather than one listing per sign-in.
 // Set to false (or delete this and the admin bar) to hand each business its
 // own account and nothing else.
-const ADMIN_MODE = true;
+const ADMIN_MODE = false;
 
 // The listing owned by whoever is signed in on /business, if they've made one.
 // In admin mode, whichever listing the operator has selected instead.
@@ -4601,9 +4721,7 @@ const state = {
   businessMessages: loadBusinessMessages(),
   bookingCart: [],                 // bookings sitting in the basket, unpaid
   servicesCategory: null,          // category being browsed
-  businessSearchCategory: 'all',   // search filter category ('all', 'trades', 'auto', etc.)
-  businessQuickFilter: 'all',      // search filter tag ('all', 'instant', 'verified', 'free')
-  businessPriceFilter: 'all',      // search price filter ('all', 'free', 'under50', '50to150', 'over150')
+  servicesView: 'cards',           // directory layout: 'cards' or 'icons'
   activeBusinessId: null,          // business page being viewed
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
   businessTab: 'page',             // business dashboard section
@@ -4681,6 +4799,9 @@ if (state.authUser) {
   state.screen = PATH_ROLE === 'courier' ? 'courier-activity'
     : PATH_ROLE === 'business' ? 'business-dashboard'
     : 'shopper-shop';
+  // A deep link beats the role's home screen, so a shared URL opens the page
+  // it points at rather than dumping you on Shop.
+  applyRoute(window.location.pathname);
 }
 
 const SHOP_IMAGES_KEY = 'absolutely-shop-images';
@@ -4790,9 +4911,18 @@ const SHOP_IMAGE_DEFAULTS = {
 function cardImageHtml(key, placeholderEmoji) {
   const src = state.shopImages[key] || SHOP_IMAGE_DEFAULTS[key];
   const bgStyle = src ? `background-image:url('${src}');background-size:cover;background-position:center;` : '';
+  const placeholder = src ? '' : `<span style="font-size:32px;opacity:0.3">${placeholderEmoji}</span>`;
+
+  // Swapping the picture is a setup affordance. For everyone else this is the
+  // biggest part of a card that is itself a link, and a <label> wrapping a file
+  // input swallows the tap — you'd get a file picker instead of the page.
+  if (!ADMIN_MODE) {
+    return `<div class="card-image" style="${bgStyle}">${placeholder}</div>`;
+  }
+
   return `
   <label class="card-image" style="${bgStyle}">
-    ${src ? '' : `<span style="font-size:32px;opacity:0.3">${placeholderEmoji}</span>`}
+    ${placeholder}
     <span class="upload-overlay">⤴ ${src ? 'Change image' : 'Add image'}</span>
     <input type="file" accept="image/*" data-upload="${key}" />
   </label>`;
@@ -5790,282 +5920,229 @@ function specialRequestPrompt(prefillQuery) {
   </div>`;
 }
 
-function renderShopperSearchResults(query) {
+function backBar(action, label, arg) {
+  return `
+    <div class="press back-bar" data-action="${action}"${arg === undefined ? '' : ` data-arg="${arg}"`}>
+      <span class="back-bar-arrow" aria-hidden="true">‹</span>
+      <span>${escapeHtml(label)}</span>
+    </div>`;
+}
+
+// Every customer screen below Shop opens with this. The tab bar covers the
+// five main sections, but nothing did for the pages you reach from a card —
+// a business page, a category, the special-request form.
+function backToShop(label = 'Shop') {
+  return backBar('goShop', label);
+}
+
+// The directory card. Lifted out of the search results so the Services page
+// can lay the same card out when it isn't searching.
+function businessGridCard(b) {
+  const banner = b.coverSrc || (b.gallery || [])[0] || 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80';
+
+  // What they actually do, in their own words. Falls back to the category, and
+  // then to the services they list, so the line is never empty.
+  const cat = serviceCategory(b.category);
+  const summary = b.tagline
+    || (cat ? cat.label : '')
+    || (b.services || []).map(s => s.name).join(' · ');
+
+  // Books the cheapest service — the entry point into the listing.
+  const cheapest = (b.services || []).slice().sort((x, y) => x.price - y.price)[0];
+  const bookHtml = cheapest
+    ? `<button type="button" class="biz-card-book" data-action="openBookingPicker" data-arg="${b.id}|${cheapest.id}">Book now</button>`
+    : `<button type="button" class="biz-card-book is-enquire" data-action="openBusiness" data-arg="${b.id}">Enquire</button>`;
+
+  // Website and Call are real links — a tel: and an external site — so they are
+  // anchors, not actions. The click handler lets any href through rather than
+  // firing the card's own action.
+  const site = b.websiteUrl || (b.domain ? `https://${b.domain}` : '');
+  const tel = b.phone ? `tel:${String(b.phone).replace(/[^\d+]/g, '')}` : '';
+
+  // The brand mark sits on the photo. Clearbit is down for some listings, so
+  // fall back to the site's favicon and then to initials.
+  const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const fallbackLogo = b.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(b.domain)}&sz=128` : '';
+  const logoHtml = b.logoSrc
+    ? `<img class="biz-card-logo" src="${escapeHtml(b.logoSrc)}" alt="" onerror="this.onerror=null;${fallbackLogo ? `this.src='${fallbackLogo}'` : `this.replaceWith(Object.assign(document.createElement('span'),{className:'biz-card-logo is-initials',textContent:'${escapeHtml(initials)}'}))`}" />`
+    : `<span class="biz-card-logo is-initials">${escapeHtml(initials)}</span>`;
+
+  return `
+    <div class="shop-card press biz-card" data-action="openBusiness" data-arg="${b.id}">
+      <div class="biz-card-photo" style="background-image:url('${banner}')">
+        ${logoHtml}
+      </div>
+
+      <div class="biz-card-body">
+        <div class="biz-card-name">${escapeHtml(b.name)}</div>
+        <div class="biz-card-desc">${escapeHtml(summary)}</div>
+        <div class="biz-card-meta">
+          <span class="biz-card-rating">4.8 <span style="color:#f59e0b">★</span> <span style="font-weight:400;color:#6b6b6b">(107)</span></span>
+        </div>
+        ${bookHtml}
+        <div class="biz-card-actions">
+          ${site ? `<a class="biz-card-action" href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">🌐 Website</a>` : ''}
+          ${tel ? `<a class="biz-card-action" href="${escapeHtml(tel)}">📞 Call</a>` : ''}
+          <button type="button" class="biz-card-action" data-action="openBusiness" data-arg="${b.id}">Overview</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Every listed business as a square logo tile, laid out like app icons on a
+// phone home screen.
+function businessIconTile(b) {
+  const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const fallbackLogo = b.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(b.domain)}&sz=128` : '';
+  const face = b.logoSrc
+    ? `<img class="app-tile-icon" src="${escapeHtml(b.logoSrc)}" onerror="this.onerror=null;if('${fallbackLogo}')this.src='${fallbackLogo}';" style="object-fit:contain;background:#ffffff;box-sizing:border-box" />`
+    : `<span class="app-tile-icon app-tile-initials">${escapeHtml(initials)}</span>`;
+
+  // A tile has no room for what they do, so it carries the category rather
+  // than a price — same rule as the card: no quote figures on a listing.
+  const cat = serviceCategory(b.category);
+  const priceBadge = cat
+    ? `<span style="font-size:10.5px;font-weight:500;color:#6b6b6b">${escapeHtml(cat.label)}</span>`
+    : '';
+
+  return `
+    <div class="press app-tile" data-action="openBusiness" data-arg="${b.id}" style="display:flex;flex-direction:column;align-items:center;text-align:center">
+      ${face}
+      <span class="app-tile-label" style="margin-top:4px">${escapeHtml(b.name)}</span>
+      ${priceBadge ? `<div style="margin-top:2px">${priceBadge}</div>` : ''}
+    </div>`;
+}
+
+// Two ways to look at the directory, nothing more. Icons fit far more on a
+// screen; cards carry the price and rating.
+function servicesViewToggle() {
+  const view = state.servicesView === 'icons' ? 'icons' : 'cards';
+  const opt = (id, label) =>
+    `<button type="button" class="view-opt${view === id ? ' is-on' : ''}" data-action="setServicesView" data-arg="${id}">${label}</button>`;
+  return `<div class="view-toggle">${opt('cards', '▦ Cards')}${opt('icons', '⊞ Icons')}</div>`;
+}
+
+function businessListHtml(list) {
+  return state.servicesView === 'icons'
+    ? `<div class="app-grid">${list.map(businessIconTile).join('')}</div>`
+    : `<div class="biz-card-grid">${list.map(businessGridCard).join('')}</div>`;
+}
+
+function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
   const q = (query || '').trim().toLowerCase();
-  const selectedCat = state.businessSearchCategory || 'all';
-  const selectedFilter = state.businessQuickFilter || 'all';
-  const selectedPrice = state.businessPriceFilter || 'all';
-  const selectedLoc = (state.userLocation || '').toLowerCase().replace(/📡.*/, '').trim();
 
-  const matchesPrice = (price) => {
-    if (selectedPrice === 'all') return true;
-    if (selectedPrice === 'free') return price === 0;
-    if (selectedPrice === 'under50') return price > 0 && price <= 50;
-    if (selectedPrice === '50to150') return price >= 50 && price <= 150;
-    if (selectedPrice === 'over150') return price > 150;
-    return true;
-  };
-
-  const matchesLocation = (b) => {
-    if (!selectedLoc) return true; // Anywhere
-    const area = (b.area || '').toLowerCase();
-    const name = (b.name || '').toLowerCase();
-    return area.includes(selectedLoc) || name.includes(selectedLoc);
-  };
-
-  // 1. Filter Businesses
-  let matchingBiz = (state.businesses || []).filter(isBusinessLive).filter(b => {
-    // Location filter
-    if (!matchesLocation(b)) return false;
-    // Category match
-    if (selectedCat !== 'all') {
-      if (selectedCat === 'groceries') return false; // Groceries is products only
-      if (b.category !== selectedCat) return false;
-    }
-    // Quick filter match
-    if (selectedFilter === 'instant') {
-      if (!b.services || !b.services.length) return false;
-    } else if (selectedFilter === 'verified') {
-      if (tierOf(b).rank === 0) return false; // Only featured/priority
-    } else if (selectedFilter === 'free') {
-      const hasFree = (b.services || []).some(s => s.price === 0);
-      if (!hasFree) return false;
-    }
-
-    // Price filter match
-    if (selectedPrice !== 'all') {
-      const hasMatchingPriceService = (b.services || []).some(s => matchesPrice(s.price));
-      if (!hasMatchingPriceService) return false;
-    }
-
-    if (!q) return true; // match category/filter only if search text empty
-
-    // Search Query match
-    const nameMatch = (b.name || '').toLowerCase().includes(q);
+  const matchesQuery = (b) => {
     const catObj = serviceCategory(b.category);
-    const catMatch = catObj && catObj.label.toLowerCase().includes(q);
-    const taglineMatch = (b.tagline || '').toLowerCase().includes(q);
-    const aboutMatch = (b.about || '').toLowerCase().includes(q);
-    const areaMatch = (b.area || '').toLowerCase().includes(q);
-    const serviceMatch = (b.services || []).some(s =>
-      (s.name || '').toLowerCase().includes(q) || (s.description || '').toLowerCase().includes(q)
-    );
+    return (b.name || '').toLowerCase().includes(q) ||
+           (catObj && catObj.label.toLowerCase().includes(q)) ||
+           (b.tagline || '').toLowerCase().includes(q) ||
+           (b.about || '').toLowerCase().includes(q) ||
+           (b.area || '').toLowerCase().includes(q) ||
+           (b.services || []).some(s =>
+             (s.name || '').toLowerCase().includes(q) ||
+             (s.description || '').toLowerCase().includes(q));
+  };
 
-    return nameMatch || catMatch || taglineMatch || aboutMatch || areaMatch || serviceMatch;
+  const matchingBiz = (state.businesses || [])
+    .filter(isBusinessLive)
+    .filter(matchesQuery)
+    .sort(byTierThenRecency);
+
+  const matchingServices = [];
+  (state.businesses || []).filter(isBusinessLive).forEach(b => {
+    (b.services || []).forEach(s => {
+      if ((s.name || '').toLowerCase().includes(q) ||
+          (s.description || '').toLowerCase().includes(q) ||
+          (b.name || '').toLowerCase().includes(q)) {
+        matchingServices.push({ business: b, service: s });
+      }
+    });
   });
 
-  // Sort businesses by tier then recency
-  matchingBiz.sort(byTierThenRecency);
+  const matchingProducts = PRODUCTS.filter(p =>
+    p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+  );
 
-  // 2. Filter Bookable Services across businesses
-  let matchingServices = [];
-  if (selectedCat !== 'groceries') {
-    (state.businesses || []).filter(isBusinessLive).forEach(b => {
-      if (selectedCat !== 'all' && b.category !== selectedCat) return;
-      (b.services || []).forEach(s => {
-        if (!matchesPrice(s.price)) return;
-        if (!q && selectedCat === 'all' && selectedFilter === 'all' && selectedPrice === 'all') return;
-        const sNameMatch = (s.name || '').toLowerCase().includes(q);
-        const sDescMatch = (s.description || '').toLowerCase().includes(q);
-        const bNameMatch = (b.name || '').toLowerCase().includes(q);
-        if (q === '' || sNameMatch || sDescMatch || bNameMatch) {
-          if (selectedFilter === 'free' && s.price > 0) return;
-          matchingServices.push({ business: b, service: s });
-        }
-      });
-    });
-  }
+  // The Services page is a directory of businesses, so it counts and shows
+  // only those; Shop search still spans bookings and groceries too.
+  const totalCount = businessesOnly
+    ? matchingBiz.length
+    : matchingBiz.length + matchingServices.length + matchingProducts.length;
 
-  // 3. Filter Products / Groceries
-  let matchingProducts = [];
-  if (selectedCat === 'all' || selectedCat === 'groceries') {
-    if (q) {
-      matchingProducts = PRODUCTS.filter(p =>
-        matchesPrice(p.estimated_price_gbp) &&
-        (p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q))
-      );
-    } else if (selectedCat === 'groceries') {
-      matchingProducts = PRODUCTS.filter(p => matchesPrice(p.estimated_price_gbp)).slice(0, 30);
-    }
-  }
+  const bizGridHtml = matchingBiz.length > 0
+    ? `<div style="margin-bottom:20px">${businessListHtml(matchingBiz)}</div>`
+    : '';
 
-  // Quick Category Filter Buttons
-  const categoryButtonsHtml = `
-    <div style="display:flex;gap:7px;overflow-x:auto;padding:4px 0 8px;margin-top:2px" class="slot-scroll">
-      <button type="button" data-action="setSearchCategoryFilter" data-arg="all"
-        style="flex:0 0 auto;padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:${selectedCat === 'all' ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === 'all' ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === 'all' ? '#141414' : '#fff'};color:${selectedCat === 'all' ? '#fff' : '#141414'};font-family:inherit">
-        🌟 All Results
-      </button>
-      <button type="button" data-action="setSearchCategoryFilter" data-arg="groceries"
-        style="flex:0 0 auto;padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:${selectedCat === 'groceries' ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === 'groceries' ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === 'groceries' ? '#141414' : '#fff'};color:${selectedCat === 'groceries' ? '#fff' : '#141414'};font-family:inherit">
-        🛒 Groceries
-      </button>
-      ${SERVICE_CATEGORIES.map(c => `
-        <button type="button" data-action="setSearchCategoryFilter" data-arg="${c.id}"
-          style="flex:0 0 auto;padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:${selectedCat === c.id ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === c.id ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === c.id ? '#141414' : '#fff'};color:${selectedCat === c.id ? '#fff' : '#141414'};font-family:inherit">
-          ${c.emoji} ${escapeHtml(c.label)}
-        </button>
-      `).join('')}
-    </div>
-  `;
-
-  // Quick Feature Filters
-  const quickFiltersHtml = `
-    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px" class="slot-scroll">
-      <button type="button" data-action="setQuickFilterTag" data-arg="all"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'all' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'all' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'all' ? '#f0f0f0' : '#fff'};color:#141414;font-family:inherit">
-        All Types
-      </button>
-      <button type="button" data-action="setQuickFilterTag" data-arg="instant"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'instant' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'instant' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'instant' ? '#141414' : '#fff'};color:${selectedFilter === 'instant' ? '#fff' : '#141414'};font-family:inherit">
-        ⚡ Instant Bookable
-      </button>
-      <button type="button" data-action="setQuickFilterTag" data-arg="verified"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'verified' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'verified' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'verified' ? '#141414' : '#fff'};color:${selectedFilter === 'verified' ? '#fff' : '#141414'};font-family:inherit">
-        ⭐ Verified & Featured
-      </button>
-      <button type="button" data-action="setQuickFilterTag" data-arg="free"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedFilter === 'free' ? 700 : 500};cursor:pointer;border:1px solid ${selectedFilter === 'free' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedFilter === 'free' ? '#141414' : '#fff'};color:${selectedFilter === 'free' ? '#fff' : '#141414'};font-family:inherit">
-        💰 Free Consultation
-      </button>
-    </div>
-  `;
-
-  // Price Filter Bar
-  const priceFilterHtml = `
-    <div style="display:flex;align-items:center;gap:6px;overflow-x:auto;padding-bottom:10px" class="slot-scroll">
-      <span style="font-size:11.5px;font-weight:700;color:#6b6b6b;flex:0 0 auto">PRICE:</span>
-      <button type="button" data-action="setPriceFilter" data-arg="all"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === 'all' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === 'all' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === 'all' ? '#141414' : '#fff'};color:${selectedPrice === 'all' ? '#fff' : '#141414'};font-family:inherit">
-        Any Price
-      </button>
-      <button type="button" data-action="setPriceFilter" data-arg="free"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === 'free' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === 'free' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === 'free' ? '#141414' : '#fff'};color:${selectedPrice === 'free' ? '#fff' : '#141414'};font-family:inherit">
-        🎁 Free (£0)
-      </button>
-      <button type="button" data-action="setPriceFilter" data-arg="under50"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === 'under50' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === 'under50' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === 'under50' ? '#141414' : '#fff'};color:${selectedPrice === 'under50' ? '#fff' : '#141414'};font-family:inherit">
-        🏷️ Under £50
-      </button>
-      <button type="button" data-action="setPriceFilter" data-arg="50to150"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === '50to150' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === '50to150' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === '50to150' ? '#141414' : '#fff'};color:${selectedPrice === '50to150' ? '#fff' : '#141414'};font-family:inherit">
-        🏷️ £50–£150
-      </button>
-      <button type="button" data-action="setPriceFilter" data-arg="over150"
-        style="flex:0 0 auto;padding:5px 11px;border-radius:14px;font-size:12px;font-weight:${selectedPrice === 'over150' ? 700 : 500};cursor:pointer;border:1px solid ${selectedPrice === 'over150' ? '#141414' : 'rgba(20,20,20,0.12)'};background:${selectedPrice === 'over150' ? '#141414' : '#fff'};color:${selectedPrice === 'over150' ? '#fff' : '#141414'};font-family:inherit">
-        🏷️ £150+
-      </button>
-    </div>
-  `;
-
-  const totalCount = matchingBiz.length + matchingServices.length + matchingProducts.length;
-
-  const resultHeader = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:600;color:#141414">
-        ${totalCount} result${totalCount === 1 ? '' : 's'} ${q ? `for "${escapeHtml(query)}"` : ''}
-      </div>
-      ${(q || selectedCat !== 'all' || selectedFilter !== 'all' || selectedPrice !== 'all') ? `
-        <button type="button" data-action="clearSearchAndFilters" style="background:none;border:none;color:#6b6b6b;font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline">
-          Reset filters ✕
-        </button>
-      ` : ''}
-    </div>
-  `;
-
-  // Render business section
-  let bizSection = '';
-  if (matchingBiz.length > 0) {
-    bizSection = `
-      <div style="margin-bottom:18px">
-        <div style="font-size:12.5px;font-weight:700;color:#6b6b6b;letter-spacing:0.3px;margin-bottom:8px;text-transform:uppercase">
-          Verified Businesses (${matchingBiz.length})
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          ${matchingBiz.slice(0, 15).map(b => businessCardHtml(b)).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // Render bookable services section
-  let serviceSection = '';
-  if (matchingServices.length > 0) {
+  // Bookable Services list
+  let servicesListHtml = '';
+  if (!businessesOnly && matchingServices.length > 0) {
     const booked = new Set((state.bookingCart || []).map(x => `${x.businessId}|${x.serviceId}`));
-    serviceSection = `
-      <div style="margin-bottom:18px">
-        <div style="font-size:12.5px;font-weight:700;color:#6b6b6b;letter-spacing:0.3px;margin-bottom:8px;text-transform:uppercase">
+    servicesListHtml = `
+      <div style="margin-bottom:20px">
+        <div style="font-size:13px;font-weight:800;color:#141414;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">
           Bookable Services (${matchingServices.length})
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
-          ${matchingServices.slice(0, 12).map(({ business: b, service: s }) => {
-            const cat = serviceCategory(b.category);
-            const isBooked = booked.has(`${b.id}|${s.id}`);
-            return `
-              <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:14px;padding:12px 14px;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px">
-                <div style="flex:1;min-width:0" class="press" data-action="openBusiness" data-arg="${b.id}">
-                  <div style="font-size:13.5px;font-weight:700;color:#141414">${escapeHtml(s.name)}</div>
-                  <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${cat ? cat.emoji : '🏪'} ${escapeHtml(b.name)} ${b.area ? `· ${escapeHtml(b.area)}` : ''}</div>
-                  <div style="font-size:12px;color:#141414;font-weight:600;margin-top:3px">
-                    ${s.price > 0 ? `£${s.price.toFixed(2)}` : 'Free'} ${s.durationMins ? `· ${s.durationMins} mins` : ''}
-                  </div>
-                </div>
-                ${isBooked ? `
-                  <span style="font-size:12px;font-weight:600;color:#6b6b6b;padding:8px 12px">In basket</span>
-                ` : `
-                  <button type="button" class="press" data-action="openBookingPicker" data-arg="${b.id}|${s.id}"
-                    style="background:#141414;color:#fff;border:none;border-radius:12px;padding:8px 14px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;flex:0 0 auto">
-                    Book
-                  </button>
-                `}
+          ${matchingServices.slice(0, 10).map(({ business: b, service: s }) => `
+            <div class="shop-card" style="border:1px solid rgba(20,20,20,0.1);border-radius:14px;padding:12px 14px;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <div style="flex:1;min-width:0" class="press" data-action="openBusiness" data-arg="${b.id}">
+                <div style="font-size:13.5px;font-weight:700;color:#141414">${escapeHtml(s.name)}</div>
+                <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px">${escapeHtml(b.name)} ${b.area ? `· ${escapeHtml(b.area)}` : ''}</div>
+                <div style="font-size:12px;color:#141414;font-weight:700;margin-top:3px">${s.price > 0 ? `£${s.price.toFixed(2)}` : 'Free Quote'}</div>
               </div>
-            `;
-          }).join('')}
+              <button type="button" class="press" data-action="openBookingPicker" data-arg="${b.id}|${s.id}"
+                style="background:#141414;color:#fff;border:none;border-radius:12px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit">
+                Book
+              </button>
+            </div>
+          `).join('')}
         </div>
       </div>
     `;
   }
 
-  // Render groceries section
-  let productSection = '';
-  if (matchingProducts.length > 0) {
-    productSection = `
-      <div style="margin-bottom:18px">
-        <div style="font-size:12.5px;font-weight:700;color:#6b6b6b;letter-spacing:0.3px;margin-bottom:8px;text-transform:uppercase">
-          Groceries & Essentials (${matchingProducts.length})
+  // Products List
+  let productsListHtml = '';
+  if (!businessesOnly && matchingProducts.length > 0) {
+    productsListHtml = `
+      <div style="margin-bottom:20px">
+        <div style="font-size:13px;font-weight:800;color:#141414;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">
+          Products &amp; Essentials (${matchingProducts.length})
         </div>
         <div style="display:flex;flex-direction:column">
-          ${matchingProducts.slice(0, 20).map(productRow).join('')}
+          ${matchingProducts.slice(0, 15).map(productRow).join('')}
         </div>
       </div>
     `;
   }
 
-  const noResults = totalCount === 0 ? `
-    <div class="shop-card" style="${SERVICE_CARD_SHELL}">
-      <div style="padding:24px 16px;text-align:center">
-        <div style="font-size:28px;margin-bottom:6px">🔍</div>
-        <div style="font-size:15px;font-weight:700;color:#141414">No results found</div>
-        <div style="font-size:13px;color:#6b6b6b;margin-top:4px;line-height:1.45">
-          We couldn't find matching businesses or items for "${escapeHtml(query || selectedCat)}".
-        </div>
-        <button type="button" data-action="clearSearchAndFilters" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit">
-          Show all businesses
-        </button>
-      </div>
+  const noResultsHtml = totalCount === 0 ? `
+    <div style="padding:40px 20px;text-align:center;background:#fff;border-radius:20px;border:1px solid rgba(20,20,20,0.08)">
+      <div style="font-size:32px;margin-bottom:8px">🔍</div>
+      <div style="font-size:16px;font-weight:800;color:#141414">No matching items found</div>
+      <div style="font-size:13px;color:#6b6b6b;margin-top:4px">Try a different word or browse the categories.</div>
+      <button type="button" data-action="clearSearch" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">
+        Clear search
+      </button>
     </div>
   ` : '';
 
   return `
-    ${categoryButtonsHtml}
-    ${quickFiltersHtml}
-    ${priceFilterHtml}
-    ${resultHeader}
-    ${bizSection}
-    ${serviceSection}
-    ${productSection}
-    ${noResults}
-    ${specialRequestPrompt(query)}
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:20px;font-weight:800;color:#141414">
+          ${businessesOnly ? 'Businesses' : 'Browse products &amp; services'}
+        </div>
+        <div style="font-size:12.5px;color:#6b6b6b;font-weight:600">
+          ${totalCount} result${totalCount === 1 ? '' : 's'}
+        </div>
+      </div>
+
+      ${bizGridHtml}
+      ${servicesListHtml}
+      ${productsListHtml}
+      ${noResultsHtml}
+    </div>
   `;
 }
 
@@ -6232,7 +6309,6 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
   if (!variant) variant = tierOf(b).card;
   const cat = serviceCategory(b.category);
   const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  const cheapest = (b.services || []).filter(s => s.price > 0).map(s => s.price).sort((x, y) => x - y)[0];
   const meta = `${cat ? `${cat.emoji} ${escapeHtml(cat.label)}` : ''}${b.area ? ` · ${escapeHtml(b.area)}` : ''}`;
   const open = linked ? `data-action="openBusiness" data-arg="${b.id}"` : '';
   const shell = `${SERVICE_CARD_SHELL}${linked ? ';cursor:pointer' : ''}`;
@@ -6241,9 +6317,13 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
   const avatarHtml = (size, radius) => {
     const fallbackLogo = b.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(b.domain)}&sz=128` : '';
     return b.logoSrc
-      ? `<img src="${escapeHtml(b.logoSrc)}" onerror="this.onerror=null;if('${fallbackLogo}')this.src='${fallbackLogo}';" style="width:${size}px;height:${size}px;border-radius:${radius}px;flex:0 0 auto;object-fit:contain;background:#ffffff;padding:3px;box-sizing:border-box;border:1px solid rgba(0,0,0,0.08)" />`
+      ? `<img src="${escapeHtml(b.logoSrc)}" onerror="this.onerror=null;if('${fallbackLogo}')this.src='${fallbackLogo}';" style="width:${size}px;height:${size}px;border-radius:${radius}px;flex:0 0 auto;object-fit:contain;background:#ffffff;box-sizing:border-box" />`
       : `<span style="width:${size}px;height:${size}px;border-radius:${radius}px;flex:0 0 auto;background:#141414;color:#fff;display:flex;align-items:center;justify-content:center;font-size:${Math.round(size / 3)}px;font-weight:600">${escapeHtml(initials)}</span>`;
   };
+
+  // No price or quote label on a business card — the tagline below says what
+  // they do instead. Prices belong on the listing, against a named service.
+  const priceLabelHtml = `<span style="opacity:0.4;flex:0 0 auto">›</span>`;
 
   if (variant === 'large') {
     // Banner falls back to the first piece of their work, then to a plain
@@ -6264,9 +6344,7 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
           <div style="flex:1;min-width:0">
             <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px">
               <span style="font-size:15.5px;font-weight:700;color:#141414;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.name)}</span>
-              ${cheapest !== undefined
-                ? `<span style="font-size:13px;color:#6b6b6b;flex:0 0 auto">from £${cheapest.toFixed(2)}</span>`
-                : `<span style="opacity:0.4;flex:0 0 auto">›</span>`}
+              ${priceLabelHtml}
             </div>
             <div style="font-size:13px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.tagline || (cat ? cat.label : ''))}</div>
             <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">${meta}</div>
@@ -6274,6 +6352,8 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
         </div>
       </div>`;
   }
+
+  const compactPriceHtml = '';
 
   return `
     <div class="${linked ? 'press ' : ''}shop-card" ${open} style="${shell}">
@@ -6284,12 +6364,7 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
           <div style="font-size:12.5px;color:#6b6b6b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(b.tagline || (cat ? cat.label : ''))}</div>
           <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px">${meta}</div>
         </div>
-        ${cheapest !== undefined
-          ? `<div style="text-align:right;flex:0 0 auto">
-               <div style="font-size:11.5px;color:#6b6b6b">from</div>
-               <div style="font-size:14px;font-weight:600;color:#141414">£${cheapest.toFixed(2)}</div>
-             </div>`
-          : ''}
+        ${compactPriceHtml}
       </div>
     </div>`;
 }
@@ -6373,27 +6448,33 @@ function locationSearchBarHtml(inputId) {
 // Every listed business as a square logo tile, laid out like app icons on a
 // phone home screen. Tapping one opens that business's page.
 function renderShopperAllServices() {
-  const all = (state.businesses || []).filter(isBusinessLive).slice().sort(byTierThenRecency);
+  const isSearching = (state.searchQuery || '').trim().length > 0;
 
-  // Grouped by category so a long directory still has some structure.
+  if (isSearching) {
+    return `
+      <div class="page" style="padding:0 18px 24px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
+          <div>
+            <div style="font-size:25px;font-weight:700;color:#141414">Services &amp; Directory</div>
+            <div style="font-size:13px;color:#6b6b6b;margin-top:2px">Interactive Business &amp; Price Search</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:22px;padding:10px 14px;margin-bottom:10px;background:#fff">
+          <span style="opacity:0.4;font-size:15px">⌕</span>
+          <input id="services-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery || '')}" placeholder="Search 100 UK services, trades, auto..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
+        </div>
+
+        ${servicesViewToggle()}
+
+        ${renderShopperSearchResults(state.searchQuery, { businessesOnly: true })}
+      </div>`;
+  }
+
+  const all = (state.businesses || []).filter(isBusinessLive).slice().sort(byTierThenRecency);
   const groups = SERVICE_CATEGORIES
     .map(cat => ({ cat, items: all.filter(b => b.category === cat.id) }))
     .filter(g => g.items.length);
-
-  const tile = (b) => {
-    const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
-    const fallbackLogo = b.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(b.domain)}&sz=128` : '';
-    const face = b.logoSrc
-      ? `<img class="app-tile-icon" src="${escapeHtml(b.logoSrc)}" onerror="this.onerror=null;if('${fallbackLogo}')this.src='${fallbackLogo}';" style="object-fit:contain;background:#ffffff;padding:5px;box-sizing:border-box;border:1px solid rgba(0,0,0,0.08)" />`
-      : `<span class="app-tile-icon app-tile-initials">${escapeHtml(initials)}</span>`;
-    return `
-      <div class="press app-tile" data-action="openBusiness" data-arg="${b.id}">
-        ${face}
-        <span class="app-tile-label">${escapeHtml(b.name)}</span>
-      </div>`;
-  };
-
-  const selectedCat = state.businessSearchCategory || 'all';
 
   return `
     <div class="page" style="padding:0 18px 24px">
@@ -6402,29 +6483,17 @@ function renderShopperAllServices() {
           <div style="font-size:25px;font-weight:700;color:#141414">Services</div>
           <div style="font-size:13px;color:#6b6b6b;margin-top:2px">${all.length} business${all.length === 1 ? '' : 'es'} on Vendaru</div>
         </div>
-        <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
       </div>
 
       ${locationSearchBarHtml('services-search-input')}
 
-      <div style="display:flex;gap:7px;overflow-x:auto;padding:10px 0 4px" class="slot-scroll">
-        <button type="button" data-action="setSearchCategoryFilter" data-arg="all"
-          style="flex:0 0 auto;padding:6px 12px;border-radius:18px;font-size:12px;font-weight:${selectedCat === 'all' ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === 'all' ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === 'all' ? '#141414' : '#fff'};color:${selectedCat === 'all' ? '#fff' : '#141414'};font-family:inherit">
-          All
-        </button>
-        ${SERVICE_CATEGORIES.map(c => `
-          <button type="button" data-action="setSearchCategoryFilter" data-arg="${c.id}"
-            style="flex:0 0 auto;padding:6px 12px;border-radius:18px;font-size:12px;font-weight:${selectedCat === c.id ? 700 : 500};cursor:pointer;border:1.5px solid ${selectedCat === c.id ? '#141414' : 'rgba(20,20,20,0.15)'};background:${selectedCat === c.id ? '#141414' : '#fff'};color:${selectedCat === c.id ? '#fff' : '#141414'};font-family:inherit">
-            ${c.emoji} ${escapeHtml(c.label)}
-          </button>
-        `).join('')}
-      </div>
+      ${servicesViewToggle()}
 
       ${groups.length
         ? groups.map(g => `
             <div>
               <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;margin-bottom:11px">${g.cat.emoji} ${escapeHtml(g.cat.label)}</div>
-              <div class="app-grid">${g.items.map(tile).join('')}</div>
+              ${businessListHtml(g.items)}
             </div>
           `).join('')
         : `<div class="shop-card" style="${SERVICE_CARD_SHELL}">
@@ -6447,7 +6516,6 @@ function renderShopperServices() {
           <div style="font-size:25px;font-weight:700;color:#141414">${cat ? escapeHtml(cat.label) : 'Services'}</div>
           <div style="font-size:13px;color:#6b6b6b;margin-top:2px">${list.length} local business${list.length === 1 ? '' : 'es'}</div>
         </div>
-        <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
       </div>
 
       ${list.length
@@ -6518,7 +6586,6 @@ function renderShopperBusiness() {
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
         <div class="press" data-action="backToCategory" style="cursor:pointer;font-size:13px;font-weight:500;color:#6b6b6b">‹ ${cat ? escapeHtml(cat.label) : 'Back'}</div>
-        <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
       </div>
 
       <!-- 1. Their card, full size — this is the top of their page -->
@@ -6604,11 +6671,7 @@ function renderBookingPickerModal() {
 }
 
 function renderShopperShop() {
-  const searching = (state.searchQuery || '').trim().length > 0 ||
-                    (state.businessSearchCategory && state.businessSearchCategory !== 'all') ||
-                    (state.businessQuickFilter && state.businessQuickFilter !== 'all') ||
-                    (state.businessPriceFilter && state.businessPriceFilter !== 'all') ||
-                    !!(state.userLocation && !state.userLocation.startsWith('📡'));
+  const searching = (state.searchQuery || '').trim().length > 0;
   const body = searching
     ? renderShopperSearchResults(state.searchQuery)
     : `
@@ -6704,9 +6767,16 @@ function productThumb(p) {
   const src = custom || p.image;
   const emoji = CATEGORY_EMOJI[p.category] || '🛒';
   const bgStyle = src ? `background-image:url('${src}');background-size:cover;background-position:center;` : '';
+  const placeholder = src ? '' : `<span style="font-size:18px">${emoji}</span>`;
+
+  // Same as the card image: only an upload target while setting the shop up.
+  if (!ADMIN_MODE) {
+    return `<span class="product-thumb" style="${bgStyle}">${placeholder}</span>`;
+  }
+
   return `
   <label class="product-thumb" style="${bgStyle}" title="${src ? 'Change image' : 'Add image'}">
-    ${src ? '' : `<span style="font-size:18px">${emoji}</span>`}
+    ${placeholder}
     <span class="product-thumb-overlay">✎</span>
     <input type="file" accept="image/*" data-upload-product="${p.id}" />
   </label>`;
@@ -6766,7 +6836,6 @@ function renderShopperBrowse() {
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column">
     <div style="display:flex;align-items:center;gap:10px;padding:4px 0 10px">
-      <div class="press" data-action="goShop" style="cursor:pointer;font-size:20px;line-height:1">‹</div>
       <div style="font-size:18px;font-weight:700">Morrisons Daily</div>
     </div>
     ${sections}
@@ -7002,7 +7071,6 @@ function renderShopperBasket() {
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
         <div style="font-size:25px;font-weight:700;color:#141414">Basket</div>
-        <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
       </div>
       ${loyaltyCard}
       ${bookingsCard}
@@ -7507,7 +7575,6 @@ function renderShopperSpecialRequest() {
   if (r.submitted) {
     return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
       <div style="display:flex;align-items:center;gap:10px;padding:4px 0 10px">
-        <div class="press" data-action="goShop" style="cursor:pointer;font-size:20px;line-height:1">‹</div>
         <div style="font-size:18px;font-weight:700">Special Request</div>
       </div>
       <div style="border:1.5px solid #141414;background:#fafafa;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center">
@@ -7526,7 +7593,6 @@ function renderShopperSpecialRequest() {
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
     <div style="display:flex;align-items:center;gap:10px;padding:4px 0 10px">
-      <div class="press" data-action="goShop" style="cursor:pointer;font-size:20px;line-height:1">‹</div>
       <div style="font-size:18px;font-weight:700">Special Request</div>
     </div>
     <div style="font-size:13px;opacity:0.6">Can't find an item in Morrisons Daily? Tell us where to find it and we'll match you with a courier to collect it.</div>
@@ -7773,11 +7839,7 @@ function renderAiChatDrawer() {
   ];
 
   return `
-    <div class="ai-modal-overlay" data-action="toggleAiChat">
-      <div class="ai-chat-sheet" onclick="event.stopPropagation()">
-        <!-- Grab handle for mobile bottom sheet -->
-        <div style="width:38px;height:4px;background:#e2e8f0;border-radius:2px;margin:8px auto 0;flex:0 0 auto" class="ai-grab-handle"></div>
-
+    <div class="ai-chat-sheet">
         <!-- Header -->
         <div class="ai-sheet-header">
           <div style="display:flex;align-items:center;gap:10px;min-width:0">
@@ -7833,7 +7895,6 @@ function renderAiChatDrawer() {
           </button>
         </div>
         ${state.aiVoiceSupported === false ? '<div style="padding:0 16px 8px;font-size:11px;color:#94a3b8;text-align:center">Voice input unavailable in this browser — type instead.</div>' : ''}
-      </div>
     </div>
   `;
 }
@@ -8458,6 +8519,7 @@ function renderBusinessDashboard() {
   if (!mine) {
     return `
       <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+        ${backBar('setAuthRole', 'Vendaru', 'shopper')}
         <div style="font-size:25px;font-weight:700;color:#141414">Your business</div>
         ${adminBar}
         <div class="shop-card" style="${shell}">
@@ -8707,6 +8769,13 @@ function renderBusinessDashboard() {
 
   return `
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
+      <!-- A section steps back to the page it belongs to; the page itself
+           steps out to the customer site, which is a different app and so a
+           real navigation rather than a screen change. -->
+      ${tab === 'page'
+        ? backBar('setAuthRole', 'Vendaru', 'shopper')
+        : backBar('setBusinessTab', 'Your page', 'page')}
+
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
         <div style="font-size:25px;font-weight:700;color:#141414">${titles[tab] || 'Your business'}</div>
         <button type="button" data-action="logout" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Log out</button>
@@ -8743,7 +8812,11 @@ const screenRenderers = {
 };
 
 function render() {
-  const content = screenRenderers[state.screen]();
+  // Added here rather than inside each renderer so no customer screen can ship
+  // without a way home — including any added later.
+  const showBack = state.mode === 'shopper' && state.screen !== 'shopper-shop';
+  const content = (showBack ? `<div style="padding:0 18px 10px">${backToShop()}</div>` : '') +
+                  screenRenderers[state.screen]();
   let tabs = '';
   let bottomPad = '';
   if (state.mode === 'courier') {
@@ -8830,6 +8903,8 @@ function render() {
       }
     }, 50);
   }
+
+  syncUrl();
 }
 
 let googleSignInInitialized = false;
@@ -9279,7 +9354,7 @@ const actions = {
   },
   clearAiChat: () => {
     state.aiMessages = [
-      { role: 'bot', text: "👋 Hi! I'm your Graftr AI Assistant. Ask me to find items, recommend groceries, or locate verified local UK services!" }
+      { role: 'bot', text: "👋 Hi! I'm your Vendaru AI Assistant. Ask me to find items, recommend groceries, or locate verified local UK services!" }
     ];
     render();
   },
@@ -9299,34 +9374,69 @@ const actions = {
     const query = (state.aiInput || '').trim();
     if (!query || state.aiLoading) return;
 
+    // Each render rebuilds the panel and destroys the composer, so the caret
+    // goes with it — and on a phone the keyboard drops after every message.
+    // Only restore it if the composer had focus: tapping a suggestion chip
+    // shouldn't summon the keyboard.
+    const keepFocus = document.activeElement && document.activeElement.id === 'ai-chat-input';
+    const restoreFocus = () => {
+      if (!keepFocus) return;
+      const el = document.getElementById('ai-chat-input');
+      if (el) el.focus();
+    };
+
     state.aiMessages.push({ role: 'user', text: query });
     state.aiInput = '';
     state.aiLoading = true;
     render();
+    restoreFocus();
 
     setTimeout(async () => {
       let replyText = "";
       try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: query })
+        // Without a deadline a stalled /api/chat leaves aiLoading stuck on
+        // forever, and the guard at the top of this function then silently
+        // swallows every later send — the composer and quick chips just stop
+        // responding. The abort cancels the request; the race is what
+        // guarantees we carry on, since a promise that never settles never
+        // sees the signal either way. 8s, then the local engine answers.
+        const abort = new AbortController();
+        let deadline;
+        const timeout = new Promise((_, reject) => {
+          deadline = setTimeout(() => { abort.abort(); reject(new Error('ai-timeout')); }, 8000);
         });
-        if (res.ok) {
-          const data = await res.json();
-          replyText = data.reply;
+        try {
+          const res = await Promise.race([
+            fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: query }),
+              signal: abort.signal
+            }),
+            timeout
+          ]);
+          if (res.ok) {
+            const data = await Promise.race([res.json(), timeout]);
+            replyText = data.reply;
+          }
+        } finally {
+          clearTimeout(deadline);
         }
       } catch (err) {
         // Fallback to client query engine
       }
 
-      if (!replyText) {
-        replyText = processVendaruAiQuery(query);
+      try {
+        if (!replyText) {
+          replyText = processVendaruAiQuery(query);
+        }
+        state.aiMessages.push({ role: 'bot', text: replyText });
+      } finally {
+        // Must clear even if the reply blows up, or the panel deadlocks.
+        state.aiLoading = false;
+        render();
+        restoreFocus();
       }
-
-      state.aiMessages.push({ role: 'bot', text: replyText });
-      state.aiLoading = false;
-      render();
     }, 500);
   },
   goActivity: () => { state.screen = 'courier-activity'; render(); },
@@ -9897,27 +10007,12 @@ const actions = {
     };
     render();
   },
-  setSearchCategoryFilter: (catId) => {
-    state.businessSearchCategory = String(catId || 'all');
-    render();
-  },
-  setQuickFilterTag: (tag) => {
-    state.businessQuickFilter = String(tag || 'all');
-    render();
-  },
-  setPriceFilter: (priceRange) => {
-    state.businessPriceFilter = String(priceRange || 'all');
-    render();
-  },
-  clearSearchAndFilters: () => {
+  clearSearch: () => {
     state.searchQuery = '';
-    state.businessSearchCategory = 'all';
-    state.businessQuickFilter = 'all';
-    state.businessPriceFilter = 'all';
     render();
   },
-  goServiceCategory: (catId) => {
-    state.businessSearchCategory = String(catId || 'all');
+  setServicesView: (view) => {
+    state.servicesView = view === 'icons' ? 'icons' : 'cards';
     render();
   },
 
@@ -9970,17 +10065,17 @@ const actions = {
 document.addEventListener('DOMContentLoaded', () => {
   root = document.getElementById('app');
   root.addEventListener('click', (e) => {
-    if (e.target.closest('.card-image') || e.target.closest('.product-thumb')) return;
-    // Close location picker on outside click
-    if (state.showLocationPicker && !e.target.closest('#location-picker') && !e.target.closest('[data-action="toggleLocationPicker"]')) {
-      state.showLocationPicker = false;
-      render();
-      // Still process the click if it had an action
-    }
+    // Only a real upload control may swallow the tap. Matching the class alone
+    // also caught the plain images shoppers see, killing the card links.
+    if (e.target.closest('label.card-image') || e.target.closest('label.product-thumb')) return;
+    // A genuine link inside a card — tel:, an external site — must navigate.
+    // Without this the card's own action claims it and preventDefault kills it.
+    if (e.target.closest('a[href]')) return;
     const el = e.target.closest('[data-action]');
     if (!el) return;
     const action = actions[el.dataset.action];
     if (!action) return;
+    e.preventDefault();
     const arg = el.dataset.arg;
     const parsedArg = arg === undefined ? undefined : (/^-?\d+$/.test(arg) ? Number(arg) : arg);
     action(parsedArg);
@@ -10081,6 +10176,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+  // Escape closes the chat. Bound to the document, not root, so it still works
+  // if focus has left the panel.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && state.aiChatOpen) {
+      e.preventDefault();
+      actions.toggleAiChat();
+    }
+  });
   root.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && e.target.id === 'ai-chat-input') {
       e.preventDefault();
@@ -10156,6 +10259,12 @@ document.addEventListener('DOMContentLoaded', () => {
     clearTimeout(bindRenderTimer);
     bindRenderTimer = setTimeout(renderKeepingFocus, 180);
   });
+  // The browser's own Back/Forward. syncUrl only pushes when the path really
+  // changes, so re-rendering here can't push a duplicate entry back on.
+  window.addEventListener('popstate', () => {
+    if (applyRoute(window.location.pathname)) render();
+  });
+
   // Coming back from Stripe via the back button restores this page from the
   // bfcache with its old JS state, which would leave the Pay button disabled
   // on "Redirecting…". Reset it whenever the page is shown again.
@@ -10183,6 +10292,10 @@ document.addEventListener('DOMContentLoaded', () => {
       state.businesses = state.businesses
         .map(b => published.get(b.id) || b)
         .concat(list.filter(b => b && b.id && !state.businesses.some(x => x.id === b.id)));
+      // A /listing/<id> deep link is resolved before this file arrives, so a
+      // business that only exists here would have fallen back to Shop. Now that
+      // the listings are in, try the URL again.
+      if (state.screen === 'shopper-shop') applyRoute(window.location.pathname);
       render();
     })
     .catch(() => { /* no published file yet */ });

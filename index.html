@@ -2,6 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Screens have nested URLs (/services/beauty), so document-relative paths
+     would resolve against that folder and 404. This pins every relative URL —
+     the tags below and the assets fetched from app.js — to the site root.
+     Skipped on file://, where "/" is the disk root and nothing would load.
+     Must run before the first element that carries a URL. -->
+<script>
+  if (location.protocol !== 'file:') {
+    var b = document.createElement('base');
+    b.href = '/';
+    document.head.appendChild(b);
+  }
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,7 +26,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8020577058635926" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="styles.css?v=26">
+<link rel="stylesheet" href="styles.css?v=57">
 </head>
 <body>
 <div class="frame-bg">
@@ -25,6 +37,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="app.js?v=26"></script>
+<script src="app.js?v=57"></script>
 </body>
 </html>
