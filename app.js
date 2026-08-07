@@ -633,6 +633,11 @@ function applyRoute(pathname) {
   return true;
 }
 
+// Where you've actually been, newest last. Back reads this rather than the
+// URL's parent: a listing opened from Services should return to Services, not
+// to the category page you never saw.
+const navStack = [];
+
 // Called at the end of every render. Pushing only when the path actually
 // changes keeps one history entry per navigation, so Back steps through pages
 // rather than through keystrokes.
@@ -641,7 +646,26 @@ function syncUrl() {
   if (window.location.protocol === 'file:') return;
   const path = pathForScreen(state.screen);
   if (path === window.location.pathname) return;
+  // location is still the page being left at this point.
+  navStack.push(window.location.pathname);
   window.history.pushState({ screen: state.screen }, '', path);
+}
+
+// Names a path the way someone would refer to the page: "Services", "Trades",
+// the business itself.
+function labelForPath(path) {
+  const match = routeForPath(path);
+  if (!match) return 'Back';
+  if (match.screen === 'shopper-services') {
+    const cat = serviceCategory(match.param);
+    return cat ? cat.label : 'Services';
+  }
+  if (match.screen === 'shopper-business') {
+    const b = businessById(match.param);
+    return b ? b.name : 'Back';
+  }
+  const nav = SCREEN_NAV[match.screen];
+  return nav ? nav.label : 'Back';
 }
 
 // ---------------------------------------------------------------------------
@@ -5998,16 +6022,19 @@ const SCREEN_NAV = {
   'shopper-special-request': { action: 'goSpecialRequest', label: 'Special request' },
 };
 
-// Back follows the URL rather than always running home: one segment up, and
-// the label names wherever that lands. /services/beauty goes to Services, not
-// to Shop.
+// Back returns to the page you came from, labelled with its name. Only when
+// there's nowhere to return to — a shared link opened cold — does it fall back
+// to the URL's parent.
 function backTarget() {
   const screen = state.screen;
   if (!SCREEN_NAV[screen] && screen !== 'shopper-services' && screen !== 'shopper-business') return null;
   if (screen === 'shopper-shop') return null;
 
-  // A listing has no parent in its own path — /listing/<id> — so it steps back
-  // to the category it belongs to, which is where you came from.
+  const from = navStack[navStack.length - 1];
+  if (from) return { action: 'goBack', label: labelForPath(from) };
+
+  // Opened cold. A listing has no parent inside /listing/<id>, so it falls
+  // back to the category it belongs to.
   if (screen === 'shopper-business') {
     const b = businessById(state.activeBusinessId);
     const cat = b && serviceCategory(b.category);
@@ -6183,7 +6210,7 @@ function businessListHtml(list) {
     : `<div class="biz-card-grid">${list.map(businessGridCard).join('')}</div>`;
 }
 
-function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
+function renderShopperSearchResults(query, { businessesOnly = false, productsOnly = false } = {}) {
   const q = (query || '').trim().toLowerCase();
 
   const matchesQuery = (b) => {
@@ -6220,17 +6247,17 @@ function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
 
   // The Services page is a directory of businesses, so it counts and shows
   // only those; Shop search still spans bookings and groceries too.
-  const totalCount = businessesOnly
-    ? matchingBiz.length
+  const totalCount = businessesOnly ? matchingBiz.length
+    : productsOnly ? matchingProducts.length
     : matchingBiz.length + matchingServices.length + matchingProducts.length;
 
-  const bizGridHtml = matchingBiz.length > 0
+  const bizGridHtml = (!productsOnly && matchingBiz.length > 0)
     ? `<div style="margin-bottom:20px">${businessListHtml(matchingBiz)}</div>`
     : '';
 
   // Bookable Services list
   let servicesListHtml = '';
-  if (!businessesOnly && matchingServices.length > 0) {
+  if (!businessesOnly && !productsOnly && matchingServices.length > 0) {
     const booked = new Set((state.bookingCart || []).map(x => `${x.businessId}|${x.serviceId}`));
     servicesListHtml = `
       <div style="margin-bottom:20px">
@@ -6271,14 +6298,24 @@ function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
     `;
   }
 
+  // Shop searches groceries only now, so a term that matches a business would
+  // otherwise dead-end. Hand it across rather than just saying nothing found.
+  const crossover = productsOnly && matchingBiz.length > 0;
+
   const noResultsHtml = totalCount === 0 ? `
     <div style="padding:40px 20px;text-align:center;background:#fff;border-radius:20px;border:1px solid rgba(20,20,20,0.08)">
       <div style="font-size:32px;margin-bottom:8px">🔍</div>
-      <div style="font-size:16px;font-weight:800;color:#141414">No matching items found</div>
-      <div style="font-size:13px;color:#6b6b6b;margin-top:4px">Try a different word or browse the categories.</div>
-      <button type="button" data-action="clearSearch" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">
-        Clear search
-      </button>
+      <div style="font-size:16px;font-weight:800;color:#141414">
+        ${crossover ? 'Nothing in the aisles' : 'No matching items found'}
+      </div>
+      <div style="font-size:13px;color:#6b6b6b;margin-top:4px">
+        ${crossover
+          ? `${matchingBiz.length} local business${matchingBiz.length === 1 ? '' : 'es'} match “${escapeHtml(q)}”.`
+          : 'Try a different word or browse the aisles.'}
+      </div>
+      ${crossover
+        ? `<button type="button" data-action="goAllServices" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">Look in Services</button>`
+        : `<button type="button" data-action="clearSearch" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">Clear search</button>`}
     </div>
   ` : '';
 
@@ -6286,7 +6323,7 @@ function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
     <div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:20px;font-weight:800;color:#141414">
-          ${businessesOnly ? 'Businesses' : 'Browse products &amp; services'}
+          ${businessesOnly ? 'Businesses' : productsOnly ? 'Groceries &amp; essentials' : 'Browse products &amp; services'}
         </div>
         <div style="font-size:12.5px;color:#6b6b6b;font-weight:600">
           ${totalCount} result${totalCount === 1 ? '' : 's'}
@@ -6825,10 +6862,17 @@ function renderBookingPickerModal() {
     </div>`;
 }
 
+// The aisles, in the order the browse page lists them.
+function groceryCategories() {
+  const seen = [];
+  PRODUCTS.forEach(p => { if (seen.indexOf(p.category) === -1) seen.push(p.category); });
+  return seen;
+}
+
 function renderShopperShop() {
   const searching = (state.searchQuery || '').trim().length > 0;
   const body = searching
-    ? renderShopperSearchResults(state.searchQuery)
+    ? renderShopperSearchResults(state.searchQuery, { productsOnly: true })
     : `
     <div class="press shop-card" data-action="goBrowse" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;cursor:pointer">
       ${cardImageHtml('morrisons', '🛒')}
@@ -6861,17 +6905,8 @@ function renderShopperShop() {
       </div>
     </div>
 
-    <!-- Newly published listings surface here, not only inside their category,
-         so a business that has just signed up is visible straight away. -->
-    ${(() => {
-      const featured = featuredBusinesses(6);
-      if (!featured.length) return '';
-      return `
-        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">Local businesses</div>
-        ${featured.map(b => businessCardHtml(b)).join('')}`;
-    })()}
-
-    <!-- Category directory sits at the foot of the page. -->
+    <!-- One doorway to the other half of the app, rather than listings mixed
+         in among the shopping. -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
       <div style="padding:4px 16px 14px">
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">
@@ -6894,19 +6929,20 @@ function renderShopperShop() {
            style="width:200px;max-width:62%;height:auto;display:block" />
     </div>
     <div style="font-size:15px;opacity:0.55;font-weight:600">Good afternoon</div>
-    ${locationSearchBarHtml('shop-search-input')}
+    <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:11px 16px">
+      <span style="opacity:0.4;font-size:15px">⌕</span>
+      <input id="shop-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery)}" placeholder="Search shops, groceries, essentials..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
+    </div>
+    <!-- Aisles, not trades. The service categories moved to Services, which is
+         the whole of that side of the app. Scrolls sideways rather than
+         shrinking. -->
     <div class="cat-rail slot-scroll">
-      <!-- Groceries first, then the service categories in order of how often
-           people look for them. Scrolls sideways rather than shrinking. -->
-      <div class="cat-tile" data-action="goBrowseCategory" data-arg="Grocery">
-        <span class="cat-tile-icon">🛒</span>
-        <span class="cat-tile-label">Groceries</span>
-      </div>
-      ${SERVICE_CATEGORIES.map(c => `
-      <div class="cat-tile" data-action="goServiceCategory" data-arg="${c.id}">
-        <span class="cat-tile-icon">${c.emoji}</span>
-        <span class="cat-tile-label">${c.label}</span>
-      </div>`).join('')}    </div>
+      ${groceryCategories().map(c => `
+      <div class="cat-tile" data-action="goBrowseCategory" data-arg="${escapeHtml(c)}">
+        <span class="cat-tile-icon">${CATEGORY_EMOJI[c] || '🛒'}</span>
+        <span class="cat-tile-label">${escapeHtml(c)}</span>
+      </div>`).join('')}
+    </div>
     ${body}
   </div>`;
 }
@@ -8984,6 +9020,10 @@ const screenRenderers = {
 };
 
 function render() {
+  // Before anything is measured or drawn: it records the page being left, and
+  // the back button below reads that to know where it goes.
+  syncUrl();
+
   // Added here rather than inside each renderer so no customer screen can ship
   // without a way back — including any added later.
   const back = state.mode === 'shopper' ? backTarget() : null;
@@ -9075,8 +9115,6 @@ function render() {
       }
     }, 50);
   }
-
-  syncUrl();
 }
 
 let googleSignInInitialized = false;
@@ -10188,6 +10226,11 @@ const actions = {
     render();
   },
   goFavourites: () => { state.screen = 'shopper-favourites'; render(); },
+  // Hands off to the browser so its own Back and this button stay in step.
+  goBack: () => {
+    if (navStack.length) window.history.back();
+    else actions.goShop();
+  },
   // Closing the login screen browses signed out. Remembered, so a refresh
   // doesn't drop them back onto it.
   browseAsGuest: () => {
@@ -10414,6 +10457,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // The browser's own Back/Forward. syncUrl only pushes when the path really
   // changes, so re-rendering here can't push a duplicate entry back on.
   window.addEventListener('popstate', () => {
+    navStack.pop();
     if (applyRoute(window.location.pathname)) render();
   });
 
