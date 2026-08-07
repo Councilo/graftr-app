@@ -795,10 +795,12 @@ body::-webkit-scrollbar {
   white-space: nowrap;
 }
 
+/* Reviews sit against the right edge, clear of the name and description on
+   the left. */
 .biz-card-meta {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 6px;
 }
 
@@ -831,31 +833,33 @@ body::-webkit-scrollbar {
   margin-top: 5px;
 }
 
+/* Same shape and weight as the app's other secondary buttons — the back bar,
+   the view switch: a soft grey rounded rect, no outline, 600. Outlined pills
+   were the odd one out. */
 .biz-card-action {
   flex: 1 1 auto;
   min-width: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 5px 8px;
-  border: 1px solid rgba(20, 20, 20, 0.15);
-  border-radius: 999px;
-  background: #ffffff;
+  gap: 4px;
+  padding: 7px 10px;
+  border: none;
+  border-radius: 12px;
+  background: #f2f2f2;
   color: #141414;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
-  transition: border-color 0.12s ease, background 0.12s ease;
+  transition: background 0.12s ease;
 }
 
 .biz-card-action:hover {
-  border-color: #141414;
-  background: #fafafa;
+  background: #e6e6e6;
 }
 
 .biz-card-action:active {
