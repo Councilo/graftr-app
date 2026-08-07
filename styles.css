@@ -732,6 +732,33 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
+/* Dismisses the login screen into signed-out browsing. */
+.login-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #f2f2f2;
+  color: #6b6b6b;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.login-close:hover {
+  background: #141414;
+  color: #ffffff;
+}
+
 .back-bar-arrow {
   font-size: 17px;
   line-height: 1;

@@ -157,6 +157,19 @@ function saveFavourites() {
   try { localStorage.setItem('graftr_favourites', JSON.stringify(state.favourites)); } catch(e){}
 }
 
+// Someone who dismissed the login screen. Remembered, or a refresh would drop
+// them straight back onto the page they just closed.
+function loadGuest() {
+  try { return localStorage.getItem('graftr_guest') === '1'; } catch (e) { return false; }
+}
+
+function saveGuest() {
+  try {
+    if (state.isGuest) localStorage.setItem('graftr_guest', '1');
+    else localStorage.removeItem('graftr_guest');
+  } catch (e) { /* ignore */ }
+}
+
 function loadLoggedOrders() {
   try {
     const saved = localStorage.getItem('graftr_logged_orders');
@@ -4738,6 +4751,7 @@ const state = {
   servicesCategory: null,          // category being browsed
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
   favourites: loadFavourites(),    // business ids the shopper has kept
+  isGuest: loadGuest(),            // dismissed the login screen, browsing signed out
   activeBusinessId: null,          // business page being viewed
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
   businessTab: 'page',             // business dashboard section
@@ -4817,6 +4831,12 @@ if (state.authUser) {
     : 'shopper-shop';
   // A deep link beats the role's home screen, so a shared URL opens the page
   // it points at rather than dumping you on Shop.
+  applyRoute(window.location.pathname);
+} else if (state.isGuest && PATH_ROLE === 'shopper') {
+  // Closed the login screen earlier. Only the customer app can be browsed
+  // signed out — a listing or a delivery run belongs to an account.
+  state.mode = 'shopper';
+  state.screen = 'shopper-shop';
   applyRoute(window.location.pathname);
 }
 
@@ -4948,8 +4968,13 @@ function renderLogin() {
   const isCourier = state.authRole === 'courier';
   const isBusiness = state.authRole === 'business';
   return `
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;gap:24px;text-align:center;min-height:580px;background:#ffffff">
-    
+  <div style="position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 24px;gap:24px;text-align:center;min-height:580px;background:#ffffff">
+
+    <!-- Closing the screen browses signed out. Only on the customer app: a
+         listing or a delivery run has to belong to an account. -->
+    ${(isCourier || isBusiness) ? '' : `
+      <button type="button" class="login-close" data-action="browseAsGuest" title="Browse without signing in" aria-label="Close">✕</button>`}
+
     <!-- Brand wordmark. Swapping assets/brand/logo.svg changes it everywhere. -->
     <img src="assets/brand/logo.svg" alt="Vendaru" width="200"
          style="width:200px;max-width:62%;height:auto;display:block" />
@@ -4990,6 +5015,11 @@ function renderLogin() {
         Log In with Email
       </button>
     </div>
+
+    ${(isCourier || isBusiness) ? '' : `
+      <div class="press" data-action="browseAsGuest" style="font-size:13px;font-weight:700;color:#5c5c5c;text-decoration:underline;text-underline-offset:2px;cursor:pointer">
+        Browse without an account
+      </div>`}
 
     <!-- Sign-up entry point for anyone without an account yet. -->
     <div style="font-size:13px;color:#5c5c5c;max-width:330px">
@@ -5955,11 +5985,42 @@ function backBar(action, label, arg) {
     </div>`;
 }
 
-// Every customer screen below Shop opens with this. The tab bar covers the
-// five main sections, but nothing did for the pages you reach from a card —
-// a business page, a category, the special-request form.
-function backToShop(label = 'Shop') {
-  return backBar('goShop', label);
+// How to get to each screen, and what to call it when it's the thing you're
+// going back to.
+const SCREEN_NAV = {
+  'shopper-shop': { action: 'goShop', label: 'Shop' },
+  'shopper-all-services': { action: 'goAllServices', label: 'Services' },
+  'shopper-browse': { action: 'goBrowse', label: 'Groceries' },
+  'shopper-basket': { action: 'goBasket', label: 'Basket' },
+  'shopper-inbox': { action: 'goShopperInbox', label: 'Activity' },
+  'shopper-account': { action: 'goShopperAccount', label: 'Account' },
+  'shopper-favourites': { action: 'goFavourites', label: 'Your list' },
+  'shopper-special-request': { action: 'goSpecialRequest', label: 'Special request' },
+};
+
+// Back follows the URL rather than always running home: one segment up, and
+// the label names wherever that lands. /services/beauty goes to Services, not
+// to Shop.
+function backTarget() {
+  const screen = state.screen;
+  if (!SCREEN_NAV[screen] && screen !== 'shopper-services' && screen !== 'shopper-business') return null;
+  if (screen === 'shopper-shop') return null;
+
+  // A listing has no parent in its own path — /listing/<id> — so it steps back
+  // to the category it belongs to, which is where you came from.
+  if (screen === 'shopper-business') {
+    const b = businessById(state.activeBusinessId);
+    const cat = b && serviceCategory(b.category);
+    return cat
+      ? { action: 'goServiceCategory', arg: cat.id, label: cat.label }
+      : { action: 'goAllServices', label: 'Services' };
+  }
+
+  const path = pathForScreen(screen);
+  const parent = path.slice(0, path.lastIndexOf('/')) || '/';
+  const match = routeForPath(parent);
+  const nav = match && SCREEN_NAV[match.screen];
+  return nav || { action: 'goShop', label: 'Shop' };
 }
 
 // Line icons drawn in currentColor, so they invert with the button rather than
@@ -8924,9 +8985,9 @@ const screenRenderers = {
 
 function render() {
   // Added here rather than inside each renderer so no customer screen can ship
-  // without a way home — including any added later.
-  const showBack = state.mode === 'shopper' && state.screen !== 'shopper-shop';
-  const content = (showBack ? `<div style="padding:0 18px 10px">${backToShop()}</div>` : '') +
+  // without a way back — including any added later.
+  const back = state.mode === 'shopper' ? backTarget() : null;
+  const content = (back ? `<div style="padding:0 18px 10px">${backBar(back.action, back.label, back.arg)}</div>` : '') +
                   screenRenderers[state.screen]();
   let tabs = '';
   let bottomPad = '';
@@ -10127,6 +10188,22 @@ const actions = {
     render();
   },
   goFavourites: () => { state.screen = 'shopper-favourites'; render(); },
+  // Closing the login screen browses signed out. Remembered, so a refresh
+  // doesn't drop them back onto it.
+  browseAsGuest: () => {
+    state.isGuest = true;
+    saveGuest();
+    state.mode = 'shopper';
+    state.screen = 'shopper-shop';
+    render();
+  },
+  goLogin: () => {
+    state.isGuest = false;
+    saveGuest();
+    state.mode = null;
+    state.screen = 'login';
+    render();
+  },
   toggleFavourite: (id) => {
     const key = String(id);
     const list = state.favourites || (state.favourites = []);
