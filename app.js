@@ -6080,9 +6080,7 @@ function businessGridCard(b) {
     <div class="shop-card press biz-card" data-action="openBusiness" data-arg="${b.id}">
       <div class="biz-card-photo" style="background-image:url('${banner}')">
         ${logoHtml}
-        <button type="button" class="biz-card-keep${isFavourite(b.id) ? ' is-on' : ''}"
-          data-action="toggleFavourite" data-arg="${b.id}"
-          title="${isFavourite(b.id) ? 'Remove from your list' : 'Add to your list'}">${ICON_HEART}</button>
+        ${keepButtonHtml(b)}
       </div>
 
       <div class="biz-card-body">
@@ -6102,6 +6100,17 @@ function businessGridCard(b) {
 
 function isFavourite(id) {
   return (state.favourites || []).indexOf(String(id)) !== -1;
+}
+
+// Keeping a business is the same control everywhere it appears — a card, a
+// listing page — so the gesture is learned once. Its own data-action resolves
+// before the card's, so keeping never opens the page by accident.
+function keepButtonHtml(b, extraClass) {
+  const on = isFavourite(b.id);
+  return `<button type="button" class="biz-card-keep${on ? ' is-on' : ''}${extraClass ? ' ' + extraClass : ''}"
+    data-action="toggleFavourite" data-arg="${b.id}"
+    title="${on ? 'Remove from your list' : 'Add to your list'}"
+    aria-label="${on ? 'Remove from your list' : 'Add to your list'}">${ICON_HEART}</button>`;
 }
 
 // The favourites board: one slot per category, so it reads as the set of
@@ -6501,7 +6510,11 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
   const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const meta = `${cat ? `${cat.emoji} ${escapeHtml(cat.label)}` : ''}${b.area ? ` · ${escapeHtml(b.area)}` : ''}`;
   const open = linked ? `data-action="openBusiness" data-arg="${b.id}"` : '';
-  const shell = `${SERVICE_CARD_SHELL}${linked ? ';cursor:pointer' : ''}`;
+  const shell = `${SERVICE_CARD_SHELL};position:relative${linked ? ';cursor:pointer' : ''}`;
+  // A card that isn't a link is either the top of the listing's own page,
+  // where the wide button sits, or an owner previewing their own card.
+  const keep = linked ? keepButtonHtml(b) : '';
+  const keepFlat = linked ? keepButtonHtml(b, 'is-flat') : '';
 
   // Same logo tile on both cards, just sized to suit.
   const avatarHtml = (size, radius) => {
@@ -6524,6 +6537,7 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
     const focal = b.coverPosition || 'center';
     return `
       <div class="${linked ? 'press ' : ''}shop-card" ${open} style="${shell}">
+        ${keep}
         <div class="biz-banner" style="background:${banner ? `#eef0ee url('${banner}') ${focal}/cover no-repeat` : '#eef0ee'}">
           ${banner ? '' : `<span style="font-size:32px;opacity:0.3">${cat ? cat.emoji : '🏪'}</span>`}
         </div>
@@ -6547,6 +6561,7 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
 
   return `
     <div class="${linked ? 'press ' : ''}shop-card" ${open} style="${shell}">
+      ${keepFlat}
       <div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
         ${avatarHtml(52, 14)}
         <div style="flex:1;min-width:0">
@@ -6820,6 +6835,11 @@ function renderShopperBusiness() {
     <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
         <div class="press" data-action="backToCategory" style="cursor:pointer;font-size:13px;font-weight:500;color:#6b6b6b">‹ ${cat ? escapeHtml(cat.label) : 'Back'}</div>
+        <!-- Spelled out here rather than left as a bare heart: there's room,
+             and this is where someone decides they'd call this business. -->
+        <button type="button" class="biz-keep-wide${isFavourite(b.id) ? ' is-on' : ''}" data-action="toggleFavourite" data-arg="${b.id}">
+          ${ICON_HEART}<span>${isFavourite(b.id) ? 'On your list' : 'Add to list'}</span>
+        </button>
       </div>
 
       <!-- 1. Their card, full size — this is the top of their page -->

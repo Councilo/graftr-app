@@ -996,6 +996,56 @@ body::-webkit-scrollbar {
   transform: scale(0.9);
 }
 
+/* On a card with no picture behind it, the translucent disc has nothing to
+   sit against — give it the card's own white and a hairline. */
+.biz-card-keep.is-flat {
+  background: #ffffff;
+  border: 1px solid rgba(20, 20, 20, 0.12);
+  box-shadow: none;
+}
+
+.biz-card-keep.is-flat.is-on {
+  background: #141414;
+  border-color: #141414;
+}
+
+/* The listing page has room for words. */
+.biz-keep-wide {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border: 1.5px solid #141414;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #141414;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.biz-keep-wide svg {
+  fill: none;
+}
+
+.biz-keep-wide:hover {
+  background: #141414;
+  color: #ffffff;
+}
+
+.biz-keep-wide.is-on {
+  background: #141414;
+  color: #ffffff;
+}
+
+.biz-keep-wide.is-on svg {
+  fill: #f2c1d8;
+  stroke: #ffffff;
+}
+
 /* The favourites board. One slot per category so it reads as a set of roles
    to fill, not a flat list. */
 /* One slot a row on a phone, two once there's width — the same rhythm the
