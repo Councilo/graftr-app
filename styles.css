@@ -789,9 +789,13 @@ body::-webkit-scrollbar {
 
 /* Four buttons don't fit a 200x200 square, so the card grows to suit its
    content and the photo keeps the 1:1 crop on its own. */
+/* In the phone column the card sizes to its content and the photo keeps the
+   square: forcing the card square there leaves ~10px for the picture once the
+   text and buttons have taken their share. The fixed 300x300 is a desktop
+   treatment, further down. */
 .biz-card {
   width: 100%;
-  max-width: 240px;
+  max-width: 300px;
   background: #ffffff;
   border: 1px solid rgba(20, 20, 20, 0.08);
   border-radius: 18px;
@@ -1405,11 +1409,21 @@ body::-webkit-scrollbar {
     margin-top: 8px;
   }
 
-  /* Full width at last, so the tracks can be their real width rather than
-     stretching to fill. Four a row at 240px, down from five — the buttons
-     need the room. */
+  /* Room for the real thing: a 300x300 card, with the photo taking whatever
+     the text and buttons leave rather than the card growing to fit a square
+     photo. */
+  .biz-card {
+    aspect-ratio: 1 / 1;
+  }
+
+  .biz-card-photo {
+    flex: 1;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+
   .biz-card-grid {
-    grid-template-columns: repeat(auto-fill, 240px);
+    grid-template-columns: repeat(auto-fill, 300px);
     justify-content: center;
   }
 
