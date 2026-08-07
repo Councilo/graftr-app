@@ -735,59 +735,6 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
-/* Top-right of every customer screen. Absolute against #app, like the tab
-   pill, so it stays put through any scroll. One control, two states: a way in
-   while signed out, their account once they're in. */
-.account-cta {
-  position: absolute;
-  top: calc(12px + env(safe-area-inset-top, 0px));
-  right: 18px;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  overflow: hidden;
-  border: none;
-  border-radius: 50%;
-  background: #141414;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  z-index: 9998;
-  box-shadow: 0 4px 12px rgba(20, 20, 20, 0.2);
-  transition: transform 0.08s ease, opacity 0.12s ease;
-}
-
-.account-cta:hover {
-  opacity: 0.86;
-}
-
-.account-cta:active {
-  transform: scale(0.92);
-}
-
-/* Their photo fills the button; the ring keeps it legible over a card. */
-.account-cta.is-in {
-  border: 2px solid #ffffff;
-}
-
-.account-cta-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.account-cta-initials {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
 /* Dismisses the login screen into signed-out browsing. Solid ink rather than
    grey-on-grey — as a faint 32px mark in a corner it was missable, and it is
    the only way past the screen. */

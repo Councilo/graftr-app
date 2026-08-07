@@ -6047,31 +6047,9 @@ const ICON_PHONE = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" 
 // fill comes from CSS so the same glyph reads as outline or solid.
 const ICON_HEART = '<svg width="15" height="15" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0110 5.6a3.7 3.7 0 016.8 2.3c0 4.5-6.8 8.6-6.8 8.6z"/></svg>';
 const ICON_PIN = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10 17.5s5.5-5 5.5-9a5.5 5.5 0 10-11 0c0 4 5.5 9 5.5 9z"/><circle cx="10" cy="8.4" r="2.1"/></svg>';
-// An arrow going through a door: the way in.
-const ICON_SIGN_IN = '<svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 3.2h3.1a1.4 1.4 0 011.4 1.4v10.8a1.4 1.4 0 01-1.4 1.4h-3.1"/><path d="M8 13.2L11.2 10 8 6.8"/><path d="M11.2 10H3.4"/></svg>';
-// Head and shoulders, for when the account is theirs.
-const ICON_USER = '<svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="6.7" r="3.1"/><path d="M3.9 16.8c1-3.3 3.4-4.9 6.1-4.9s5.1 1.6 6.1 4.9"/></svg>';
-
-// Signed out it's a way in; signed in it's their account, wearing their photo
-// or initials so it reads as theirs rather than as a generic icon.
-function accountButtonHtml() {
-  if (!state.authUser) {
-    return `<button type="button" class="account-cta" data-action="goLogin" title="Log in" aria-label="Log in">${ICON_SIGN_IN}</button>`;
-  }
-  const p = state.userProfile || {};
-  const name = state.authUser.name || p.name || '';
-  const initials = name.trim()
-    ? name.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase()
-    : '';
-  const face = p.avatarSrc
-    ? `<img src="${escapeHtml(p.avatarSrc)}" alt="" class="account-cta-photo" />`
-    : (initials ? `<span class="account-cta-initials">${escapeHtml(initials)}</span>` : ICON_USER);
-  return `<button type="button" class="account-cta is-in" data-action="goShopperAccount" title="Your account" aria-label="Your account">${face}</button>`;
-}
 const ICON_CROSSHAIR = '<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="5.4"/><circle cx="10" cy="10" r="1.4" fill="currentColor" stroke="none"/><path d="M10 1.6v2.6M10 15.8v2.6M18.4 10h-2.6M4.2 10H1.6" stroke-linecap="round"/></svg>';
 const ICON_CARET = '<svg width="9" height="9" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7.5L10 13l5.5-5.5"/></svg>';
 const ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>';
-
 // The directory card. Lifted out of the search results so the Services page
 // can lay the same card out when it isn't searching.
 function businessGridCard(b) {
@@ -7954,10 +7932,16 @@ function renderShopperTabs() {
       </span>
       Activity
     </div>
+    <!-- The last tab is the way in until there's an account behind it. -->
+    ${state.authUser ? `
     <div class="press floating-tab" data-action="goShopperAccount" style="${tabStyle('shopper-account')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="6.5" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 17c1-3.5 4-5 6.5-5s5.5 1.5 6.5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
       Account
-    </div>
+    </div>` : `
+    <div class="press floating-tab" data-action="goLogin" style="${tabStyle('login')}">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 3.2h3.1a1.4 1.4 0 011.4 1.4v10.8a1.4 1.4 0 01-1.4 1.4h-3.1"/><path d="M8 13.2L11.2 10 8 6.8"/><path d="M11.2 10H3.4"/></svg>
+      Log in
+    </div>`}
   </div>
   <div class="press ai-fab" data-action="toggleAiChat" title="Chat with AI Assistant">
     <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z" fill="#fff"/></svg>
@@ -9105,10 +9089,6 @@ function render() {
     bottomPad = 'padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px));';
   }
 
-  // One control in the band every screen already reserves at the top: a way in
-  // while signed out, and your account once you are.
-  const loginButton = state.mode === 'shopper' ? accountButtonHtml() : '';
-
   const aiDrawer = renderAiChatDrawer();
   const addressModal = renderAddressModal();
   const checkoutModal = renderCheckoutModal();
@@ -9119,7 +9099,6 @@ function render() {
 
   root.innerHTML = `
     <div class="app-scroll" style="flex:1;overflow:auto;padding-top:calc(56px + env(safe-area-inset-top, 0px));${bottomPad}">${content}</div>
-    ${loginButton}
     ${tabs}
     ${aiDrawer}
     ${addressModal}
