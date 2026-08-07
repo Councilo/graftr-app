@@ -824,6 +824,11 @@ body::-webkit-scrollbar {
   color: #141414;
 }
 
+/* The star was the last colour on the card; monochrome like everything else. */
+.biz-card-rating [aria-hidden="true"] {
+  color: #141414;
+}
+
 /* Website, Call, Overview. They wrap rather than squeezing, so a narrow card
    stacks them instead of clipping the labels. */
 .biz-card-actions {
@@ -833,21 +838,20 @@ body::-webkit-scrollbar {
   margin-top: 5px;
 }
 
-/* Same shape and weight as the app's other secondary buttons — the back bar,
-   the view switch: a soft grey rounded rect, no outline, 600. Outlined pills
-   were the odd one out. */
+/* Black on white, the same ink the app's primary buttons use. Icons are drawn
+   in currentColor so they invert with the button. */
 .biz-card-action {
   flex: 1 1 auto;
   min-width: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   padding: 7px 10px;
   border: none;
   border-radius: 12px;
-  background: #f2f2f2;
-  color: #141414;
+  background: #141414;
+  color: #ffffff;
   font-family: inherit;
   font-size: 11.5px;
   font-weight: 600;
@@ -855,11 +859,15 @@ body::-webkit-scrollbar {
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.12s ease;
+  transition: opacity 0.12s ease;
 }
 
 .biz-card-action:hover {
-  background: #e6e6e6;
+  opacity: 0.86;
+}
+
+.biz-card-action svg {
+  flex: 0 0 auto;
 }
 
 .biz-card-action:active {

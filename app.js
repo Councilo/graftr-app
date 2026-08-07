@@ -5946,6 +5946,11 @@ function backToShop(label = 'Shop') {
   return backBar('goShop', label);
 }
 
+// Line icons drawn in currentColor, so they invert with the button rather than
+// sitting on it in colour the way the emoji did.
+const ICON_GLOBE = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.2"/><path d="M2.8 10h14.4M10 2.8c2.1 2.3 2.1 12.1 0 14.4M10 2.8c-2.1 2.3-2.1 12.1 0 14.4"/></svg>';
+const ICON_PHONE = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6.6 3.2H4.5A1.5 1.5 0 003 4.8C3 11.4 8.6 17 15.2 17a1.5 1.5 0 001.6-1.5v-2.1a1 1 0 00-.8-1l-2.5-.5a1 1 0 00-1 .4l-.6.9a10.6 10.6 0 01-4.1-4.1l.9-.6a1 1 0 00.4-1L8.6 4a1 1 0 00-1-.8z"/></svg>';
+
 // The directory card. Lifted out of the search results so the Services page
 // can lay the same card out when it isn't searching.
 function businessGridCard(b) {
@@ -5982,11 +5987,11 @@ function businessGridCard(b) {
         <div class="biz-card-name">${escapeHtml(b.name)}</div>
         <div class="biz-card-desc">${escapeHtml(summary)}</div>
         <div class="biz-card-meta">
-          <span class="biz-card-rating">4.8 <span style="color:#f59e0b">★</span> <span style="font-weight:400;color:#6b6b6b">(107)</span></span>
+          <span class="biz-card-rating">4.8 <span aria-hidden="true">★</span> <span style="font-weight:400;color:#6b6b6b">(107)</span></span>
         </div>
         <div class="biz-card-actions">
-          ${site ? `<a class="biz-card-action" href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">🌐 Website</a>` : ''}
-          ${tel ? `<a class="biz-card-action" href="${escapeHtml(tel)}">📞 Call</a>` : ''}
+          ${site ? `<a class="biz-card-action" href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">${ICON_GLOBE} Website</a>` : ''}
+          ${tel ? `<a class="biz-card-action" href="${escapeHtml(tel)}">${ICON_PHONE} Call</a>` : ''}
           <button type="button" class="biz-card-action" data-action="openBusiness" data-arg="${b.id}">Overview</button>
         </div>
       </div>
