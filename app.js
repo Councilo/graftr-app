@@ -5920,6 +5920,17 @@ function specialRequestPrompt(prefillQuery) {
   </div>`;
 }
 
+// Some logos are app icons — artwork that already fills its own frame, corners
+// and all. `contain` letterboxes those, so the white tile shows as a ring
+// around the mark. Near-square art fills the tile instead; a wide wordmark
+// keeps `contain`, since `cover` would crop it to pieces.
+window.__fitLogo = function (img) {
+  const w = img.naturalWidth, h = img.naturalHeight;
+  if (!w || !h) return;
+  const ratio = w / h;
+  img.classList.toggle('is-fill', ratio > 0.8 && ratio < 1.25);
+};
+
 function backBar(action, label, arg) {
   return `
     <div class="press back-bar" data-action="${action}"${arg === undefined ? '' : ` data-arg="${arg}"`}>
@@ -5964,7 +5975,7 @@ function businessGridCard(b) {
   const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const fallbackLogo = b.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(b.domain)}&sz=128` : '';
   const logoHtml = b.logoSrc
-    ? `<img class="biz-card-logo" src="${escapeHtml(b.logoSrc)}" alt="" onerror="this.onerror=null;${fallbackLogo ? `this.src='${fallbackLogo}'` : `this.replaceWith(Object.assign(document.createElement('span'),{className:'biz-card-logo is-initials',textContent:'${escapeHtml(initials)}'}))`}" />`
+    ? `<img class="biz-card-logo" src="${escapeHtml(b.logoSrc)}" alt="" onload="__fitLogo(this)" onerror="this.onerror=null;${fallbackLogo ? `this.src='${fallbackLogo}'` : `this.replaceWith(Object.assign(document.createElement('span'),{className:'biz-card-logo is-initials',textContent:'${escapeHtml(initials)}'}))`}" />`
     : `<span class="biz-card-logo is-initials">${escapeHtml(initials)}</span>`;
 
   return `
@@ -5995,7 +6006,7 @@ function businessIconTile(b) {
   const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const fallbackLogo = b.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(b.domain)}&sz=128` : '';
   const face = b.logoSrc
-    ? `<img class="app-tile-icon" src="${escapeHtml(b.logoSrc)}" onerror="this.onerror=null;if('${fallbackLogo}')this.src='${fallbackLogo}';" style="object-fit:contain;background:#ffffff;box-sizing:border-box" />`
+    ? `<img class="app-tile-icon" src="${escapeHtml(b.logoSrc)}" onload="__fitLogo(this)" onerror="this.onerror=null;if('${fallbackLogo}')this.src='${fallbackLogo}';" style="background:#ffffff;box-sizing:border-box" />`
     : `<span class="app-tile-icon app-tile-initials">${escapeHtml(initials)}</span>`;
 
   // A tile has no room for what they do, so it carries the category rather

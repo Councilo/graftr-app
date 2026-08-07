@@ -914,6 +914,13 @@ body::-webkit-scrollbar {
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
 }
 
+/* Set by __fitLogo on near-square art: fills the tile so the corners are the
+   tile's own, not a white frame around someone else's icon. */
+.biz-card-logo.is-fill,
+.app-tile-icon.is-fill {
+  object-fit: cover;
+}
+
 /* Initials are text, so this one still needs something behind it. */
 .biz-card-logo.is-initials {
   display: flex;
@@ -979,6 +986,7 @@ body::-webkit-scrollbar {
   /* White behind every mark — plenty are dark or transparent and vanish
      without it. No border and no inset trim; the shadow separates the tile. */
   background-color: #ffffff;
+  object-fit: contain;
   /* contain, so a wide wordmark is not cropped to fit a square */
   background-size: 74%;
   background-position: center;
