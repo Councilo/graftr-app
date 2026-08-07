@@ -535,7 +535,7 @@ function roleHome(role) {
 // business-owner app and the two must not collide.
 // ---------------------------------------------------------------------------
 const SCREEN_ROUTES = [
-  { screen: 'shopper-shop', path: '/' },
+  { screen: 'shopper-shop', path: '/shop' },
   { screen: 'shopper-browse', path: '/groceries' },
   { screen: 'shopper-all-services', path: '/services' },
   { screen: 'shopper-services', path: '/services/:category' },
@@ -593,6 +593,10 @@ function pathForScreen(screen) {
 function routeForPath(pathname) {
   const path = '/' + String(pathname || '').replace(/^\/+|\/+$/g, '').toLowerCase();
 
+  // The bare domain is Shop. /shop is the address it answers to; this only
+  // keeps a link to the root working.
+  if (path === '/') return { screen: 'shopper-shop' };
+
   // Checked ahead of the table: /business/photos would otherwise fall through
   // to no match, and bare /business has to name its section too.
   if (path === BUSINESS_PATH) return { screen: 'business-dashboard', tab: 'page' };
@@ -646,6 +650,14 @@ function syncUrl() {
   if (window.location.protocol === 'file:') return;
   const path = pathForScreen(state.screen);
   if (path === window.location.pathname) return;
+
+  // Landing on the bare domain: swap the full address in rather than pushing,
+  // or Back would return to / and be sent straight here again.
+  if (window.location.pathname === '/' && state.screen === 'shopper-shop') {
+    window.history.replaceState({ screen: state.screen }, '', path);
+    return;
+  }
+
   // location is still the page being left at this point.
   navStack.push(window.location.pathname);
   window.history.pushState({ screen: state.screen }, '', path);
