@@ -1424,3 +1424,232 @@ body::-webkit-scrollbar {
     height: min(540px, calc(100% - 120px));
   }
 }
+
+/* ── Location search bar ──────────────────────────────────────────────────── */
+
+.loc-search-wrap {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 2px;
+}
+
+.loc-search-bar {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid rgba(20,20,20,0.15);
+  border-radius: 26px;
+  padding: 10px 10px 10px 16px;
+  background: #fff;
+  gap: 0;
+  transition: border-color 0.15s;
+}
+
+.loc-search-bar:focus-within {
+  border-color: rgba(20,20,20,0.35);
+}
+
+.loc-search-icon {
+  opacity: 0.4;
+  font-size: 15px;
+  flex: 0 0 auto;
+  padding-right: 8px;
+  line-height: 1;
+}
+
+.loc-search-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 13.5px;
+  font-family: inherit;
+  background: transparent;
+  min-width: 0;
+  color: #141414;
+}
+
+.loc-search-input::placeholder {
+  color: rgba(20,20,20,0.38);
+}
+
+.loc-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(20,20,20,0.1);
+  flex: 0 0 auto;
+  margin: 0 8px;
+}
+
+/* The same shape and weight as the app's other buttons: 12px corner, 600,
+   soft grey resting, solid ink once it's doing something. */
+.loc-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  border-radius: 12px;
+  padding: 7px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  max-width: 150px;
+  transition: background 0.12s ease, color 0.12s ease;
+  background: #f2f2f2;
+  color: #141414;
+}
+
+.loc-btn:hover {
+  background: #e6e6e6;
+}
+
+.loc-btn.active,
+.loc-btn.is-open {
+  background: #141414;
+  color: #ffffff;
+}
+
+.loc-btn.active:hover,
+.loc-btn.is-open:hover {
+  background: #141414;
+  opacity: 0.86;
+}
+
+.loc-btn-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loc-btn svg {
+  flex: 0 0 auto;
+}
+
+.loc-btn-caret {
+  flex: 0 0 auto;
+  opacity: 0.6;
+  display: inline-flex;
+}
+
+/* Rows carry the mark in line weight, like the rest of the app's icons. */
+.loc-picker-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  color: rgba(20, 20, 20, 0.45);
+}
+
+.loc-picker-count {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+.loc-picker-notice {
+  padding: 10px 16px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #6b6b6b;
+  background: #fafafa;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+/* Picker dropdown */
+.loc-picker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1.5px solid rgba(20,20,20,0.1);
+  border-radius: 20px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+  z-index: 9500;
+  overflow: hidden;
+  animation: loc-drop-in 0.18s cubic-bezier(0.16,1,0.3,1);
+  transform-origin: top center;
+}
+
+@keyframes loc-drop-in {
+  from { opacity: 0; transform: scaleY(0.92) translateY(-6px); }
+  to   { opacity: 1; transform: scaleY(1)   translateY(0); }
+}
+
+.loc-picker-gps {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f2f2f2;
+  cursor: pointer;
+}
+
+.loc-picker-gps:hover,
+.loc-picker-row:hover {
+  background: #fafafa;
+}
+
+.loc-picker-gps-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #141414;
+}
+
+.loc-picker-gps-sub {
+  font-size: 11.5px;
+  color: #6b6b6b;
+  margin-top: 1px;
+}
+
+.loc-picker-anywhere {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f2f2f2;
+  cursor: pointer;
+}
+
+.loc-picker-list {
+  max-height: 230px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.loc-picker-list::-webkit-scrollbar { display: none; }
+
+.loc-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 13px;
+  color: #141414;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(20,20,20,0.04);
+}
+
+.loc-picker-row.selected,
+.loc-picker-anywhere.selected {
+  background: #fafafa;
+  font-weight: 600;
+}
+
+.loc-picker-row.selected .loc-picker-icon,
+.loc-picker-anywhere.selected .loc-picker-icon {
+  color: #141414;
+}
+
+.loc-picker-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #141414;
+  color: #ffffff;
+}
+

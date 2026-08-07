@@ -4651,7 +4651,7 @@ function isBusinessLive(b) {
 // above Basic, and only then does recency decide.
 function businessesInCategory(categoryId) {
   return (state.businesses || [])
-    .filter(b => b.category === categoryId && isBusinessLive(b))
+    .filter(b => b.category === categoryId && isBusinessLive(b) && servesLocation(b))
     .slice()
     .sort(byTierThenRecency);
 }
@@ -6046,6 +6046,10 @@ const ICON_GLOBE = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" 
 const ICON_PHONE = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6.6 3.2H4.5A1.5 1.5 0 003 4.8C3 11.4 8.6 17 15.2 17a1.5 1.5 0 001.6-1.5v-2.1a1 1 0 00-.8-1l-2.5-.5a1 1 0 00-1 .4l-.6.9a10.6 10.6 0 01-4.1-4.1l.9-.6a1 1 0 00.4-1L8.6 4a1 1 0 00-1-.8z"/></svg>';
 // fill comes from CSS so the same glyph reads as outline or solid.
 const ICON_HEART = '<svg width="15" height="15" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10 16.5S3.2 12.4 3.2 7.9A3.7 3.7 0 0110 5.6a3.7 3.7 0 016.8 2.3c0 4.5-6.8 8.6-6.8 8.6z"/></svg>';
+const ICON_PIN = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10 17.5s5.5-5 5.5-9a5.5 5.5 0 10-11 0c0 4 5.5 9 5.5 9z"/><circle cx="10" cy="8.4" r="2.1"/></svg>';
+const ICON_CROSSHAIR = '<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="5.4"/><circle cx="10" cy="10" r="1.4" fill="currentColor" stroke="none"/><path d="M10 1.6v2.6M10 15.8v2.6M18.4 10h-2.6M4.2 10H1.6" stroke-linecap="round"/></svg>';
+const ICON_CARET = '<svg width="9" height="9" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7.5L10 13l5.5-5.5"/></svg>';
+const ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>';
 
 // The directory card. Lifted out of the search results so the Services page
 // can lay the same card out when it isn't searching.
@@ -6105,7 +6109,7 @@ function isFavourite(id) {
 // people you'd call for your life rather than an undifferentiated list. A slot
 // you haven't filled suggests the best-ranked business in that category.
 function renderShopperFavourites() {
-  const live = (state.businesses || []).filter(isBusinessLive);
+  const live = (state.businesses || []).filter(isBusinessLive).filter(servesLocation);
   const kept = (state.favourites || [])
     .map(id => live.find(b => String(b.id) === String(id)))
     .filter(Boolean);
@@ -6217,11 +6221,12 @@ function renderShopperSearchResults(query, { businessesOnly = false, productsOnl
 
   const matchingBiz = (state.businesses || [])
     .filter(isBusinessLive)
+    .filter(servesLocation)
     .filter(matchesQuery)
     .sort(byTierThenRecency);
 
   const matchingServices = [];
-  (state.businesses || []).filter(isBusinessLive).forEach(b => {
+  (state.businesses || []).filter(isBusinessLive).filter(servesLocation).forEach(b => {
     (b.services || []).forEach(s => {
       if ((s.name || '').toLowerCase().includes(q) ||
           (s.description || '').toLowerCase().includes(q) ||
@@ -6552,49 +6557,101 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
 }
 // ─── Location selector ────────────────────────────────────────────────────────
 
-const UK_CITIES = [
-  'London', 'Manchester', 'Birmingham', 'Leeds', 'Liverpool', 'Sheffield',
-  'Bristol', 'Edinburgh', 'Glasgow', 'Cardiff', 'Newcastle', 'Nottingham',
-  'Leicester', 'Southampton', 'Portsmouth', 'Brighton', 'Oxford', 'Cambridge',
-  'York', 'Norwich', 'Exeter', 'Bath', 'Derby', 'Coventry', 'Reading',
-  'Milton Keynes', 'Plymouth', 'Stoke-on-Trent', 'Wolverhampton', 'Belfast',
-];
+// Coordinates so "use my current location" can resolve offline: the nearest of
+// these is the answer. No geocoding service, no key, no network round trip.
+const UK_CITY_COORDS = {
+  London: [51.507, -0.128], Manchester: [53.480, -2.243], Birmingham: [52.487, -1.890],
+  Leeds: [53.801, -1.549], Liverpool: [53.408, -2.992], Sheffield: [53.381, -1.470],
+  Bristol: [51.455, -2.588], Edinburgh: [55.953, -3.189], Glasgow: [55.864, -4.252],
+  Cardiff: [51.481, -3.179], Newcastle: [54.978, -1.618], Nottingham: [52.954, -1.158],
+  Leicester: [52.637, -1.139], Southampton: [50.910, -1.404], Portsmouth: [50.816, -1.088],
+  Brighton: [50.822, -0.137], Oxford: [51.752, -1.258], Cambridge: [52.205, 0.119],
+  York: [53.960, -1.081], Norwich: [52.630, 1.297], Exeter: [50.719, -3.534],
+  Bath: [51.380, -2.360], Derby: [52.922, -1.477], Coventry: [52.407, -1.510],
+  Reading: [51.454, -0.978], 'Milton Keynes': [52.041, -0.759], Plymouth: [50.376, -4.143],
+  'Stoke-on-Trent': [53.003, -2.180], Wolverhampton: [52.587, -2.129], Belfast: [54.597, -5.930],
+  Bolton: [53.578, -2.429],
+};
+
+const UK_CITIES = Object.keys(UK_CITY_COORDS).sort();
+
+// A listing describes its patch in prose — "Croydon & UK Wide", "UK
+// Nationwide", "Wythenshawe, Manchester & 2,000 UK Branches". Naming the place
+// counts, and so does national coverage: without that second test, choosing a
+// city would hide every chain that serves it, which is most of the directory.
+const NATIONAL_COVERAGE = /uk[\s-]?wide|nationwide|national|branches|stores|centres|salons|clinics|locations|home counties/i;
+
+function locationChosen() {
+  const loc = state.userLocation || '';
+  return loc && !loc.startsWith('📡') ? loc : '';
+}
+
+function servesLocation(b) {
+  const loc = locationChosen();
+  if (!loc) return true;
+  const area = String(b.area || '');
+  return area.toLowerCase().includes(loc.toLowerCase()) || NATIONAL_COVERAGE.test(area);
+}
+
+function nearestCity(lat, lng) {
+  let best = null, bestD = Infinity;
+  Object.keys(UK_CITY_COORDS).forEach(city => {
+    const [cLat, cLng] = UK_CITY_COORDS[city];
+    // Flat approximation: fine for ranking towns a few hundred km apart.
+    const dLat = cLat - lat;
+    const dLng = (cLng - lng) * Math.cos(lat * Math.PI / 180);
+    const d = dLat * dLat + dLng * dLng;
+    if (d < bestD) { bestD = d; best = city; }
+  });
+  return best;
+}
 
 function locationSearchBarHtml(inputId) {
   const loc = state.userLocation || '';
   const open = !!state.showLocationPicker;
-  const inputPlaceholder = inputId === 'shop-search-input'
+  const isShop = inputId === 'shop-search-input';
+  const inputPlaceholder = isShop
     ? 'Search shops, groceries, essentials...'
     : 'Search services, trades, auto...';
 
-  const locBtnLabel = loc
-    ? `📍 ${escapeHtml(loc)}`
-    : '📍 Anywhere';
+  const locating = loc.startsWith('📡');
+  const locLabel = locating
+    ? '<span class="loc-btn-text">Locating…</span>'
+    : `${ICON_PIN}<span class="loc-btn-text">${escapeHtml(loc || 'Anywhere')}</span>`;
+
+  // How many listings a place would leave you with, counted the same way the
+  // filter counts, so the number on the row is the number you get.
+  const countFor = (city) => (state.businesses || [])
+    .filter(isBusinessLive)
+    .filter(b => !city || String(b.area || '').toLowerCase().includes(city.toLowerCase()) || NATIONAL_COVERAGE.test(String(b.area || '')))
+    .length;
 
   const picker = open ? `
-    <div id="location-picker" style="position:absolute;left:0;right:0;top:calc(100% + 8px);background:#fff;border:1.5px solid rgba(20,20,20,0.12);border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,0.14);z-index:9000;overflow:hidden">
-      <!-- Detect location row -->
-      <div class="press" data-action="detectUserLocation" style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid #f2f2f2;cursor:pointer">
-        <span style="font-size:18px">🎯</span>
+    <div id="location-picker" class="loc-picker">
+      <div class="press loc-picker-gps" data-action="detectUserLocation">
+        <span class="loc-picker-icon">${ICON_CROSSHAIR}</span>
         <div>
-          <div style="font-size:13.5px;font-weight:700;color:#141414">Use my current location</div>
-          <div style="font-size:11.5px;color:#6b6b6b;margin-top:1px">Auto-detect via GPS</div>
+          <div class="loc-picker-gps-title">Use my current location</div>
+          <div class="loc-picker-gps-sub">Matched to the nearest city</div>
         </div>
       </div>
-      <!-- Anywhere row -->
-      <div class="press" data-action="setUserLocation" data-arg="" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #f2f2f2;cursor:pointer;background:${loc === '' ? '#f8f8f8' : '#fff'}">
-        <span style="font-size:16px">🌍</span>
-        <span style="font-size:13px;font-weight:${loc === '' ? 700 : 400};color:#141414">Anywhere in the UK</span>
-        ${loc === '' ? '<span style="margin-left:auto;font-size:11px;font-weight:700;color:#141414;background:#e5e7eb;padding:2px 8px;border-radius:8px">Selected</span>' : ''}
+
+      ${state.locationNotice ? `<div class="loc-picker-notice">${escapeHtml(state.locationNotice)}</div>` : ''}
+
+      <div class="press loc-picker-anywhere ${loc === '' ? 'selected' : ''}" data-action="setUserLocation" data-arg="">
+        <span class="loc-picker-icon">${ICON_PIN}</span>
+        <span style="flex:1;font-size:13px">Anywhere in the UK</span>
+        <span class="loc-picker-count">${countFor('')}</span>
+        ${loc === '' ? `<span class="loc-picker-badge">${ICON_CHECK}</span>` : ''}
       </div>
-      <!-- City list -->
-      <div style="max-height:220px;overflow-y:auto">
+
+      <div class="loc-picker-list">
         ${UK_CITIES.map(city => `
-          <div class="press" data-action="setUserLocation" data-arg="${escapeHtml(city)}"
-            style="padding:11px 16px;font-size:13px;font-weight:${loc === city ? 700 : 400};color:#141414;cursor:pointer;display:flex;align-items:center;gap:8px;background:${loc === city ? '#f8f8f8' : '#fff'};border-bottom:1px solid rgba(20,20,20,0.05)">
-            <span style="opacity:0.4;font-size:12px">📍</span>
-            ${escapeHtml(city)}
-            ${loc === city ? '<span style="margin-left:auto;font-size:11px;font-weight:700;color:#141414;background:#e5e7eb;padding:2px 8px;border-radius:8px">✓</span>' : ''}
+          <div class="press loc-picker-row ${loc === city ? 'selected' : ''}" data-action="setUserLocation" data-arg="${escapeHtml(city)}">
+            <span class="loc-picker-icon">${ICON_PIN}</span>
+            <span style="flex:1">${escapeHtml(city)}</span>
+            <span class="loc-picker-count">${countFor(city)}</span>
+            ${loc === city ? `<span class="loc-picker-badge">${ICON_CHECK}</span>` : ''}
           </div>
         `).join('')}
       </div>
@@ -6602,23 +6659,17 @@ function locationSearchBarHtml(inputId) {
   ` : '';
 
   return `
-    <div style="position:relative">
-      <!-- Search + Location in one pill bar -->
-      <div style="display:flex;align-items:center;gap:8px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:10px 14px;background:#fff;gap:0">
-        <!-- Search icon + input -->
-        <span style="opacity:0.4;font-size:15px;flex:0 0 auto;padding-right:8px">⌕</span>
-        <input id="${inputId}" data-bind="searchQuery" value="${escapeHtml(state.searchQuery || '')}"
-          placeholder="${escapeHtml(inputPlaceholder)}"
-          style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent;min-width:0" />
-
-        <!-- Divider -->
-        <div style="width:1px;height:18px;background:rgba(20,20,20,0.12);flex:0 0 auto;margin:0 8px"></div>
-
-        <!-- Location pill button -->
+    <div class="loc-search-wrap">
+      <div class="loc-search-bar">
+        <span class="loc-search-icon">⌕</span>
+        <input id="${inputId}" data-bind="searchQuery"
+          class="loc-search-input"
+          value="${escapeHtml(state.searchQuery || '')}"
+          placeholder="${escapeHtml(inputPlaceholder)}" />
+        <div class="loc-divider"></div>
         <button type="button" data-action="toggleLocationPicker"
-          style="flex:0 0 auto;display:flex;align-items:center;gap:5px;background:${loc ? '#141414' : '#f4f4f5'};color:${loc ? '#fff' : '#141414'};border:none;border-radius:18px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis">
-          ${locBtnLabel}
-          <span style="font-size:9px;opacity:0.6">▾</span>
+          class="loc-btn ${locationChosen() ? 'active' : ''}${open ? ' is-open' : ''}">
+          ${locLabel}<span class="loc-btn-caret">${ICON_CARET}</span>
         </button>
       </div>
       ${picker}
@@ -6630,22 +6681,20 @@ function locationSearchBarHtml(inputId) {
 // Every listed business as a square logo tile, laid out like app icons on a
 // phone home screen. Tapping one opens that business's page.
 function renderShopperAllServices() {
-  const isSearching = (state.searchQuery || '').trim().length > 0;
+  const isSearching = (state.searchQuery || '').trim().length > 0
+    || !!(state.userLocation && !state.userLocation.startsWith('📡'));
 
   if (isSearching) {
     return `
       <div class="page" style="padding:0 18px 24px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
           <div>
-            <div style="font-size:25px;font-weight:700;color:#141414">Services &amp; Directory</div>
-            <div style="font-size:13px;color:#6b6b6b;margin-top:2px">Interactive Business &amp; Price Search</div>
+            <div style="font-size:25px;font-weight:700;color:#141414">Services</div>
+            <div style="font-size:13px;color:#6b6b6b;margin-top:2px">${(state.businesses||[]).filter(isBusinessLive).length} businesses on Vendaru</div>
           </div>
         </div>
 
-        <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:22px;padding:10px 14px;margin-bottom:10px;background:#fff">
-          <span style="opacity:0.4;font-size:15px">⌕</span>
-          <input id="services-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery || '')}" placeholder="Search 100 UK services, trades, auto..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
-        </div>
+        ${locationSearchBarHtml('services-search-input')}
 
         ${servicesViewToggle()}
 
@@ -6653,7 +6702,7 @@ function renderShopperAllServices() {
       </div>`;
   }
 
-  const all = (state.businesses || []).filter(isBusinessLive).slice().sort(byTierThenRecency);
+  const all = (state.businesses || []).filter(isBusinessLive).filter(servesLocation).slice().sort(byTierThenRecency);
   const groups = SERVICE_CATEGORIES
     .map(cat => ({ cat, items: all.filter(b => b.category === cat.id) }))
     .filter(g => g.items.length);
@@ -6903,10 +6952,7 @@ function renderShopperShop() {
            style="width:200px;max-width:62%;height:auto;display:block" />
     </div>
     <div style="font-size:15px;opacity:0.55;font-weight:600">Good afternoon</div>
-    <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:11px 16px">
-      <span style="opacity:0.4;font-size:15px">⌕</span>
-      <input id="shop-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery)}" placeholder="Search shops, groceries, essentials..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
-    </div>
+    ${locationSearchBarHtml('shop-search-input')}
     <!-- Aisles, not trades. The service categories moved to Services, which is
          the whole of that side of the app. Scrolls sideways rather than
          shrinking. -->
@@ -10227,6 +10273,39 @@ const actions = {
   setServicesView: (view) => {
     state.servicesView = view === 'icons' ? 'icons' : 'cards';
     render();
+  },
+  toggleLocationPicker: () => {
+    state.showLocationPicker = !state.showLocationPicker;
+    render();
+  },
+  setUserLocation: (city) => {
+    state.userLocation = String(city === undefined ? '' : city);
+    try { localStorage.setItem('graftr_user_location', state.userLocation); } catch (e) { /* ignore */ }
+    state.showLocationPicker = false;
+    render();
+  },
+  // Resolved against the city table rather than a geocoding service, so it
+  // works with no key and no network beyond the browser's own fix.
+  detectUserLocation: () => {
+    if (!navigator.geolocation) {
+      state.locationNotice = 'This browser can’t share a location. Pick a city instead.';
+      render();
+      return;
+    }
+    const previous = state.userLocation || '';
+    state.userLocation = '📡 Locating…';
+    state.locationNotice = null;
+    render();
+    navigator.geolocation.getCurrentPosition(
+      (pos) => actions.setUserLocation(nearestCity(pos.coords.latitude, pos.coords.longitude) || previous),
+      () => {
+        // Denied or timed out — put back whatever they had rather than
+        // leaving the button reading "Locating…" for ever.
+        state.locationNotice = 'Couldn’t get your location. Pick a city instead.';
+        actions.setUserLocation(previous);
+      },
+      { timeout: 8000, maximumAge: 300000 }
+    );
   },
   goFavourites: () => { state.screen = 'shopper-favourites'; render(); },
   // Hands off to the browser so its own Back and this button stay in step.
