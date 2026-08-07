@@ -4661,6 +4661,8 @@ const state = {
   savedForLater: loadSavedForLater(),
   productImages: {},
   searchQuery: '',
+  userLocation: localStorage.getItem('graftr_user_location') || '',
+  showLocationPicker: false,
   specialRequest: {
     productName: '',
     productUrl: '',
@@ -5793,6 +5795,7 @@ function renderShopperSearchResults(query) {
   const selectedCat = state.businessSearchCategory || 'all';
   const selectedFilter = state.businessQuickFilter || 'all';
   const selectedPrice = state.businessPriceFilter || 'all';
+  const selectedLoc = (state.userLocation || '').toLowerCase().replace(/📡.*/, '').trim();
 
   const matchesPrice = (price) => {
     if (selectedPrice === 'all') return true;
@@ -5803,8 +5806,17 @@ function renderShopperSearchResults(query) {
     return true;
   };
 
+  const matchesLocation = (b) => {
+    if (!selectedLoc) return true; // Anywhere
+    const area = (b.area || '').toLowerCase();
+    const name = (b.name || '').toLowerCase();
+    return area.includes(selectedLoc) || name.includes(selectedLoc);
+  };
+
   // 1. Filter Businesses
   let matchingBiz = (state.businesses || []).filter(isBusinessLive).filter(b => {
+    // Location filter
+    if (!matchesLocation(b)) return false;
     // Category match
     if (selectedCat !== 'all') {
       if (selectedCat === 'groceries') return false; // Groceries is products only
@@ -6281,6 +6293,81 @@ function businessCardHtml(b, { linked = true, variant } = {}) {
       </div>
     </div>`;
 }
+// ─── Location selector ────────────────────────────────────────────────────────
+
+const UK_CITIES = [
+  'London', 'Manchester', 'Birmingham', 'Leeds', 'Liverpool', 'Sheffield',
+  'Bristol', 'Edinburgh', 'Glasgow', 'Cardiff', 'Newcastle', 'Nottingham',
+  'Leicester', 'Southampton', 'Portsmouth', 'Brighton', 'Oxford', 'Cambridge',
+  'York', 'Norwich', 'Exeter', 'Bath', 'Derby', 'Coventry', 'Reading',
+  'Milton Keynes', 'Plymouth', 'Stoke-on-Trent', 'Wolverhampton', 'Belfast',
+];
+
+function locationSearchBarHtml(inputId) {
+  const loc = state.userLocation || '';
+  const open = !!state.showLocationPicker;
+  const inputPlaceholder = inputId === 'shop-search-input'
+    ? 'Search shops, groceries, essentials...'
+    : 'Search services, trades, auto...';
+
+  const locBtnLabel = loc
+    ? `📍 ${escapeHtml(loc)}`
+    : '📍 Anywhere';
+
+  const picker = open ? `
+    <div id="location-picker" style="position:absolute;left:0;right:0;top:calc(100% + 8px);background:#fff;border:1.5px solid rgba(20,20,20,0.12);border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,0.14);z-index:9000;overflow:hidden">
+      <!-- Detect location row -->
+      <div class="press" data-action="detectUserLocation" style="display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid #f2f2f2;cursor:pointer">
+        <span style="font-size:18px">🎯</span>
+        <div>
+          <div style="font-size:13.5px;font-weight:700;color:#141414">Use my current location</div>
+          <div style="font-size:11.5px;color:#6b6b6b;margin-top:1px">Auto-detect via GPS</div>
+        </div>
+      </div>
+      <!-- Anywhere row -->
+      <div class="press" data-action="setUserLocation" data-arg="" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #f2f2f2;cursor:pointer;background:${loc === '' ? '#f8f8f8' : '#fff'}">
+        <span style="font-size:16px">🌍</span>
+        <span style="font-size:13px;font-weight:${loc === '' ? 700 : 400};color:#141414">Anywhere in the UK</span>
+        ${loc === '' ? '<span style="margin-left:auto;font-size:11px;font-weight:700;color:#141414;background:#e5e7eb;padding:2px 8px;border-radius:8px">Selected</span>' : ''}
+      </div>
+      <!-- City list -->
+      <div style="max-height:220px;overflow-y:auto">
+        ${UK_CITIES.map(city => `
+          <div class="press" data-action="setUserLocation" data-arg="${escapeHtml(city)}"
+            style="padding:11px 16px;font-size:13px;font-weight:${loc === city ? 700 : 400};color:#141414;cursor:pointer;display:flex;align-items:center;gap:8px;background:${loc === city ? '#f8f8f8' : '#fff'};border-bottom:1px solid rgba(20,20,20,0.05)">
+            <span style="opacity:0.4;font-size:12px">📍</span>
+            ${escapeHtml(city)}
+            ${loc === city ? '<span style="margin-left:auto;font-size:11px;font-weight:700;color:#141414;background:#e5e7eb;padding:2px 8px;border-radius:8px">✓</span>' : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  return `
+    <div style="position:relative">
+      <!-- Search + Location in one pill bar -->
+      <div style="display:flex;align-items:center;gap:8px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:10px 14px;background:#fff;gap:0">
+        <!-- Search icon + input -->
+        <span style="opacity:0.4;font-size:15px;flex:0 0 auto;padding-right:8px">⌕</span>
+        <input id="${inputId}" data-bind="searchQuery" value="${escapeHtml(state.searchQuery || '')}"
+          placeholder="${escapeHtml(inputPlaceholder)}"
+          style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent;min-width:0" />
+
+        <!-- Divider -->
+        <div style="width:1px;height:18px;background:rgba(20,20,20,0.12);flex:0 0 auto;margin:0 8px"></div>
+
+        <!-- Location pill button -->
+        <button type="button" data-action="toggleLocationPicker"
+          style="flex:0 0 auto;display:flex;align-items:center;gap:5px;background:${loc ? '#141414' : '#f4f4f5'};color:${loc ? '#fff' : '#141414'};border:none;border-radius:18px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis">
+          ${locBtnLabel}
+          <span style="font-size:9px;opacity:0.6">▾</span>
+        </button>
+      </div>
+      ${picker}
+    </div>
+  `;
+}
 
 // Category list: every business filed under one category.
 // Every listed business as a square logo tile, laid out like app icons on a
@@ -6318,10 +6405,7 @@ function renderShopperAllServices() {
         <div class="press" data-action="goShop" title="Close" style="width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:#6b6b6b;background:#f2f2f2">✕</div>
       </div>
 
-      <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:22px;padding:10px 14px;margin-top:12px;background:#fff">
-        <span style="opacity:0.4;font-size:15px">⌕</span>
-        <input id="services-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery || '')}" placeholder="Search 100 UK services, trades, auto..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
-      </div>
+      ${locationSearchBarHtml('services-search-input')}
 
       <div style="display:flex;gap:7px;overflow-x:auto;padding:10px 0 4px" class="slot-scroll">
         <button type="button" data-action="setSearchCategoryFilter" data-arg="all"
@@ -6523,7 +6607,8 @@ function renderShopperShop() {
   const searching = (state.searchQuery || '').trim().length > 0 ||
                     (state.businessSearchCategory && state.businessSearchCategory !== 'all') ||
                     (state.businessQuickFilter && state.businessQuickFilter !== 'all') ||
-                    (state.businessPriceFilter && state.businessPriceFilter !== 'all');
+                    (state.businessPriceFilter && state.businessPriceFilter !== 'all') ||
+                    !!(state.userLocation && !state.userLocation.startsWith('📡'));
   const body = searching
     ? renderShopperSearchResults(state.searchQuery)
     : `
@@ -6575,10 +6660,7 @@ function renderShopperShop() {
            style="width:200px;max-width:62%;height:auto;display:block" />
     </div>
     <div style="font-size:15px;opacity:0.55;font-weight:600">Good afternoon</div>
-    <div style="display:flex;align-items:center;gap:10px;border:1.5px solid rgba(20,20,20,0.15);border-radius:26px;padding:11px 16px">
-      <span style="opacity:0.4;font-size:15px">⌕</span>
-      <input id="shop-search-input" data-bind="searchQuery" value="${escapeHtml(state.searchQuery)}" placeholder="Search shops, groceries, essentials..." style="border:none;outline:none;flex:1;font-size:13.5px;font-family:inherit;background:transparent" />
-    </div>
+    ${locationSearchBarHtml('shop-search-input')}
     <div class="cat-rail slot-scroll">
       <!-- Groceries first, then the service categories in order of how often
            people look for them. Scrolls sideways rather than shrinking. -->
@@ -9838,12 +9920,63 @@ const actions = {
     state.businessSearchCategory = String(catId || 'all');
     render();
   },
+
+  // ─── Location selector actions ─────────────────────────────────────────────
+  toggleLocationPicker: () => {
+    state.showLocationPicker = !state.showLocationPicker;
+    render();
+  },
+  setUserLocation: (city) => {
+    state.userLocation = city || '';
+    state.showLocationPicker = false;
+    localStorage.setItem('graftr_user_location', state.userLocation);
+    render();
+  },
+  detectUserLocation: () => {
+    if (!navigator.geolocation) {
+      state.showLocationPicker = false;
+      render();
+      return;
+    }
+    state.showLocationPicker = false;
+    state.userLocation = '📡 Detecting...';
+    render();
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`)
+          .then(r => r.json())
+          .then(data => {
+            const city = data.address.city || data.address.town || data.address.village || data.address.county || 'Near you';
+            state.userLocation = city;
+            localStorage.setItem('graftr_user_location', city);
+            render();
+          })
+          .catch(() => {
+            state.userLocation = 'Near you';
+            localStorage.setItem('graftr_user_location', 'Near you');
+            render();
+          });
+      },
+      () => {
+        state.userLocation = '';
+        render();
+      },
+      { timeout: 8000 }
+    );
+  },
 };
 
 document.addEventListener('DOMContentLoaded', () => {
   root = document.getElementById('app');
   root.addEventListener('click', (e) => {
     if (e.target.closest('.card-image') || e.target.closest('.product-thumb')) return;
+    // Close location picker on outside click
+    if (state.showLocationPicker && !e.target.closest('#location-picker') && !e.target.closest('[data-action="toggleLocationPicker"]')) {
+      state.showLocationPicker = false;
+      render();
+      // Still process the click if it had an action
+    }
     const el = e.target.closest('[data-action]');
     if (!el) return;
     const action = actions[el.dataset.action];
