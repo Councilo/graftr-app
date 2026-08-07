@@ -651,23 +651,6 @@ function syncUrl() {
   window.history.pushState({ screen: state.screen }, '', path);
 }
 
-// Names a path the way someone would refer to the page: "Services", "Trades",
-// the business itself.
-function labelForPath(path) {
-  const match = routeForPath(path);
-  if (!match) return 'Back';
-  if (match.screen === 'shopper-services') {
-    const cat = serviceCategory(match.param);
-    return cat ? cat.label : 'Services';
-  }
-  if (match.screen === 'shopper-business') {
-    const b = businessById(match.param);
-    return b ? b.name : 'Back';
-  }
-  const nav = SCREEN_NAV[match.screen];
-  return nav ? nav.label : 'Back';
-}
-
 // ---------------------------------------------------------------------------
 // Local services marketplace
 //
@@ -6030,8 +6013,7 @@ function backTarget() {
   if (!SCREEN_NAV[screen] && screen !== 'shopper-services' && screen !== 'shopper-business') return null;
   if (screen === 'shopper-shop') return null;
 
-  const from = navStack[navStack.length - 1];
-  if (from) return { action: 'goBack', label: labelForPath(from) };
+  if (navStack.length) return { action: 'goBack' };
 
   // Opened cold. A listing has no parent inside /listing/<id>, so it falls
   // back to the category it belongs to.
@@ -7735,18 +7717,24 @@ function renderShopperAccount() {
       </button>
     </div>
 
-    <!-- Switch app / sign out -->
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px">
-      <a href="${ROLE_PATH}" style="width:100%;background:#ffffff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:14px;border-radius:16px;font-size:14px;font-weight:600;text-decoration:none;text-align:center;box-sizing:border-box;display:block">
-        Switch to courier app
+    <!-- The other two apps. A card, so on desktop it takes the column beside
+         Legal instead of running the full width under it. -->
+    <div class="shop-card" style="${cardStyle}">
+      <div style="${sectionLabel}">Other Vendaru apps</div>
+      <a href="${ROLE_PATH}" style="${rowBase};text-decoration:none">
+        <span style="font-weight:500">Switch to courier app</span>
+        <span style="opacity:0.4;flex:0 0 auto">›</span>
       </a>
-      <a href="${BUSINESS_PATH}" style="width:100%;background:#ffffff;color:#141414;border:1.5px solid rgba(20,20,20,0.15);padding:14px;border-radius:16px;font-size:14px;font-weight:600;text-decoration:none;text-align:center;box-sizing:border-box;display:block">
-        List your business
+      <a href="${BUSINESS_PATH}" style="${rowBase};${divider};text-decoration:none">
+        <span style="font-weight:500">List your business</span>
+        <span style="opacity:0.4;flex:0 0 auto">›</span>
       </a>
-      <button type="button" data-action="logout" style="width:100%;background:none;border:none;padding:6px;font-size:14px;font-weight:600;color:#6b6b6b;cursor:pointer;font-family:inherit">
-        Log out
-      </button>
     </div>
+
+    <!-- Signing out is its own thing, not one of the app links. -->
+    <button type="button" data-action="logout" style="width:100%;background:none;border:none;padding:6px;font-size:14px;font-weight:600;color:#6b6b6b;cursor:pointer;font-family:inherit">
+      Log out
+    </button>
 
   </div>`;
 }
@@ -8981,7 +8969,7 @@ function renderBusinessDashboard() {
            real navigation rather than a screen change. -->
       ${tab === 'page'
         ? backBar('setAuthRole', 'Vendaru', 'shopper')
-        : backBar('setBusinessTab', 'Your page', 'page')}
+        : backBar('setBusinessTab', 'Back', 'page')}
 
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
         <div style="font-size:25px;font-weight:700;color:#141414">${titles[tab] || 'Your business'}</div>
@@ -9027,7 +9015,7 @@ function render() {
   // Added here rather than inside each renderer so no customer screen can ship
   // without a way back — including any added later.
   const back = state.mode === 'shopper' ? backTarget() : null;
-  const content = (back ? `<div style="padding:0 18px 10px">${backBar(back.action, back.label, back.arg)}</div>` : '') +
+  const content = (back ? `<div style="padding:0 18px 10px">${backBar(back.action, 'Back', back.arg)}</div>` : '') +
                   screenRenderers[state.screen]();
   let tabs = '';
   let bottomPad = '';
