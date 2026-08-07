@@ -7778,22 +7778,6 @@ function renderShopperAccount() {
 
     <div style="font-size:25px;font-weight:700;color:#141414">Account</div>
 
-    <!-- Their own board, first thing under the heading: it's the part of the
-         account they'll come back for. -->
-    <div class="press shop-card" data-action="goFavourites" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;cursor:pointer">
-      <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div style="min-width:0">
-          <div style="font-size:15.5px;font-weight:700">Your list</div>
-          <div style="font-size:13px;opacity:0.6">
-            ${(state.favourites || []).length
-              ? `${(state.favourites || []).length} kept · your people for jobs around the house`
-              : 'Keep a cleaner, a plumber, a dog walker — ready when you need them'}
-          </div>
-        </div>
-        <span style="opacity:0.4;flex:0 0 auto">›</span>
-      </div>
-    </div>
-
     <!-- Profile -->
     <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#ffffff;padding:16px;display:flex;flex-direction:row;align-items:center;gap:14px;text-align:left">
       ${avatarBadge}
@@ -7805,18 +7789,19 @@ function renderShopperAccount() {
       <button type="button" data-action="openAddressModal" style="background:none;border:none;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;flex:0 0 auto;font-family:inherit;padding:4px">Edit</button>
     </div>
 
-    <!-- Delivery address -->
-    <div class="shop-card" style="${cardStyle}">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;${sectionLabel}">
-        <span>Delivery address</span>
-        <button type="button" data-action="openAddressModal" style="background:none;border:none;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;font-family:inherit;padding:0">Edit</button>
-      </div>
-      <div style="padding-bottom:14px">
-        ${p.address
-          ? `<div style="font-size:14px;color:#141414;line-height:1.5">${escapeHtml(p.address)}${p.postcode ? ', ' + escapeHtml(p.postcode) : ''}</div>
-             <div style="font-size:13px;color:#6b6b6b;margin-top:3px">${escapeHtml(p.city || '')}${p.city && p.phone ? ' · ' : ''}${escapeHtml(p.phone || '')}</div>
-             ${p.instructions ? `<div style="font-size:13px;color:#6b6b6b;margin-top:6px">Note: ${escapeHtml(p.instructions)}</div>` : ''}`
-          : `<div style="font-size:13.5px;color:#6b6b6b;line-height:1.5">No delivery address saved yet. You'll need one before you can order.</div>`}
+    <!-- Under the profile: whose account it is, then the part of it they come
+         back for. The address lives in Edit profile, not on a card of its own. -->
+    <div class="press shop-card" data-action="goFavourites" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;cursor:pointer">
+      <div style="padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="min-width:0">
+          <div style="font-size:15.5px;font-weight:700">Your list</div>
+          <div style="font-size:13px;opacity:0.6">
+            ${(state.favourites || []).length
+              ? `${(state.favourites || []).length} kept · your people for jobs around the house`
+              : 'Keep a cleaner, a plumber, a dog walker — ready when you need them'}
+          </div>
+        </div>
+        <span style="opacity:0.4;flex:0 0 auto">›</span>
       </div>
     </div>
 
