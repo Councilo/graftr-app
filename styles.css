@@ -20,6 +20,20 @@ select {
   letter-spacing: -0.028em;
 }
 
+/* iOS zooms the page in when you focus a field whose text is under 16px, and
+   leaves it scaled and panned after you tap away — most visibly on the search
+   bars. 16px is the threshold, so every field meets it on a touch screen.
+   Done this way rather than by pinning the viewport with maximum-scale, which
+   would take pinch-zoom away from everyone to fix one behaviour.
+   !important because nearly every field here carries an inline font-size. */
+@media (max-width: 900px), (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 html {
   height: 100%;
   scrollbar-width: none;
@@ -1409,11 +1423,11 @@ body::-webkit-scrollbar {
     margin-top: 8px;
   }
 
-  /* Room for the real thing: a 300x300 card, with the photo taking whatever
-     the text and buttons leave rather than the card growing to fit a square
-     photo. */
+  /* Square, and free to take its share of the row — the cap would otherwise
+     hold it at 300 and leave the difference as gutters. */
   .biz-card {
     aspect-ratio: 1 / 1;
+    max-width: none;
   }
 
   .biz-card-photo {
@@ -1422,9 +1436,14 @@ body::-webkit-scrollbar {
     aspect-ratio: auto;
   }
 
+  /* Tracks share the row rather than sitting at a fixed 300 and centring,
+     which left an 80px gutter either side while the search bar above ran the
+     full width. 300 is the floor now, so the grid lines up with the bar at
+     both edges. */
   .biz-card-grid {
-    grid-template-columns: repeat(auto-fill, 300px);
-    justify-content: center;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    justify-content: stretch;
+    justify-items: stretch;
   }
 
   /* Six a row rather than thirteen tiny ones across a wide column. */
