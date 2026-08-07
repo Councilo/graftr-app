@@ -838,8 +838,8 @@ body::-webkit-scrollbar {
   margin-top: 5px;
 }
 
-/* Black on white, the same ink the app's primary buttons use. Icons are drawn
-   in currentColor so they invert with the button. */
+/* Outlined: black rule, black label, white ground. Icons are drawn in
+   currentColor, so they take the same ink. */
 .biz-card-action {
   flex: 1 1 auto;
   min-width: 0;
@@ -848,10 +848,10 @@ body::-webkit-scrollbar {
   justify-content: center;
   gap: 5px;
   padding: 7px 10px;
-  border: none;
+  border: 1.5px solid #141414;
   border-radius: 12px;
-  background: #141414;
-  color: #ffffff;
+  background: #ffffff;
+  color: #141414;
   font-family: inherit;
   font-size: 11.5px;
   font-weight: 600;
@@ -859,11 +859,13 @@ body::-webkit-scrollbar {
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
-  transition: opacity 0.12s ease;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
+/* Fills on hover, so the outline reads as the resting state of a real button. */
 .biz-card-action:hover {
-  opacity: 0.86;
+  background: #141414;
+  color: #ffffff;
 }
 
 .biz-card-action svg {
@@ -1045,21 +1047,24 @@ body::-webkit-scrollbar {
   transform: scale(0.92);
 }
 
+/* Same outlined button as the cards, so the board reads as one set. */
 .fav-browse {
   width: 100%;
   padding: 7px 10px;
-  border: none;
+  border: 1.5px solid #141414;
   border-radius: 12px;
-  background: #f2f2f2;
+  background: #ffffff;
   color: #141414;
   font-family: inherit;
   font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
 .fav-browse:hover {
-  background: #e6e6e6;
+  background: #141414;
+  color: #ffffff;
 }
 
 /* Cards or icons — the only two ways to view the directory. */
