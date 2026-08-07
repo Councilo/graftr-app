@@ -157,19 +157,6 @@ function saveFavourites() {
   try { localStorage.setItem('graftr_favourites', JSON.stringify(state.favourites)); } catch(e){}
 }
 
-// Someone who dismissed the login screen. Remembered, or a refresh would drop
-// them straight back onto the page they just closed.
-function loadGuest() {
-  try { return localStorage.getItem('graftr_guest') === '1'; } catch (e) { return false; }
-}
-
-function saveGuest() {
-  try {
-    if (state.isGuest) localStorage.setItem('graftr_guest', '1');
-    else localStorage.removeItem('graftr_guest');
-  } catch (e) { /* ignore */ }
-}
-
 function loadLoggedOrders() {
   try {
     const saved = localStorage.getItem('graftr_logged_orders');
@@ -536,6 +523,7 @@ function roleHome(role) {
 // ---------------------------------------------------------------------------
 const SCREEN_ROUTES = [
   { screen: 'shopper-shop', path: '/shop' },
+  { screen: 'login', path: '/login' },
   { screen: 'shopper-browse', path: '/groceries' },
   { screen: 'shopper-all-services', path: '/services' },
   { screen: 'shopper-services', path: '/services/:category' },
@@ -569,6 +557,10 @@ function businessTabForSlug(slug) {
 }
 
 function pathForScreen(screen) {
+  // Signing in has an address of its own, but only on the customer app: the
+  // courier and business screens are told apart by their path, so rewriting
+  // either to /login would lose which app you were signing into.
+  if (screen === 'login') return PATH_ROLE === 'shopper' ? '/login' : roleHome(PATH_ROLE);
   if (screen === 'business-dashboard') {
     const slug = BUSINESS_TAB_PATHS[state.businessTab] || '';
     return slug ? BUSINESS_PATH + '/' + slug : BUSINESS_PATH;
@@ -633,6 +625,10 @@ function applyRoute(pathname) {
     state.activeBusinessId = match.param;
   }
   if (match.tab) state.businessTab = match.tab;
+  if (match.screen === 'login') {
+    state.mode = null;
+    state.authRole = PATH_ROLE;
+  }
   state.screen = match.screen;
   return true;
 }
@@ -4770,7 +4766,6 @@ const state = {
   servicesCategory: null,          // category being browsed
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
   favourites: loadFavourites(),    // business ids the shopper has kept
-  isGuest: loadGuest(),            // dismissed the login screen, browsing signed out
   activeBusinessId: null,          // business page being viewed
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
   businessTab: 'page',             // business dashboard section
@@ -4851,9 +4846,10 @@ if (state.authUser) {
   // A deep link beats the role's home screen, so a shared URL opens the page
   // it points at rather than dumping you on Shop.
   applyRoute(window.location.pathname);
-} else if (state.isGuest && PATH_ROLE === 'shopper') {
-  // Closed the login screen earlier. Only the customer app can be browsed
-  // signed out — a listing or a delivery run belongs to an account.
+} else if (PATH_ROLE === 'shopper') {
+  // Everyone lands on Shop, signed in or not — signing in is a choice, made
+  // from the button in the corner or at /login. The courier and business apps
+  // still open on their sign-in screen: those need an account to be any use.
   state.mode = 'shopper';
   state.screen = 'shopper-shop';
   applyRoute(window.location.pathname);
@@ -9042,6 +9038,12 @@ function render() {
     bottomPad = 'padding-bottom:calc(110px + env(safe-area-inset-bottom, 0px));';
   }
 
+  // Sits in the empty band every screen already reserves at the top. Only
+  // while signed out — once you're in, Account is where you go.
+  const loginButton = (state.mode === 'shopper' && !state.authUser)
+    ? '<button type="button" class="login-cta" data-action="goLogin">Log in</button>'
+    : '';
+
   const aiDrawer = renderAiChatDrawer();
   const addressModal = renderAddressModal();
   const checkoutModal = renderCheckoutModal();
@@ -9052,6 +9054,7 @@ function render() {
 
   root.innerHTML = `
     <div class="app-scroll" style="flex:1;overflow:auto;padding-top:calc(56px + env(safe-area-inset-top, 0px));${bottomPad}">${content}</div>
+    ${loginButton}
     ${tabs}
     ${aiDrawer}
     ${addressModal}
@@ -10231,19 +10234,17 @@ const actions = {
     if (navStack.length) window.history.back();
     else actions.goShop();
   },
-  // Closing the login screen browses signed out. Remembered, so a refresh
-  // doesn't drop them back onto it.
+  // Leaving the sign-in screen without signing in.
   browseAsGuest: () => {
-    state.isGuest = true;
-    saveGuest();
     state.mode = 'shopper';
     state.screen = 'shopper-shop';
     render();
   },
+  // The screen has an address of its own now, so it can be linked to and
+  // returned from. mode goes null so the tab bar doesn't frame it.
   goLogin: () => {
-    state.isGuest = false;
-    saveGuest();
     state.mode = null;
+    state.authRole = PATH_ROLE;
     state.screen = 'login';
     render();
   },

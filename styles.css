@@ -735,6 +735,34 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
+/* Top-right of every customer screen while signed out. Absolute against #app,
+   like the tab pill, so it stays put through any scroll. */
+.login-cta {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: 18px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 999px;
+  background: #141414;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 9998;
+  box-shadow: 0 4px 12px rgba(20, 20, 20, 0.2);
+  transition: transform 0.08s ease, opacity 0.12s ease;
+}
+
+.login-cta:hover {
+  opacity: 0.86;
+}
+
+.login-cta:active {
+  transform: scale(0.95);
+}
+
 /* Dismisses the login screen into signed-out browsing. Solid ink rather than
    grey-on-grey — as a faint 32px mark in a corner it was missable, and it is
    the only way past the screen. */
