@@ -157,6 +157,26 @@ function saveFavourites() {
   try { localStorage.setItem('graftr_favourites', JSON.stringify(state.favourites)); } catch(e){}
 }
 
+// What they've called their own wall. Empty means they haven't renamed it, so
+// it follows their name instead of freezing whatever it was when they set it.
+function loadListTitle() {
+  try { return localStorage.getItem('graftr_list_title') || ''; } catch (e) { return ''; }
+}
+
+function saveListTitle() {
+  try {
+    if (state.listTitle) localStorage.setItem('graftr_list_title', state.listTitle);
+    else localStorage.removeItem('graftr_list_title');
+  } catch (e) { /* ignore */ }
+}
+
+function listTitle() {
+  if (state.listTitle) return state.listTitle;
+  const name = (state.authUser && state.authUser.name) || (state.userProfile || {}).name || '';
+  const first = name.trim().split(/\s+/)[0];
+  return first ? `${first}’s list` : 'Your list';
+}
+
 function loadLoggedOrders() {
   try {
     const saved = localStorage.getItem('graftr_logged_orders');
@@ -4765,6 +4785,7 @@ const state = {
   bookingCart: [],                 // bookings sitting in the basket, unpaid
   servicesCategory: null,          // category being browsed
   openFavPicker: null,             // category whose chooser is open on the wall
+  listTitle: loadListTitle(),      // what they've named their own wall
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
   favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
@@ -6050,6 +6071,7 @@ const ICON_HEART = '<svg width="15" height="15" viewBox="0 0 20 20" stroke="curr
 const ICON_PIN = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10 17.5s5.5-5 5.5-9a5.5 5.5 0 10-11 0c0 4 5.5 9 5.5 9z"/><circle cx="10" cy="8.4" r="2.1"/></svg>';
 const ICON_CROSSHAIR = '<svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="5.4"/><circle cx="10" cy="10" r="1.4" fill="currentColor" stroke="none"/><path d="M10 1.6v2.6M10 15.8v2.6M18.4 10h-2.6M4.2 10H1.6" stroke-linecap="round"/></svg>';
 const ICON_CARET = '<svg width="9" height="9" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7.5L10 13l5.5-5.5"/></svg>';
+const ICON_CAMERA = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M2.8 6.9h2.6l1.2-1.9h6.8l1.2 1.9h2.6a1 1 0 011 1v7.2a1 1 0 01-1 1H2.8a1 1 0 01-1-1V7.9a1 1 0 011-1z"/><circle cx="10" cy="11.2" r="2.9"/></svg>';
 const ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>';
 // The directory card. Lifted out of the search results so the Services page
 // can lay the same card out when it isn't searching.
@@ -6172,14 +6194,36 @@ function renderShopperFavourites() {
     </div>`;
   };
 
-  return `
-    <div class="page" style="padding:0 18px 24px">
-      <div>
-        <div style="font-size:25px;font-weight:700;color:#141414">Your list</div>
-        <div style="font-size:13px;color:#6b6b6b;margin-top:2px">
-          ${filled ? `${filled} of ${slots.length} slots filled` : 'The people you’d call, kept in one place'}
+  const p = state.userProfile || {};
+  const who = (state.authUser && state.authUser.name) || p.name || '';
+  const initials = who.trim()
+    ? who.trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase()
+    : '';
+
+  // Their face and their name for it, so the wall reads as somewhere of their
+  // own rather than a page of the app. The photo is the same one the account
+  // uses — set it here or there, it's the same picture.
+  const header = `
+    <div class="fav-header">
+      <label class="fav-avatar" title="Change photo">
+        ${p.avatarSrc
+          ? `<img src="${escapeHtml(p.avatarSrc)}" alt="" />`
+          : `<span class="fav-avatar-initials">${escapeHtml(initials || '＋')}</span>`}
+        <span class="fav-avatar-edit">${ICON_CAMERA}</span>
+        <input type="file" accept="image/*" data-upload-avatar />
+      </label>
+      <div class="fav-header-text">
+        <input class="fav-title" data-bind="listTitle" value="${escapeHtml(listTitle())}"
+          placeholder="Your list" aria-label="Name your list" maxlength="40" />
+        <div class="fav-sub">
+          ${filled ? `${filled} of ${slots.length} filled` : 'The people you’d call, kept in one place'}
         </div>
       </div>
+    </div>`;
+
+  return `
+    <div class="page" style="padding:0 18px 24px">
+      ${header}
 
       <div class="fav-board">
         ${slots.map(s => s.mine.length
@@ -10552,6 +10596,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (path === 'searchQuery') {
       state.searchQuery = el.value;
       needsRender = true;               // drives the results list
+    } else if (path === 'listTitle') {
+      state.listTitle = el.value;
+      saveListTitle();
     } else if (path === 'aiInput') {
       state.aiInput = el.value;
     } else if (path === 'manualBarcodeInput') {
