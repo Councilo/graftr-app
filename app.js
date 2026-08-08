@@ -6121,6 +6121,25 @@ function businessGridCard(b) {
     </div>`;
 }
 
+// The wall is a household you're staffing, not a directory you're filtering.
+// Each slot is the person you'd ring, named the way you'd think of them —
+// "someone for the odd jobs", not "Trades" — and backed by the category the
+// listings are actually filed under.
+const LIFE_ROLES = [
+  { cat: 'trades', role: 'Personal handyman', does: 'Shelves, leaks, flat-pack, the jobs that pile up' },
+  { cat: 'cleaning', role: 'Cleaner', does: 'A regular going-over, or one big reset' },
+  { cat: 'dog-walkers', role: 'Dog walker', does: 'Midday walks when you can’t get back' },
+  { cat: 'pets', role: 'Pet care', does: 'Grooming, jabs, the vet you’d actually call' },
+  { cat: 'beauty', role: 'Hair & beauty', does: 'The one who knows how you like it' },
+  { cat: 'auto', role: 'Car sorted', does: 'MOT, tyres, the noise it’s started making' },
+  { cat: 'health', role: 'Health & fitness', does: 'Dentist, physio, somewhere to train' },
+  { cat: 'tutoring', role: 'Tutor', does: 'Help before the exams, not after' },
+  { cat: 'legal', role: 'Money & legal', does: 'Tax return, a will, the letter you’re avoiding' },
+  { cat: 'real-estate', role: 'Moving house', does: 'Valuations, lettings, when the time comes' },
+  { cat: 'events', role: 'Events', does: 'Birthdays, the wedding, the big one' },
+  { cat: 'travel', role: 'Getting away', does: 'Booked by someone who does it all day' },
+];
+
 function isFavourite(id) {
   return (state.favourites || []).indexOf(String(id)) !== -1;
 }
@@ -6145,13 +6164,15 @@ function renderShopperFavourites() {
     .map(id => live.find(b => String(b.id) === String(id)))
     .filter(Boolean);
 
-  const slots = SERVICE_CATEGORIES.map(cat => {
-    const mine = kept.filter(b => b.category === cat.id);
+  const slots = LIFE_ROLES.map(r => {
+    const cat = serviceCategory(r.cat);
+    if (!cat) return null;
+    const mine = kept.filter(b => b.category === r.cat);
     const choices = live
-      .filter(b => b.category === cat.id && !isFavourite(b.id))
+      .filter(b => b.category === r.cat && !isFavourite(b.id))
       .sort(byTierThenRecency);
-    return { cat, mine, choices };
-  }).filter(s => s.mine.length || s.choices.length);
+    return { cat, role: r.role, does: r.does, mine, choices };
+  }).filter(s => s && (s.mine.length || s.choices.length));
 
   const filled = slots.filter(s => s.mine.length).length;
 
@@ -6176,21 +6197,27 @@ function renderShopperFavourites() {
   // An empty slot is a card-shaped hole the same size as a filled one, so the
   // wall keeps its grid whether or not a place is taken. The button in the
   // middle opens a list of who could fill it; picking one makes it a card.
-  const emptySlot = (cat, choices) => {
-    const open = state.openFavPicker === cat.id;
+  const slotHead = (slot) => `
+    <div class="fav-slot-head">
+      <span class="fav-slot-icon">${slot.cat.emoji}</span>
+      <span class="fav-slot-titles">
+        <span class="fav-slot-label">${escapeHtml(slot.role)}</span>
+        <span class="fav-slot-does">${escapeHtml(slot.does)}</span>
+      </span>
+    </div>`;
+
+  const emptySlot = (slot) => {
+    const open = state.openFavPicker === slot.cat.id;
     return `
     <div class="fav-slot is-empty">
-      <div class="fav-slot-head">
-        <span class="fav-slot-icon">${cat.emoji}</span>
-        <span class="fav-slot-label">${escapeHtml(cat.label)}</span>
-      </div>
+      ${slotHead(slot)}
 
       <div class="fav-empty-card">
-        <button type="button" class="fav-add-btn${open ? ' is-open' : ''}" data-action="toggleFavPicker" data-arg="${cat.id}"
-          title="Choose a ${escapeHtml(cat.label.toLowerCase())}" aria-label="Choose a ${escapeHtml(cat.label.toLowerCase())}">+</button>
+        <button type="button" class="fav-add-btn${open ? ' is-open' : ''}" data-action="toggleFavPicker" data-arg="${slot.cat.id}"
+          title="Choose your ${escapeHtml(slot.role.toLowerCase())}" aria-label="Choose your ${escapeHtml(slot.role.toLowerCase())}">+</button>
       </div>
 
-      ${open ? `<div class="fav-choices">${choices.map(choiceRow).join('')}</div>` : ''}
+      ${open ? `<div class="fav-choices">${slot.choices.map(choiceRow).join('')}</div>` : ''}
     </div>`;
   };
 
@@ -6216,8 +6243,11 @@ function renderShopperFavourites() {
         <input class="fav-title" data-bind="listTitle" value="${escapeHtml(listTitle())}"
           placeholder="Your list" aria-label="Name your list" maxlength="40" />
         <div class="fav-sub">
-          ${filled ? `${filled} of ${slots.length} filled` : 'The people you’d call, kept in one place'}
+          ${filled
+            ? `${filled} of ${slots.length} sorted${filled === slots.length ? ' — the lot' : ''}`
+            : 'Pick the people you’d call, one job at a time'}
         </div>
+        <div class="fav-bar" aria-hidden="true"><span style="width:${Math.round((filled / slots.length) * 100)}%"></span></div>
       </div>
     </div>`;
 
@@ -6228,13 +6258,10 @@ function renderShopperFavourites() {
       <div class="fav-board">
         ${slots.map(s => s.mine.length
           ? `<div class="fav-slot">
-               <div class="fav-slot-head">
-                 <span class="fav-slot-icon">${s.cat.emoji}</span>
-                 <span class="fav-slot-label">${escapeHtml(s.cat.label)}</span>
-               </div>
+               ${slotHead(s)}
                ${s.mine.map(b => businessCardHtml(b, { variant: 'large' })).join('')}
              </div>`
-          : emptySlot(s.cat, s.choices)).join('')}
+          : emptySlot(s)).join('')}
       </div>
 
       
@@ -10833,7 +10860,11 @@ document.addEventListener('DOMContentLoaded', () => {
     action(parsedArg);
   });
   root.addEventListener('change', (e) => {
-    const cardInput = e.target.closest('input[type="file"][data-upload]');
+    // Swapping a shop picture or a product thumbnail is a setup job. The
+    // controls aren't rendered outside admin mode, but the handlers stayed
+    // live, so anything that got an input onto the page could still write over
+    // an image. Held shut here as well as hidden in the markup.
+    const cardInput = ADMIN_MODE && e.target.closest('input[type="file"][data-upload]');
     if (cardInput && cardInput.files[0]) {
       const key = cardInput.dataset.upload;
       const reader = new FileReader();
@@ -10845,7 +10876,7 @@ document.addEventListener('DOMContentLoaded', () => {
       reader.readAsDataURL(cardInput.files[0]);
       return;
     }
-    const productInput = e.target.closest('input[type="file"][data-upload-product]');
+    const productInput = ADMIN_MODE && e.target.closest('input[type="file"][data-upload-product]');
     if (productInput && productInput.files[0]) {
       const id = productInput.dataset.uploadProduct;
       const reader = new FileReader();

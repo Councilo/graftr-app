@@ -1276,11 +1276,50 @@ body::-webkit-scrollbar {
 
 .fav-slot-head {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 7px;
   font-size: 12.5px;
   font-weight: 600;
   color: #6b6b6b;
+}
+
+.fav-slot-titles {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* The role is a heading now, not a faint category tag above a card. */
+.fav-slot-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #141414;
+}
+
+/* What the role is for, under its name — the reason to fill the slot. */
+.fav-slot-does {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: #9a9a9a;
+  line-height: 1.3;
+}
+
+/* How far through staffing the house they are. */
+.fav-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: #f2f2f2;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.fav-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: #141414;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .fav-slot-icon {
