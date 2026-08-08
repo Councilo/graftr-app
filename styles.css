@@ -1103,6 +1103,44 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+/* A paid placement. Same card as the rest of the page on purpose — it should
+   not be dressed up as something it isn't — but it carries an Ad mark, and no
+   heart, because there is nothing here to keep. */
+.partner-card {
+  cursor: default;
+}
+
+.partner-mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Top-right, where a listing's heart sits, so the eye finds it in the same
+   place it looks for a card's status. */
+.partner-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #141414;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 /* Which town's branch this is. Sits where a listing's rating sits, on the left
    because it's a fact about the shop rather than a score. */
 .biz-card-town {

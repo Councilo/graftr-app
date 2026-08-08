@@ -4290,6 +4290,62 @@ function shopFeatureGridHtml() {
     </div>`;
 }
 
+// Paid placements. These are affiliate links — Vendaru earns if someone signs
+// up — so each card says Ad on its face and the band says it again above them.
+// An affiliate card sitting unmarked among the listings would be telling people
+// it is a listing, which is both against the ASA's rules on identifying ads and
+// the reason the directory is worth anything.
+//
+// rel="sponsored" is the other half: it tells search engines the link is paid,
+// so it can't be read as an editorial recommendation.
+const PARTNER_CARDS = [
+  {
+    id: 'shopify',
+    name: 'Shopify',
+    blurb: 'Set your shop up online and sell from your own site',
+    cta: 'Start free trial',
+    tint: '#008060',
+    url: 'https://shopify.pxf.io/dyEmAj',
+  },
+  {
+    id: 'tiktok',
+    name: 'TikTok for Business',
+    blurb: 'Put your business in front of people nearby',
+    cta: 'Get started',
+    tint: '#010101',
+    url: 'https://getstartedtiktok.partnerlinks.io/00n0j6kr0ids',
+  },
+];
+
+function partnerCardHtml(p) {
+  return `
+    <div class="shop-card biz-card partner-card">
+      <div class="biz-card-photo" style="background:${p.tint}">
+        <span class="partner-mark">${escapeHtml(p.name)}</span>
+        <span class="partner-tag">Ad</span>
+      </div>
+      <div class="biz-card-body">
+        <div class="biz-card-name">${escapeHtml(p.name)}</div>
+        <div class="biz-card-desc">${escapeHtml(p.blurb)}</div>
+        <div class="biz-card-actions">
+          <a class="biz-card-action" href="${escapeHtml(p.url)}"
+             target="_blank" rel="sponsored nofollow noopener noreferrer">${escapeHtml(p.cta)}</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+function shopPartnersSectionHtml() {
+  if (!PARTNER_CARDS.length) return '';
+  return `
+    <div class="page-band">
+      <span>Partner offers</span>
+      <span class="page-band-count">Ad</span>
+    </div>
+    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">Paid links — Vendaru earns a commission if you sign up. Not part of the directory.</div>
+    <div class="biz-card-grid">${PARTNER_CARDS.map(partnerCardHtml).join('')}</div>`;
+}
+
 // Flat rather than grouped by trade: a dozen firms across twelve categories
 // would be a page of headings with one card under each.
 function shopLocalSectionHtml() {
@@ -4432,6 +4488,7 @@ function renderShopperShop() {
     // earns its place on the New to Vendaru button, but as the first thing on
     // the home page it would be an apology where the shop should be.
     body = (newToVendaru().length ? shopNewSectionHtml() : '')
+      + shopPartnersSectionHtml()
       + shopServicesSectionHtml() + shopFeatureGridHtml()
       + shopShopsSectionHtml({ limit: 6 }) + shopLocalSectionHtml();
   }
