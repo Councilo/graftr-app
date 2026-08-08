@@ -7353,8 +7353,14 @@ function localBusinesses() {
 // Businesses that have listed themselves, newest first. The seeded listings
 // carry no join date, so they are not "new" — this fills as real businesses
 // sign up rather than pretending they already have.
+//
+// Not filtered by location, unlike the directory and the shops. A new arrival
+// is news for the whole platform, and the location is remembered between
+// visits, so filtering it silently hid any joiner whose area line doesn't claim
+// national coverage — a Salford studio vanished the moment a town was picked
+// while the "UK Wide" listing next to it stayed put.
 function newToVendaru() {
-  return (state.businesses || []).filter(isBusinessLive).filter(servesLocation)
+  return (state.businesses || []).filter(isBusinessLive)
     .filter(b => b.createdAt)
     .slice()
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -8444,7 +8450,7 @@ function renderShopperTabs() {
     <div class="press tabbar-brand" data-action="goShop" title="Vendaru home"><img src="assets/brand/logo.svg" alt="Vendaru" /></div>
     <div class="press floating-tab" data-action="goShop" style="${tabStyle('shopper-shop')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M5 7h10l-1 10H6L5 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 7V5.5a2.5 2.5 0 015 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-      Shop
+      All
     </div>
     <div class="press floating-tab" data-action="goAllServices" style="${tabStyle('shopper-all-services')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2.5" y="2.5" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
