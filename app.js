@@ -1022,6 +1022,7 @@ const state = {
   listTitle: loadListTitle(),      // what they've named their own wall
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
   shopFilter: 'all',               // which part of Shop: see SHOP_FILTERS
+  shopCategory: '',                // narrows the shops band; '' is all of them
   favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
@@ -2595,7 +2596,10 @@ function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
   const matchingShops = businessesOnly ? [] : searchableShops().filter(s =>
     s.name.toLowerCase().includes(q) ||
     s.sells.toLowerCase().includes(q) ||
-    s.town.toLowerCase().includes(q)
+    s.town.toLowerCase().includes(q) ||
+    // The kind of shop, so "florist" finds the florists rather than only the
+    // one that happens to have the word in its name.
+    s.category.toLowerCase().includes(q)
   );
 
   // The Services page is a directory of businesses, so it counts and shows
@@ -3322,196 +3326,853 @@ function renderBookingPickerModal() {
     </div>`;
 }
 
-// Shops a courier can be sent to, by town.
-//
-// Real chains, and named at town level only: no invented street addresses, and
-// no storefront photograph, because a stock picture captioned with a specific
-// branch would say something we don't know. Tapping one starts a special
-// request from that shop, which is what the app can actually honour — a
-// courier collecting, rather than a catalogue we don't have.
+// The shops a courier can be sent to: independents, not chains — the kind of
+// place worth sending someone across town for. Named with their town, never a
+// street address, and the picture is of the kind of shop rather than a
+// photograph captioned as that particular door.
+const SHOPS_100 = [
+  {
+    "id": "shop-1",
+    "name": "Rokit Vintage & Streetwear",
+    "category": "Clothes",
+    "sells": "Vintage denim, 90s jackets & retro streetwear",
+    "town": "London",
+    "photo": "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-2",
+    "name": "Endless Joy Atelier",
+    "category": "Clothes",
+    "sells": "Luxury designer fashion & tailored apparel",
+    "town": "Manchester",
+    "photo": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-3",
+    "name": "Beyond Retro Apparel",
+    "category": "Clothes",
+    "sells": "Handpicked vintage dresses, leather coats & 70s fashion",
+    "town": "Brighton",
+    "photo": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-4",
+    "name": "Saturdays Footwear & Leather",
+    "category": "Clothes",
+    "sells": "Handcrafted leather boots & artisan sneakers",
+    "town": "Bristol",
+    "photo": "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-5",
+    "name": "The Crafty Tailor & Tweed",
+    "category": "Clothes",
+    "sells": "Scottish Harris tweed jackets & custom suits",
+    "town": "Edinburgh",
+    "photo": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-6",
+    "name": "Blue Collar Vintage Denim",
+    "category": "Clothes",
+    "sells": "Japanese selvage denim & heavy canvas jackets",
+    "town": "Leeds",
+    "photo": "https://images.unsplash.com/photo-1542272604-780c36856d63?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-7",
+    "name": "Thread & Needle Childrenswear",
+    "category": "Clothes",
+    "sells": "Organic cotton baby clothes & handmade knits",
+    "town": "Bath",
+    "photo": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-8",
+    "name": "Studio Velvet Boutique",
+    "category": "Clothes",
+    "sells": "Contemporary womenswear & evening gowns",
+    "town": "Birmingham",
+    "photo": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-9",
+    "name": "Cotswold Cashmere & Wool",
+    "category": "Clothes",
+    "sells": "Pure Scottish cashmere jumpers & Merino scarves",
+    "town": "Oxford",
+    "photo": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-10",
+    "name": "Rebel Threads Streetwear",
+    "category": "Clothes",
+    "sells": "Independent UK streetwear, hoodies & sneakers",
+    "town": "Glasgow",
+    "photo": "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-11",
+    "name": "Avenue Silk & Lace",
+    "category": "Clothes",
+    "sells": "Luxury silk sleepwear & handmade lingerie",
+    "town": "Cambridge",
+    "photo": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-12",
+    "name": "Old Town Hatters & Caps",
+    "category": "Clothes",
+    "sells": "Felt fedoras, tweed flat caps & Panama hats",
+    "town": "York",
+    "photo": "https://images.unsplash.com/photo-1521369984125-658097b6a655?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-13",
+    "name": "High Street Consignment Hub",
+    "category": "Clothes",
+    "sells": "Pre-loved designer handbags & heels",
+    "town": "Liverpool",
+    "photo": "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-14",
+    "name": "Nomad Outdoor Apparel",
+    "category": "Clothes",
+    "sells": "Weatherproof oilskin jackets & waterproof boots",
+    "town": "Sheffield",
+    "photo": "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-15",
+    "name": "St. Ives Linen Studio",
+    "category": "Clothes",
+    "sells": "Organic linen shirts & summer dresses",
+    "town": "Exeter",
+    "photo": "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-16",
+    "name": "Kensington Cobbler & Leather",
+    "category": "Clothes",
+    "sells": "Handmade Italian dress shoes & oxford boots",
+    "town": "London",
+    "photo": "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-17",
+    "name": "Northern Soul Mod Outfitters",
+    "category": "Clothes",
+    "sells": "60s Mod suits, harrington jackets & polo shirts",
+    "town": "Newcastle",
+    "photo": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-18",
+    "name": "The Vintage Fur & Shearling Co.",
+    "category": "Clothes",
+    "sells": "Reclaimed shearling coats & suede jackets",
+    "town": "Norwich",
+    "photo": "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-19",
+    "name": "Bespoke Bridal & Silk",
+    "category": "Clothes",
+    "sells": "Custom wedding gowns & bridal veil couture",
+    "town": "Bath",
+    "photo": "https://images.unsplash.com/photo-1594552072238-b8a33785b261?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-20",
+    "name": "Urban Edge Denim Lab",
+    "category": "Clothes",
+    "sells": "Custom raw denim jeans & embroidered jackets",
+    "town": "Nottingham",
+    "photo": "https://images.unsplash.com/photo-1582552938357-32b906df40cb?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-21",
+    "name": "The Old Bank Antiques",
+    "category": "Antiques",
+    "sells": "Georgian silverware, antique clocks & oil paintings",
+    "town": "Bath",
+    "photo": "https://images.unsplash.com/photo-1567016432779-094069958ea5?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-22",
+    "name": "Portobello Relics & Curios",
+    "category": "Antiques",
+    "sells": "Victorian curiosities, telescopes & brass compasses",
+    "town": "London",
+    "photo": "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-23",
+    "name": "Northern Quarter Vintage Finds",
+    "category": "Antiques",
+    "sells": "Mid-century teak furniture & 1970s glassware",
+    "town": "Manchester",
+    "photo": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-24",
+    "name": "Royal Mile Rare Books & Prints",
+    "category": "Antiques",
+    "sells": "18th-century leatherbound books & antique maps",
+    "town": "Edinburgh",
+    "photo": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-25",
+    "name": "The Clockwork Emporium",
+    "category": "Antiques",
+    "sells": "Restored grandfather clocks & pocket watches",
+    "town": "York",
+    "photo": "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-26",
+    "name": "Brighton Lanes Jewellery & Gold",
+    "category": "Antiques",
+    "sells": "Edwardian diamond rings & Art Deco gold",
+    "town": "Brighton",
+    "photo": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-27",
+    "name": "Cotswold Fine Antiques",
+    "category": "Antiques",
+    "sells": "Mahogany dining tables & crystal chandeliers",
+    "town": "Oxford",
+    "photo": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-28",
+    "name": "The Industrial Relic Co.",
+    "category": "Antiques",
+    "sells": "Salvaged factory lights & cast iron signs",
+    "town": "Birmingham",
+    "photo": "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-29",
+    "name": "Merchant City Art & Antiques",
+    "category": "Antiques",
+    "sells": "Victorian oil portraits & Scottish landscapes",
+    "town": "Glasgow",
+    "photo": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-30",
+    "name": "The Vintage Rug Exchange",
+    "category": "Antiques",
+    "sells": "Hand-knotted Persian rugs & Turkish kilims",
+    "town": "Bristol",
+    "photo": "https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-31",
+    "name": "The Shabby Chic Emporium",
+    "category": "Antiques",
+    "sells": "French country furniture & distressed mirrors",
+    "town": "Cambridge",
+    "photo": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-32",
+    "name": "The Old Marine Salvage Shop",
+    "category": "Antiques",
+    "sells": "Ship wheels, brass portholes & maritime antiques",
+    "town": "Portsmouth",
+    "photo": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-33",
+    "name": "St. Nicholas Antique Arcade",
+    "category": "Antiques",
+    "sells": "Antique toys, vintage tin signs & coins",
+    "town": "Leicester",
+    "photo": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-34",
+    "name": "High Street Curiosities",
+    "category": "Antiques",
+    "sells": "Vintage apothecary bottles & cabinet curios",
+    "town": "Norwich",
+    "photo": "https://images.unsplash.com/photo-1516981879613-9f5da904015f?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-35",
+    "name": "The Grand Arcade Antiques",
+    "category": "Antiques",
+    "sells": "Art Nouveau lamps & ceramic vases",
+    "town": "Leeds",
+    "photo": "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-36",
+    "name": "Scoops Artisan Gelato Lab",
+    "category": "Ice Cream",
+    "sells": "Handcrafted pistachio gelato & sea salt caramel",
+    "town": "Brighton",
+    "photo": "https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-37",
+    "name": "The Milkshake & Sundae Parlour",
+    "category": "Ice Cream",
+    "sells": "Waffle sundaes, thick shakes & gelato cakes",
+    "town": "London",
+    "photo": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-38",
+    "name": "Cotswold Creamery & Dairy",
+    "category": "Ice Cream",
+    "sells": "Jersey milk ice cream & clotted cream scoops",
+    "town": "Oxford",
+    "photo": "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-39",
+    "name": "Lick! Artisan Gelateria",
+    "category": "Ice Cream",
+    "sells": "Dark chocolate gelato & mango sorbetto",
+    "town": "Manchester",
+    "photo": "https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-40",
+    "name": "Highland Fudge & Ice Cream",
+    "category": "Ice Cream",
+    "sells": "Scottish tablet ice cream & honeycomb scoops",
+    "town": "Edinburgh",
+    "photo": "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-41",
+    "name": "Harbour Front Ice Cream Works",
+    "category": "Ice Cream",
+    "sells": "Waffle cones & plant-based gelato",
+    "town": "Bristol",
+    "photo": "https://images.unsplash.com/photo-1560008511-11c63416e52d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-42",
+    "name": "Lakeside Dairy & Ice Cream Parlour",
+    "category": "Ice Cream",
+    "sells": "Organic strawberry swirls & mint choc chip",
+    "town": "Cambridge",
+    "photo": "https://images.unsplash.com/photo-1580915411954-282cb1b0d780?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-43",
+    "name": "The Gelato Alchemist",
+    "category": "Ice Cream",
+    "sells": "Smoked vanilla bean & hazelnut praline",
+    "town": "Bath",
+    "photo": "https://images.unsplash.com/photo-1576506295286-5cda482453a2?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-44",
+    "name": "Sweet Treats Gelateria",
+    "category": "Ice Cream",
+    "sells": "Churros with warm chocolate dip & gelato",
+    "town": "York",
+    "photo": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-45",
+    "name": "Seaside Sundae House",
+    "category": "Ice Cream",
+    "sells": "Banana splits & knickerbocker glories",
+    "town": "Southampton",
+    "photo": "https://images.unsplash.com/photo-1505394033641-40c6ad1178d7?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-46",
+    "name": "The Frozen Spoon Parlour",
+    "category": "Ice Cream",
+    "sells": "Bubble waffle gelato cones & frappes",
+    "town": "Leeds",
+    "photo": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-47",
+    "name": "Little Italy Gelato Bar",
+    "category": "Ice Cream",
+    "sells": "Sicilian cannoli & espresso gelato",
+    "town": "Liverpool",
+    "photo": "https://images.unsplash.com/photo-1557142046-c704a3adf364?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-48",
+    "name": "Artisan Churn Ice Cream Shop",
+    "category": "Ice Cream",
+    "sells": "Clotted cream & wild blueberry ice cream",
+    "town": "Exeter",
+    "photo": "https://images.unsplash.com/photo-1516559828984-fb3b99548b21?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-49",
+    "name": "The Ice Cream Cartel",
+    "category": "Ice Cream",
+    "sells": "Gourmet gelato sandwiches & waffle nachos",
+    "town": "Glasgow",
+    "photo": "https://images.unsplash.com/photo-1549395156-e0c1fe6fc7a5?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-50",
+    "name": "Pistachio & Co. Gelateria",
+    "category": "Ice Cream",
+    "sells": "Bronte pistachio & roasted almond gelato",
+    "town": "Nottingham",
+    "photo": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-51",
+    "name": "The Artisan Espresso Bar",
+    "category": "Cafes",
+    "sells": "Single-origin pour-overs & sourdough toasts",
+    "town": "London",
+    "photo": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-52",
+    "name": "Heritage Velvet Tea Rooms",
+    "category": "Cafes",
+    "sells": "Traditional afternoon tea & warm scones",
+    "town": "Bath",
+    "photo": "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-53",
+    "name": "Northern Quarter Roasters",
+    "category": "Cafes",
+    "sells": "House-roasted beans & flat whites",
+    "town": "Manchester",
+    "photo": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-54",
+    "name": "The Botanical Glasshouse Cafe",
+    "category": "Cafes",
+    "sells": "Matcha lattes, avocado toast & cakes",
+    "town": "Cambridge",
+    "photo": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-55",
+    "name": "Royal Mile Coffee House",
+    "category": "Cafes",
+    "sells": "Scottish shortbread & specialty filter coffee",
+    "town": "Edinburgh",
+    "photo": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-56",
+    "name": "Harbour Light Coffee & Bakehouse",
+    "category": "Cafes",
+    "sells": "Cardamom buns & specialty coffee",
+    "town": "Bristol",
+    "photo": "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-57",
+    "name": "The Old Bookshop Cafe",
+    "category": "Cafes",
+    "sells": "Loose-leaf teas, flapjacks & reading corner",
+    "town": "Oxford",
+    "photo": "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-58",
+    "name": "Lanes Espresso & Brew Bar",
+    "category": "Cafes",
+    "sells": "Cold brew on tap & iced matcha",
+    "town": "Brighton",
+    "photo": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-59",
+    "name": "The Shambles Coffee Roastery",
+    "category": "Cafes",
+    "sells": "Freshly roasted Arabica beans & croissants",
+    "town": "York",
+    "photo": "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-60",
+    "name": "Merchant City Roasters",
+    "category": "Cafes",
+    "sells": "Micro-batch coffees & sourdough toasties",
+    "town": "Glasgow",
+    "photo": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-61",
+    "name": "The Victorian Tea Salon",
+    "category": "Cafes",
+    "sells": "Fine china afternoon tea & cucumber sandwiches",
+    "town": "Leamington Spa",
+    "photo": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-62",
+    "name": "Black Gold Coffee Works",
+    "category": "Cafes",
+    "sells": "Dark roast espresso & almond croissants",
+    "town": "Leeds",
+    "photo": "https://images.unsplash.com/photo-1485808191679-5f86510681a2?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-63",
+    "name": "The Quarterdeck Cafe",
+    "category": "Cafes",
+    "sells": "Specialty roasts, crab rolls & fresh cakes",
+    "town": "Portsmouth",
+    "photo": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-64",
+    "name": "Green Leaf Vegan Cafe",
+    "category": "Cafes",
+    "sells": "Plant-based lattes, vegan sausage rolls & acai",
+    "town": "Leicester",
+    "photo": "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-65",
+    "name": "Cathedral Bakehouse & Cafe",
+    "category": "Cafes",
+    "sells": "Artisan sourdough, hot soups & coffees",
+    "town": "Norwich",
+    "photo": "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-66",
+    "name": "The Beanery Specialty Coffee",
+    "category": "Cafes",
+    "sells": "Single-estate Ethiopian beans & babka",
+    "town": "Liverpool",
+    "photo": "https://images.unsplash.com/photo-1497515114629-f71d768fd07c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-67",
+    "name": "The Little French Cafe",
+    "category": "Cafes",
+    "sells": "Freshly baked butter croissants & cafe au lait",
+    "town": "Exeter",
+    "photo": "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-68",
+    "name": "The Copper Kettle Cafe",
+    "category": "Cafes",
+    "sells": "Full English breakfasts & Victoria sponge",
+    "town": "Milton Keynes",
+    "photo": "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-69",
+    "name": "St. Peter's Square Coffee Bar",
+    "category": "Cafes",
+    "sells": "Iced lattes, toasted bagels & sourdough",
+    "town": "Nottingham",
+    "photo": "https://images.unsplash.com/photo-1493857671505-72967e2e2760?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-70",
+    "name": "Castle Hill Espresso Bar",
+    "category": "Cafes",
+    "sells": "Artisan espresso, shortbread & oatcakes",
+    "town": "Stirling",
+    "photo": "https://images.unsplash.com/photo-1468418143278-41595b1a4c01?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-71",
+    "name": "Sourdough & Flour Bakehouse",
+    "category": "Bakery & Delis",
+    "sells": "Country sourdough loaves & focaccia",
+    "town": "London",
+    "photo": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-72",
+    "name": "La Petite Patisserie Francaise",
+    "category": "Bakery & Delis",
+    "sells": "Handmade eclairs, fruit tarts & mille-feuille",
+    "town": "Bath",
+    "photo": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-73",
+    "name": "The Fine Cheesemonger",
+    "category": "Bakery & Delis",
+    "sells": "British & European artisan cheeses & chutneys",
+    "town": "Oxford",
+    "photo": "https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-74",
+    "name": "The Artisan Pastry Kitchen",
+    "category": "Bakery & Delis",
+    "sells": "Almond croissants, pain au chocolat & tarts",
+    "town": "Manchester",
+    "photo": "https://images.unsplash.com/photo-1530610476181-d83430b64dcd?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-75",
+    "name": "Merchant Deli & Charcuterie",
+    "category": "Bakery & Delis",
+    "sells": "Cured meats, truffle oils & fresh pasta",
+    "town": "Edinburgh",
+    "photo": "https://images.unsplash.com/photo-1541529086526-db283c563270?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-76",
+    "name": "The Golden Wheat Bakery",
+    "category": "Bakery & Delis",
+    "sells": "Yorkshire curd tarts, sourdough & pork pies",
+    "town": "York",
+    "photo": "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-77",
+    "name": "Boutique Chocolatier & Truffles",
+    "category": "Bakery & Delis",
+    "sells": "Hand-poured dark chocolate truffles & pralines",
+    "town": "Brighton",
+    "photo": "https://images.unsplash.com/photo-1548907040-4baa42d10919?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-78",
+    "name": "St. Nicholas Market Bakehouse",
+    "category": "Bakery & Delis",
+    "sells": "Fresh cinnamon swirls & sourdough rolls",
+    "town": "Bristol",
+    "photo": "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-79",
+    "name": "The Old Town Delicatessen",
+    "category": "Bakery & Delis",
+    "sells": "Imported Italian olive oils, prosciutto & cheeses",
+    "town": "Cambridge",
+    "photo": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-80",
+    "name": "Highland Crust Bakery",
+    "category": "Bakery & Delis",
+    "sells": "Scottish oatcakes, steak pies & fruit scones",
+    "town": "Inverness",
+    "photo": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-81",
+    "name": "The Old Corner Bookshop",
+    "category": "Books",
+    "sells": "Rare hardbacks, fiction & cozy reading nooks",
+    "town": "Oxford",
+    "photo": "https://images.unsplash.com/photo-1526243741027-444d633d7342?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-82",
+    "name": "Graphic Novel & Comic Depot",
+    "category": "Books",
+    "sells": "Manga, indie graphic novels & collectibles",
+    "town": "Manchester",
+    "photo": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-83",
+    "name": "Royal Mile Paper & Fine Pens",
+    "category": "Books",
+    "sells": "Italian leather notebooks & fountain pens",
+    "town": "Edinburgh",
+    "photo": "https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-84",
+    "name": "The Children's Storybook Tree",
+    "category": "Books",
+    "sells": "Illustrated children's books & wooden toys",
+    "town": "Bath",
+    "photo": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-85",
+    "name": "Lanes Independent Booksellers",
+    "category": "Books",
+    "sells": "Fiction, art books & coffee table editions",
+    "town": "Brighton",
+    "photo": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-86",
+    "name": "The Vintage Map & Book Trader",
+    "category": "Books",
+    "sells": "19th-century atlases & travel memoirs",
+    "town": "York",
+    "photo": "https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-87",
+    "name": "The Botanical Stationer",
+    "category": "Books",
+    "sells": "Eco-friendly journals & calligraphy sets",
+    "town": "Cambridge",
+    "photo": "https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-88",
+    "name": "Merchant City Rare Volumes",
+    "category": "Books",
+    "sells": "First edition novels & leatherbound classics",
+    "town": "Glasgow",
+    "photo": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-89",
+    "name": "The High Street Paperback Exchange",
+    "category": "Books",
+    "sells": "Secondhand paperbacks & sci-fi classics",
+    "town": "Leeds",
+    "photo": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-90",
+    "name": "The Waterfront Bookshop & Cafe",
+    "category": "Books",
+    "sells": "Independent releases & local history books",
+    "town": "Bristol",
+    "photo": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-91",
+    "name": "The Botanical Florist Studio",
+    "category": "Florists",
+    "sells": "Custom flower bouquets & dried arrangements",
+    "town": "London",
+    "photo": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-92",
+    "name": "Urban Jungle Succulents & Ferns",
+    "category": "Florists",
+    "sells": "Rare houseplants, monstera & terrariums",
+    "town": "Manchester",
+    "photo": "https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-93",
+    "name": "Cotswold Flower Garden",
+    "category": "Florists",
+    "sells": "Freshly cut English garden roses & peonies",
+    "town": "Oxford",
+    "photo": "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-94",
+    "name": "Highland Wildflower Studio",
+    "category": "Florists",
+    "sells": "Scottish heather & thistle bouquets",
+    "town": "Edinburgh",
+    "photo": "https://images.unsplash.com/photo-1508610048659-a06b669e3321?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-95",
+    "name": "The Glasshouse Plant Nursery",
+    "category": "Florists",
+    "sells": "Indoor palms, bonsai trees & terracotta pots",
+    "town": "Cambridge",
+    "photo": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-96",
+    "name": "Bath Spa Floral Design",
+    "category": "Florists",
+    "sells": "Pastel bouquets & dried flower stems",
+    "town": "Bath",
+    "photo": "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-97",
+    "name": "Lanes Botanical House",
+    "category": "Florists",
+    "sells": "Hanging pothos, cacti & macrame hangers",
+    "town": "Brighton",
+    "photo": "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-98",
+    "name": "The Bloom & Willow Shop",
+    "category": "Florists",
+    "sells": "Seasonal blooms & luxury hatbox flowers",
+    "town": "York",
+    "photo": "https://images.unsplash.com/photo-1507290439931-a861b5a38200?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-99",
+    "name": "Merchant City Plant Parlour",
+    "category": "Florists",
+    "sells": "Calathea, snake plants & organic plant food",
+    "town": "Glasgow",
+    "photo": "https://images.unsplash.com/photo-1463936575829-25148e1db1b8?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "shop-100",
+    "name": "The Waterfront Flower Stall",
+    "category": "Florists",
+    "sells": "Fresh market tulips, sunflowers & gift wraps",
+    "town": "Bristol",
+    "photo": "https://images.unsplash.com/photo-1567696911980-2eed69a46042?auto=format&fit=crop&w=800&q=80"
+  }
+];
+
+// Vendaru own patch, used by the local-businesses band. Separate from the
+// shops above, which reach further than the courier network does.
 const SHOP_TOWNS = [
   'Manchester', 'Bolton', 'Bury', 'Radcliffe', 'Salford',
   'Rochdale', 'Oldham', 'Stockport', 'Wigan', 'Altrincham',
 ];
 
-// Filled in by build_shop_photos.js. A photo of the kind of shop, never
-// captioned as a particular branch.
-const SHOP_PHOTOS = {
-  "Co-op Food": [
-    "https://images.unsplash.com/photo-1611250308498-9e325502f8ee?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1780538778860-7aaa9a0ee84b?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1769485016826-a7d5bfe50119?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1765741836929-af2f9e1968e8?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1770341565195-01e87d58498f?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1783990117468-354b0635aae8?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1775592231472-6d8719ccdfe3?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1759547082440-7cbde2849357?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1761281254116-82a6bded6c30?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8Y29udmVuaWVuY2UlMjBzdG9yZSUyMGludGVyaW9yfGVufDF8MHx8fDE3ODYxODA1MjV8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1781579239593-c76d875c55cd?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fGNvbnZlbmllbmNlJTIwc3RvcmUlMjBpbnRlcmlvcnxlbnwxfDB8fHwxNzg2MTgwNTI1fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "Tesco Express": [
-    "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1670684684445-a4504dca0bbc?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1578916171728-46686eac8d58?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1515706886582-54c73c5eaf41?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1534723452862-4c874018d66d?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1506617420156-8e4536971650?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1540340061722-9293d5163008?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1685640206182-c51b8aa9b686?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8c3VwZXJtYXJrZXQlMjBhaXNsZSUyMGdyb2Nlcmllc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1584953528653-503bb1c9dbf8?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fHN1cGVybWFya2V0JTIwYWlzbGUlMjBncm9jZXJpZXN8ZW58MXwwfHx8MTc4NjE4MDUyNnww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "Sainsbury's Local": [
-    "https://images.unsplash.com/photo-1670684684445-a4504dca0bbc?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1583258292688-d0213dc5a3a8?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1607349913338-fca6f7fc42d0?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1584680226833-0d680d0a0794?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1604719312497-c6fc196f51ec?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1604719312266-d57b1438d4bf?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1757801752791-8bcd63cec878?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1584568694489-f71bdbac55e2?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1740439225991-ab26e8f6da9d?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8Z3JvY2VyeSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTI2fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1604719312245-6d2c47114758?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fGdyb2NlcnklMjBzdG9yZSUyMHNoZWx2ZXN8ZW58MXwwfHx8MTc4NjE4MDUyNnww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "Iceland": [
-    "https://images.unsplash.com/photo-1780387249824-8b8a2907805c?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1780444078356-5ca1e9efe6b8?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1589961548587-1538535cee95?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1635847457796-c6d78fa0fbc9?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1661319615776-946158744a29?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1780387250036-af6182875a50?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1651313430135-a2635048b1d7?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1777732785460-d361fddf4653?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1624336726283-af99ceabe280?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8ZnJvemVuJTIwZm9vZCUyMHBhY2thZ2luZ3xlbnwxfDB8fHwxNzg2MTgwNTI3fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1581059474347-833e80d81ba8?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fGZyb3plbiUyMGZvb2QlMjBwYWNrYWdpbmd8ZW58MXwwfHx8MTc4NjE4MDUyN3ww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "Farmfoods": [
-    "https://images.unsplash.com/photo-1646836390736-ee0af3b6e9c6?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1418669112725-fb499fb61127?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1604742760532-62e31dde1c74?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1615841010702-3c4fed5e5804?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1604742763104-86a0cf0aa1c2?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1771575521357-f6c9237fe16f?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1764955307141-056b240923a1?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1727303016382-a53bcfb57cd3?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1727303016410-ba51309643af?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8Z3JvY2VyeSUyMHNob3BwaW5nJTIwYmFza2V0fGVufDF8MHx8fDE3ODYxODA1NTF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1767114648647-0c2f3f6cff49?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fGdyb2NlcnklMjBzaG9wcGluZyUyMGJhc2tldHxlbnwxfDB8fHwxNzg2MTgwNTUxfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "Greggs": [
-    "https://images.unsplash.com/photo-1711672284661-bd70e38f31b2?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1726137569911-bc03e55fd87f?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1777709350429-d152848a698e?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1771498637378-c5ff74b70b52?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1723910065937-423711621b02?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1771498326035-c148ca1511de?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1745937745692-273bbd37b601?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1783408355814-351ffec4a6ab?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1777544575746-96654957db13?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8YmFrZXJ5JTIwc2hvcCUyMGNvdW50ZXJ8ZW58MXwwfHx8MTc4NjE4MDUyOHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1771797573158-82da8bfe7497?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fGJha2VyeSUyMHNob3AlMjBjb3VudGVyfGVufDF8MHx8fDE3ODYxODA1Mjh8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "Boots": [
-    "https://images.unsplash.com/photo-1739289696449-cba3a5ef085d?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1648091856225-dd091d7e5075?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1765031092161-a9ebe556117e?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1785596497581-19b671f83d70?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1664163335111-9b8cc6b7d3f7?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1777494395822-be72bef7262b?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1646023624315-d86b41e6de0a?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1768839466981-f466c7ba1a0c?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1648091855047-9e6a97f9e52b?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8cGhhcm1hY3klMjBzaG9wfGVufDF8MHx8fDE3ODYxODA1Mjl8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1621745490720-bc825c1a5167?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fHBoYXJtYWN5JTIwc2hvcHxlbnwxfDB8fHwxNzg2MTgwNTI5fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "Home Bargains": [
-    "https://images.unsplash.com/photo-1626379481874-3dc5678fa8ca?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1643107303813-077f2061cec1?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1727537377673-5ae71f27ea08?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1646533683740-670d8ee20fff?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1756158448893-ffac8a29f986?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1731041869283-1cbeee663d16?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1733023919991-4a6488eea645?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1643107242058-9391a7ba60d3?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1546695032-736b612d5a0c?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8Y2xlYW5pbmclMjBwcm9kdWN0cyUyMHNoZWxmfGVufDF8MHx8fDE3ODYxODA1MzB8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1530045264137-4ffef096997e?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fGNsZWFuaW5nJTIwcHJvZHVjdHMlMjBzaGVsZnxlbnwxfDB8fHwxNzg2MTgwNTMwfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "B&M": [
-    "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1578916171728-46686eac8d58?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1670684684445-a4504dca0bbc?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1540340061722-9293d5163008?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1585861299373-491140ca920e?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1605371924599-2d0365da1ae0?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1589526174056-2d6960ead9a2?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1580674287405-80cd77a2fee2?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1643430603795-b1c753fdbdcb?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8ZGlzY291bnQlMjBzdG9yZSUyMGFpc2xlfGVufDF8MHx8fDE3ODYxODA1MzF8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1722639096485-7f48cae22a87?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fGRpc2NvdW50JTIwc3RvcmUlMjBhaXNsZXxlbnwxfDB8fHwxNzg2MTgwNTMxfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ],
-  "Poundland": [
-    "https://images.unsplash.com/photo-1705045206675-01781bf32687?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1761059080249-3f0fe21958a5?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Mnx8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1768836727404-28313ac3b579?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8M3x8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1759167632930-298bca6b4268?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NHx8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1757801752791-8bcd63cec878?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8NXx8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1740803292374-1b167c1558b1?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8Nnx8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1740803292822-a742c6a4fef0?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8N3x8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1761281206511-cf440dbb4e6b?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OHx8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1759167633294-a8a8a70078b6?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8OXx8dmFyaWV0eSUyMHN0b3JlJTIwc2hlbHZlc3xlbnwxfDB8fHwxNzg2MTgwNTMyfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1779721064963-f6d01f20f27e?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MTB8fHZhcmlldHklMjBzdG9yZSUyMHNoZWx2ZXN8ZW58MXwwfHx8MTc4NjE4MDUzMnww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80"
-  ]
+// The kinds of shop, in the order they should appear, derived from the data so
+// a new category cannot be added without a chip appearing for it.
+const SHOP_CATEGORY_EMOJI = {
+  Clothes: '👗', Antiques: '🏺', 'Ice Cream': '🍨', Cafes: '☕',
+  'Bakery & Delis': '🥖', Books: '📚', Florists: '💐',
 };
 
-const SHOP_CHAINS = [
-  { name: 'Co-op Food', sells: 'Everyday groceries & meal deals' },
-  { name: 'Tesco Express', sells: 'Groceries, bakery & household' },
-  { name: "Sainsbury's Local", sells: 'Groceries, chilled & ready meals' },
-  { name: 'Iceland', sells: 'Frozen food & family packs' },
-  { name: 'Farmfoods', sells: 'Frozen food & value groceries' },
-  { name: 'Greggs', sells: 'Bakery, hot food & coffee' },
-  { name: 'Boots', sells: 'Pharmacy, health & beauty' },
-  { name: 'Home Bargains', sells: 'Household, cleaning & toiletries' },
-  { name: 'B&M', sells: 'Home, garden & branded food' },
-  { name: 'Poundland', sells: 'Everyday essentials & basics' },
-];
-
-// The photo is fixed to the chain-and-town pair, so a shop keeps the same
-// picture whether it's seen in its own town's ten or in the spread.
-function shopEntry(chain, town) {
-  return {
-    ...chain,
-    town,
-    photo: (SHOP_PHOTOS[chain.name] || [])[SHOP_TOWNS.indexOf(town)] || '',
-  };
+function shopCategories() {
+  const seen = [];
+  SHOPS_100.forEach(s => { if (seen.indexOf(s.category) === -1) seen.push(s.category); });
+  return seen;
 }
 
-// A town's ten when one is chosen. With no town set it's a spread — one chain
-// per town — so the section shows the reach rather than a hundred cards.
-function shopsForLocation() {
-  const loc = locationChosen();
-  if (loc) {
-    if (!SHOP_TOWNS.includes(loc)) return [];
-    return SHOP_CHAINS.map(c => shopEntry(c, loc));
-  }
-  return SHOP_TOWNS.map((town, i) => shopEntry(SHOP_CHAINS[i % SHOP_CHAINS.length], town));
-}
-
-// Every chain in every town. The browsable section shows a spread so the page
-// isn't a hundred cards, but a search has to look at all of them — otherwise
-// searching a town returns only whichever chain the spread happened to pick.
-function allShops() {
-  const out = [];
-  SHOP_TOWNS.forEach(town => SHOP_CHAINS.forEach(c => out.push(shopEntry(c, town))));
-  return out;
+function shopCategory() {
+  return shopCategories().indexOf(state.shopCategory) === -1 ? '' : state.shopCategory;
 }
 
 // The pool a search draws from: a chosen town narrows it, exactly as it narrows
-// which businesses are shown.
+// which businesses are shown. Not narrowed by the category chip, which belongs
+// to the band rather than to a search.
 function searchableShops() {
-  return locationChosen() ? shopsForLocation() : allShops();
+  const loc = locationChosen();
+  if (!loc) return SHOPS_100;
+  return SHOPS_100.filter(s => String(s.town).toLowerCase() === loc.toLowerCase());
 }
 
-// The same card as a business in the directory — square photo, name, what they
-// sell, a button — because Shop now shows shops and services side by side and
-// two card languages on one page read as two half-finished pages. No heart: a
-// shop is a chain in a town, not a listing you can keep on your wall.
+// What the Shops band draws: the chosen town if there is one, narrowed further
+// by the category chip.
+function shopsForLocation() {
+  const cat = shopCategory();
+  return searchableShops().filter(s => !cat || s.category === cat);
+}
+
 function shopCardHtml(shop) {
   const arg = escapeHtml(shop.name + '|' + shop.town);
   const initials = shop.name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -3653,26 +4314,54 @@ function shopLocalSectionHtml() {
     ${businessListHtml(mine)}`;
 }
 
-// Shops a courier can be sent to. Follows the location chip above: pick a town
-// and it's that town's ten.
-function shopShopsSectionHtml() {
-  const shops = shopsForLocation();
+// The independents a courier can be sent to. Follows the location chip above,
+// and the category chips below it.
+//
+// `limit` is for the All view, where this is one band among four: a hundred
+// shop cards before the directory even starts would bury everything under it.
+// The Shops button is the whole list.
+function shopShopsSectionHtml({ limit = 0 } = {}) {
+  const all = shopsForLocation();
   const loc = locationChosen();
-  if (!shops.length) {
-    return loc ? `
-      <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px">
-        <div style="padding:16px">
-          <div style="font-size:15.5px;font-weight:700">No shops in ${escapeHtml(loc)} yet</div>
-          <div style="font-size:13px;opacity:0.6">Couriers cover Greater Manchester so far. Special Requests still works from any store.</div>
+  const cat = shopCategory();
+
+  // Only worth offering a category once there is a list to narrow.
+  const chips = limit ? '' : `
+    <div class="quick-rail slot-scroll" style="margin-top:8px">
+      <button type="button" class="quick-btn${cat ? '' : ' is-on'}" data-action="setShopCategory" data-arg="">All shops</button>
+      ${shopCategories().map(c => `
+        <button type="button" class="quick-btn${cat === c ? ' is-on' : ''}"
+          data-action="setShopCategory" data-arg="${escapeHtml(c)}">${SHOP_CATEGORY_EMOJI[c] || ''} ${escapeHtml(c)}</button>`).join('')}
+    </div>`;
+
+  if (!all.length) {
+    // Which of the two filters emptied it decides what to say — telling someone
+    // there are no shops in Bath when they've filtered to Florists is a lie.
+    const why = cat && loc ? `No ${escapeHtml(cat.toLowerCase())} in ${escapeHtml(loc)} yet`
+      : cat ? `No ${escapeHtml(cat.toLowerCase())} listed yet`
+      : `No shops in ${escapeHtml(loc)} yet`;
+    return `
+      <div class="page-band"><span>Shops</span></div>
+      ${chips}
+      <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+        <div style="padding:22px 16px;text-align:center">
+          <div style="font-size:15px;font-weight:600;color:#141414">${why}</div>
+          <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Special Requests still works from any shop, anywhere — name it and a courier collects.</div>
         </div>
-      </div>` : '';
+      </div>`;
   }
+
+  const shown = limit ? all.slice(0, limit) : all;
   return `
     <div class="page-band">
-      <span>${loc ? `Shops in ${escapeHtml(loc)}` : 'Local shops'}</span>
-      <span class="page-band-count">${shops.length}</span>
+      <span>${loc ? `Shops in ${escapeHtml(loc)}` : 'Independent shops'}</span>
+      <span class="page-band-count">${limit && all.length > limit ? `${shown.length} of ${all.length}` : all.length}</span>
     </div>
-    <div class="biz-card-grid">${shops.map(shopCardHtml).join('')}</div>`;
+    ${chips}
+    <div class="biz-card-grid">${shown.map(shopCardHtml).join('')}</div>
+    ${limit && all.length > limit
+      ? `<button type="button" data-action="setShopFilter" data-arg="shops" style="background:none;border:none;padding:6px 0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px">See all ${all.length} shops</button>`
+      : ''}`;
 }
 
 // The directory itself, not a door to it: every business, in the same cards as
@@ -3744,7 +4433,7 @@ function renderShopperShop() {
     // the home page it would be an apology where the shop should be.
     body = (newToVendaru().length ? shopNewSectionHtml() : '')
       + shopServicesSectionHtml() + shopFeatureGridHtml()
-      + shopShopsSectionHtml() + shopLocalSectionHtml();
+      + shopShopsSectionHtml({ limit: 6 }) + shopLocalSectionHtml();
   }
   if (!searching) body += listYourBusinessLinkHtml();
 
@@ -7190,6 +7879,12 @@ const actions = {
   setShopFilter: (id) => {
     state.shopFilter = SHOP_FILTERS.some(f => f.id === id) ? id : 'all';
     state.searchQuery = '';
+    render();
+  },
+  // '' is every kind. Anything unrecognised falls back to that rather than
+  // leaving the band filtered to a category that no longer exists.
+  setShopCategory: (cat) => {
+    state.shopCategory = shopCategories().indexOf(cat) === -1 ? '' : cat;
     render();
   },
   toggleLocationPicker: () => {
