@@ -9037,6 +9037,7 @@ function renderShopperInbox() {
   </div>`;
 }
 
+let mapWaitAttempts = 0;
 let graftrMapInstance = null;
 let courierMarkerInstance = null;
 let liveAnimationInterval = null;
@@ -9046,7 +9047,16 @@ const STORE_COORDS = [53.587892, -2.43748];
 
 async function initGraftrLiveMap() {
   const container = document.getElementById('graftr-leaflet-map');
-  if (!container || typeof L === 'undefined') return;
+  if (!container) return;
+
+  // Leaflet loads async now, so it can still be in flight if someone reaches
+  // tracking within the first moment. Wait for it rather than returning to a
+  // blank panel that never fills.
+  if (typeof L === 'undefined') {
+    if (mapWaitAttempts++ < 40) setTimeout(initGraftrLiveMap, 150);
+    return;
+  }
+  mapWaitAttempts = 0;
 
   if (graftrMapInstance) {
     try { graftrMapInstance.remove(); } catch(e){}
