@@ -4305,6 +4305,8 @@ const PARTNER_CARDS = [
     blurb: 'Set your shop up online and sell from your own site',
     cta: 'Start free trial',
     tint: '#008060',
+    logo: 'https://www.google.com/s2/favicons?domain=shopify.com&sz=128',
+    photo: 'https://images.unsplash.com/photo-1611250308498-9e325502f8ee?auto=format&fit=crop&w=800&q=80',
     url: 'https://shopify.pxf.io/dyEmAj',
   },
   {
@@ -4313,6 +4315,10 @@ const PARTNER_CARDS = [
     blurb: 'Put your business in front of people nearby',
     cta: 'Get started',
     tint: '#010101',
+    logo: 'https://www.google.com/s2/favicons?domain=tiktok.com&sz=128',
+    // No photo: nothing in the library reads as short video or creators, and a
+    // stock picture that doesn't mean anything is worse than the brand's own
+    // black. build_partner_photos.js fills this in with a real one.
     url: 'https://getstartedtiktok.partnerlinks.io/00n0j6kr0ids',
   },
   {
@@ -4325,6 +4331,9 @@ const PARTNER_CARDS = [
     blurb: 'Plan smarter trips around your route, budget and comfort',
     cta: 'Plan a trip',
     tint: '#1D4ED8',
+    // Its own mark, served as SVG by the site itself, so it stays sharp.
+    logo: 'https://utraveluk.net/favicon.svg',
+    photo: 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?auto=format&fit=crop&w=800&q=80',
     url: 'https://utraveluk.net/',
     kind: 'ours',
     // Rendered at the head of New to Vendaru rather than in the partners band,
@@ -4347,15 +4356,39 @@ let livePartners = null;
 // Impact — TikTok's is on another network entirely, so a straight swap to live
 // data would have quietly dropped it. Live entries win where the two name the
 // same brand, since those carry the real tracking link.
+// Two brands are the same brand if either name contains the other — Impact's
+// "TikTok" against our "TikTok for Business".
+function sameBrand(a, b) {
+  const x = String(a || '').toLowerCase(), y = String(b || '').toLowerCase();
+  return x === y || x.includes(y) || y.includes(x);
+}
+
 function partnerCards() {
   const band = PARTNER_CARDS.filter(p => !p.slot);
   const live = (livePartners || []).filter(p => p && p.url && p.name);
   if (!live.length) return band;
-  const named = new Set(live.map(p => p.name.toLowerCase()));
-  const builtInOnly = band.filter(p => !named.has(p.name.toLowerCase())
-    // "TikTok for Business" against a live "TikTok" is the same brand twice.
-    && ![...named].some(n => n.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(n)));
-  return live.concat(builtInOnly);
+
+  // Field by field, not card for card. Impact supplies the tracking link and
+  // the programme's own copy; it has no logo and no banner, so a straight
+  // swap stripped the artwork off any card it matched. The live URL wins
+  // because that's the one that pays, and everything the API doesn't carry
+  // falls back to what's set here.
+  const merged = live.map((p) => {
+    const mine = band.find(b => sameBrand(b.name, p.name));
+    if (!mine) return p;
+    return {
+      ...mine,
+      ...p,
+      logo: p.logo || mine.logo,
+      photo: p.photo || mine.photo,
+      blurb: p.blurb || mine.blurb,
+      cta: p.cta || mine.cta,
+      tint: p.tint || mine.tint,
+    };
+  });
+
+  const builtInOnly = band.filter(b => !live.some(p => sameBrand(b.name, p.name)));
+  return merged.concat(builtInOnly);
 }
 
 function partnerCardHtml(p) {
@@ -4364,10 +4397,18 @@ function partnerCardHtml(p) {
   // own work — so they say Ours and link normally.
   const ours = p.kind === 'ours';
   const rel = ours ? 'noopener noreferrer' : 'sponsored nofollow noopener noreferrer';
+  // The brand colour stays underneath the photo, so a picture that hasn't
+  // loaded leaves the card looking intentional rather than grey. The wordmark
+  // only appears when there is no photo to caption.
+  const tile = p.photo
+    ? `background:${p.tint} url('${escapeHtml(p.photo)}') center/cover no-repeat`
+    : `background:${p.tint}`;
   return `
     <div class="shop-card biz-card partner-card">
-      <div class="biz-card-photo" style="background:${p.tint}">
-        <span class="partner-mark">${escapeHtml(p.name)}</span>
+      <div class="biz-card-photo" style="${tile}">
+        ${p.photo ? '' : `<span class="partner-mark">${escapeHtml(p.name)}</span>`}
+        ${p.logo ? `<img class="biz-card-logo partner-logo" src="${escapeHtml(p.logo)}" alt=""
+             onerror="this.remove()" />` : ''}
         <span class="partner-tag${ours ? ' is-ours' : ''}">${ours ? 'Ours' : 'Ad'}</span>
       </div>
       <div class="biz-card-body">

@@ -1141,6 +1141,15 @@ body::-webkit-scrollbar {
   text-transform: uppercase;
 }
 
+/* Sits where a listing's brand mark sits, bottom-left of the picture. White
+   plate behind it because these arrive as favicons with transparent corners,
+   which vanish against a dark photo. */
+.partner-logo {
+  background: #ffffff;
+  object-fit: contain;
+  padding: 5px;
+}
+
 /* Our own sites. Outlined rather than filled, so Ad stays the louder of the
    two — the one that has to be noticed is the one someone pays us for. */
 .partner-tag.is-ours {
