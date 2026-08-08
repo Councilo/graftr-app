@@ -119,8 +119,15 @@ module.exports = async (req, res) => {
   } catch (e) {
     console.error('Impact partners failed:', e.message);
     // The page keeps its built-in cards; nothing about the credentials or the
-    // upstream response goes back to the browser.
-    res.setHeader('Cache-Control', 'public, s-maxage=60');
-    res.status(200).json({ configured: true, partners: [], error: 'upstream' });
+    // upstream response goes back to the browser. The status code does come
+    // back, because it says which thing is wrong — 401 the credentials, 403 the
+    // token's scopes, 404 the path — and a bare status leaks nothing.
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(200).json({
+      configured: true,
+      partners: [],
+      error: 'upstream',
+      upstreamStatus: e.status || null,
+    });
   }
 };
