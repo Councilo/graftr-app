@@ -976,16 +976,16 @@ body::-webkit-scrollbar {
   fill: none;
 }
 
-/* Kept: the same glyph, filled in the logo's pink (#f2c1d8). The outline stays
-   dark — the pink is a pastel, and at 15px on white it needs the edge to read
-   as a heart at all. */
+/* Kept: the same glyph, filled in. Solid black against the white disc, so the
+   difference between kept and not is the glyph going solid rather than a
+   colour appearing — the same read as every other control on the site. */
 .biz-card-keep.is-on {
   background: #ffffff;
   color: #141414;
 }
 
 .biz-card-keep.is-on svg {
-  fill: #f2c1d8;
+  fill: #141414;
 }
 
 .biz-card-keep:active {
@@ -1001,7 +1001,7 @@ body::-webkit-scrollbar {
 }
 
 .biz-card-keep.is-flat.is-on {
-  background: #141414;
+  background: #ffffff;
   border-color: #141414;
 }
 
@@ -1038,7 +1038,7 @@ body::-webkit-scrollbar {
 }
 
 .biz-keep-wide.is-on svg {
-  fill: #f2c1d8;
+  fill: #ffffff;
   stroke: #ffffff;
 }
 
