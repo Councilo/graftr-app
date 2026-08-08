@@ -7304,13 +7304,6 @@ function shopCardHtml(shop) {
     </div>`;
 }
 
-// The aisles, in the order the browse page lists them.
-function groceryCategories() {
-  const seen = [];
-  PRODUCTS.forEach(p => { if (seen.indexOf(p.category) === -1) seen.push(p.category); });
-  return seen;
-}
-
 // The app's own two services — the Morrisons basket and Special Requests — in
 // the same card as everything else on the page. They keep their spot at the top
 // rather than a bigger card, since the page is now one card language throughout.
@@ -7526,21 +7519,11 @@ function renderShopperShop() {
     </div>
     <div style="font-size:15px;opacity:0.55;font-weight:600">Good afternoon</div>
     ${locationSearchBarHtml('shop-search-input')}
-    <!-- Which part of the app you're after. Above the aisles because it governs
-         everything below it, including whether the aisles are relevant. -->
+    <!-- Which part of the app you're after. The grocery aisle rail used to sit
+         under this; the aisles are inside Morrisons Daily, which is a card on
+         the page, so a second way in was a row of tiles earning its keep on
+         every visit. -->
     ${shopFilterBarHtml()}
-    <!-- Aisles, not trades. The service categories moved to Services, which is
-         the whole of that side of the app. Scrolls sideways rather than
-         shrinking. Hidden on the two filters that have nothing to do with
-         groceries, where it would just be a rail you can't use. -->
-    ${(filter === 'all' || filter === 'shops') ? `
-    <div class="cat-rail slot-scroll">
-      ${groceryCategories().map(c => `
-      <div class="cat-tile" data-action="goBrowseCategory" data-arg="${escapeHtml(c)}">
-        <span class="cat-tile-icon">${CATEGORY_EMOJI[c] || '🛒'}</span>
-        <span class="cat-tile-label">${escapeHtml(c)}</span>
-      </div>`).join('')}
-    </div>` : ''}
     ${body}
   </div>`;
 }
