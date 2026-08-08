@@ -2536,9 +2536,12 @@ function resetAdCards() {
   adCardsPlaced = 0;
 }
 
-function businessListHtml(list) {
+function businessListHtml(list, { appendCells = '' } = {}) {
   if (state.servicesView === 'icons') {
-    return `<div class="app-grid">${list.map(businessIconTile).join('')}</div>`;
+    // Icon tiles and a full card can't sit in the same grid, so anything extra
+    // keeps its own row here.
+    return `<div class="app-grid">${list.map(businessIconTile).join('')}</div>`
+      + (appendCells ? `<div class="biz-card-grid">${appendCells}</div>` : '');
   }
   const cells = [];
   list.forEach((b, i) => {
@@ -2551,7 +2554,7 @@ function businessListHtml(list) {
       adCardsSince = 0;
     }
   });
-  return `<div class="biz-card-grid">${cells.join('')}</div>`;
+  return `<div class="biz-card-grid">${cells.join('')}${appendCells}</div>`;
 }
 
 function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
@@ -4546,9 +4549,10 @@ function shopServicesSectionHtml() {
 
 function shopNewSectionHtml() {
   const fresh = newToVendaru();
-  // Ours, at the head of the band. It keeps its Ours tag here more than
-  // anywhere: sitting among businesses that really did join, an unmarked card
-  // would read as one of them.
+  // Ours, after the businesses rather than before them, and in the same grid so
+  // the three share a row on a wide screen instead of it taking one alone. It
+  // keeps its Ours tag here more than anywhere: sitting among businesses that
+  // really did join, an unmarked card would read as one of them.
   const mine = slottedPartners('new').map(partnerCardHtml).join('');
 
   if (!fresh.length) {
@@ -4567,8 +4571,7 @@ function shopNewSectionHtml() {
       <span>New to Vendaru</span>
       <span class="page-band-count">${fresh.length}</span>
     </div>
-    ${mine ? `<div class="biz-card-grid">${mine}</div>` : ''}
-    ${businessListHtml(fresh)}`;
+    ${businessListHtml(fresh, { appendCells: mine })}`;
 }
 
 function renderShopperShop() {
