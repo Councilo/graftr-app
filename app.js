@@ -6274,10 +6274,40 @@ function servicesViewToggle() {
   return `<div class="view-toggle">${opt('cards', '▦ Cards')}${opt('icons', '⊞ Icons')}</div>`;
 }
 
+// Cards, with an ad card dropped in every so often. The socket is a grid item
+// like any other, so the ad takes a card's place in the run rather than
+// interrupting it.
+//
+// Counted across the whole page, not per category: the directory draws a grid
+// per category, so counting inside each would put an ad in every one of the
+// twelve. Capped as well — a page is a page whether it holds ten cards or a
+// hundred.
+const AD_EVERY = 6;
+const AD_MAX_PER_PAGE = 3;
+let adCardsSince = 0;
+let adCardsPlaced = 0;
+
+function resetAdCards() {
+  adCardsSince = 0;
+  adCardsPlaced = 0;
+}
+
 function businessListHtml(list) {
-  return state.servicesView === 'icons'
-    ? `<div class="app-grid">${list.map(businessIconTile).join('')}</div>`
-    : `<div class="biz-card-grid">${list.map(businessGridCard).join('')}</div>`;
+  if (state.servicesView === 'icons') {
+    return `<div class="app-grid">${list.map(businessIconTile).join('')}</div>`;
+  }
+  const cells = [];
+  list.forEach((b, i) => {
+    cells.push(businessGridCard(b));
+    adCardsSince++;
+    // Never trailing the run — an ad shouldn't be the last thing in a grid.
+    const room = i + 1 < list.length;
+    if (adInFeedConfigured() && room && adCardsSince >= AD_EVERY && adCardsPlaced < AD_MAX_PER_PAGE) {
+      cells.push(adFeedSlotHtml(adCardsPlaced++));
+      adCardsSince = 0;
+    }
+  });
+  return `<div class="biz-card-grid">${cells.join('')}</div>`;
 }
 
 function renderShopperSearchResults(query, { businessesOnly = false, productsOnly = false } = {}) {
@@ -9163,35 +9193,80 @@ const AD_CLIENT = 'ca-pub-8020577058635926';
 function adSlotHtml() {
   return '<div id="ad-multiplex" class="ad-slot"></div>';
 }
-let adUnitNode = null;
 
-function mountAdUnit() {
-  const host = root.querySelector('#ad-multiplex');
-  if (!host) return;
+// --- Ads in the card grid -------------------------------------------------
+// An ad taking a card's place in the run, so it reads as part of the grid
+// rather than a block bolted onto the page. The responsive display unit sizes
+// itself to whatever box it's in, which is what makes that work.
+const AD_CARD_SLOT = '9817285420';
 
-  if (!adUnitNode) {
-    adUnitNode = document.createElement('ins');
-    adUnitNode.className = 'adsbygoogle';
-    adUnitNode.style.display = 'block';
-    adUnitNode.setAttribute('data-ad-format', 'autorelaxed');
-    adUnitNode.setAttribute('data-ad-client', AD_CLIENT);
-    adUnitNode.setAttribute('data-ad-slot', '9901045905');
-    host.appendChild(adUnitNode);
+function adInFeedConfigured() {
+  return !!AD_CARD_SLOT;
+}
+
+function adFeedSlotHtml(index) {
+  return `<div class="ad-card" data-ad-feed="${index}"></div>`;
+}
+
+// Every unit is kept and reused by key. A key's element is built and pushed
+// once, then moved into whichever socket carries that key now.
+const adNodes = new Map();
+
+function mountAdInto(host, key, build) {
+  let node = adNodes.get(key);
+  if (!node) {
+    node = build();
+    adNodes.set(key, node);
+    host.appendChild(node);
     // Queues whether or not the loader has arrived — it's an array until then.
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) { /* blocked, offline, or an ad blocker: leave the gap empty */ }
     return;
   }
-
   // Already filled: move it rather than replace it, so no second request.
-  if (adUnitNode.parentElement !== host) host.appendChild(adUnitNode);
+  if (node.parentElement !== host) host.appendChild(node);
+}
+
+function mountAdUnit() {
+  const foot = root.querySelector('#ad-multiplex');
+  if (foot) {
+    mountAdInto(foot, 'multiplex', () => {
+      const ins = document.createElement('ins');
+      ins.className = 'adsbygoogle';
+      ins.style.display = 'block';
+      ins.setAttribute('data-ad-format', 'autorelaxed');
+      ins.setAttribute('data-ad-client', AD_CLIENT);
+      ins.setAttribute('data-ad-slot', '9901045905');
+      return ins;
+    });
+  }
+
+  if (!adInFeedConfigured()) return;
+  root.querySelectorAll('[data-ad-feed]').forEach((host) => {
+    mountAdInto(host, 'feed-' + host.dataset.adFeed, () => {
+      const ins = document.createElement('ins');
+      ins.className = 'adsbygoogle';
+      ins.style.display = 'block';
+      ins.setAttribute('data-ad-format', 'auto');
+      // The unit's own snippet asks for full-width-responsive, which on a
+      // phone stretches an ad to the viewport. Inside a card that would burst
+      // the grid, so here it sizes to the card instead.
+      ins.setAttribute('data-full-width-responsive', 'false');
+      ins.setAttribute('data-ad-client', AD_CLIENT);
+      ins.setAttribute('data-ad-slot', AD_CARD_SLOT);
+      return ins;
+    });
+  });
 }
 
 function render() {
   // Before anything is measured or drawn: it records the page being left, and
   // the back button below reads that to know where it goes.
   syncUrl();
+
+  // Ad placement counts across the page being built, so it starts from zero.
+  resetAdCards();
 
   // Added here rather than inside each renderer so no customer screen can ship
   // without a way back — including any added later.
