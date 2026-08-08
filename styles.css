@@ -1125,37 +1125,51 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-/* A shop a courier can be sent to. Same shell and the same 110px picture area
-   as the Morrisons and Special Requests cards it sits under. */
-.local-shop {
-  border: 1.5px solid rgba(20, 20, 20, 0.12);
-  border-radius: 16px;
-  overflow: hidden;
-  background: #ffffff;
-  cursor: pointer;
-}
-
-/* Of the kind of shop, never captioned as a particular branch. */
-.local-shop-photo {
-  height: 110px;
-  background-color: #eef0ee;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.local-shop-town {
-  display: inline-flex;
+/* Which town's branch this is. Sits where a listing's rating sits, on the left
+   because it's a fact about the shop rather than a score. */
+.biz-card-town {
+  display: flex;
   align-items: center;
   gap: 3px;
-  margin-top: 4px;
-  font-size: 12.5px;
+  font-size: 11px;
   color: #6b6b6b;
 }
 
-.local-shop-town svg {
+.biz-card-town svg {
   flex: 0 0 auto;
   opacity: 0.55;
+}
+
+/* Stands in for a picture we haven't got, at the size the photo would be. */
+.biz-card-photo-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  opacity: 0.3;
+}
+
+/* Shop runs several sections down one page — the app's own two services, then
+   local shops, then the directory — so each gets a heading with its count
+   rather than sections running into each other. */
+.page-band {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+.page-band-count {
+  flex: 0 0 auto;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #9a9a9a;
 }
 
 /* Their face and their name for the wall. */

@@ -6338,7 +6338,7 @@ function businessListHtml(list) {
   return `<div class="biz-card-grid">${cells.join('')}</div>`;
 }
 
-function renderShopperSearchResults(query, { businessesOnly = false, productsOnly = false } = {}) {
+function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
   const q = (query || '').trim().toLowerCase();
 
   const matchesQuery = (b) => {
@@ -6374,19 +6374,36 @@ function renderShopperSearchResults(query, { businessesOnly = false, productsOnl
     p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
   );
 
+  // Shop lists the local shops, so its search has to reach them — otherwise a
+  // town or a chain name comes back empty from a page that's showing both.
+  // Not on the Services directory, which is businesses only.
+  const matchingShops = businessesOnly ? [] : searchableShops().filter(s =>
+    s.name.toLowerCase().includes(q) ||
+    s.sells.toLowerCase().includes(q) ||
+    s.town.toLowerCase().includes(q)
+  );
+
   // The Services page is a directory of businesses, so it counts and shows
   // only those; Shop search still spans bookings and groceries too.
   const totalCount = businessesOnly ? matchingBiz.length
-    : productsOnly ? matchingProducts.length
-    : matchingBiz.length + matchingServices.length + matchingProducts.length;
+    : matchingBiz.length + matchingServices.length + matchingProducts.length + matchingShops.length;
 
-  const bizGridHtml = (!productsOnly && matchingBiz.length > 0)
+  const bizGridHtml = matchingBiz.length > 0
     ? `<div style="margin-bottom:20px">${businessListHtml(matchingBiz)}</div>`
+    : '';
+
+  const shopsGridHtml = matchingShops.length > 0
+    ? `<div style="margin-bottom:20px">
+         <div style="font-size:13px;font-weight:800;color:#141414;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">
+           Shops to send a courier to (${matchingShops.length})
+         </div>
+         <div class="biz-card-grid">${matchingShops.slice(0, 12).map(shopCardHtml).join('')}</div>
+       </div>`
     : '';
 
   // Bookable Services list
   let servicesListHtml = '';
-  if (!businessesOnly && !productsOnly && matchingServices.length > 0) {
+  if (!businessesOnly && matchingServices.length > 0) {
     const booked = new Set((state.bookingCart || []).map(x => `${x.businessId}|${x.serviceId}`));
     servicesListHtml = `
       <div style="margin-bottom:20px">
@@ -6427,24 +6444,14 @@ function renderShopperSearchResults(query, { businessesOnly = false, productsOnl
     `;
   }
 
-  // Shop searches groceries only now, so a term that matches a business would
-  // otherwise dead-end. Hand it across rather than just saying nothing found.
-  const crossover = productsOnly && matchingBiz.length > 0;
-
+  // Nothing to hand across any more: Shop's search covers businesses, shops and
+  // the aisles in one pass, so an empty result really is empty.
   const noResultsHtml = totalCount === 0 ? `
     <div style="padding:40px 20px;text-align:center;background:#fff;border-radius:20px;border:1px solid rgba(20,20,20,0.08)">
       <div style="font-size:32px;margin-bottom:8px">🔍</div>
-      <div style="font-size:16px;font-weight:800;color:#141414">
-        ${crossover ? 'Nothing in the aisles' : 'No matching items found'}
-      </div>
-      <div style="font-size:13px;color:#6b6b6b;margin-top:4px">
-        ${crossover
-          ? `${matchingBiz.length} local business${matchingBiz.length === 1 ? '' : 'es'} match “${escapeHtml(q)}”.`
-          : 'Try a different word or browse the aisles.'}
-      </div>
-      ${crossover
-        ? `<button type="button" data-action="goAllServices" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">Look in Services</button>`
-        : `<button type="button" data-action="clearSearch" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">Clear search</button>`}
+      <div style="font-size:16px;font-weight:800;color:#141414">No matching items found</div>
+      <div style="font-size:13px;color:#6b6b6b;margin-top:4px">Try a different word, or clear the search to see everything.</div>
+      <button type="button" data-action="clearSearch" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">Clear search</button>
     </div>
   ` : '';
 
@@ -6452,7 +6459,7 @@ function renderShopperSearchResults(query, { businessesOnly = false, productsOnl
     <div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:20px;font-weight:800;color:#141414">
-          ${businessesOnly ? 'Businesses' : productsOnly ? 'Groceries &amp; essentials' : 'Browse products &amp; services'}
+          ${businessesOnly ? 'Businesses' : 'Shops, services &amp; groceries'}
         </div>
         <div style="font-size:12.5px;color:#6b6b6b;font-weight:600">
           ${totalCount} result${totalCount === 1 ? '' : 's'}
@@ -6461,6 +6468,7 @@ function renderShopperSearchResults(query, { businessesOnly = false, productsOnl
 
       ${bizGridHtml}
       ${servicesListHtml}
+      ${shopsGridHtml}
       ${productsListHtml}
       ${noResultsHtml}
     </div>
@@ -7236,37 +7244,61 @@ const SHOP_CHAINS = [
   { name: 'Poundland', sells: 'Everyday essentials & basics' },
 ];
 
+// The photo is fixed to the chain-and-town pair, so a shop keeps the same
+// picture whether it's seen in its own town's ten or in the spread.
+function shopEntry(chain, town) {
+  return {
+    ...chain,
+    town,
+    photo: (SHOP_PHOTOS[chain.name] || [])[SHOP_TOWNS.indexOf(town)] || '',
+  };
+}
+
 // A town's ten when one is chosen. With no town set it's a spread — one chain
 // per town — so the section shows the reach rather than a hundred cards.
 function shopsForLocation() {
   const loc = locationChosen();
-  // The photo is fixed to the chain-and-town pair, so a shop keeps the same
-  // picture whether it's seen in its own town's ten or in the spread.
-  const withPhoto = (chain, town) => ({
-    ...chain,
-    town,
-    photo: (SHOP_PHOTOS[chain.name] || [])[SHOP_TOWNS.indexOf(town)] || '',
-  });
   if (loc) {
     if (!SHOP_TOWNS.includes(loc)) return [];
-    return SHOP_CHAINS.map(c => withPhoto(c, loc));
+    return SHOP_CHAINS.map(c => shopEntry(c, loc));
   }
-  return SHOP_TOWNS.map((town, i) => withPhoto(SHOP_CHAINS[i % SHOP_CHAINS.length], town));
+  return SHOP_TOWNS.map((town, i) => shopEntry(SHOP_CHAINS[i % SHOP_CHAINS.length], town));
 }
 
-// Built like the Morrisons and Special Requests cards above it — picture over
-// a title row — so the section reads as more of the same page.
+// Every chain in every town. The browsable section shows a spread so the page
+// isn't a hundred cards, but a search has to look at all of them — otherwise
+// searching a town returns only whichever chain the spread happened to pick.
+function allShops() {
+  const out = [];
+  SHOP_TOWNS.forEach(town => SHOP_CHAINS.forEach(c => out.push(shopEntry(c, town))));
+  return out;
+}
+
+// The pool a search draws from: a chosen town narrows it, exactly as it narrows
+// which businesses are shown.
+function searchableShops() {
+  return locationChosen() ? shopsForLocation() : allShops();
+}
+
+// The same card as a business in the directory — square photo, name, what they
+// sell, a button — because Shop now shows shops and services side by side and
+// two card languages on one page read as two half-finished pages. No heart: a
+// shop is a chain in a town, not a listing you can keep on your wall.
 function shopCardHtml(shop) {
+  const arg = escapeHtml(shop.name + '|' + shop.town);
+  const initials = shop.name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   return `
-    <div class="press shop-card local-shop" data-action="requestFromShop" data-arg="${escapeHtml(shop.name + '|' + shop.town)}">
-      <div class="local-shop-photo"${shop.photo ? ` style="background-image:url('${escapeHtml(shop.photo)}')"` : ''}></div>
-      <div style="padding:16px">
-        <div style="display:flex;justify-content:space-between;gap:10px">
-          <span style="font-size:15.5px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(shop.name)}</span>
-          <span style="opacity:0.4;flex:0 0 auto">›</span>
+    <div class="shop-card press biz-card" data-action="requestFromShop" data-arg="${arg}">
+      <div class="biz-card-photo"${shop.photo ? ` style="background-image:url('${escapeHtml(shop.photo)}')"` : ''}>
+        <span class="biz-card-logo is-initials">${escapeHtml(initials)}</span>
+      </div>
+      <div class="biz-card-body">
+        <div class="biz-card-name">${escapeHtml(shop.name)}</div>
+        <div class="biz-card-desc">${escapeHtml(shop.sells)}</div>
+        <div class="biz-card-town">${ICON_PIN} ${escapeHtml(shop.town)}</div>
+        <div class="biz-card-actions">
+          <button type="button" class="biz-card-action" data-action="requestFromShop" data-arg="${arg}">Send a courier</button>
         </div>
-        <div style="font-size:13px;opacity:0.6">${escapeHtml(shop.sells)}</div>
-        <div class="local-shop-town">${ICON_PIN} ${escapeHtml(shop.town)}</div>
       </div>
     </div>`;
 }
@@ -7278,24 +7310,42 @@ function groceryCategories() {
   return seen;
 }
 
+// The app's own two services — the Morrisons basket and Special Requests — in
+// the same card as everything else on the page. They keep their spot at the top
+// rather than a bigger card, since the page is now one card language throughout.
+function shopFeatureCardHtml({ action, imageKey, emoji, title, sub, cta }) {
+  const src = state.shopImages[imageKey] || SHOP_IMAGE_DEFAULTS[imageKey];
+  return `
+    <div class="shop-card press biz-card" data-action="${action}">
+      <div class="biz-card-photo"${src ? ` style="background-image:url('${src}')"` : ''}>
+        ${src ? '' : `<span class="biz-card-photo-empty">${emoji}</span>`}
+      </div>
+      <div class="biz-card-body">
+        <div class="biz-card-name">${escapeHtml(title)}</div>
+        <div class="biz-card-desc">${escapeHtml(sub)}</div>
+        <div class="biz-card-actions">
+          <button type="button" class="biz-card-action" data-action="${action}">${escapeHtml(cta)}</button>
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderShopperShop() {
   const searching = (state.searchQuery || '').trim().length > 0;
+  // Shop is the landing page, so its search reaches everything — businesses,
+  // bookable services and groceries — instead of the aisles alone.
   const body = searching
-    ? renderShopperSearchResults(state.searchQuery, { productsOnly: true })
+    ? renderShopperSearchResults(state.searchQuery)
     : `
-    <div class="press shop-card" data-action="goBrowse" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;cursor:pointer">
-      ${cardImageHtml('morrisons', '🛒')}
-      <div style="padding:16px">
-        <div style="display:flex;justify-content:space-between"><span style="font-size:15.5px;font-weight:700">Morrisons Daily</span><span style="opacity:0.4">›</span></div>
-        <div style="font-size:13px;opacity:0.6">Order in 12 min · £30 min basket</div>
-      </div>
-    </div>
-    <div class="press shop-card" data-action="goSpecialRequest" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;cursor:pointer">
-      ${cardImageHtml('local', '📍')}
-      <div style="padding:16px">
-        <div style="display:flex;justify-content:space-between"><span style="font-size:15.5px;font-weight:700">Special Requests</span><span style="opacity:0.4">›</span></div>
-        <div style="font-size:13px;opacity:0.6">Collection and delivery from any store</div>
-      </div>
+    <div class="biz-card-grid">
+      ${shopFeatureCardHtml({
+        action: 'goBrowse', imageKey: 'morrisons', emoji: '🛒',
+        title: 'Morrisons Daily', sub: 'Order in 12 min · £30 min basket', cta: 'Shop the aisles',
+      })}
+      ${shopFeatureCardHtml({
+        action: 'goSpecialRequest', imageKey: 'local', emoji: '📍',
+        title: 'Special Requests', sub: 'Collection and delivery from any store', cta: 'Make a request',
+      })}
     </div>
 
     <!-- Shops a courier can be sent to. Follows the location chip above: pick a
@@ -7313,26 +7363,38 @@ function renderShopperShop() {
           </div>` : '';
       }
       return `
-        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">
-          ${loc ? `Shops in ${escapeHtml(loc)}` : 'Local shops'}
+        <div class="page-band">
+          <span>${loc ? `Shops in ${escapeHtml(loc)}` : 'Local shops'}</span>
+          <span class="page-band-count">${shops.length}</span>
         </div>
-        ${shops.map(shopCardHtml).join('')}`;
+        <div class="biz-card-grid">${shops.map(shopCardHtml).join('')}</div>`;
     })()}
 
-    <!-- One doorway to the other half of the app, rather than listings mixed
-         in among the shopping. -->
-    <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#fff">
-      <div style="padding:4px 16px 14px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">
+    <!-- The directory itself, not a door to it. Shop is the landing page, so
+         everything the app has is reachable from here: shops above, then every
+         business, in the same cards and with the same Cards/Icons switch that
+         Services uses — one card language down the page. -->
+    ${(() => {
+      const all = (state.businesses || []).filter(isBusinessLive).filter(servesLocation)
+        .slice().sort(byTierThenRecency);
+      const groups = SERVICE_CATEGORIES
+        .map(cat => ({ cat, items: all.filter(b => b.category === cat.id) }))
+        .filter(g => g.items.length);
+      if (!groups.length) return '';
+      return `
+        <div class="page-band">
           <span>Local services</span>
-          <button type="button" data-action="goAllServices" style="background:none;border:none;padding:0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit">See all</button>
+          <span class="page-band-count">${all.length}</span>
         </div>
-        <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Book trusted businesses near you and pay in the same basket.</div>
-        <!-- The category grid that used to sit here is now the rail at the top
-             of the page, so this card just points into the directory. -->
-        <a href="${BUSINESS_PATH}" style="display:block;text-align:center;margin-top:12px;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>
-      </div>
-    </div>
+        <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">Book trusted businesses near you and pay in the same basket.</div>
+        ${servicesViewToggle()}
+        ${groups.map(g => `
+          <div>
+            <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;margin-bottom:11px">${g.cat.emoji} ${escapeHtml(g.cat.label)}</div>
+            ${businessListHtml(g.items)}
+          </div>`).join('')}
+        <a href="${BUSINESS_PATH}" style="display:block;text-align:center;padding:6px 0;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>`;
+    })()}
 
     <!-- Below the content, not among it. Only the socket is rendered here —
          mountAdUnit puts the unit inside it after the page is drawn. -->
