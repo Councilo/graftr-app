@@ -1064,6 +1064,30 @@ body::-webkit-scrollbar {
   stroke: #ffffff;
 }
 
+/* Ad socket. Sits below the page's own content with clear separation, and
+   takes no height at all until an ad actually fills it — a blocked or unfilled
+   unit leaves no gap. Spans the grid rather than sitting in a card column. */
+.ad-slot {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin-top: 6px;
+  /* The unit renders wider than the phone column if left alone, which makes
+     the whole page scroll sideways. Hold it to the column's width so it lays
+     itself out to fit rather than being cropped. */
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.ad-slot ins,
+.ad-slot iframe {
+  max-width: 100% !important;
+}
+
+.ad-slot:empty,
+.ad-slot > ins:not([data-adsbygoogle-status]) {
+  display: none;
+}
+
 /* Their face and their name for the wall. */
 .fav-header {
   display: flex;

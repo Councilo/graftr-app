@@ -7027,6 +7027,10 @@ function renderShopperShop() {
         <a href="${BUSINESS_PATH}" style="display:block;text-align:center;margin-top:12px;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>
       </div>
     </div>
+
+    <!-- Below the content, not among it. Only the socket is rendered here —
+         mountAdUnit puts the unit inside it after the page is drawn. -->
+    <div id="ad-multiplex" class="ad-slot"></div>
   `;
 
   return `<div class="page page-cards" style="padding:0 18px 24px">
@@ -9137,6 +9141,40 @@ const screenRenderers = {
   'business-dashboard': renderBusinessDashboard,
 };
 
+// The AdSense unit, kept as one long-lived element.
+//
+// Two things about this app make the pasted snippet not work as written: a
+// <script> set through innerHTML never runs, so the push that activates the
+// unit has to live in code; and render() rebuilds #app wholesale, so an <ins>
+// written into the template would be destroyed and recreated on every render,
+// asking for a fresh ad each time. So the element is created once, pushed
+// once, and moved into whichever socket is on the page now.
+const AD_CLIENT = 'ca-pub-8020577058635926';
+let adUnitNode = null;
+
+function mountAdUnit() {
+  const host = root.querySelector('#ad-multiplex');
+  if (!host) return;
+
+  if (!adUnitNode) {
+    adUnitNode = document.createElement('ins');
+    adUnitNode.className = 'adsbygoogle';
+    adUnitNode.style.display = 'block';
+    adUnitNode.setAttribute('data-ad-format', 'autorelaxed');
+    adUnitNode.setAttribute('data-ad-client', AD_CLIENT);
+    adUnitNode.setAttribute('data-ad-slot', '9901045905');
+    host.appendChild(adUnitNode);
+    // Queues whether or not the loader has arrived — it's an array until then.
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) { /* blocked, offline, or an ad blocker: leave the gap empty */ }
+    return;
+  }
+
+  // Already filled: move it rather than replace it, so no second request.
+  if (adUnitNode.parentElement !== host) host.appendChild(adUnitNode);
+}
+
 function render() {
   // Before anything is measured or drawn: it records the page being left, and
   // the back button below reads that to know where it goes.
@@ -9179,6 +9217,8 @@ function render() {
     ${loyaltyPicker}
     ${bookingPicker}
   `;
+
+  mountAdUnit();
 
   if (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) {
     if (scannerStartedForIndex !== state.scanningBarcodeIndex) {
