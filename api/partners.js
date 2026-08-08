@@ -8,8 +8,13 @@
 // finished cards travel back to the page.
 //
 // Set in Vercel → Settings → Environment Variables:
-//   IMPACT_ACCOUNT_SID   the account SID Impact shows with the token
-//   IMPACT_AUTH_TOKEN    the token secret itself
+//   IMPACT_ACCOUNT_SID   the account SID Impact shows alongside the token
+//   IMPACT_API_TOKEN     the token secret itself
+//
+// Both are required: Impact's API takes the SID as the Basic-auth username and
+// the token as the password, so a token on its own cannot authenticate.
+// Vercel only injects environment variables at build time, so a variable added
+// after the last deploy needs a redeploy before this function can see it.
 //
 // Neither belongs in this repo. Without them the endpoint reports that it isn't
 // configured and the page falls back to its built-in list, so deploying this
@@ -62,13 +67,25 @@ async function impactGet(path, sid, token) {
 }
 
 module.exports = async (req, res) => {
-  const sid = process.env.IMPACT_ACCOUNT_SID;
-  const token = process.env.IMPACT_AUTH_TOKEN;
+  // Impact authenticates with the account SID as the username and the token as
+  // the password, so both are needed. Several spellings accepted because the
+  // name in the dashboard doesn't match the name in the docs.
+  const sid = process.env.IMPACT_ACCOUNT_SID || process.env.IMPACT_ACCOUNT_ID || process.env.IMPACT_SID;
+  const token = process.env.IMPACT_API_TOKEN || process.env.IMPACT_AUTH_TOKEN || process.env.IMPACT_TOKEN;
 
-  // Not an error: the site is expected to work before the token exists.
+  // Not an error: the site is expected to work before the token exists. Names
+  // of what's missing come back so a half-finished setup can be diagnosed
+  // without guessing — names only, never values.
   if (!sid || !token) {
-    res.setHeader('Cache-Control', 'public, s-maxage=300');
-    res.status(200).json({ configured: false, partners: [] });
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(200).json({
+      configured: false,
+      partners: [],
+      missing: [
+        sid ? null : 'IMPACT_ACCOUNT_SID',
+        token ? null : 'IMPACT_API_TOKEN',
+      ].filter(Boolean),
+    });
     return;
   }
 
