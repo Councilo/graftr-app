@@ -4317,6 +4317,15 @@ const PARTNER_CARDS = [
   },
 ];
 
+// Filled by /api/partners when an Impact token is configured on the server.
+// Until then this stays empty and the built-in list above is what shows, so the
+// band never depends on the endpoint being there.
+let livePartners = null;
+
+function partnerCards() {
+  return (livePartners && livePartners.length) ? livePartners : PARTNER_CARDS;
+}
+
 function partnerCardHtml(p) {
   return `
     <div class="shop-card biz-card partner-card">
@@ -4336,14 +4345,29 @@ function partnerCardHtml(p) {
 }
 
 function shopPartnersSectionHtml() {
-  if (!PARTNER_CARDS.length) return '';
+  const cards = partnerCards();
+  if (!cards.length) return '';
   return `
     <div class="page-band">
       <span>Partner offers</span>
       <span class="page-band-count">Ad</span>
     </div>
     <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">Paid links — Vendaru earns a commission if you sign up. Not part of the directory.</div>
-    <div class="biz-card-grid">${PARTNER_CARDS.map(partnerCardHtml).join('')}</div>`;
+    <div class="biz-card-grid">${cards.map(partnerCardHtml).join('')}</div>`;
+}
+
+// Asked for once, after the first paint, and only ever additive: a failure or a
+// server with no token leaves the built-in cards exactly as they are.
+function loadPartners() {
+  fetch('/api/partners')
+    .then(r => (r.ok ? r.json() : null))
+    .then(d => {
+      const list = d && Array.isArray(d.partners) ? d.partners.filter(p => p && p.url && p.name) : [];
+      if (!list.length) return;
+      livePartners = list;
+      render();
+    })
+    .catch(() => { /* built-in cards stand */ });
 }
 
 // Flat rather than grouped by trade: a dozen firms across twelve categories
@@ -8262,6 +8286,9 @@ document.addEventListener('DOMContentLoaded', () => {
       render();
     })
     .catch(() => { /* no published file yet */ });
+
+  // After the first paint, never before it: the band already has cards to draw.
+  loadPartners();
 
   checkStripeRedirectResult();
 
