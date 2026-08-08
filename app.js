@@ -4878,6 +4878,10 @@ if (state.authUser) {
   applyRoute(window.location.pathname);
 }
 
+// Read-only now: nothing writes shop images since the upload control went, but
+// a browser that was used to set one in admin mode still holds it, and
+// shopFeatureCardHtml prefers it over the bundled default. Kept so those don't
+// silently revert.
 const SHOP_IMAGES_KEY = 'absolutely-shop-images';
 try {
   const saved = JSON.parse(localStorage.getItem(SHOP_IMAGES_KEY) || '{}');
@@ -4965,10 +4969,6 @@ function escapeHtml(str) {
   return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
 }
 
-function saveShopImages() {
-  localStorage.setItem(SHOP_IMAGES_KEY, JSON.stringify(state.shopImages));
-}
-
 function saveProductImages() {
   localStorage.setItem(PRODUCT_IMAGES_KEY, JSON.stringify(state.productImages));
 }
@@ -4981,26 +4981,6 @@ const SHOP_IMAGE_DEFAULTS = {
   offers: 'assets/shop/offers.png',
   local: 'assets/shop/local.png',
 };
-
-function cardImageHtml(key, placeholderEmoji) {
-  const src = state.shopImages[key] || SHOP_IMAGE_DEFAULTS[key];
-  const bgStyle = src ? `background-image:url('${src}');background-size:cover;background-position:center;` : '';
-  const placeholder = src ? '' : `<span style="font-size:32px;opacity:0.3">${placeholderEmoji}</span>`;
-
-  // Swapping the picture is a setup affordance. For everyone else this is the
-  // biggest part of a card that is itself a link, and a <label> wrapping a file
-  // input swallows the tap — you'd get a file picker instead of the page.
-  if (!ADMIN_MODE) {
-    return `<div class="card-image" style="${bgStyle}">${placeholder}</div>`;
-  }
-
-  return `
-  <label class="card-image" style="${bgStyle}">
-    ${placeholder}
-    <span class="upload-overlay">⤴ ${src ? 'Change image' : 'Add image'}</span>
-    <input type="file" accept="image/*" data-upload="${key}" />
-  </label>`;
-}
 
 function renderLogin() {
   const isCourier = state.authRole === 'courier';
@@ -11032,22 +11012,10 @@ document.addEventListener('DOMContentLoaded', () => {
     action(parsedArg);
   });
   root.addEventListener('change', (e) => {
-    // Swapping a shop picture or a product thumbnail is a setup job. The
-    // controls aren't rendered outside admin mode, but the handlers stayed
-    // live, so anything that got an input onto the page could still write over
-    // an image. Held shut here as well as hidden in the markup.
-    const cardInput = ADMIN_MODE && e.target.closest('input[type="file"][data-upload]');
-    if (cardInput && cardInput.files[0]) {
-      const key = cardInput.dataset.upload;
-      const reader = new FileReader();
-      reader.onload = () => {
-        state.shopImages[key] = reader.result;
-        saveShopImages();
-        render();
-      };
-      reader.readAsDataURL(cardInput.files[0]);
-      return;
-    }
+    // Swapping a product thumbnail is a setup job. The control isn't rendered
+    // outside admin mode, but the handler stayed live, so anything that got an
+    // input onto the page could still write over an image. Held shut here as
+    // well as hidden in the markup.
     const productInput = ADMIN_MODE && e.target.closest('input[type="file"][data-upload-product]');
     if (productInput && productInput.files[0]) {
       const id = productInput.dataset.uploadProduct;
