@@ -32,6 +32,26 @@ const TINTS = [
   [/ebay/i, '#0064D2'],
 ];
 
+// "Visit" is true of every link and tells nobody anything. Where the offer is
+// known, say what it actually is.
+const CTAS = [
+  [/shopify/i, 'Start free trial'],
+  [/tiktok/i, 'Get started'],
+  [/booking|expedia|hotel/i, 'Find a stay'],
+];
+
+function ctaFor(name) {
+  const hit = CTAS.find(([re]) => re.test(name || ''));
+  return hit ? hit[1] : 'Visit';
+}
+
+function shorten(text) {
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  if (t.length <= 96) return t;
+  // Break at a word so it doesn't end mid-syllable.
+  return t.slice(0, 95).replace(/\s+\S*$/, '') + '…';
+}
+
 function tintFor(name) {
   const hit = TINTS.find(([re]) => re.test(name || ''));
   return hit ? hit[1] : '#141414';
@@ -122,8 +142,8 @@ module.exports = async (req, res) => {
         return {
           id: pick(c, 'CampaignId', 'campaignId', 'Id') || name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           name,
-          blurb: pick(c, 'CampaignDescription', 'Description', 'TagLine'),
-          cta: 'Visit',
+          blurb: shorten(pick(c, 'CampaignDescription', 'Description', 'TagLine')),
+          cta: ctaFor(name),
           tint: tintFor(name),
           url,
         };
@@ -149,15 +169,6 @@ module.exports = async (req, res) => {
       partners: [],
       error: 'upstream',
       upstreamStatus: e.status || null,
-      // Shape, never content. An Impact media-partner SID begins IR; if this
-      // says otherwise, the SID is the wrong string and no amount of retrying
-      // the auth header will fix it. Lengths catch the other common cause — a
-      // half-copied value — without putting any of the value in the response.
-      shape: {
-        sidStartsIR: /^IR/i.test(sid),
-        sidLength: sid.length,
-        tokenLength: token.length,
-      },
     });
   }
 };

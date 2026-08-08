@@ -4322,8 +4322,18 @@ const PARTNER_CARDS = [
 // band never depends on the endpoint being there.
 let livePartners = null;
 
+// Merged, not replaced. Impact only knows about the programmes joined through
+// Impact — TikTok's is on another network entirely, so a straight swap to live
+// data would have quietly dropped it. Live entries win where the two name the
+// same brand, since those carry the real tracking link.
 function partnerCards() {
-  return (livePartners && livePartners.length) ? livePartners : PARTNER_CARDS;
+  const live = (livePartners || []).filter(p => p && p.url && p.name);
+  if (!live.length) return PARTNER_CARDS;
+  const named = new Set(live.map(p => p.name.toLowerCase()));
+  const builtInOnly = PARTNER_CARDS.filter(p => !named.has(p.name.toLowerCase())
+    // "TikTok for Business" against a live "TikTok" is the same brand twice.
+    && ![...named].some(n => n.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(n)));
+  return live.concat(builtInOnly);
 }
 
 function partnerCardHtml(p) {
