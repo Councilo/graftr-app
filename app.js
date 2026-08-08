@@ -4327,8 +4327,16 @@ const PARTNER_CARDS = [
     tint: '#1D4ED8',
     url: 'https://utraveluk.net/',
     kind: 'ours',
+    // Rendered at the head of New to Vendaru rather than in the partners band,
+    // which is why it isn't in partnerCards() below.
+    slot: 'new',
   },
 ];
+
+// Cards that belong somewhere other than the partners band.
+function slottedPartners(slot) {
+  return PARTNER_CARDS.filter(p => p.slot === slot);
+}
 
 // Filled by /api/partners when an Impact token is configured on the server.
 // Until then this stays empty and the built-in list above is what shows, so the
@@ -4340,10 +4348,11 @@ let livePartners = null;
 // data would have quietly dropped it. Live entries win where the two name the
 // same brand, since those carry the real tracking link.
 function partnerCards() {
+  const band = PARTNER_CARDS.filter(p => !p.slot);
   const live = (livePartners || []).filter(p => p && p.url && p.name);
-  if (!live.length) return PARTNER_CARDS;
+  if (!live.length) return band;
   const named = new Set(live.map(p => p.name.toLowerCase()));
-  const builtInOnly = PARTNER_CARDS.filter(p => !named.has(p.name.toLowerCase())
+  const builtInOnly = band.filter(p => !named.has(p.name.toLowerCase())
     // "TikTok for Business" against a live "TikTok" is the same brand twice.
     && ![...named].some(n => n.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(n)));
   return live.concat(builtInOnly);
@@ -4496,9 +4505,15 @@ function shopServicesSectionHtml() {
 
 function shopNewSectionHtml() {
   const fresh = newToVendaru();
+  // Ours, at the head of the band. It keeps its Ours tag here more than
+  // anywhere: sitting among businesses that really did join, an unmarked card
+  // would read as one of them.
+  const mine = slottedPartners('new').map(partnerCardHtml).join('');
+
   if (!fresh.length) {
     return `
       <div class="page-band"><span>New to Vendaru</span></div>
+      ${mine ? `<div class="biz-card-grid">${mine}</div>` : ''}
       <div class="shop-card" style="${SERVICE_CARD_SHELL}">
         <div style="padding:22px 16px;text-align:center">
           <div style="font-size:15px;font-weight:600;color:#141414">Nobody has joined yet</div>
@@ -4511,6 +4526,7 @@ function shopNewSectionHtml() {
       <span>New to Vendaru</span>
       <span class="page-band-count">${fresh.length}</span>
     </div>
+    ${mine ? `<div class="biz-card-grid">${mine}</div>` : ''}
     ${businessListHtml(fresh)}`;
 }
 
@@ -4539,7 +4555,7 @@ function renderShopperShop() {
     // Only when there are arrivals to show: the "nobody has joined yet" card
     // earns its place on the New to Vendaru button, but as the first thing on
     // the home page it would be an apology where the shop should be.
-    body = (newToVendaru().length ? shopNewSectionHtml() : '')
+    body = ((newToVendaru().length || slottedPartners('new').length) ? shopNewSectionHtml() : '')
       + shopPartnersSectionHtml()
       + shopServicesSectionHtml() + shopFeatureGridHtml()
       + shopShopsSectionHtml({ limit: 6 }) + shopLocalSectionHtml();
