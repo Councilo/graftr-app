@@ -1125,6 +1125,76 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+/* A shop a courier can be sent to. Same shell as the other cards on Shop. */
+.local-shop {
+  border: 1.5px solid rgba(20, 20, 20, 0.12);
+  border-radius: 16px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.local-shop-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+}
+
+/* Initials rather than a storefront photo: a stock picture captioned with a
+   named branch would claim something we can't stand behind. */
+.local-shop-mark {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 22%;
+  background: #141414;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.local-shop-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.local-shop-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #141414;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.local-shop-sells {
+  font-size: 12.5px;
+  color: #6b6b6b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.local-shop-town {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.local-shop-town svg {
+  flex: 0 0 auto;
+  opacity: 0.55;
+}
+
 /* Their face and their name for the wall. */
 .fav-header {
   display: flex;

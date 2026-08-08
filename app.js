@@ -6683,6 +6683,9 @@ const UK_CITY_COORDS = {
   Reading: [51.454, -0.978], 'Milton Keynes': [52.041, -0.759], Plymouth: [50.376, -4.143],
   'Stoke-on-Trent': [53.003, -2.180], Wolverhampton: [52.587, -2.129], Belfast: [54.597, -5.930],
   Bolton: [53.578, -2.429],
+  Bury: [53.593, -2.297], Radcliffe: [53.562, -2.327], Salford: [53.483, -2.290],
+  Rochdale: [53.616, -2.155], Oldham: [53.541, -2.118], Stockport: [53.408, -2.148],
+  Wigan: [53.545, -2.632], Altrincham: [53.387, -2.348],
 };
 
 const UK_CITIES = Object.keys(UK_CITY_COORDS).sort();
@@ -7023,6 +7026,59 @@ function renderBookingPickerModal() {
     </div>`;
 }
 
+// Shops a courier can be sent to, by town.
+//
+// Real chains, and named at town level only: no invented street addresses, and
+// no storefront photograph, because a stock picture captioned with a specific
+// branch would say something we don't know. Tapping one starts a special
+// request from that shop, which is what the app can actually honour — a
+// courier collecting, rather than a catalogue we don't have.
+const SHOP_TOWNS = [
+  'Manchester', 'Bolton', 'Bury', 'Radcliffe', 'Salford',
+  'Rochdale', 'Oldham', 'Stockport', 'Wigan', 'Altrincham',
+];
+
+const SHOP_CHAINS = [
+  { name: 'Co-op Food', sells: 'Everyday groceries & meal deals' },
+  { name: 'Tesco Express', sells: 'Groceries, bakery & household' },
+  { name: "Sainsbury's Local", sells: 'Groceries, chilled & ready meals' },
+  { name: 'Iceland', sells: 'Frozen food & family packs' },
+  { name: 'Farmfoods', sells: 'Frozen food & value groceries' },
+  { name: 'Greggs', sells: 'Bakery, hot food & coffee' },
+  { name: 'Boots', sells: 'Pharmacy, health & beauty' },
+  { name: 'Home Bargains', sells: 'Household, cleaning & toiletries' },
+  { name: 'B&M', sells: 'Home, garden & branded food' },
+  { name: 'Poundland', sells: 'Everyday essentials & basics' },
+];
+
+// A town's ten when one is chosen. With no town set it's a spread — one chain
+// per town — so the section shows the reach rather than a hundred cards.
+function shopsForLocation() {
+  const loc = locationChosen();
+  if (loc) {
+    if (!SHOP_TOWNS.includes(loc)) return [];
+    return SHOP_CHAINS.map(c => ({ ...c, town: loc }));
+  }
+  return SHOP_TOWNS.map((town, i) => ({ ...SHOP_CHAINS[i % SHOP_CHAINS.length], town }));
+}
+
+function shopCardHtml(shop) {
+  const initials = shop.name.replace(/[^A-Za-z ]/g, '').split(/\s+/)
+    .map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  return `
+    <div class="press shop-card local-shop" data-action="requestFromShop" data-arg="${escapeHtml(shop.name + '|' + shop.town)}">
+      <div class="local-shop-row">
+        <span class="local-shop-mark">${escapeHtml(initials)}</span>
+        <span class="local-shop-text">
+          <span class="local-shop-name">${escapeHtml(shop.name)}</span>
+          <span class="local-shop-sells">${escapeHtml(shop.sells)}</span>
+          <span class="local-shop-town">${ICON_PIN} ${escapeHtml(shop.town)}</span>
+        </span>
+        <span style="opacity:0.4;flex:0 0 auto">›</span>
+      </div>
+    </div>`;
+}
+
 // The aisles, in the order the browse page lists them.
 function groceryCategories() {
   const seen = [];
@@ -7049,6 +7105,27 @@ function renderShopperShop() {
         <div style="font-size:13px;opacity:0.6">Collection and delivery from any store</div>
       </div>
     </div>
+
+    <!-- Shops a courier can be sent to. Follows the location chip above: pick a
+         town and it's that town's ten. -->
+    ${(() => {
+      const shops = shopsForLocation();
+      const loc = locationChosen();
+      if (!shops.length) {
+        return loc ? `
+          <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px">
+            <div style="padding:16px">
+              <div style="font-size:15.5px;font-weight:700">No shops in ${escapeHtml(loc)} yet</div>
+              <div style="font-size:13px;opacity:0.6">Couriers cover Greater Manchester so far. Special Requests still works from any store.</div>
+            </div>
+          </div>` : '';
+      }
+      return `
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">
+          ${loc ? `Shops in ${escapeHtml(loc)}` : 'Local shops'}
+        </div>
+        ${shops.map(shopCardHtml).join('')}`;
+    })()}
 
     <!-- One doorway to the other half of the app, rather than listings mixed
          in among the shopping. -->
@@ -10462,6 +10539,13 @@ const actions = {
   newBasket: () => { state.basketCheckedOut = false; state.cart = {}; state.loyaltyFree = {}; render(); },
   emptyBasket: () => { state.cart = {}; state.loyaltyFree = {}; render(); },
   advanceTrack: () => { state.trackStep = Math.min(state.trackStep + 1, 3); render(); },
+  // A shop card starts the request with the store already filled in.
+  requestFromShop: (arg) => {
+    const [name, town] = String(arg).split('|');
+    state.specialRequest.storeLocation = town ? `${name}, ${town}` : name;
+    state.screen = 'shopper-special-request';
+    render();
+  },
   goSpecialRequest: (prefill) => {
     state.screen = 'shopper-special-request';
     if (prefill) state.specialRequest.productName = prefill;
