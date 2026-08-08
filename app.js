@@ -4366,7 +4366,8 @@ const SEED_BUSINESSES = [
       "https://images.unsplash.com/photo-1513623935135-818a83e3f165?auto=format&fit=crop&w=800&h=600&q=80&biz=93&s=4"
     ],
     "tier": "featured",
-    "billing": "monthly"
+    "billing": "monthly",
+    "createdAt": 1786093200000
   },
   {
     "id": "biz-memuriah-digital-memorials",
@@ -4404,7 +4405,8 @@ const SEED_BUSINESSES = [
       "https://images.unsplash.com/photo-1501386761578-edefc18b4470?auto=format&fit=crop&w=800&h=600&q=80&biz=94&s=4"
     ],
     "tier": "priority",
-    "billing": "monthly"
+    "billing": "monthly",
+    "createdAt": 1786179600000
   },
   {
     "id": "biz-the-hopton-wedding-event-planners",
