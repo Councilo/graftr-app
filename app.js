@@ -7021,10 +7021,23 @@ function renderShopperBusiness() {
             <div style="${SERVICE_SECTION_LABEL}">About</div>
             <!-- pre-line keeps the paragraph breaks the owner typed. -->
             <div style="font-size:13.5px;color:#141414;line-height:1.55;margin-top:6px;white-space:pre-line">${escapeHtml(b.about)}</div>
-            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;font-size:13px">
-              ${b.phone ? `<div style="color:#6b6b6b;display:flex;align-items:center;gap:4px">📞 <a href="tel:${escapeHtml(b.phone.replace(/\s+/g, ''))}" style="color:#6b6b6b;text-decoration:none">${escapeHtml(b.phone)}</a></div>` : ''}
-              ${b.websiteUrl ? `<div style="display:flex;align-items:center;gap:4px">🌐 <a href="${escapeHtml(b.websiteUrl)}" target="_blank" rel="noopener noreferrer" style="color:#141414;font-weight:600;text-decoration:underline">${escapeHtml(b.websiteUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a></div>` : ''}
-            </div>
+            <!-- The same two buttons as the card this page was opened from,
+                 built from the same class and the same icons so they can't
+                 drift apart. They were a line of coloured emoji with the
+                 number and address as text — the only pair of controls on the
+                 site not wearing the outlined pill. -->
+            ${(() => {
+              // Matching the card's fallback too: a listing with a domain but
+              // no full URL still gets a Website button.
+              const site = b.websiteUrl || (b.domain ? `https://${b.domain}` : '');
+              const tel = b.phone ? `tel:${String(b.phone).replace(/[^\d+]/g, '')}` : '';
+              if (!site && !tel) return '';
+              return `
+                <div class="biz-detail-actions">
+                  ${site ? `<a class="biz-card-action" href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">${ICON_GLOBE} Website</a>` : ''}
+                  ${tel ? `<a class="biz-card-action" href="${escapeHtml(tel)}">${ICON_PHONE} Call</a>` : ''}
+                </div>`;
+            })()}
           </div>
         </div>` : ''}
 

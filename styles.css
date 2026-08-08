@@ -889,6 +889,25 @@ body::-webkit-scrollbar {
   transform: scale(0.97);
 }
 
+/* The card's buttons, reused on the listing page under the description. They
+   size to their labels rather than splitting the row: a card is 300px wide and
+   wants them to fill it, but this page is as wide as the screen, where two
+   stretched pills read as a form rather than a pair of links. */
+.biz-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.biz-detail-actions .biz-card-action {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  padding: 9px 16px;
+}
+
 /* The brand mark, square, sitting on the photo where the badge used to be.
    Borderless — no tile, no plate. drop-shadow rather than box-shadow so it
    follows the logo's own shape and keeps it legible on a busy photo instead
