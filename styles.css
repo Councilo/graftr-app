@@ -1106,10 +1106,18 @@ body::-webkit-scrollbar {
   max-width: 100% !important;
 }
 
-/* Nothing served: collapse rather than leave a hole in the run. */
+/* Nothing served: collapse rather than leave a hole in the run. AdSense marks
+   a slot it has processed but couldn't fill as unfilled — without this the
+   card sits there blank, which is worse than not being there at all. */
 .ad-card:empty,
+.ad-card.is-unfilled,
 .ad-card > ins:not([data-adsbygoogle-status]) {
   display: none;
+}
+
+/* The ad sits in the middle of the card at whatever size it comes in. */
+.ad-card > ins {
+  width: 100%;
 }
 
 .ad-slot:empty,
@@ -1573,7 +1581,10 @@ body::-webkit-scrollbar {
 
   /* Square, and free to take its share of the row — the cap would otherwise
      hold it at 300 and leave the difference as gutters. */
-  .biz-card {
+  .biz-card,
+  /* The ad card takes the same shape as a listing card, or it reads as a hole
+     in the grid rather than one of the cards. */
+  .ad-card {
     aspect-ratio: 1 / 1;
     max-width: none;
   }
@@ -1592,6 +1603,9 @@ body::-webkit-scrollbar {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     justify-content: stretch;
     justify-items: stretch;
+    /* Each card keeps its own height: an ad that comes in taller than a square
+       shouldn't drag the cards beside it taller with it. */
+    align-items: start;
   }
 
   /* Six a row rather than thirteen tiny ones across a wide column. */

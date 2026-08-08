@@ -9212,12 +9212,25 @@ function adFeedSlotHtml(index) {
 // once, then moved into whichever socket carries that key now.
 const adNodes = new Map();
 
+// AdSense marks a slot it processed but couldn't fill as data-ad-status
+// "unfilled". Left alone that's a blank card sitting in the run, so the card
+// is told to stand down. Watched rather than polled: the status is set
+// whenever the ad resolves, which isn't on a schedule we can guess.
+function watchFill(host, ins) {
+  const sync = () => {
+    host.classList.toggle('is-unfilled', ins.getAttribute('data-ad-status') === 'unfilled');
+  };
+  sync();
+  new MutationObserver(sync).observe(ins, { attributes: true, attributeFilter: ['data-ad-status'] });
+}
+
 function mountAdInto(host, key, build) {
   let node = adNodes.get(key);
   if (!node) {
     node = build();
     adNodes.set(key, node);
     host.appendChild(node);
+    watchFill(host, node);
     // Queues whether or not the loader has arrived — it's an array until then.
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -9225,7 +9238,10 @@ function mountAdInto(host, key, build) {
     return;
   }
   // Already filled: move it rather than replace it, so no second request.
-  if (node.parentElement !== host) host.appendChild(node);
+  if (node.parentElement !== host) {
+    host.appendChild(node);
+    watchFill(host, node);
+  }
 }
 
 function mountAdUnit() {
