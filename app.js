@@ -4787,6 +4787,7 @@ const state = {
   openFavPicker: null,             // category whose chooser is open on the wall
   listTitle: loadListTitle(),      // what they've named their own wall
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
+  shopFilter: 'all',               // which part of Shop: see SHOP_FILTERS
   favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
   bookingDraft: null,              // { businessId, serviceId, dayOffset, slot }
@@ -7330,13 +7331,43 @@ function shopFeatureCardHtml({ action, imageKey, emoji, title, sub, cta }) {
     </div>`;
 }
 
-function renderShopperShop() {
-  const searching = (state.searchQuery || '').trim().length > 0;
-  // Shop is the landing page, so its search reaches everything — businesses,
-  // bookable services and groceries — instead of the aisles alone.
-  const body = searching
-    ? renderShopperSearchResults(state.searchQuery)
-    : `
+// The quick row across the top of Shop. Shop holds everything the app has, so
+// these say which part of it you want rather than how to draw it — the
+// Cards/Icons switch stays on Services, where it was asked for.
+const SHOP_FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'services', label: 'Services' },
+  { id: 'shops', label: 'Local businesses' },
+  { id: 'new', label: 'New to Vendaru' },
+];
+
+function shopFilter() {
+  return SHOP_FILTERS.some(f => f.id === state.shopFilter) ? state.shopFilter : 'all';
+}
+
+function shopFilterBarHtml() {
+  const on = shopFilter();
+  return `<div class="quick-rail slot-scroll">${SHOP_FILTERS.map(f => `
+    <button type="button" class="quick-btn${f.id === on ? ' is-on' : ''}"
+      data-action="setShopFilter" data-arg="${f.id}">${escapeHtml(f.label)}</button>`).join('')}</div>`;
+}
+
+// Businesses that have listed themselves, newest first. The seeded listings
+// carry no join date, so they are not "new" — this fills as real businesses
+// sign up rather than pretending they already have.
+function newToVendaru() {
+  return (state.businesses || []).filter(isBusinessLive).filter(servesLocation)
+    .filter(b => b.createdAt)
+    .slice()
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+}
+
+function listYourBusinessLinkHtml() {
+  return `<a href="${BUSINESS_PATH}" style="display:block;text-align:center;padding:6px 0;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>`;
+}
+
+function shopFeatureGridHtml() {
+  return `
     <div class="biz-card-grid">
       ${shopFeatureCardHtml({
         action: 'goBrowse', imageKey: 'morrisons', emoji: '🛒',
@@ -7346,61 +7377,94 @@ function renderShopperShop() {
         action: 'goSpecialRequest', imageKey: 'local', emoji: '📍',
         title: 'Special Requests', sub: 'Collection and delivery from any store', cta: 'Make a request',
       })}
+    </div>`;
+}
+
+// Shops a courier can be sent to. Follows the location chip above: pick a town
+// and it's that town's ten.
+function shopShopsSectionHtml() {
+  const shops = shopsForLocation();
+  const loc = locationChosen();
+  if (!shops.length) {
+    return loc ? `
+      <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px">
+        <div style="padding:16px">
+          <div style="font-size:15.5px;font-weight:700">No shops in ${escapeHtml(loc)} yet</div>
+          <div style="font-size:13px;opacity:0.6">Couriers cover Greater Manchester so far. Special Requests still works from any store.</div>
+        </div>
+      </div>` : '';
+  }
+  return `
+    <div class="page-band">
+      <span>${loc ? `Shops in ${escapeHtml(loc)}` : 'Local shops'}</span>
+      <span class="page-band-count">${shops.length}</span>
     </div>
+    <div class="biz-card-grid">${shops.map(shopCardHtml).join('')}</div>`;
+}
 
-    <!-- Shops a courier can be sent to. Follows the location chip above: pick a
-         town and it's that town's ten. -->
-    ${(() => {
-      const shops = shopsForLocation();
-      const loc = locationChosen();
-      if (!shops.length) {
-        return loc ? `
-          <div class="shop-card" style="border:1.5px solid rgba(20,20,20,0.12);border-radius:16px">
-            <div style="padding:16px">
-              <div style="font-size:15.5px;font-weight:700">No shops in ${escapeHtml(loc)} yet</div>
-              <div style="font-size:13px;opacity:0.6">Couriers cover Greater Manchester so far. Special Requests still works from any store.</div>
-            </div>
-          </div>` : '';
-      }
-      return `
-        <div class="page-band">
-          <span>${loc ? `Shops in ${escapeHtml(loc)}` : 'Local shops'}</span>
-          <span class="page-band-count">${shops.length}</span>
+// The directory itself, not a door to it: every business, in the same cards as
+// everything else on the page.
+function shopServicesSectionHtml() {
+  const all = (state.businesses || []).filter(isBusinessLive).filter(servesLocation)
+    .slice().sort(byTierThenRecency);
+  const groups = SERVICE_CATEGORIES
+    .map(cat => ({ cat, items: all.filter(b => b.category === cat.id) }))
+    .filter(g => g.items.length);
+  if (!groups.length) return '';
+  return `
+    <div class="page-band">
+      <span>Local services</span>
+      <span class="page-band-count">${all.length}</span>
+    </div>
+    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">Book trusted businesses near you and pay in the same basket.</div>
+    ${groups.map(g => `
+      <div>
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;margin-bottom:11px">${g.cat.emoji} ${escapeHtml(g.cat.label)}</div>
+        ${businessListHtml(g.items)}
+      </div>`).join('')}
+    ${listYourBusinessLinkHtml()}`;
+}
+
+function shopNewSectionHtml() {
+  const fresh = newToVendaru();
+  if (!fresh.length) {
+    return `
+      <div class="page-band"><span>New to Vendaru</span></div>
+      <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+        <div style="padding:22px 16px;text-align:center">
+          <div style="font-size:15px;font-weight:600;color:#141414">Nobody has joined yet</div>
+          <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Businesses that list themselves on Vendaru show up here first, newest at the top. Yours could be the one.</div>
+          <a href="${BUSINESS_PATH}" style="display:inline-block;background:#141414;color:#fff;text-decoration:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;margin-top:12px">List your business</a>
         </div>
-        <div class="biz-card-grid">${shops.map(shopCardHtml).join('')}</div>`;
-    })()}
+      </div>`;
+  }
+  return `
+    <div class="page-band">
+      <span>New to Vendaru</span>
+      <span class="page-band-count">${fresh.length}</span>
+    </div>
+    ${businessListHtml(fresh)}
+    ${listYourBusinessLinkHtml()}`;
+}
 
-    <!-- The directory itself, not a door to it. Shop is the landing page, so
-         everything the app has is reachable from here: shops above, then every
-         business, in the same cards and with the same Cards/Icons switch that
-         Services uses — one card language down the page. -->
-    ${(() => {
-      const all = (state.businesses || []).filter(isBusinessLive).filter(servesLocation)
-        .slice().sort(byTierThenRecency);
-      const groups = SERVICE_CATEGORIES
-        .map(cat => ({ cat, items: all.filter(b => b.category === cat.id) }))
-        .filter(g => g.items.length);
-      if (!groups.length) return '';
-      return `
-        <div class="page-band">
-          <span>Local services</span>
-          <span class="page-band-count">${all.length}</span>
-        </div>
-        <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">Book trusted businesses near you and pay in the same basket.</div>
-        ${servicesViewToggle()}
-        ${groups.map(g => `
-          <div>
-            <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;margin-bottom:11px">${g.cat.emoji} ${escapeHtml(g.cat.label)}</div>
-            ${businessListHtml(g.items)}
-          </div>`).join('')}
-        <a href="${BUSINESS_PATH}" style="display:block;text-align:center;padding:6px 0;font-size:13px;font-weight:500;color:#6b6b6b;text-decoration:underline;text-underline-offset:2px">List your business</a>`;
-    })()}
+function renderShopperShop() {
+  const searching = (state.searchQuery || '').trim().length > 0;
+  const filter = shopFilter();
 
-    <!-- Below the content, not among it. Only the socket is rendered here —
-         mountAdUnit puts the unit inside it after the page is drawn. -->
-    
-      
-  `;
+  // Shop is the landing page, so its search reaches everything — businesses,
+  // bookable services, shops and groceries — whichever part the row is set to.
+  let body;
+  if (searching) {
+    body = renderShopperSearchResults(state.searchQuery);
+  } else if (filter === 'services') {
+    body = shopServicesSectionHtml();
+  } else if (filter === 'shops') {
+    body = shopShopsSectionHtml();
+  } else if (filter === 'new') {
+    body = shopNewSectionHtml();
+  } else {
+    body = shopFeatureGridHtml() + shopShopsSectionHtml() + shopServicesSectionHtml();
+  }
 
   return `<div class="page page-cards" style="padding:0 18px 24px">
     <!-- Brand mark, centred. Same 200px width as the sign-in screen.
@@ -7411,16 +7475,21 @@ function renderShopperShop() {
     </div>
     <div style="font-size:15px;opacity:0.55;font-weight:600">Good afternoon</div>
     ${locationSearchBarHtml('shop-search-input')}
+    <!-- Which part of the app you're after. Above the aisles because it governs
+         everything below it, including whether the aisles are relevant. -->
+    ${shopFilterBarHtml()}
     <!-- Aisles, not trades. The service categories moved to Services, which is
          the whole of that side of the app. Scrolls sideways rather than
-         shrinking. -->
+         shrinking. Hidden on the two filters that have nothing to do with
+         groceries, where it would just be a rail you can't use. -->
+    ${(filter === 'all' || filter === 'shops') ? `
     <div class="cat-rail slot-scroll">
       ${groceryCategories().map(c => `
       <div class="cat-tile" data-action="goBrowseCategory" data-arg="${escapeHtml(c)}">
         <span class="cat-tile-icon">${CATEGORY_EMOJI[c] || '🛒'}</span>
         <span class="cat-tile-label">${escapeHtml(c)}</span>
       </div>`).join('')}
-    </div>
+    </div>` : ''}
     ${body}
   </div>`;
 }
@@ -10824,6 +10893,13 @@ const actions = {
   },
   setServicesView: (view) => {
     state.servicesView = view === 'icons' ? 'icons' : 'cards';
+    render();
+  },
+  // A search spans the whole app, so switching part clears it — otherwise the
+  // row looks like it did nothing while the results stay put.
+  setShopFilter: (id) => {
+    state.shopFilter = SHOP_FILTERS.some(f => f.id === id) ? id : 'all';
+    state.searchQuery = '';
     render();
   },
   toggleLocationPicker: () => {

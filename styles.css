@@ -1479,6 +1479,48 @@ body::-webkit-scrollbar {
   white-space: nowrap;
 }
 
+/* Which part of the app Shop is showing: All, Services, Local businesses, New
+   to Vendaru. Scrolls sideways rather than wrapping or shrinking the labels, so
+   adding another one later doesn't reflow the page. Same outlined-to-filled
+   treatment as the card buttons, so a pressed one reads as chosen. */
+.quick-rail {
+  display: flex;
+  gap: 8px;
+  margin: 12px -18px 2px;
+  padding: 2px 18px 4px;
+  overflow-x: auto;
+}
+
+.quick-btn {
+  flex: 0 0 auto;
+  padding: 8px 15px;
+  border: 1.5px solid rgba(20, 20, 20, 0.18);
+  border-radius: 20px;
+  background: #ffffff;
+  color: #141414;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.quick-btn:hover {
+  border-color: #141414;
+}
+
+.quick-btn.is-on {
+  background: #141414;
+  border-color: #141414;
+  color: #ffffff;
+}
+
+.quick-btn:active {
+  transform: scale(0.97);
+}
+
 /* Cards or icons — the only two ways to view the directory. */
 .view-toggle {
   display: inline-flex;
