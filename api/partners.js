@@ -149,6 +149,15 @@ module.exports = async (req, res) => {
       partners: [],
       error: 'upstream',
       upstreamStatus: e.status || null,
+      // Shape, never content. An Impact media-partner SID begins IR; if this
+      // says otherwise, the SID is the wrong string and no amount of retrying
+      // the auth header will fix it. Lengths catch the other common cause — a
+      // half-copied value — without putting any of the value in the response.
+      shape: {
+        sidStartsIR: /^IR/i.test(sid),
+        sidLength: sid.length,
+        tokenLength: token.length,
+      },
     });
   }
 };
