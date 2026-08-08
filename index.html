@@ -1,12 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<!-- Screens have nested URLs (/services/beauty), so document-relative paths
-     would resolve against that folder and 404. This pins every relative URL —
-     the tags below and the assets fetched from app.js — to the site root.
-     Skipped on file://, where "/" is the disk root and nothing would load.
-     Must run before the first element that carries a URL. -->
+<!-- Pin document-relative paths to root for SPA nested routes -->
 <script>
   if (location.protocol !== 'file:') {
     var b = document.createElement('base');
@@ -19,24 +15,172 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Vendaru</title>
+
+<!-- SEO Meta Tags -->
+<title>Vendaru | UK Business Directory, Local Services & Grocery Shopping</title>
+<meta name="description" content="Discover 100+ verified UK local businesses, certified tradespeople, estate agents, car repair, beauty salons, tutors & local grocery delivery on Vendaru. Compare prices & book local services across the UK.">
+<meta name="keywords" content="Vendaru, UK business directory, local tradesmen, plumber UK, electrician UK, estate agents UK, auto repair UK, groceries delivery UK, local services UK">
+<meta name="author" content="Vendaru UK">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://vendaru.com/" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vendaru.com/">
+<meta property="og:title" content="Vendaru | UK Business Directory, Local Services & Grocery Shopping">
+<meta property="og:description" content="Connect with verified UK tradespeople, local services, estate agents, auto repairs, and grocery stores with transparent pricing across London, Manchester, Birmingham & nationwide.">
+<meta property="og:image" content="https://vendaru.com/assets/brand/logo.svg">
+<meta property="og:site_name" content="Vendaru">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://vendaru.com/">
+<meta name="twitter:title" content="Vendaru | UK Business Directory & Local Marketplace">
+<meta name="twitter:description" content="Discover 100+ verified UK local businesses, tradespeople, auto repairs, beauty salons, and grocery stores.">
+<meta name="twitter:image" content="https://vendaru.com/assets/brand/logo.svg">
+
+<!-- Favicon & Styles -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f2c1d8'/%3E%3Ctext x='32' y='47' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='40' fill='%23ffffff' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Google AdSense Script -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8020577058635926" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="styles.css?v=99">
+
+<!-- Structured Data (JSON-LD) for Search Engines & AdSense Verification -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Vendaru",
+  "url": "https://vendaru.com/",
+  "description": "The UK's premier local business directory and instant shopping marketplace connecting consumers with verified trades, services, and local stores.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Vendaru UK",
+    "url": "https://vendaru.com/",
+    "logo": "https://vendaru.com/assets/brand/logo.svg"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://vendaru.com/shop?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<link rel="stylesheet" href="styles.css?v=101">
 </head>
 <body>
 <div class="frame-bg">
   <div class="phone">
-    <div id="app" style="height:100%;display:flex;flex-direction:column;background:#fff;font-family:-apple-system,system-ui,sans-serif;color:#141414"></div>
+    <div id="app" style="height:100%;display:flex;flex-direction:column;background:#fff;font-family:-apple-system,system-ui,sans-serif;color:#141414">
+      
+      <!-- Pre-rendered Semantic HTML for Crawlers, Search Engines & AdSense Compliance -->
+      <article style="padding:24px 20px;overflow-y:auto;line-height:1.6;color:#141414;font-family:'Inter',sans-serif">
+        <header style="display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;border-bottom:1px solid #eee">
+          <img src="assets/brand/logo.svg" alt="Vendaru UK Business Directory" width="160" style="height:auto" />
+          <nav style="font-size:13px;display:flex;gap:12px;font-weight:600">
+            <a href="/shop" style="color:#141414;text-decoration:none">Shop</a>
+            <a href="/services" style="color:#141414;text-decoration:none">Services</a>
+            <a href="/about.html" style="color:#141414;text-decoration:none">About</a>
+            <a href="/contact.html" style="color:#141414;text-decoration:none">Contact</a>
+          </nav>
+        </header>
+
+        <section style="margin-top:24px">
+          <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:12px;color:#141414">
+            Vendaru — UK Local Business Directory, Services &amp; Grocery Shopping Marketplace
+          </h1>
+          <p style="font-size:14.5px;color:#444;margin-bottom:20px">
+            Welcome to <strong>Vendaru</strong>, the United Kingdom's leading digital directory and local marketplace connecting UK consumers directly with over 100 verified independent businesses, certified trade professionals, professional services, local grocery stores, and essential service providers across the UK.
+          </p>
+
+          <h2 style="font-size:18px;font-weight:700;margin-top:28px;margin-bottom:10px">Explore Verified Local UK Service Categories</h2>
+          
+          <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px">
+            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
+              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🛠️ Verified Trades &amp; Home Improvements</h3>
+              <p style="font-size:13px;color:#555;margin:0">Find accredited UK plumbers, certified electricians, emergency gas engineers, roofers, joiners, plasterers, and general builders. View upfront pricing, portfolios, and contact details for top providers like Checkatrade, MyBuilder, Pimlico Plumbers, and Homeserve UK.</p>
+            </div>
+
+            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
+              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🏠 Real Estate &amp; Property Services</h3>
+              <p style="font-size:13px;color:#555;margin:0">Browse leading UK estate agencies, letting specialists, property valuation experts, and conveyancing firms. Access listings and consultation services from Purplebricks, Savills, Foxtons, Yopa, and Connells.</p>
+            </div>
+
+            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
+              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🚗 Automotive Repair, MOT &amp; Servicing</h3>
+              <p style="font-size:13px;color:#555;margin:0">Book MOT tests, full car servicing, tyre replacements, bodywork repair, and breakdown assistance from nationwide autocentres including Kwik Fit, Halfords Autocentres, RAC, The AA, and Autoglass UK.</p>
+            </div>
+
+            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
+              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">💇 Hair Salons, Barbers &amp; Beauty Clinics</h3>
+              <p style="font-size:13px;color:#555;margin:0">Discover top-rated UK hair salons, barbershops, nail studios, skincare clinics, and spa treatments near you. Featuring Rush Hair &amp; Beauty, Toni &amp; Guy, SK:N Clinics, and Townhouse Nails.</p>
+            </div>
+
+            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
+              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🏋️ Health, Fitness &amp; Dental Care</h3>
+              <p style="font-size:13px;color:#555;margin:0">Locate certified dental surgeries, opticians, gyms, and health clubs across the UK, including Bupa Dental Care, PureGym, Specsavers, Nuffield Health, and David Lloyd Clubs.</p>
+            </div>
+
+            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
+              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🧹 Professional Domestic &amp; Commercial Cleaning</h3>
+              <p style="font-size:13px;color:#555;margin:0">Book vetted house cleaners, end-of-tenancy specialists, carpet cleaning, oven cleaning, and window cleaners from Fantastic Services, MOLLY MAID, and Ovenu.</p>
+            </div>
+
+            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
+              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🐾 Pet Care, Vets &amp; Professional Dog Walking</h3>
+              <p style="font-size:13px;color:#555;margin:0">Connect with reliable local dog walkers, pet sitters, veterinary hospitals, and pet grooming salons including Pets at Home Groom Room, Vets4Pets, Barking Mad, and Rover UK.</p>
+            </div>
+
+            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
+              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">📚 Academic Tutors &amp; Approved Driving Schools</h3>
+              <p style="font-size:13px;color:#555;margin:0">Find experienced UK tutors for primary, GCSE, A-Level, and university subjects, alongside DVSA certified driving instructors from RED Driving School, BSM, and Kumon UK.</p>
+            </div>
+          </div>
+
+          <h2 style="font-size:18px;font-weight:700;margin-top:28px;margin-bottom:10px">On-Demand Local Groceries &amp; Independent Store Shopping</h2>
+          <p style="font-size:13.5px;color:#444">
+            In addition to professional local services, Vendaru enables customers to shop fresh groceries, bakery goods, dairy essentials, snacks, beverages, and household supplies from local UK supermarkets and independent high-street stores with convenient local delivery options.
+          </p>
+
+          <h2 style="font-size:18px;font-weight:700;margin-top:28px;margin-bottom:10px">Nationwide UK Coverage</h2>
+          <p style="font-size:13.5px;color:#444">
+            Vendaru connects consumers with local businesses across all major UK cities, including London, Manchester, Birmingham, Leeds, Liverpool, Sheffield, Bristol, Edinburgh, Glasgow, Cardiff, Newcastle, Nottingham, Leicester, Southampton, Portsmouth, Brighton, Oxford, Cambridge, York, Norwich, Exeter, Bath, Derby, Coventry, Reading, Milton Keynes, Plymouth, Stoke-on-Trent, Wolverhampton, and Belfast.
+          </p>
+
+          <h2 style="font-size:18px;font-weight:700;margin-top:28px;margin-bottom:10px">Why Choose Vendaru?</h2>
+          <ul style="font-size:13.5px;color:#444;padding-left:20px;margin-bottom:24px">
+            <li><strong>Verified UK Companies:</strong> Every business listing features real registered head office addresses, verified contact numbers, and official web links.</li>
+            <li><strong>Interactive Price Range Filtering:</strong> Easily search services by price ranges (Free Quotes, Under £50, £50–£150, £150+) to fit your budget.</li>
+            <li><strong>Location-Aware Search:</strong> Auto-detect your current GPS location or filter listings by your preferred UK city.</li>
+            <li><strong>Direct Contact &amp; Transparent Booking:</strong> Call, visit official websites, or request quotes directly with zero middleman markups.</li>
+          </ul>
+        </section>
+
+        <footer style="margin-top:36px;padding-top:20px;border-top:1px solid #eee;font-size:12.5px;color:#666;text-align:center">
+          <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap">
+            <a href="/about.html" style="color:#141414;text-decoration:none;font-weight:600">About Us</a>
+            <a href="/privacy.html" style="color:#141414;text-decoration:none;font-weight:600">Privacy Policy</a>
+            <a href="/terms.html" style="color:#141414;text-decoration:none;font-weight:600">Terms of Service</a>
+            <a href="/contact.html" style="color:#141414;text-decoration:none;font-weight:600">Contact Us</a>
+            <a href="/ads.txt" style="color:#141414;text-decoration:none;font-weight:600">ads.txt</a>
+          </div>
+          <p style="margin:4px 0">&copy; 2026 Vendaru UK Ltd. All rights reserved. The UK's premier business directory &amp; local shopping marketplace.</p>
+        </footer>
+      </article>
+
+    </div>
   </div>
 </div>
+
+<!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="app.js?v=99"></script>
+<script src="app.js?v=101"></script>
 </body>
 </html>

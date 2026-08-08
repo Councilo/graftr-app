@@ -6237,7 +6237,8 @@ function renderShopperFavourites() {
           : emptySlot(s.cat, s.choices)).join('')}
       </div>
 
-      ${adSlotHtml()}
+      
+      
     </div>`;
 }
 
@@ -6549,6 +6550,32 @@ function releaseDueScheduledOrders() {
   return changed;
 }
 
+// AdSense Ad Slot and Footer Policy Links Helper
+function adSlotHtml() {
+  return `
+    <div style="margin:16px 0;text-align:center;min-height:90px;background:#fafafa;border-radius:12px;border:1px dashed rgba(20,20,20,0.12);display:flex;align-items:center;justify-content:center;overflow:hidden">
+      <ins class="adsbygoogle"
+           style="display:block;width:100%"
+           data-ad-client="ca-pub-8020577058635926"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+    </div>`;
+}
+
+function vendaruFooterHtml() {
+  return `
+    <footer style="margin-top:28px;padding:20px 0 16px;border-top:1px solid rgba(20,20,20,0.08);text-align:center;font-size:12px;color:#6b6b6b">
+      <div style="display:flex;justify-content:center;gap:14px;margin-bottom:10px;flex-wrap:wrap;font-weight:600">
+        <a href="/about.html" style="color:#141414;text-decoration:none">About Us</a>
+        <a href="/privacy.html" style="color:#141414;text-decoration:none">Privacy Policy</a>
+        <a href="/terms.html" style="color:#141414;text-decoration:none">Terms of Service</a>
+        <a href="/contact.html" style="color:#141414;text-decoration:none">Contact Us</a>
+        <a href="/ads.txt" style="color:#141414;text-decoration:none">ads.txt</a>
+      </div>
+      <div>&copy; 2026 Vendaru UK Directory. Verified Local Services &amp; Shopping.</div>
+    </footer>`;
+}
+
 // Lives inside the checkout sheet, next to the address it's being delivered to.
 // Takes the sheet's own card styles so it can't drift from the cards around it.
 function renderCheckoutDeliveryCard(cardShell, sectionLabel) {
@@ -6814,7 +6841,8 @@ function renderShopperAllServices() {
         ${servicesViewToggle()}
 
         ${renderShopperSearchResults(state.searchQuery, { businessesOnly: true })}
-        ${adSlotHtml()}
+        
+      
       </div>`;
   }
 
@@ -6849,7 +6877,9 @@ function renderShopperAllServices() {
                <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Local businesses will appear here once they've published a page.</div>
              </div>
            </div>`}
-      ${adSlotHtml()}
+      
+      
+      ${vendaruFooterHtml()}
     </div>`;
 }
 
@@ -6875,7 +6905,9 @@ function renderShopperServices() {
                <a href="${BUSINESS_PATH}" style="display:inline-block;background:#141414;color:#fff;text-decoration:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;margin-top:12px">List your business</a>
              </div>
            </div>`}
-      ${adSlotHtml()}
+      
+      
+      ${vendaruFooterHtml()}
     </div>`;
 }
 
@@ -6974,7 +7006,8 @@ function renderShopperBusiness() {
         </div>
       </div>
 
-      ${adSlotHtml()}
+      
+      
     </div>`;
 }
 
@@ -7276,7 +7309,8 @@ function renderShopperShop() {
 
     <!-- Below the content, not among it. Only the socket is rendered here —
          mountAdUnit puts the unit inside it after the page is drawn. -->
-    ${adSlotHtml()}
+    
+      
   `;
 
   return `<div class="page page-cards" style="padding:0 18px 24px">
