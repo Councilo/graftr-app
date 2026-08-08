@@ -6236,6 +6236,8 @@ function renderShopperFavourites() {
              </div>`
           : emptySlot(s.cat, s.choices)).join('')}
       </div>
+
+      ${adSlotHtml()}
     </div>`;
 }
 
@@ -6779,6 +6781,7 @@ function renderShopperAllServices() {
         ${servicesViewToggle()}
 
         ${renderShopperSearchResults(state.searchQuery, { businessesOnly: true })}
+        ${adSlotHtml()}
       </div>`;
   }
 
@@ -6813,6 +6816,7 @@ function renderShopperAllServices() {
                <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Local businesses will appear here once they've published a page.</div>
              </div>
            </div>`}
+      ${adSlotHtml()}
     </div>`;
 }
 
@@ -6838,6 +6842,7 @@ function renderShopperServices() {
                <a href="${BUSINESS_PATH}" style="display:inline-block;background:#141414;color:#fff;text-decoration:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;margin-top:12px">List your business</a>
              </div>
            </div>`}
+      ${adSlotHtml()}
     </div>`;
 }
 
@@ -6935,6 +6940,8 @@ function renderShopperBusiness() {
           ${galleryGridHtml(b.gallery)}
         </div>
       </div>
+
+      ${adSlotHtml()}
     </div>`;
 }
 
@@ -7030,7 +7037,7 @@ function renderShopperShop() {
 
     <!-- Below the content, not among it. Only the socket is rendered here —
          mountAdUnit puts the unit inside it after the page is drawn. -->
-    <div id="ad-multiplex" class="ad-slot"></div>
+    ${adSlotHtml()}
   `;
 
   return `<div class="page page-cards" style="padding:0 18px 24px">
@@ -9150,6 +9157,12 @@ const screenRenderers = {
 // asking for a fresh ad each time. So the element is created once, pushed
 // once, and moved into whichever socket is on the page now.
 const AD_CLIENT = 'ca-pub-8020577058635926';
+
+// Dropped at the foot of a content page. Only ever one on screen — a single
+// screen renders at a time — so the one unit moves to whichever is showing.
+function adSlotHtml() {
+  return '<div id="ad-multiplex" class="ad-slot"></div>';
+}
 let adUnitNode = null;
 
 function mountAdUnit() {
