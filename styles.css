@@ -1141,6 +1141,14 @@ body::-webkit-scrollbar {
   text-transform: uppercase;
 }
 
+/* Our own sites. Outlined rather than filled, so Ad stays the louder of the
+   two — the one that has to be noticed is the one someone pays us for. */
+.partner-tag.is-ours {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  color: #ffffff;
+}
+
 /* Which town's branch this is. Sits where a listing's rating sits, on the left
    because it's a fact about the shop rather than a score. */
 .biz-card-town {

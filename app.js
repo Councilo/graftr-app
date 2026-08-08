@@ -4315,6 +4315,19 @@ const PARTNER_CARDS = [
     tint: '#010101',
     url: 'https://getstartedtiktok.partnerlinks.io/00n0j6kr0ids',
   },
+  {
+    // Ours, so it is marked as ours rather than as an ad: nobody pays us for
+    // this click, and calling it an ad would be as inaccurate as leaving the
+    // affiliate cards unmarked. Brand blue lifted from the UTravel design
+    // system so the tile is its colour rather than a guess at it.
+    id: 'utravel',
+    name: 'UTravel',
+    blurb: 'Plan smarter trips around your route, budget and comfort',
+    cta: 'Plan a trip',
+    tint: '#1D4ED8',
+    url: 'https://utraveluk.net/',
+    kind: 'ours',
+  },
 ];
 
 // Filled by /api/partners when an Impact token is configured on the server.
@@ -4337,18 +4350,23 @@ function partnerCards() {
 }
 
 function partnerCardHtml(p) {
+  // Paid placements carry rel="sponsored" and say Ad. Our own sites are neither
+  // — a nofollow on them would be telling search engines we don't vouch for our
+  // own work — so they say Ours and link normally.
+  const ours = p.kind === 'ours';
+  const rel = ours ? 'noopener noreferrer' : 'sponsored nofollow noopener noreferrer';
   return `
     <div class="shop-card biz-card partner-card">
       <div class="biz-card-photo" style="background:${p.tint}">
         <span class="partner-mark">${escapeHtml(p.name)}</span>
-        <span class="partner-tag">Ad</span>
+        <span class="partner-tag${ours ? ' is-ours' : ''}">${ours ? 'Ours' : 'Ad'}</span>
       </div>
       <div class="biz-card-body">
         <div class="biz-card-name">${escapeHtml(p.name)}</div>
         <div class="biz-card-desc">${escapeHtml(p.blurb)}</div>
         <div class="biz-card-actions">
           <a class="biz-card-action" href="${escapeHtml(p.url)}"
-             target="_blank" rel="sponsored nofollow noopener noreferrer">${escapeHtml(p.cta)}</a>
+             target="_blank" rel="${rel}">${escapeHtml(p.cta)}</a>
         </div>
       </div>
     </div>`;
@@ -4362,7 +4380,7 @@ function shopPartnersSectionHtml() {
       <span>Partner offers</span>
       <span class="page-band-count">Ad</span>
     </div>
-    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">Paid links — Vendaru earns a commission if you sign up. Not part of the directory.</div>
+    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">Marked <strong>Ad</strong> are paid links — Vendaru earns a commission if you sign up. Marked <strong>Ours</strong> are our own sites. Neither is part of the directory.</div>
     <div class="biz-card-grid">${cards.map(partnerCardHtml).join('')}</div>`;
 }
 
