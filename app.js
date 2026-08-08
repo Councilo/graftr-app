@@ -773,7 +773,7 @@ function applyPlan(pending) {
   b.tier = pending.tier;
   b.billing = pending.billing;
   b.subscribedAt = Date.now();
-  saveBusinesses();
+  saveBusinesses(b);
   const t = tierById(pending.tier);
   state.businessNotice = {
     tone: 'ok',
@@ -4628,7 +4628,13 @@ function loadBusinesses() {
   return SEED_BUSINESSES.map(b => ({ ...b }));
 }
 
-function saveBusinesses() {
+// `touched` is the listing this call is saving. It gets a flag, because
+// assets/businesses.json is fetched on every load and its entries replace the
+// ones held here — without the flag an operator's new photo lasted until the
+// next page load and then quietly reverted to the published one, which reads
+// as the change never having saved at all.
+function saveBusinesses(touched) {
+  if (touched) touched.locallyEdited = true;
   try { localStorage.setItem(BUSINESSES_KEY, JSON.stringify(state.businesses)); } catch (e) { /* ignore */ }
 }
 
@@ -7504,11 +7510,16 @@ function renderShopperShop() {
   } else if (filter === 'new') {
     body = shopNewSectionHtml();
   } else {
-    // Services at the top: it's the half of the app that pays for itself, and
-    // the groceries have the aisle rail and their own tab already. Then the
-    // shops, the independents, and whoever joined most recently.
-    body = shopServicesSectionHtml() + shopFeatureGridHtml() + shopShopsSectionHtml()
-      + shopLocalSectionHtml() + shopNewSectionHtml();
+    // New arrivals first, then services. Last it sat 13,000px down a page of a
+    // hundred cards, which is the same as not being there — and a section
+    // whose whole point is "look who just joined" is worth nothing at the
+    // bottom. It's one row, so services still start near the top.
+    // Only when there are arrivals to show: the "nobody has joined yet" card
+    // earns its place on the New to Vendaru button, but as the first thing on
+    // the home page it would be an apology where the shop should be.
+    body = (newToVendaru().length ? shopNewSectionHtml() : '')
+      + shopServicesSectionHtml() + shopFeatureGridHtml()
+      + shopShopsSectionHtml() + shopLocalSectionHtml();
   }
   if (!searching) body += listYourBusinessLinkHtml();
 
@@ -10433,7 +10444,7 @@ const actions = {
   createBusiness: () => {
     const fresh = blankBusiness();
     state.businesses.unshift(fresh);
-    saveBusinesses();
+    saveBusinesses(fresh);
     state.businessTab = 'page';
     state.businessEditor = null;
     if (isAdmin()) state.adminEditingId = fresh.id;   // edit the new one straight away
@@ -10501,7 +10512,7 @@ const actions = {
     mine.tier = null;
     mine.billing = null;
     mine.subscribedAt = null;
-    saveBusinesses();
+    saveBusinesses(mine);
     state.businessNotice = { tone: 'warn', text: 'Subscription cancelled. Your listing drops back to a basic category card.' };
     render();
   },
@@ -10538,7 +10549,7 @@ const actions = {
       state.businessNotice = { tone: 'ok', text: 'Changes saved — your page has been updated.' };
     }
 
-    saveBusinesses();
+    saveBusinesses(mine);
     render();
   },
   dismissBusinessNotice: () => { state.businessNotice = null; render(); },
@@ -10555,7 +10566,11 @@ const actions = {
   // and committing that file is what makes them visible to every visitor.
   // Retire this along with isAdmin once every business holds its own account.
   exportBusinesses: () => {
-    const payload = (state.businesses || []).filter(isBusinessLive).map(b => ({ ...b }));
+    const payload = (state.businesses || []).filter(isBusinessLive).map(b => {
+      const copy = { ...b };
+      delete copy.locallyEdited;   // bookkeeping for this browser, not for the repo
+      return copy;
+    });
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -10577,6 +10592,10 @@ const actions = {
     const mine = myBusiness();
     if (!mine) return;
     state.businesses = state.businesses.filter(b => b.id !== mine.id);
+    // Nothing left to flag as edited. Note that deleting a listing that is in
+    // assets/businesses.json only holds until the next load, when the fetch
+    // adds it back — undoing that needs a record of what was deleted, which
+    // this doesn't keep yet.
     saveBusinesses();
     state.confirmingBusinessDelete = false;
     state.businessEditor = null;
@@ -10591,14 +10610,14 @@ const actions = {
       id: 's' + Date.now().toString(36),
       name: '', description: '', price: 0, durationMins: 60,
     });
-    saveBusinesses();
+    saveBusinesses(mine);
     render();
   },
   removeService: (serviceId) => {
     const mine = myBusiness();
     if (!mine) return;
     mine.services = (mine.services || []).filter(s => s.id !== String(serviceId));
-    saveBusinesses();
+    saveBusinesses(mine);
     render();
   },
   completeBooking: (id) => {
@@ -11081,7 +11100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = () => {
           mine.logoSrc = reader.result;
           if (state.businessEditor) state.businessEditor.logoSrc = reader.result;
-          saveBusinesses();
+          saveBusinesses(mine);
           render();
         };
         reader.readAsDataURL(bizLogoInput.files[0]);
@@ -11096,7 +11115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = () => {
           mine.coverSrc = reader.result;
           if (state.businessEditor) state.businessEditor.coverSrc = reader.result;
-          saveBusinesses();
+          saveBusinesses(mine);
           render();
         };
         reader.readAsDataURL(bizCoverInput.files[0]);
@@ -11114,7 +11133,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // Pad so an upload into slot 3 doesn't collapse into slot 0.
           while (mine.gallery.length < 4) mine.gallery.push(null);
           mine.gallery[slot] = reader.result;
-          saveBusinesses();
+          saveBusinesses(mine);
           render();
         };
         reader.readAsDataURL(galleryInput.files[0]);
@@ -11193,7 +11212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         svc[field] = (field === 'price' || field === 'durationMins')
           ? (el.value === '' ? 0 : Number(el.value))
           : el.value;
-        saveBusinesses();
+        saveBusinesses(mine);
       }
     } else {
       const m = /^specialRequest\.(\w+)$/.exec(path);
@@ -11239,7 +11258,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // it hasn't been deployed yet.
       const published = new Map(list.filter(b => b && b.id).map(b => [b.id, b]));
       state.businesses = state.businesses
-        .map(b => published.get(b.id) || b)
+        // Published wins, except over a listing edited in this browser — that
+        // work is unsaved-to-the-repo, not stale, and overwriting it loses it.
+        .map(b => (b.locallyEdited ? b : (published.get(b.id) || b)))
         .concat(list.filter(b => b && b.id && !state.businesses.some(x => x.id === b.id)));
       // A /listing/<id> deep link is resolved before this file arrives, so a
       // business that only exists here would have fallen back to Shop. Now that
