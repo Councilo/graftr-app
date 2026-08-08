@@ -4688,16 +4688,30 @@ function featuredBusinesses(limit) {
     .slice(0, limit || 6);
 }
 
-// SETUP ONLY. Lets one operator create and edit every listing from /business
-// while the accounts are being built, rather than one listing per sign-in.
-// Set to false (or delete this and the admin bar) to hand each business its
-// own account and nothing else.
-const ADMIN_MODE = false;
+// Lets one operator create and edit every listing from /business — picking any
+// of them and changing its logo, cover, work photos and details — rather than
+// one listing per sign-in.
+//
+// Tied to an account rather than a build flag, so it can stay on without every
+// visitor getting the editing controls. It is not a security boundary and can't
+// be one: there is no server here, so the check runs inside code the visitor has
+// already downloaded and anyone determined can set the flag on themselves.
+//
+// What actually holds is further down. Editing only ever touches this browser's
+// own copy of the listings; a change reaches other people when businesses.json
+// is exported and committed. So a spoofed admin can rearrange their own screen
+// and nobody else's, which is why an allowlist is enough here.
+const ADMIN_EMAILS = ['hello@pixcision.co.uk'];
+
+function isAdmin() {
+  const email = state.authUser && state.authUser.email;
+  return !!email && ADMIN_EMAILS.indexOf(String(email).trim().toLowerCase()) !== -1;
+}
 
 // The listing owned by whoever is signed in on /business, if they've made one.
 // In admin mode, whichever listing the operator has selected instead.
 function myBusiness() {
-  if (ADMIN_MODE && state.adminEditingId) {
+  if (isAdmin() && state.adminEditingId) {
     const picked = businessById(state.adminEditingId);
     if (picked) return picked;
   }
@@ -7545,8 +7559,8 @@ function productThumb(p) {
   const bgStyle = src ? `background-image:url('${src}');background-size:cover;background-position:center;` : '';
   const placeholder = src ? '' : `<span style="font-size:18px">${emoji}</span>`;
 
-  // Same as the card image: only an upload target while setting the shop up.
-  if (!ADMIN_MODE) {
+  // Only an upload target for an operator setting the shop up.
+  if (!isAdmin()) {
     return `<span class="product-thumb" style="${bgStyle}">${placeholder}</span>`;
   }
 
@@ -8450,7 +8464,7 @@ function renderShopperTabs() {
     <div class="press tabbar-brand" data-action="goShop" title="Vendaru home"><img src="assets/brand/logo.svg" alt="Vendaru" /></div>
     <div class="press floating-tab" data-action="goShop" style="${tabStyle('shopper-shop')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M5 7h10l-1 10H6L5 7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 7V5.5a2.5 2.5 0 015 0V7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-      All
+      Shop
     </div>
     <div class="press floating-tab" data-action="goAllServices" style="${tabStyle('shopper-all-services')}">
       <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2.5" y="2.5" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
@@ -9286,8 +9300,8 @@ function renderBusinessDashboard() {
   const label = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
   const mine = myBusiness();
 
-  // SETUP ONLY — remove with ADMIN_MODE.
-  const adminBar = ADMIN_MODE ? `
+  // Operators only — see isAdmin.
+  const adminBar = isAdmin() ? `
     <div class="shop-card" style="${shell}">
       <div style="padding:4px 16px 14px">
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${label}">
@@ -10422,7 +10436,7 @@ const actions = {
     saveBusinesses();
     state.businessTab = 'page';
     state.businessEditor = null;
-    if (ADMIN_MODE) state.adminEditingId = fresh.id;   // edit the new one straight away
+    if (isAdmin()) state.adminEditingId = fresh.id;   // edit the new one straight away
     render();
   },
   // --- plans ---------------------------------------------------------------
@@ -10539,7 +10553,7 @@ const actions = {
   // --- setup-only: publishing listings to everyone -------------------------
   // Listings live in this browser. Downloading them as assets/businesses.json
   // and committing that file is what makes them visible to every visitor.
-  // Delete ADMIN_MODE (and this action) once the accounts are set up.
+  // Retire this along with isAdmin once every business holds its own account.
   exportBusinesses: () => {
     const payload = (state.businesses || []).filter(isBusinessLive).map(b => ({ ...b }));
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -11020,11 +11034,11 @@ document.addEventListener('DOMContentLoaded', () => {
     action(parsedArg);
   });
   root.addEventListener('change', (e) => {
-    // Swapping a product thumbnail is a setup job. The control isn't rendered
-    // outside admin mode, but the handler stayed live, so anything that got an
-    // input onto the page could still write over an image. Held shut here as
+    // Swapping a product thumbnail is an operator job. The control isn't
+    // rendered for anyone else, but the handler stays live, so anything that got
+    // an input onto the page could still write over an image. Held shut here as
     // well as hidden in the markup.
-    const productInput = ADMIN_MODE && e.target.closest('input[type="file"][data-upload-product]');
+    const productInput = isAdmin() && e.target.closest('input[type="file"][data-upload-product]');
     if (productInput && productInput.files[0]) {
       const id = productInput.dataset.uploadProduct;
       const reader = new FileReader();
