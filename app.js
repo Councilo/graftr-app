@@ -7337,7 +7337,8 @@ function shopFeatureCardHtml({ action, imageKey, emoji, title, sub, cta }) {
 const SHOP_FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'services', label: 'Services' },
-  { id: 'shops', label: 'Local businesses' },
+  { id: 'shops', label: 'Shops' },
+  { id: 'local', label: 'Local businesses' },
   { id: 'new', label: 'New to Vendaru' },
 ];
 
@@ -7350,6 +7351,28 @@ function shopFilterBarHtml() {
   return `<div class="quick-rail slot-scroll">${SHOP_FILTERS.map(f => `
     <button type="button" class="quick-btn${f.id === on ? ' is-on' : ''}"
       data-action="setShopFilter" data-arg="${f.id}">${escapeHtml(f.label)}</button>`).join('')}</div>`;
+}
+
+// Businesses local to a place, by the one fact the data actually holds: whether
+// the listing's own area line names the place. Nothing records chain against
+// independent, and guessing it from the prose gets it wrong both ways — "London
+// & South East" is Foxtons, "Telford & 48 UK Pet Hospitals" is the PDSA — so
+// this asks a narrower question it can answer, and the answer is the listing's
+// own claim rather than ours.
+//
+// Deliberately stricter than servesLocation, which lets national coverage
+// through so that picking a town doesn't hide the chains. Here the chains are
+// exactly what's being set aside.
+function namesPlace(b, place) {
+  return String(b.area || '').toLowerCase().includes(place.toLowerCase());
+}
+
+function localBusinesses() {
+  const loc = locationChosen();
+  const places = loc ? [loc] : SHOP_TOWNS;
+  return (state.businesses || []).filter(isBusinessLive)
+    .filter(b => places.some(p => namesPlace(b, p)))
+    .slice().sort(byTierThenRecency);
 }
 
 // Businesses that have listed themselves, newest first. The seeded listings
@@ -7378,6 +7401,30 @@ function shopFeatureGridHtml() {
         title: 'Special Requests', sub: 'Collection and delivery from any store', cta: 'Make a request',
       })}
     </div>`;
+}
+
+// Flat rather than grouped by trade: a dozen firms across twelve categories
+// would be a page of headings with one card under each.
+function shopLocalSectionHtml() {
+  const mine = localBusinesses();
+  const loc = locationChosen();
+  if (!mine.length) {
+    return `
+      <div class="page-band"><span>Local businesses</span></div>
+      <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+        <div style="padding:22px 16px;text-align:center">
+          <div style="font-size:15px;font-weight:600;color:#141414">Nobody has named ${loc ? escapeHtml(loc) : 'your area'} yet</div>
+          <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">These are businesses whose own listing says they cover where you are. The national names that also reach you are all under Services.</div>
+        </div>
+      </div>`;
+  }
+  return `
+    <div class="page-band">
+      <span>Local businesses</span>
+      <span class="page-band-count">${mine.length}</span>
+    </div>
+    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">${loc ? `Businesses that name ${escapeHtml(loc)} as their patch.` : 'Businesses that name a town Vendaru covers as their patch.'}</div>
+    ${businessListHtml(mine)}`;
 }
 
 // Shops a courier can be sent to. Follows the location chip above: pick a town
@@ -7421,8 +7468,7 @@ function shopServicesSectionHtml() {
       <div>
         <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;margin-bottom:11px">${g.cat.emoji} ${escapeHtml(g.cat.label)}</div>
         ${businessListHtml(g.items)}
-      </div>`).join('')}
-    ${listYourBusinessLinkHtml()}`;
+      </div>`).join('')}`;
 }
 
 function shopNewSectionHtml() {
@@ -7434,7 +7480,6 @@ function shopNewSectionHtml() {
         <div style="padding:22px 16px;text-align:center">
           <div style="font-size:15px;font-weight:600;color:#141414">Nobody has joined yet</div>
           <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Businesses that list themselves on Vendaru show up here first, newest at the top. Yours could be the one.</div>
-          <a href="${BUSINESS_PATH}" style="display:inline-block;background:#141414;color:#fff;text-decoration:none;padding:11px 22px;border-radius:14px;font-size:13.5px;font-weight:600;margin-top:12px">List your business</a>
         </div>
       </div>`;
   }
@@ -7443,8 +7488,7 @@ function shopNewSectionHtml() {
       <span>New to Vendaru</span>
       <span class="page-band-count">${fresh.length}</span>
     </div>
-    ${businessListHtml(fresh)}
-    ${listYourBusinessLinkHtml()}`;
+    ${businessListHtml(fresh)}`;
 }
 
 function renderShopperShop() {
@@ -7459,12 +7503,19 @@ function renderShopperShop() {
   } else if (filter === 'services') {
     body = shopServicesSectionHtml();
   } else if (filter === 'shops') {
-    body = shopShopsSectionHtml();
+    body = shopFeatureGridHtml() + shopShopsSectionHtml();
+  } else if (filter === 'local') {
+    body = shopLocalSectionHtml();
   } else if (filter === 'new') {
     body = shopNewSectionHtml();
   } else {
-    body = shopFeatureGridHtml() + shopShopsSectionHtml() + shopServicesSectionHtml();
+    // Services at the top: it's the half of the app that pays for itself, and
+    // the groceries have the aisle rail and their own tab already. Then the
+    // shops, the independents, and whoever joined most recently.
+    body = shopServicesSectionHtml() + shopFeatureGridHtml() + shopShopsSectionHtml()
+      + shopLocalSectionHtml() + shopNewSectionHtml();
   }
+  if (!searching) body += listYourBusinessLinkHtml();
 
   return `<div class="page page-cards" style="padding:0 18px 24px">
     <!-- Brand mark, centred. Same 200px width as the sign-in screen.
