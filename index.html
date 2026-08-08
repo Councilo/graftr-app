@@ -43,7 +43,7 @@
      at the foot of the page. Until it runs, what's on screen is the
      pre-rendered article below, so every millisecond here is a millisecond of
      the wrong page. -->
-<link rel="preload" href="app.js?v=115" as="script">
+<link rel="preload" href="app.js?v=116" as="script">
 
 <!-- Favicon & Styles -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f2c1d8'/%3E%3Ctext x='32' y='47' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='40' fill='%23ffffff' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E" />
@@ -91,7 +91,20 @@
 }
 </script>
 
-<link rel="stylesheet" href="styles.css?v=115">
+<!-- Asks for the listings while the HTML is still being parsed, so the file is
+     already in flight — usually already arrived — by the time app.js has
+     downloaded and run. Kicking it off from inside app.js meant queueing it
+     behind app.js's own download and parse, and the directory is the first
+     thing on the page. Kept above styles.css deliberately: a blocking stylesheet
+     would hold this script up, and the two sheets above it are media="print"
+     until they load, so they don't. -->
+<script>
+  window.__vendaruListings = fetch('assets/businesses.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .catch(function () { return null; });
+</script>
+
+<link rel="stylesheet" href="styles.css?v=116">
 </head>
 <body>
 <div class="frame-bg">
@@ -206,6 +219,6 @@
 <script async src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script async src="https://unpkg.com/@zxing/library@0.23.0/umd/index.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="app.js?v=115"></script>
+<script src="app.js?v=116"></script>
 </body>
 </html>
