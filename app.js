@@ -5115,14 +5115,22 @@ function memberBadgeHtml(tier, size) {
     </span>`;
 }
 
-function memberChipHtml() {
+function memberCrestHtml() {
   const tier = memberTier();
   return `
-    <span class="member-chip" title="Vendaru ${escapeHtml(tier.label)} membership">
-      ${memberBadgeHtml(tier, 'sm')}
-      <span class="member-chip-label">${escapeHtml(tier.label)}</span>
-    </span>`;
+    <button type="button" class="member-crest is-${escapeHtml(tier.id)}" data-action="goShopperAccount"
+      title="Vendaru ${escapeHtml(tier.label)} — tap to manage">
+      <span class="member-crest-rule" aria-hidden="true"></span>
+      <span class="member-crest-body">
+        <span class="member-crest-kicker">Member</span>
+        <span class="member-crest-tier">${escapeHtml(tier.label)}</span>
+      </span>
+      <span class="member-crest-pips" aria-hidden="true">
+        ${MEMBER_TIERS.map((t) => `<span class="member-pip${t.rank <= tier.rank ? ' is-on' : ''}"></span>`).join('')}
+      </span>
+    </button>`;
 }
+
 
 function renderMembershipCard() {
   const held = memberTier();
@@ -6263,10 +6271,9 @@ function boardHeroHtml(filled, total) {
       </label>
 
       <div class="board-hero-text">
-        <button type="button" class="board-profile-tag" data-action="goShopperAccount">Profile</button>
+        ${memberCrestHtml()}
         <div class="board-hey">Hey,</div>
         <div class="board-name">${escapeHtml(first || 'there')}</div>
-        ${memberChipHtml()}
         <div class="board-lede">${filled
           ? 'Everyone you’d call, in one place.'
           : 'Put the people you’d call in one place, before you need them.'}</div>
