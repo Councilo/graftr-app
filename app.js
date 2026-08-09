@@ -969,7 +969,6 @@ const state = {
   openFavPicker: null,             // category whose chooser is open on the wall
   listTitle: loadListTitle(),      // what they've named their own wall
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
-  shopFilter: 'all',               // which part of Shop: see SHOP_FILTERS
   board: {},                       // slot id -> business id; see BOARD_AREAS
   openBoardPicker: null,           // which board slot has its chooser open
   pendingBoardScroll: null,        // slot to scroll to once it has been drawn
@@ -2445,7 +2444,7 @@ function businessListHtml(list, { appendCells = '' } = {}) {
   return `<div class="biz-card-grid">${cells.join('')}${appendCells}</div>`;
 }
 
-function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
+function renderShopperSearchResults(query, { businessesOnly = false, shoppingOnly = false } = {}) {
   const q = (query || '').trim().toLowerCase();
 
   const matchesQuery = (b) => {
@@ -2496,9 +2495,10 @@ function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
   // The Services page is a directory of businesses, so it counts and shows
   // only those; Shop search still spans bookings and groceries too.
   const totalCount = businessesOnly ? matchingBiz.length
+    : shoppingOnly ? matchingProducts.length + matchingShops.length
     : matchingBiz.length + matchingServices.length + matchingProducts.length + matchingShops.length;
 
-  const bizGridHtml = matchingBiz.length > 0
+  const bizGridHtml = (!shoppingOnly && matchingBiz.length > 0)
     ? `<div style="margin-bottom:20px">${businessListHtml(matchingBiz)}</div>`
     : '';
 
@@ -2513,7 +2513,7 @@ function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
 
   // Bookable Services list
   let servicesListHtml = '';
-  if (!businessesOnly && matchingServices.length > 0) {
+  if (!businessesOnly && !shoppingOnly && matchingServices.length > 0) {
     const booked = new Set((state.bookingCart || []).map(x => `${x.businessId}|${x.serviceId}`));
     servicesListHtml = `
       <div style="margin-bottom:20px">
@@ -2554,14 +2554,24 @@ function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
     `;
   }
 
-  // Nothing to hand across any more: Shop's search covers businesses, shops and
-  // the aisles in one pass, so an empty result really is empty.
+  // Shop searches shops and the aisles, so a word that only matches a business
+  // would dead-end here. Hand it across rather than saying nothing found.
+  const crossover = shoppingOnly && matchingBiz.length > 0;
+
   const noResultsHtml = totalCount === 0 ? `
     <div style="padding:40px 20px;text-align:center;background:#fff;border-radius:20px;border:1px solid rgba(20,20,20,0.08)">
       <div style="font-size:32px;margin-bottom:8px">🔍</div>
-      <div style="font-size:16px;font-weight:800;color:#141414">No matching items found</div>
-      <div style="font-size:13px;color:#6b6b6b;margin-top:4px">Try a different word, or clear the search to see everything.</div>
-      <button type="button" data-action="clearSearch" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">Clear search</button>
+      <div style="font-size:16px;font-weight:800;color:#141414">
+        ${crossover ? 'Nothing in the shops' : 'No matching items found'}
+      </div>
+      <div style="font-size:13px;color:#6b6b6b;margin-top:4px">
+        ${crossover
+          ? `${matchingBiz.length} business${matchingBiz.length === 1 ? '' : 'es'} match “${escapeHtml(q)}”.`
+          : 'Try a different word, or clear the search to see everything.'}
+      </div>
+      ${crossover
+        ? `<button type="button" data-action="goAllServices" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">Look in Services</button>`
+        : `<button type="button" data-action="clearSearch" style="background:#141414;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px;font-family:inherit">Clear search</button>`}
     </div>
   ` : '';
 
@@ -2569,7 +2579,7 @@ function renderShopperSearchResults(query, { businessesOnly = false } = {}) {
     <div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div style="font-size:20px;font-weight:800;color:#141414">
-          ${businessesOnly ? 'Businesses' : 'Shops, services &amp; groceries'}
+          ${businessesOnly ? 'Businesses' : shoppingOnly ? 'Shops &amp; groceries' : 'Shops, services &amp; groceries'}
         </div>
         <div style="font-size:12.5px;color:#6b6b6b;font-weight:600">
           ${totalCount} result${totalCount === 1 ? '' : 's'}
@@ -3006,6 +3016,8 @@ function renderShopperAllServices() {
       </div>
 
       ${locationSearchBarHtml('services-search-input')}
+
+      ${newToVendaru().length ? shopNewSectionHtml() : ''}
 
       ${servicesViewToggle()}
 
@@ -4079,13 +4091,30 @@ function shopsForLocation() {
   return { shops: byCat(SHOPS_100), elsewhere: true, loc };
 }
 
+// A shop's mark. Not a logo: two of these hundred are real businesses with real
+// logos, and the rest are names without a company behind them — putting an
+// invented brand mark on an invented shop would be dressing a placeholder up as
+// a trader. This is a monogram instead, its colour fixed by the name, so each
+// shop reads as its own and the same shop always looks the same.
+function shopMarkHtml(shop) {
+  const initials = shop.name.replace(/^(the|la|le)\s+/i, '')
+    .split(/\s+/).map(w => w[0]).filter(c => /[a-z0-9]/i.test(c)).join('').slice(0, 2).toUpperCase();
+
+  // Hashed from the name so it never moves, and kept dark so white initials
+  // hold up on it whatever the photo behind the tile is doing.
+  let h = 0;
+  for (let i = 0; i < shop.name.length; i++) h = (h * 31 + shop.name.charCodeAt(i)) % 360;
+  const bg = `hsl(${h} 42% 26%)`;
+
+  return `<span class="biz-card-logo is-initials shop-mark" style="background:${bg}">${escapeHtml(initials || '?')}</span>`;
+}
+
 function shopCardHtml(shop) {
   const arg = escapeHtml(shop.name + '|' + shop.town);
-  const initials = shop.name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   return `
     <div class="shop-card press biz-card" data-action="requestFromShop" data-arg="${arg}">
       <div class="biz-card-photo"${shop.photo ? ` style="background-image:url('${escapeHtml(shop.photo)}')"` : ''}>
-        <span class="biz-card-logo is-initials">${escapeHtml(initials)}</span>
+        ${shopMarkHtml(shop)}
       </div>
       <div class="biz-card-body">
         <div class="biz-card-name">${escapeHtml(shop.name)}</div>
@@ -4118,50 +4147,6 @@ function shopFeatureCardHtml({ action, imageKey, emoji, title, sub, cta }) {
         </div>
       </div>
     </div>`;
-}
-
-// The quick row across the top of Shop. Shop holds everything the app has, so
-// these say which part of it you want rather than how to draw it — the
-// Cards/Icons switch stays on Services, where it was asked for.
-const SHOP_FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'services', label: 'Services' },
-  { id: 'shops', label: 'Shops' },
-  { id: 'local', label: 'Local businesses' },
-  { id: 'new', label: 'New to Vendaru' },
-];
-
-function shopFilter() {
-  return SHOP_FILTERS.some(f => f.id === state.shopFilter) ? state.shopFilter : 'all';
-}
-
-function shopFilterBarHtml() {
-  const on = shopFilter();
-  return `<div class="quick-rail slot-scroll">${SHOP_FILTERS.map(f => `
-    <button type="button" class="quick-btn${f.id === on ? ' is-on' : ''}"
-      data-action="setShopFilter" data-arg="${f.id}">${escapeHtml(f.label)}</button>`).join('')}</div>`;
-}
-
-// Businesses local to a place, by the one fact the data actually holds: whether
-// the listing's own area line names the place. Nothing records chain against
-// independent, and guessing it from the prose gets it wrong both ways — "London
-// & South East" is Foxtons, "Telford & 48 UK Pet Hospitals" is the PDSA — so
-// this asks a narrower question it can answer, and the answer is the listing's
-// own claim rather than ours.
-//
-// Deliberately stricter than servesLocation, which lets national coverage
-// through so that picking a town doesn't hide the chains. Here the chains are
-// exactly what's being set aside.
-function namesPlace(b, place) {
-  return String(b.area || '').toLowerCase().includes(place.toLowerCase());
-}
-
-function localBusinesses() {
-  const loc = locationChosen();
-  const places = loc ? [loc] : SHOP_TOWNS;
-  return (state.businesses || []).filter(isBusinessLive)
-    .filter(b => places.some(p => namesPlace(b, p)))
-    .slice().sort(byTierThenRecency);
 }
 
 // Businesses that have listed themselves, newest first. The seeded listings
@@ -4269,16 +4254,8 @@ const PARTNER_CARDS = [
     photo: 'https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8dHJhdmVsJTIwcGxhbm5pbmclMjBtYXAlMjBob2xpZGF5fGVufDF8MHx8fDE3ODYyNzAyNDR8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80',
     url: 'https://utraveluk.net/',
     kind: 'ours',
-    // Rendered at the head of New to Vendaru rather than in the partners band,
-    // which is why it isn't in partnerCards() below.
-    slot: 'new',
   },
 ];
-
-// Cards that belong somewhere other than the partners band.
-function slottedPartners(slot) {
-  return PARTNER_CARDS.filter(p => p.slot === slot);
-}
 
 // Filled by /api/partners when an Impact token is configured on the server.
 // Until then this stays empty and the built-in list above is what shows, so the
@@ -4300,7 +4277,7 @@ function partnerCards() {
   // No destination, no card — whether that destination is a website or a screen
   // in the app. Keeps a half-set-up entry off the page rather than shipping a
   // button that does nothing.
-  const band = PARTNER_CARDS.filter(p => !p.slot && (p.url || p.action));
+  const band = PARTNER_CARDS.filter(p => p.url || p.action);
   const live = (livePartners || []).filter(p => p && p.url && p.name);
   if (!live.length) return band;
 
@@ -4386,29 +4363,6 @@ function loadPartners() {
     .catch(() => { /* built-in cards stand */ });
 }
 
-// Flat rather than grouped by trade: a dozen firms across twelve categories
-// would be a page of headings with one card under each.
-function shopLocalSectionHtml() {
-  const mine = localBusinesses();
-  const loc = locationChosen();
-  if (!mine.length) {
-    return `
-      <div class="page-band"><span>Local businesses</span></div>
-      <div class="shop-card" style="${SERVICE_CARD_SHELL}">
-        <div style="padding:22px 16px;text-align:center">
-          <div style="font-size:15px;font-weight:600;color:#141414">Nobody has named ${loc ? escapeHtml(loc) : 'your area'} yet</div>
-          <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">These are businesses whose own listing says they cover where you are. The national names that also reach you are all under Services.</div>
-        </div>
-      </div>`;
-  }
-  return `
-    <div class="page-band">
-      <span>Local businesses</span>
-      <span class="page-band-count">${mine.length}</span>
-    </div>
-    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">${loc ? `Businesses that name ${escapeHtml(loc)} as their patch.` : 'Businesses that name a town Vendaru covers as their patch.'}</div>
-    ${businessListHtml(mine)}`;
-}
 
 // The independents a courier can be sent to. Follows the location chip above,
 // and the category chips below it.
@@ -4416,13 +4370,12 @@ function shopLocalSectionHtml() {
 // `limit` is for the All view, where this is one band among four: a hundred
 // shop cards before the directory even starts would bury everything under it.
 // The Shops button is the whole list.
-function shopShopsSectionHtml({ limit = 0 } = {}) {
+function shopShopsSectionHtml() {
   const { shops: all, elsewhere } = shopsForLocation();
   const loc = locationChosen();
   const cat = shopCategory();
 
-  // Only worth offering a category once there is a list to narrow.
-  const chips = limit ? '' : `
+  const chips = `
     <div class="quick-rail slot-scroll" style="margin-top:8px">
       <button type="button" class="quick-btn${cat ? '' : ' is-on'}" data-action="setShopCategory" data-arg="">All shops</button>
       ${shopCategories().map(c => `
@@ -4444,56 +4397,25 @@ function shopShopsSectionHtml({ limit = 0 } = {}) {
       </div>`;
   }
 
-  const shown = limit ? all.slice(0, limit) : all;
   return `
     <div class="page-band">
       <span>${elsewhere || !loc ? 'Independent shops' : `Shops in ${escapeHtml(loc)}`}</span>
-      <span class="page-band-count">${limit && all.length > limit ? `${shown.length} of ${all.length}` : all.length}</span>
+      <span class="page-band-count">${all.length}</span>
     </div>
     ${elsewhere
       ? `<div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">None in ${escapeHtml(loc)} yet — these are elsewhere, and a courier still collects.</div>`
       : ''}
     ${chips}
-    <div class="biz-card-grid">${shown.map(shopCardHtml).join('')}</div>
-    ${limit && all.length > limit
-      ? `<button type="button" data-action="setShopFilter" data-arg="shops" style="background:none;border:none;padding:6px 0;font-size:13px;font-weight:500;color:#141414;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px">See all ${all.length} shops</button>`
-      : ''}`;
+    <div class="biz-card-grid">${all.map(shopCardHtml).join('')}</div>`;
 }
 
-// The directory itself, not a door to it: every business, in the same cards as
-// everything else on the page.
-function shopServicesSectionHtml() {
-  const all = (state.businesses || []).filter(isBusinessLive).filter(servesLocation)
-    .slice().sort(byTierThenRecency);
-  const groups = SERVICE_CATEGORIES
-    .map(cat => ({ cat, items: all.filter(b => b.category === cat.id) }))
-    .filter(g => g.items.length);
-  if (!groups.length) return '';
-  return `
-    <div class="page-band">
-      <span>Local services</span>
-      <span class="page-band-count">${all.length}</span>
-    </div>
-    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">Book trusted businesses near you and pay in the same basket.</div>
-    ${groups.map(g => `
-      <div>
-        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b;margin-bottom:11px">${g.cat.emoji} ${escapeHtml(g.cat.label)}</div>
-        ${businessListHtml(g.items)}
-      </div>`).join('')}`;
-}
 
 function shopNewSectionHtml() {
   const fresh = newToVendaru();
-  // Ours, after the businesses rather than before them, and in the same grid so
-  // the three share a row on a wide screen instead of it taking one alone. It
-  // keeps its Ours tag here more than anywhere: sitting among businesses that
-  // really did join, an unmarked card would read as one of them.
-  const mine = slottedPartners('new').map(partnerCardHtml).join('');
 
   if (!fresh.length) {
     return `
       <div class="page-band"><span>New to Vendaru</span></div>
-      ${mine ? `<div class="biz-card-grid">${mine}</div>` : ''}
       <div class="shop-card" style="${SERVICE_CARD_SHELL}">
         <div style="padding:22px 16px;text-align:center">
           <div style="font-size:15px;font-weight:600;color:#141414">Nobody has joined yet</div>
@@ -4506,38 +4428,27 @@ function shopNewSectionHtml() {
       <span>New to Vendaru</span>
       <span class="page-band-count">${fresh.length}</span>
     </div>
-    ${businessListHtml(fresh, { appendCells: mine })}`;
+    ${businessListHtml(fresh)}`;
 }
 
 function renderShopperShop() {
   const searching = (state.searchQuery || '').trim().length > 0;
-  const filter = shopFilter();
 
-  // Shop is the landing page, so its search reaches everything — businesses,
-  // bookable services, shops and groceries — whichever part the row is set to.
+  // Shop is shopping: the two Vendaru runs itself, then the independents a
+  // courier can be sent to. The services directory lives on Services, which is
+  // a tab of its own — carrying a hundred listings here as well made this the
+  // same page twice and buried the shops under them.
+  //
+  // The filter row went with them. With nothing but shops left to show, a row
+  // offering to show only shops was a button that did nothing; the shop
+  // categories below are the filter that matters now.
   let body;
   if (searching) {
-    body = renderShopperSearchResults(state.searchQuery);
-  } else if (filter === 'services') {
-    body = shopServicesSectionHtml();
-  } else if (filter === 'shops') {
-    body = shopFeatureGridHtml() + shopShopsSectionHtml();
-  } else if (filter === 'local') {
-    body = shopLocalSectionHtml();
-  } else if (filter === 'new') {
-    body = shopNewSectionHtml();
+    body = renderShopperSearchResults(state.searchQuery, { shoppingOnly: true });
   } else {
-    // New arrivals first, then services. Last it sat 13,000px down a page of a
-    // hundred cards, which is the same as not being there — and a section
-    // whose whole point is "look who just joined" is worth nothing at the
-    // bottom. It's one row, so services still start near the top.
-    // Only when there are arrivals to show: the "nobody has joined yet" card
-    // earns its place on the New to Vendaru button, but as the first thing on
-    // the home page it would be an apology where the shop should be.
-    body = ((newToVendaru().length || slottedPartners('new').length) ? shopNewSectionHtml() : '')
-      + shopPartnersSectionHtml()
-      + shopServicesSectionHtml() + shopFeatureGridHtml()
-      + shopShopsSectionHtml({ limit: 6 }) + shopLocalSectionHtml();
+    body = shopPartnersSectionHtml()
+      + shopFeatureGridHtml()
+      + shopShopsSectionHtml();
   }
   if (!searching) body += listYourBusinessLinkHtml();
 
@@ -4554,7 +4465,6 @@ function renderShopperShop() {
          under this; the aisles are inside Morrisons Daily, which is a card on
          the page, so a second way in was a row of tiles earning its keep on
          every visit. -->
-    ${shopFilterBarHtml()}
     ${body}
   </div>`;
 }
@@ -8381,11 +8291,6 @@ const actions = {
   },
   // A search spans the whole app, so switching part clears it — otherwise the
   // row looks like it did nothing while the results stay put.
-  setShopFilter: (id) => {
-    state.shopFilter = SHOP_FILTERS.some(f => f.id === id) ? id : 'all';
-    state.searchQuery = '';
-    render();
-  },
   // '' is every kind. Anything unrecognised falls back to that rather than
   // leaving the band filtered to a category that no longer exists.
   // One slot's chooser at a time — two open lists on a page of slots is a mess

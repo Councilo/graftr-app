@@ -1730,8 +1730,17 @@ body::-webkit-scrollbar {
   color: #ffffff;
 }
 
-/* Which town's branch this is. Sits where a listing's rating sits, on the left
-   because it's a fact about the shop rather than a score. */
+/* A shop's monogram, in place of a logo it hasn't got. The colour comes from
+   the name, so it is set inline; everything else matches the brand marks it
+   sits alongside. */
+.shop-mark {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Which town's branch this is. Sits where a listing's rating sits — right, with
+   the rating — so a shop card and a listing card keep the same rhythm. */
 .biz-card-town {
   display: flex;
   align-items: center;
