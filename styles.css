@@ -1739,6 +1739,19 @@ body::-webkit-scrollbar {
   letter-spacing: 0.02em;
 }
 
+/* A real shop's real logo, on the white plate the brand marks use — these
+   arrive as favicons with transparent corners, which vanish on a photo. */
+.shop-logo {
+  background: #ffffff;
+  object-fit: contain;
+  padding: 6px;
+}
+
+.shop-logo.is-fill {
+  object-fit: cover;
+  padding: 0;
+}
+
 /* Which town's branch this is. Sits where a listing's rating sits — right, with
    the rating — so a shop card and a listing card keep the same rhythm. */
 .biz-card-town {

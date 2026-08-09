@@ -3237,6 +3237,7 @@ const SHOPS_100 = [
   {
     "id": "shop-1",
     "name": "Rokit Vintage & Streetwear",
+    "domain": "rokit.co.uk",
     "category": "Clothes",
     "sells": "Vintage denim, 90s jackets & retro streetwear",
     "town": "London",
@@ -3253,6 +3254,7 @@ const SHOPS_100 = [
   {
     "id": "shop-3",
     "name": "Beyond Retro Apparel",
+    "domain": "beyondretro.com",
     "category": "Clothes",
     "sells": "Handpicked vintage dresses, leather coats & 70s fashion",
     "town": "Brighton",
@@ -4106,7 +4108,16 @@ function shopMarkHtml(shop) {
   for (let i = 0; i < shop.name.length; i++) h = (h * 31 + shop.name.charCodeAt(i)) % 360;
   const bg = `hsl(${h} 42% 26%)`;
 
-  return `<span class="biz-card-logo is-initials shop-mark" style="background:${bg}">${escapeHtml(initials || '?')}</span>`;
+  const monogram = `<span class="biz-card-logo is-initials shop-mark" style="background:${bg}">${escapeHtml(initials || '?')}</span>`;
+
+  // A shop with a domain is a real company, so it gets its real mark. The
+  // monogram is the fallback, and the fallback for the fallback if the icon
+  // fails to load — nothing on the card ends up empty.
+  if (!shop.domain) return monogram;
+  return `<img class="biz-card-logo shop-logo" alt=""
+    src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(shop.domain)}&sz=128"
+    onload="__fitLogo(this)"
+    onerror="this.onerror=null;this.outerHTML=${JSON.stringify(monogram).replace(/"/g, '&quot;')}" />`;
 }
 
 function shopCardHtml(shop) {
@@ -4446,9 +4457,12 @@ function renderShopperShop() {
   if (searching) {
     body = renderShopperSearchResults(state.searchQuery, { shoppingOnly: true });
   } else {
+    // Shops first, then the two Vendaru runs itself. The independents are what
+    // the page is a directory of; Morrisons and Special Requests are always
+    // there and don't need the top of it.
     body = shopPartnersSectionHtml()
-      + shopFeatureGridHtml()
-      + shopShopsSectionHtml();
+      + shopShopsSectionHtml()
+      + shopFeatureGridHtml();
   }
   if (!searching) body += listYourBusinessLinkHtml();
 
