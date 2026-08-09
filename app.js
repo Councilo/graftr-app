@@ -4325,6 +4325,24 @@ const PARTNER_CARDS = [
     url: 'https://getstartedtiktok.partnerlinks.io/00n0j6kr0ids',
   },
   {
+    // A local butcher delivering. Held back from the page until it has somewhere
+    // to send people: a card with an Order now button that goes nowhere is worse
+    // than no card, so partnerCards() drops any entry with an empty url.
+    //
+    // To turn it on: put the destination in url — their site, their online-order
+    // page, or tel:+44... if orders are taken by phone — and drop the logo in at
+    // assets/business/barrons-of-beef.png. The banner arrives with
+    // build_partner_photos.js.
+    id: 'barrons',
+    name: 'Barrons of Beef',
+    blurb: 'High-class butchers since 1978 — delivered to your door',
+    cta: 'Order now',
+    tint: '#141414',
+    logo: 'assets/business/barrons-of-beef.png',
+    photo: '',
+    url: '',
+  },
+  {
     // Ours, so it is marked as ours rather than as an ad: nobody pays us for
     // this click, and calling it an ad would be as inaccurate as leaving the
     // affiliate cards unmarked. Brand blue lifted from the UTravel design
@@ -4367,7 +4385,9 @@ function sameBrand(a, b) {
 }
 
 function partnerCards() {
-  const band = PARTNER_CARDS.filter(p => !p.slot);
+  // No destination, no card. Keeps a half-set-up entry off the page rather than
+  // shipping a button that does nothing.
+  const band = PARTNER_CARDS.filter(p => !p.slot && p.url);
   const live = (livePartners || []).filter(p => p && p.url && p.name);
   if (!live.length) return band;
 

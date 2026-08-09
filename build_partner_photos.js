@@ -24,6 +24,7 @@ const QUERIES = {
   shopify: 'small business owner packing orders',
   tiktok: 'filming video smartphone creator',
   utravel: 'travel planning map holiday',
+  barrons: 'butcher shop meat counter',
 };
 
 async function firstPhoto(query) {
