@@ -27,6 +27,22 @@ module.exports = async (req, res) => {
         return;
       }
 
+      // Two things buy a subscription here — a business listing plan and a
+      // customer membership — and they come back to different pages. The
+      // return path is chosen from a fixed pair rather than taken from the
+      // request, so a caller can't point Stripe's redirect anywhere it likes.
+      const membership = subscription.kind === 'membership';
+      const back = membership
+        ? { path: 'account', key: 'membership' }
+        : { path: 'business', key: 'plan' };
+
+      // A trial the caller asks for, clamped to something sane. Anything
+      // outside a month is a mistake rather than an offer.
+      const trialDays = Math.floor(Number(subscription.trialDays));
+      const trial = Number.isFinite(trialDays) && trialDays > 0 && trialDays <= 31
+        ? { trial_period_days: trialDays }
+        : null;
+
       const planSession = await stripe.checkout.sessions.create({
         mode: 'subscription',
         line_items: [{
@@ -38,8 +54,9 @@ module.exports = async (req, res) => {
           },
           quantity: 1,
         }],
-        success_url: `${origin}/business?plan=success&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/business?plan=cancelled`,
+        ...(trial ? { subscription_data: trial } : {}),
+        success_url: `${origin}/${back.path}?${back.key}=success&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/${back.path}?${back.key}=cancelled`,
       });
 
       res.status(200).json({ url: planSession.url });

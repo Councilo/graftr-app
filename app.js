@@ -5056,12 +5056,12 @@ const MEMBER_TIERS = [
     features: ['Browse and book every listing', 'Your board, all fifteen slots', 'Special requests by courier'],
   },
   {
-    id: 'plus', label: 'Plus', monthly: 3, annual: 30, rank: 1,
+    id: 'plus', label: 'Plus', monthly: 9.99, annual: 99.90, rank: 1, trialDays: 7,
     summary: 'No service fee on anything you order',
     features: ['Everything in Free', `No £${SERVICE_FEE.toFixed(2)} service fee, ever`, 'Priority on the courier queue'],
   },
   {
-    id: 'pro', label: 'Pro', monthly: 7, annual: 70, rank: 2,
+    id: 'pro', label: 'Pro', monthly: 19.99, annual: 199.90, rank: 2, trialDays: 7,
     summary: 'Free delivery and first pick of new listings',
     features: ['Everything in Plus', 'Free delivery on every order', 'New businesses before anyone else'],
   },
@@ -5156,9 +5156,10 @@ function renderMembershipCard() {
         data-action="setMemberChoice" data-arg="${t.id}">
         <span class="member-plan-top">
           <span class="member-plan-name">${escapeHtml(t.label)}${isHeld ? ' <span class="member-plan-current">Current</span>' : ''}</span>
-          <span class="member-plan-price">${price ? `£${price}<span>/${billing === 'annual' ? 'yr' : 'mo'}</span>` : 'Free'}</span>
+          <span class="member-plan-price">${price ? `£${price.toFixed(2)}<span>/${billing === 'annual' ? 'yr' : 'mo'}</span>` : 'Free'}</span>
         </span>
         <span class="member-plan-summary">${escapeHtml(t.summary)}</span>
+        ${t.trialDays && t.id !== held.id ? `<span class="member-plan-trial">${t.trialDays} days free, then £${price.toFixed(2)}</span>` : ''}
         <span class="member-plan-features">${t.features.map(f => `<span>${escapeHtml(f)}</span>`).join('')}</span>
       </button>`;
   }).join('');
@@ -5189,7 +5190,11 @@ function renderMembershipCard() {
         <div class="member-actions">
           ${canBuy
             ? `<button type="button" class="member-buy" data-action="subscribeMembership"${state.memberBuying ? ' disabled' : ''}>
-                 ${state.memberBuying ? 'Redirecting…' : `Get ${escapeHtml(chosen.label)} · £${memberPrice(chosen, billing)}/${billing === 'annual' ? 'yr' : 'mo'}`}
+                 ${state.memberBuying
+                   ? 'Redirecting…'
+                   : chosen.trialDays
+                     ? `Start ${chosen.trialDays}-day free trial`
+                     : `Get ${escapeHtml(chosen.label)} · £${memberPrice(chosen, billing).toFixed(2)}`}
                </button>`
             : ''}
           ${canCancel
@@ -5197,7 +5202,9 @@ function renderMembershipCard() {
             : ''}
         </div>
 
-        <div class="member-note">Billed by Stripe. Cancel any time — you keep the tier until the period you have paid for runs out.</div>
+        <div class="member-note">${canBuy && chosen.trialDays
+          ? `Free for ${chosen.trialDays} days, then £${memberPrice(chosen, billing).toFixed(2)} ${billing === 'annual' ? 'a year' : 'a month'}. Cancel during the trial and you pay nothing. `
+          : ''}Billed by Stripe. Cancel any time — you keep the tier until the period you have paid for runs out.</div>
       </div>
     </div>`;
 }
@@ -7809,9 +7816,11 @@ const actions = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           subscription: {
+            kind: 'membership',
             name: `Vendaru ${tier.label} membership`,
             amount: memberPrice(tier, billing),
             interval: billing === 'annual' ? 'year' : 'month',
+            trialDays: tier.trialDays || 0,
           },
         }),
       });
