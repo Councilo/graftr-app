@@ -3542,8 +3542,9 @@
     "about": "Pixcision is a premier commercial photography studio based at MediaCityUK, capturing corporate headshots, product photography, and major live events.",
     "area": "MediaCityUK, Salford & Manchester",
     "phone": "0161 800 9100",
-    "websiteUrl": "https://www.pixcision.com",
-    "domain": "pixcision.com",
+    "websiteUrl": "https://pixcisionstock.com",
+    "domain": "pixcisionstock.com",
+    "shopFeed": "gelato",
     "logoSrc": "assets/business/pixcisionstock-logo.png",
     "coverSrc": "assets/business/pixcisionstock-cover.jpg",
     "services": [

@@ -3106,6 +3106,11 @@ function renderShopperBusiness() {
   const cat = serviceCategory(b.category);
   const booked = new Set((state.bookingCart || []).filter(x => x.businessId === b.id).map(x => x.serviceId));
 
+  // Kicked off the first time a shop-backed listing is opened. Deferred out of
+  // the render pass because it finishes by calling render() itself, and starting
+  // that from inside one would be re-entrant.
+  if (b.shopFeed && shopFeedStatus === 'idle') setTimeout(loadShopFeed, 0);
+
   const servicesHtml = (b.services || []).length
     ? (b.services || []).map((s, i) => `
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
@@ -3173,7 +3178,10 @@ function renderShopperBusiness() {
         </div>
       </div>
 
-      <!-- 3. Their work -->
+      <!-- 3. What they sell, live from their shop -->
+      ${businessShopSectionHtml(b)}
+
+      <!-- 4. Their work -->
       <div class="shop-card" style="${SERVICE_CARD_SHELL}">
         <div style="padding:4px 16px 16px">
           <div style="${SERVICE_SECTION_LABEL}">Their work</div>
@@ -4377,6 +4385,94 @@ function loadPartners() {
       render();
     })
     .catch(() => { /* built-in cards stand */ });
+}
+
+
+// ---- Live shop products -------------------------------------------------
+//
+// A listing with `shopFeed` sells things as well as booking them, so its page
+// shows what's actually in the shop today rather than a description of it. The
+// products come from /api/gelato-products, which reads the shop's own feed and
+// asks Gelato which of them it prints.
+//
+// Fetched once per session, the first time such a listing is opened — there's no
+// reason to pull 400 products for a visitor who never looks at this business.
+let shopFeed = null;          // null until the first response; [] means "none"
+let shopFeedStatus = 'idle';  // idle | loading | ready | failed
+
+function loadShopFeed() {
+  if (shopFeedStatus === 'loading' || shopFeedStatus === 'ready') return;
+  shopFeedStatus = 'loading';
+  fetch('/api/gelato-products')
+    .then(r => (r.ok ? r.json() : null))
+    .then((d) => {
+      shopFeed = d && Array.isArray(d.products) ? d.products : [];
+      shopFeedStatus = 'ready';
+      render();
+    })
+    .catch(() => {
+      // The rest of the page is unaffected; the section just doesn't appear.
+      shopFeedStatus = 'failed';
+      render();
+    });
+}
+
+const SHOPFEED_SHOWN = 12;
+
+function shopFeedCardHtml(p) {
+  const price = Number(p.price);
+  return `
+    <a class="shopfeed-card" href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer">
+      <div class="shopfeed-shot">
+        <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.title)}" loading="lazy" decoding="async">
+      </div>
+      <div class="shopfeed-title">${escapeHtml(p.title)}</div>
+      <div class="shopfeed-price">${p.variants > 1 ? 'from ' : ''}£${price.toFixed(2)}</div>
+    </a>`;
+}
+
+// Prints lead: they're the made-to-order pieces, and a wall of £10 downloads
+// says less about the shop than six framed canvases do.
+function businessShopSectionHtml(b) {
+  if (!b || !b.shopFeed) return '';
+  if (shopFeedStatus === 'failed') return '';
+  if (shopFeedStatus === 'idle' || shopFeedStatus === 'loading') {
+    return `
+      <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+        <div style="padding:4px 16px 16px">
+          <div style="${SERVICE_SECTION_LABEL}">Shop</div>
+          <div class="shopfeed-row">
+            ${Array.from({ length: 3 }, () => '<div class="shopfeed-card shopfeed-ghost"></div>').join('')}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const all = shopFeed || [];
+  if (!all.length) return '';
+  const prints = all.filter(p => p.kind === 'print');
+  const digital = all.length - prints.length;
+  const shown = (prints.length ? prints : all).slice(0, SHOPFEED_SHOWN);
+  const site = b.websiteUrl || (b.domain ? `https://${b.domain}` : '');
+
+  // Said plainly, because "63 prints" on its own reads like the whole shop.
+  const tally = [
+    prints.length ? `${prints.length} framed print${prints.length === 1 ? '' : 's'}` : '',
+    digital ? `${digital} digital download${digital === 1 ? '' : 's'}` : '',
+  ].filter(Boolean).join(' and ');
+
+  return `
+    <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+      <div style="padding:4px 16px 16px">
+        <div style="${SERVICE_SECTION_LABEL}">Shop</div>
+        <div class="shopfeed-row">${shown.map(shopFeedCardHtml).join('')}</div>
+        ${site ? `
+          <div class="shopfeed-foot">
+            ${tally ? `<span>${escapeHtml(tally)}</span>` : ''}
+            <a href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">See the full shop ›</a>
+          </div>` : ''}
+      </div>
+    </div>`;
 }
 
 

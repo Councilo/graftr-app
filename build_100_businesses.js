@@ -1932,7 +1932,10 @@ const rawBusinesses = [
     about: "Pixcision is a premier commercial photography studio based at MediaCityUK, capturing corporate headshots, product photography, and major live events.",
     area: "MediaCityUK, Salford & Manchester",
     phone: "0161 800 9100",
-    websiteUrl: "https://www.pixcision.com",
+    websiteUrl: "https://pixcisionstock.com",
+    // The shop is pixcisionstock.com, not pixcision.com. Flagged so the listing
+    // pulls its live products from /api/gelato-products.
+    shopFeed: "gelato",
     coverSrc: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
     photos: [
       "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80",
@@ -2098,6 +2101,9 @@ rawBusinesses.forEach((item, index) => {
     phone: item.phone,
     websiteUrl: item.websiteUrl,
     domain: domain,
+    // Only present on the handful of listings that have a live product feed;
+    // omitted entirely elsewhere rather than written as null.
+    ...(item.shopFeed ? { shopFeed: item.shopFeed } : {}),
     logoSrc: logo,
     coverSrc: cover,
     services: item.services.map((s, idx) => ({ id: `s-${counter}-${idx}`, ...s })),
