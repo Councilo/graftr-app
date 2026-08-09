@@ -614,14 +614,9 @@ function applyRoute(pathname) {
   return true;
 }
 
-// Where you've actually been, newest last. Back reads this rather than the
-// URL's parent: a listing opened from Services should return to Services, not
-// to the category page you never saw.
-const navStack = [];
-
 // Called at the end of every render. Pushing only when the path actually
-// changes keeps one history entry per navigation, so Back steps through pages
-// rather than through keystrokes.
+// changes keeps one history entry per navigation, so the browser's Back steps
+// through pages rather than through keystrokes.
 function syncUrl() {
   // file:// has no origin to push against — the pathname is a disk path.
   if (window.location.protocol === 'file:') return;
@@ -635,8 +630,6 @@ function syncUrl() {
     return;
   }
 
-  // location is still the page being left at this point.
-  navStack.push(window.location.pathname);
   window.history.pushState({ screen: state.screen }, '', path);
 }
 
@@ -2171,45 +2164,7 @@ function backBar(action, label, arg) {
     </div>`;
 }
 
-// How to get to each screen, and what to call it when it's the thing you're
-// going back to.
-const SCREEN_NAV = {
-  'shopper-shop': { action: 'goShop', label: 'Shop' },
-  'shopper-all-services': { action: 'goAllServices', label: 'Services' },
-  'shopper-browse': { action: 'goBrowse', label: 'Groceries' },
-  'shopper-basket': { action: 'goBasket', label: 'Basket' },
-  'shopper-inbox': { action: 'goShopperInbox', label: 'Board' },
-  'shopper-account': { action: 'goShopperAccount', label: 'Account' },
-  'shopper-favourites': { action: 'goFavourites', label: 'Your list' },
-  'shopper-special-request': { action: 'goSpecialRequest', label: 'Special request' },
-};
 
-// Back returns to the page you came from, labelled with its name. Only when
-// there's nowhere to return to — a shared link opened cold — does it fall back
-// to the URL's parent.
-function backTarget() {
-  const screen = state.screen;
-  if (!SCREEN_NAV[screen] && screen !== 'shopper-services' && screen !== 'shopper-business') return null;
-  if (screen === 'shopper-shop') return null;
-
-  if (navStack.length) return { action: 'goBack' };
-
-  // Opened cold. A listing has no parent inside /listing/<id>, so it falls
-  // back to the category it belongs to.
-  if (screen === 'shopper-business') {
-    const b = businessById(state.activeBusinessId);
-    const cat = b && serviceCategory(b.category);
-    return cat
-      ? { action: 'goServiceCategory', arg: cat.id, label: cat.label }
-      : { action: 'goAllServices', label: 'Services' };
-  }
-
-  const path = pathForScreen(screen);
-  const parent = path.slice(0, path.lastIndexOf('/')) || '/';
-  const match = routeForPath(parent);
-  const nav = match && SCREEN_NAV[match.screen];
-  return nav || { action: 'goShop', label: 'Shop' };
-}
 
 // Line icons drawn in currentColor, so they invert with the button rather than
 // sitting on it in colour the way the emoji did.
@@ -7166,9 +7121,9 @@ function render() {
 
   // Added here rather than inside each renderer so no customer screen can ship
   // without a way back — including any added later.
-  const back = state.mode === 'shopper' ? backTarget() : null;
-  const content = (back ? `<div style="padding:0 18px 10px">${backBar(back.action, 'Back', back.arg)}</div>` : '') +
-                  screenRenderers[state.screen]();
+  // No Back bar: every screen has its own address and the browser's own Back
+  // steps through them, so a second one on the page was the same button twice.
+  const content = screenRenderers[state.screen]();
   let tabs = '';
   let bottomPad = '';
   if (state.mode === 'courier') {
@@ -8492,11 +8447,6 @@ const actions = {
     );
   },
   goFavourites: () => { state.screen = 'shopper-favourites'; render(); },
-  // Hands off to the browser so its own Back and this button stay in step.
-  goBack: () => {
-    if (navStack.length) window.history.back();
-    else actions.goShop();
-  },
   // Leaving the sign-in screen without signing in.
   browseAsGuest: () => {
     state.mode = 'shopper';
@@ -8730,7 +8680,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // The browser's own Back/Forward. syncUrl only pushes when the path really
   // changes, so re-rendering here can't push a duplicate entry back on.
   window.addEventListener('popstate', () => {
-    navStack.pop();
     if (applyRoute(window.location.pathname)) render();
   });
 
