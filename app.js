@@ -1025,6 +1025,7 @@ const state = {
   board: {},                       // slot id -> business id; see BOARD_AREAS
   openBoardPicker: null,           // which board slot has its chooser open
   pendingBoardScroll: null,        // slot to scroll to once it has been drawn
+  expandedBoardSlot: null,         // slot showing its full card; phones only
   shopCategory: '',                // narrows the shops band; '' is all of them
   favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
@@ -6158,6 +6159,29 @@ function saveBoard() {
 // says nothing. Everything saved would come back missing on reload.
 state.board = loadBoard();
 
+// Phones get the compact card — the Basic-tier row — and open the full one on
+// a tap. There is room for the banner on a wide screen, so it is always shown
+// there and the tap does nothing.
+//
+// Decided in JS rather than CSS because the two cards pull different images:
+// rendering both and hiding one would have every phone downloading a banner it
+// never sees. Re-rendered when the query flips, so a resize doesn't strand the
+// page in the wrong one.
+const BOARD_NARROW = typeof window !== 'undefined' && window.matchMedia
+  ? window.matchMedia('(max-width: 559px)')
+  : null;
+
+if (BOARD_NARROW && BOARD_NARROW.addEventListener) {
+  BOARD_NARROW.addEventListener('change', () => {
+    if (state.screen === 'shopper-inbox') render();
+  });
+}
+
+function boardShowsFullCard(slotId) {
+  if (!BOARD_NARROW || !BOARD_NARROW.matches) return true;
+  return state.expandedBoardSlot === slotId;
+}
+
 function boardBusiness(slotId) {
   const id = (state.board || {})[slotId];
   if (!id) return null;
@@ -6188,11 +6212,19 @@ function boardSlotHtml(area, slot) {
     </div>`;
 
   if (chosen) {
+    const full = boardShowsFullCard(slot.id);
+    const canExpand = BOARD_NARROW && BOARD_NARROW.matches;
     return `
       <div class="fav-slot" data-slot="${escapeHtml(slot.id)}">
         ${head}
-        ${businessCardHtml(chosen, { variant: 'compact' })}
-        <button type="button" class="board-clear" data-action="clearBoardSlot" data-arg="${escapeHtml(slot.id)}">Change</button>
+        <div class="board-card${canExpand ? ' press' : ''}"${canExpand ? ` data-action="toggleBoardCard" data-arg="${escapeHtml(slot.id)}"` : ''}>
+          ${businessCardHtml(chosen, { linked: false, variant: full ? 'large' : 'compact' })}
+        </div>
+        <div class="board-slot-actions">
+          ${canExpand ? `<button type="button" class="board-clear" data-action="toggleBoardCard" data-arg="${escapeHtml(slot.id)}">${full ? 'Show less' : 'Preview'}</button>` : ''}
+          <button type="button" class="board-clear" data-action="openBusiness" data-arg="${chosen.id}">Open listing</button>
+          <button type="button" class="board-clear" data-action="clearBoardSlot" data-arg="${escapeHtml(slot.id)}">Change</button>
+        </div>
       </div>`;
   }
 
@@ -8367,6 +8399,12 @@ const actions = {
   // to read and nobody is filling two at once.
   // The rail's shortcut: open that slot and take them to it, since the slot it
   // opens is usually well below the fold.
+  // One open at a time: a column of expanded cards is the same scrolling
+  // problem the compact card exists to avoid.
+  toggleBoardCard: (slotId) => {
+    state.expandedBoardSlot = state.expandedBoardSlot === String(slotId) ? null : String(slotId);
+    render();
+  },
   quickBoardSlot: (slotId) => {
     // A taken slot has nothing to choose — tapping it goes to it, and Change on
     // the card is how it gets swapped.

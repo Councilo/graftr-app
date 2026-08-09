@@ -1504,11 +1504,24 @@ body::-webkit-scrollbar {
   padding: 0 12px;
 }
 
-/* Swapping who's in a slot. Understated — it only matters once a slot is
-   filled, and then only occasionally. */
+/* The card in a slot. On a phone it is the tap target that opens the full one,
+   so it wants to look pressable without wearing a second border. */
+.board-card {
+  margin-top: 2px;
+}
+
+.board-slot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Swapping who's in a slot, previewing them, opening their page. Understated —
+   they only matter once a slot is filled, and then only occasionally. */
 .board-clear {
   align-self: flex-start;
-  margin-top: 6px;
   padding: 0;
   border: none;
   background: none;
