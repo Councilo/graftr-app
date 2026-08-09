@@ -6254,38 +6254,60 @@ function boardProgressNote(filled, total) {
   return 'Nearly there — a couple of slots left';
 }
 
-// Only the slots that can actually be filled: no point offering a shortcut to
-// car insurance when there is nobody to choose from.
+// Every slot that can hold someone, filled or not — a filled one keeps its
+// place in the rail and wears the business's own mark, so the row fills up as
+// the board does instead of counting down to nothing. Only the slots Vendaru
+// has nobody for are left out; a shortcut to an empty list is no shortcut.
 function boardQuickSlots() {
   const live = (state.businesses || []).filter(isBusinessLive).filter(servesLocation);
   const out = [];
   BOARD_AREAS.forEach((area) => {
     area.slots.forEach((slot) => {
-      if (boardBusiness(slot.id)) return;
-      if (!slot.cat) return;
-      if (!live.some((b) => b.category === slot.cat)) return;
-      out.push({ area, slot, cat: serviceCategory(slot.cat) });
+      const chosen = boardBusiness(slot.id);
+      if (!chosen) {
+        if (!slot.cat) return;
+        if (!live.some((b) => b.category === slot.cat)) return;
+      }
+      out.push({ area, slot, chosen, cat: slot.cat ? serviceCategory(slot.cat) : null });
     });
   });
   return out;
 }
 
-// A rail of the empty slots, above the first card. Tapping one jumps to that
-// slot with its chooser already open, so filling the board doesn't mean
-// scrolling the whole page hunting for the next hole in it. The inner plus
-// still works for anyone who would rather go slot by slot.
+// The icon itself: their logo once a slot is taken, the trade's mark while it
+// is still open.
+function boardQuickIconHtml({ slot, chosen, cat }) {
+  if (!chosen) {
+    return `<span class="board-quick-icon">${cat ? cat.emoji : '＋'}</span>`;
+  }
+  const fallback = chosen.domain
+    ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(chosen.domain)}&sz=128`
+    : '';
+  const initials = (chosen.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const inner = chosen.logoSrc
+    ? `<img src="${escapeHtml(chosen.logoSrc)}" alt="" onload="__fitLogo(this)" onerror="this.onerror=null;${fallback ? `this.src='${fallback}'` : `this.replaceWith(Object.assign(document.createElement('span'),{className:'board-quick-initials',textContent:'${escapeHtml(initials)}'}))`}" />`
+    : `<span class="board-quick-initials">${escapeHtml(initials)}</span>`;
+  return `<span class="board-quick-icon is-filled">${inner}</span>`;
+}
+
+// The rail above the first card. Tapping an empty one opens its chooser and
+// takes you to the slot, which is usually well below the fold; tapping a filled
+// one just takes you to it. The plus inside a slot still works for anyone who
+// would rather go one at a time.
 function boardQuickRailHtml() {
   const quick = boardQuickSlots();
   if (!quick.length) return '';
+  const left = quick.filter(q => !q.chosen).length;
   return `
     <div class="board-quick">
-      <div class="board-quick-head">Quick add — ${quick.length} still to pick</div>
+      <div class="board-quick-head">${left ? `Quick add — ${left} still to pick` : 'Your line-up'}</div>
       <div class="board-quick-rail slot-scroll">
-        ${quick.map(({ slot, cat }) => `
-          <button type="button" class="board-quick-btn" data-action="quickBoardSlot" data-arg="${escapeHtml(slot.id)}"
-            title="Choose your ${escapeHtml(slot.label.toLowerCase())}">
-            <span class="board-quick-icon">${cat ? cat.emoji : '＋'}</span>
-            <span class="board-quick-label">${escapeHtml(slot.label)}</span>
+        ${quick.map((q) => `
+          <button type="button" class="board-quick-btn${q.chosen ? ' is-filled' : ''}"
+            data-action="quickBoardSlot" data-arg="${escapeHtml(q.slot.id)}"
+            title="${q.chosen ? escapeHtml(q.chosen.name) : `Choose your ${escapeHtml(q.slot.label.toLowerCase())}`}">
+            ${boardQuickIconHtml(q)}
+            <span class="board-quick-label">${escapeHtml(q.chosen ? q.chosen.name : q.slot.label)}</span>
           </button>`).join('')}
       </div>
     </div>`;
@@ -8346,7 +8368,9 @@ const actions = {
   // The rail's shortcut: open that slot and take them to it, since the slot it
   // opens is usually well below the fold.
   quickBoardSlot: (slotId) => {
-    state.openBoardPicker = String(slotId);
+    // A taken slot has nothing to choose — tapping it goes to it, and Change on
+    // the card is how it gets swapped.
+    state.openBoardPicker = boardBusiness(slotId) ? null : String(slotId);
     state.pendingBoardScroll = String(slotId);
     render();
   },
