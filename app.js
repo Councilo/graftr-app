@@ -6071,46 +6071,67 @@ function renderLoggedOrdersCard() {
     </div>`;
 }
 
-// The board: the things a household actually has to keep track of, grouped the
-// way people think about them rather than by trade. A slot names the job, not
-// the category — "emergency breakdown" and "local garage" are both garages, and
-// they are rarely the same phone number, which is why what fills a slot is
-// remembered against the slot rather than worked out from the business.
+// The board: seven parts of a household, two things to sort in each.
 //
-// cat is the directory category a slot draws from. null means Vendaru has no
-// listings for it yet — insurers and mortgage lenders are not on here — and the
-// slot says so rather than offering a button that opens an empty list.
+// Two rather than four. The fuller version had twenty-eight slots and twelve of
+// them had nobody to offer — banks, insurers, nurseries, skip hire — so a third
+// of the board was dead ends. These fourteen can all be filled today.
+//
+// A slot draws from `cat`, then narrows with `match` against the name. Both
+// matter: Dental and GP sit on the same `health` category, and without the
+// second filter each would offer the identical nine listings.
 const BOARD_AREAS = [
-  { id: 'car', label: 'Car', emoji: '🚗', slots: [
-    { id: 'car-garage',    label: 'Local garage',        does: 'MOT, servicing, the noise it has started making', cat: 'auto' },
-    { id: 'car-breakdown', label: 'Emergency breakdown', does: 'Who you ring from the hard shoulder',              cat: 'auto' },
-    { id: 'car-insurance', label: 'Car insurance',       does: 'Who you are with, and when it renews',            cat: null },
-  ] },
-  { id: 'house', label: 'House', emoji: '🏠', slots: [
-    { id: 'house-mortgage',  label: 'Mortgage or rent', does: 'Who holds it, and the date it renews',   cat: 'real-estate' },
-    { id: 'house-insurance', label: 'Home insurance',   does: 'Buildings and contents',                 cat: null },
-    { id: 'house-repairs',   label: 'Repairs & upkeep', does: 'The one who actually turns up',          cat: 'trades' },
-    { id: 'house-cleaner',   label: 'Cleaner',          does: 'A regular going-over, or one big reset', cat: 'cleaning' },
-  ] },
-  { id: 'pets', label: 'Pets', emoji: '🐾', slots: [
-    { id: 'pets-vet',    label: 'Vet',        does: 'Jabs, and the number for a bad night',   cat: 'pets' },
-    { id: 'pets-walker', label: 'Dog walker', does: 'Midday walks when you cannot get back',  cat: 'dog-walkers' },
-  ] },
   { id: 'health', label: 'Health', emoji: '💚', slots: [
-    { id: 'health-dentist', label: 'Dentist & physio', does: 'Before it becomes urgent',           cat: 'health' },
-    { id: 'health-beauty',  label: 'Hair & beauty',    does: 'The one who knows how you like it',  cat: 'beauty' },
+    { id: 'health-gp',     label: 'Primary care',  does: 'Check-ups, and someone to call when it is not right', cat: 'health', match: /nuffield|bupa health/i },
+    { id: 'health-dental', label: 'Dental care',   does: 'Six-monthly, and the one that cannot wait',           cat: 'health', match: /dental|dentist/i },
   ] },
+
+  { id: 'home', label: 'Home', emoji: '🏠', slots: [
+    { id: 'home-plumbing', label: 'Plumbing & heating', does: 'Leaks, boilers, no hot water on a Sunday', cat: 'trades', match: /plumb|dyno|boiler|heating|homeserve|british gas/i },
+    { id: 'home-handyman', label: 'Handyman & repairs', does: 'Shelves, locks, the jobs that pile up',    cat: 'trades', match: /checkatrade|mybuilder|handyman|timpson|screwfix/i },
+  ] },
+
+  { id: 'pets', label: 'Pets', emoji: '🐾', slots: [
+    { id: 'pets-vet',    label: 'Veterinary care',       does: 'Jabs, and the number for a bad night', cat: 'pets', match: /vet|pdsa|linnaeus|cvs/i },
+    { id: 'pets-walker', label: 'Daily care & exercise', does: 'Midday walks when you cannot get back', cat: 'dog-walkers' },
+  ] },
+
   { id: 'money', label: 'Money & legal', emoji: '📄', slots: [
-    { id: 'money-legal', label: 'Solicitor or accountant', does: 'Tax return, a will, the letter you are avoiding', cat: 'legal' },
+    { id: 'money-wills', label: 'Wills & estate law', does: 'A will, probate, the letter you are avoiding', cat: 'legal', match: /solicitor|law|legal|mitchell|shoosmith|gordon/i },
+    { id: 'money-tax',   label: 'Tax & accounting',  does: 'The return, and someone to ring about it',     cat: 'legal', match: /tax|account|kpmg|bdo/i },
   ] },
+
+  { id: 'auto', label: 'Automotive', emoji: '🚗', slots: [
+    { id: 'auto-service',   label: 'Servicing & repairs',  does: 'MOT, servicing, the noise it has started making', cat: 'auto', match: /kwik|halfords|autocentre|servicing|chipsaway|autoglass|lookers/i },
+    { id: 'auto-breakdown', label: 'Breakdown & recovery', does: 'Who you ring from the hard shoulder',             cat: 'auto', match: /rac|automobile association|breakdown|recovery/i },
+  ] },
+
   { id: 'family', label: 'Family', emoji: '🎒', slots: [
-    { id: 'family-tutor', label: 'Tutor', does: 'Help before the exams, not after', cat: 'tutoring' },
+    { id: 'family-tutor',    label: 'Academic tutoring', does: 'Help before the exams, not after',       cat: 'tutoring', match: /tutor|kumon|explore learning|kip mcgrath/i },
+    { id: 'family-cleaning', label: 'Home cleaning',     does: 'A regular going-over, or one big reset', cat: 'cleaning', match: /molly|domestic|fantastic|ovenu|safeclean/i },
   ] },
-  { id: 'plans', label: 'Plans', emoji: '✈️', slots: [
-    { id: 'plans-travel', label: 'Getting away', does: 'Booked by someone who does it all day', cat: 'travel' },
-    { id: 'plans-events', label: 'Occasions',    does: 'Birthdays, the wedding, the big one',   cat: 'events' },
+
+  { id: 'plans', label: 'Plans & travel', emoji: '✈️', slots: [
+    { id: 'plans-agent',    label: 'Travel & bookings', does: 'Booked by someone who does it all day', cat: 'travel', match: /tui|hays|trailfinders|flight centre|virgin|travel/i },
+    { id: 'plans-transfer', label: 'Airport transit',   does: 'Getting there at five in the morning',   cat: 'travel', match: /national express|addison lee|coach|chauffeur|taxi|transfer/i },
   ] },
 ];
+
+// The businesses a slot can be filled from: its category, narrowed by its
+// matcher. Either may be absent; both absent means nothing to offer.
+function boardSlotPool(slot) {
+  if (!slot.cat && !slot.match) return [];
+  return (state.businesses || [])
+    .filter(isBusinessLive)
+    .filter(servesLocation)
+    .filter(b => (!slot.cat || b.category === slot.cat)
+      // Name only. Taglines list what a business can arrange as much as what
+      // it is — Checkatrade's mentions plumbers, {my}dentist's mentions
+      // practices — so matching them put a directory under Plumbing and a
+      // dentist under GP.
+      && (!slot.match || slot.match.test(b.name)))
+    .sort(byTierThenRecency);
+}
 
 const BOARD_KEY = 'graftr_board';
 
@@ -6202,15 +6223,14 @@ function boardSlotHtml(area, slot) {
       </div>`;
   }
 
-  const live = (state.businesses || []).filter(isBusinessLive).filter(servesLocation);
-  const choices = cat ? live.filter(b => b.category === slot.cat).sort(byTierThenRecency) : [];
+  const choices = boardSlotPool(slot);
 
   if (!choices.length) {
     return `
       <div class="fav-slot is-empty" data-slot="${escapeHtml(slot.id)}">
         ${head}
         <div class="fav-empty-card board-none">
-          <span>${slot.cat ? 'Nobody listed yet' : 'Not on Vendaru yet'}</span>
+          <span>Nobody listed yet</span>
         </div>
       </div>`;
   }
@@ -6265,15 +6285,11 @@ function boardProgressNote(filled, total) {
 // the board does instead of counting down to nothing. Only the slots Vendaru
 // has nobody for are left out; a shortcut to an empty list is no shortcut.
 function boardQuickSlots() {
-  const live = (state.businesses || []).filter(isBusinessLive).filter(servesLocation);
   const out = [];
   BOARD_AREAS.forEach((area) => {
     area.slots.forEach((slot) => {
       const chosen = boardBusiness(slot.id);
-      if (!chosen) {
-        if (!slot.cat) return;
-        if (!live.some((b) => b.category === slot.cat)) return;
-      }
+      if (!chosen && !boardSlotPool(slot).length) return;
       out.push({ area, slot, chosen, cat: slot.cat ? serviceCategory(slot.cat) : null });
     });
   });
