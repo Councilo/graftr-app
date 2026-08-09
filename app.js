@@ -1024,6 +1024,7 @@ const state = {
   shopFilter: 'all',               // which part of Shop: see SHOP_FILTERS
   board: {},                       // slot id -> business id; see BOARD_AREAS
   openBoardPicker: null,           // which board slot has its chooser open
+  pendingBoardScroll: null,        // slot to scroll to once it has been drawn
   shopCategory: '',                // narrows the shops band; '' is all of them
   favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
@@ -6188,7 +6189,7 @@ function boardSlotHtml(area, slot) {
 
   if (chosen) {
     return `
-      <div class="fav-slot">
+      <div class="fav-slot" data-slot="${escapeHtml(slot.id)}">
         ${head}
         ${businessCardHtml(chosen, { variant: 'compact' })}
         <button type="button" class="board-clear" data-action="clearBoardSlot" data-arg="${escapeHtml(slot.id)}">Change</button>
@@ -6200,7 +6201,7 @@ function boardSlotHtml(area, slot) {
 
   if (!choices.length) {
     return `
-      <div class="fav-slot is-empty">
+      <div class="fav-slot is-empty" data-slot="${escapeHtml(slot.id)}">
         ${head}
         <div class="fav-empty-card board-none">
           <span>${slot.cat ? 'Nobody listed yet' : 'Not on Vendaru yet'}</span>
@@ -6210,7 +6211,7 @@ function boardSlotHtml(area, slot) {
 
   const open = state.openBoardPicker === slot.id;
   return `
-    <div class="fav-slot is-empty">
+    <div class="fav-slot is-empty" data-slot="${escapeHtml(slot.id)}">
       ${head}
       <div class="fav-empty-card">
         <button type="button" class="fav-add-btn${open ? ' is-open' : ''}" data-action="toggleBoardPicker"
@@ -6240,6 +6241,56 @@ function boardChoiceHtml(slot, b) {
 // The top of the board is a page about a person, not a screen of the app: their
 // picture, their name said out loud, and what the board is for underneath. The
 // photo is the account's, so setting it here or there sets it in both places.
+// How far along, in words. A bare percentage tells you a number; this tells you
+// whether to bother carrying on.
+function boardProgressNote(filled, total) {
+  if (!total) return '';
+  if (filled === 0) return 'Nothing on your board yet — start with the one you would ring first';
+  if (filled === total) return 'Every slot filled. Nothing left to sort';
+  const pct = Math.round((filled / total) * 100);
+  if (pct < 25) return 'Made a start — a few more and this is worth coming back to';
+  if (pct < 50) return 'Coming together. The gaps are the ones you notice at the worst moment';
+  if (pct < 80) return 'Over halfway. Worth finishing while you are here';
+  return 'Nearly there — a couple of slots left';
+}
+
+// Only the slots that can actually be filled: no point offering a shortcut to
+// car insurance when there is nobody to choose from.
+function boardQuickSlots() {
+  const live = (state.businesses || []).filter(isBusinessLive).filter(servesLocation);
+  const out = [];
+  BOARD_AREAS.forEach((area) => {
+    area.slots.forEach((slot) => {
+      if (boardBusiness(slot.id)) return;
+      if (!slot.cat) return;
+      if (!live.some((b) => b.category === slot.cat)) return;
+      out.push({ area, slot, cat: serviceCategory(slot.cat) });
+    });
+  });
+  return out;
+}
+
+// A rail of the empty slots, above the first card. Tapping one jumps to that
+// slot with its chooser already open, so filling the board doesn't mean
+// scrolling the whole page hunting for the next hole in it. The inner plus
+// still works for anyone who would rather go slot by slot.
+function boardQuickRailHtml() {
+  const quick = boardQuickSlots();
+  if (!quick.length) return '';
+  return `
+    <div class="board-quick">
+      <div class="board-quick-head">Quick add — ${quick.length} still to pick</div>
+      <div class="board-quick-rail slot-scroll">
+        ${quick.map(({ slot, cat }) => `
+          <button type="button" class="board-quick-btn" data-action="quickBoardSlot" data-arg="${escapeHtml(slot.id)}"
+            title="Choose your ${escapeHtml(slot.label.toLowerCase())}">
+            <span class="board-quick-icon">${cat ? cat.emoji : '＋'}</span>
+            <span class="board-quick-label">${escapeHtml(slot.label)}</span>
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
+
 function boardHeroHtml(filled, total) {
   const p = state.userProfile || {};
   const who = ((state.authUser && state.authUser.name) || p.name || '').trim();
@@ -6269,8 +6320,9 @@ function boardHeroHtml(filled, total) {
           : 'Put the people you’d call in one place, before you need them.'}</div>
         <div class="board-progress">
           <div class="fav-bar" aria-hidden="true"><span style="width:${total ? Math.round((filled / total) * 100) : 0}%"></span></div>
-          <span class="board-progress-count">${filled} of ${total}</span>
+          <span class="board-progress-count">${total ? Math.round((filled / total) * 100) : 0}%</span>
         </div>
+        <div class="board-progress-note">${escapeHtml(boardProgressNote(filled, total))} · ${filled} of ${total}</div>
       </div>
     </div>`;
 }
@@ -6282,6 +6334,8 @@ function renderBoardSection() {
     ${boardHeroHtml(filled, total)}
 
     <div class="board-lede-2">Explore further and fill in:</div>
+
+    ${boardQuickRailHtml()}
 
     ${BOARD_AREAS.map(area => `
       <div class="board-area">
@@ -7130,6 +7184,12 @@ function render() {
   if (state.aiChatOpen) {
     const chatBody = root.querySelector('#ai-chat-body-scroll');
     if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  if (state.pendingBoardScroll) {
+    const el = root.querySelector(`[data-slot="${state.pendingBoardScroll}"]`);
+    if (el) el.scrollIntoView({ block: 'center' });
+    state.pendingBoardScroll = null;
   }
 
   if (state.pendingScrollCategory && state.screen === 'shopper-browse') {
@@ -8283,6 +8343,13 @@ const actions = {
   // leaving the band filtered to a category that no longer exists.
   // One slot's chooser at a time — two open lists on a page of slots is a mess
   // to read and nobody is filling two at once.
+  // The rail's shortcut: open that slot and take them to it, since the slot it
+  // opens is usually well below the fold.
+  quickBoardSlot: (slotId) => {
+    state.openBoardPicker = String(slotId);
+    state.pendingBoardScroll = String(slotId);
+    render();
+  },
   toggleBoardPicker: (slotId) => {
     state.openBoardPicker = state.openBoardPicker === slotId ? null : String(slotId);
     render();

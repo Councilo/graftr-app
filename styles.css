@@ -1317,6 +1317,82 @@ body::-webkit-scrollbar {
   color: #9a9a9a;
 }
 
+.board-progress-note {
+  font-size: 12px;
+  color: #6b6b6b;
+  line-height: 1.45;
+  margin-top: 6px;
+}
+
+/* Every empty slot as an app icon, above the first card. Filling a board
+   otherwise means scrolling the length of it looking for the next hole. */
+.board-quick {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.board-quick-head {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+}
+
+.board-quick-rail {
+  display: flex;
+  gap: 10px;
+  margin: 0 -18px;
+  padding: 2px 18px 6px;
+  overflow-x: auto;
+}
+
+.board-quick-btn {
+  flex: 0 0 auto;
+  width: 66px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.board-quick-btn:active {
+  transform: scale(0.96);
+}
+
+.board-quick-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed rgba(20, 20, 20, 0.25);
+  border-radius: 15px;
+  background: #ffffff;
+  font-size: 19px;
+}
+
+/* Dashed until it is filled, which is the whole point of the rail: these are
+   the holes, and they close as you go. */
+.board-quick-btn:hover .board-quick-icon {
+  border-style: solid;
+  border-color: #141414;
+}
+
+.board-quick-label {
+  font-size: 10.5px;
+  line-height: 1.25;
+  color: #141414;
+  text-align: center;
+}
+
 /* The line that hands you on to the slots, as the reference does. */
 .board-lede-2 {
   font-size: 15px;
