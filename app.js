@@ -4309,7 +4309,7 @@ const PARTNER_CARDS = [
     cta: 'Start free trial',
     tint: '#008060',
     logo: 'https://www.google.com/s2/favicons?domain=shopify.com&sz=128',
-    photo: 'https://images.unsplash.com/photo-1611250308498-9e325502f8ee?auto=format&fit=crop&w=800&q=80',
+    photo: 'https://images.unsplash.com/photo-1449247666642-264389f5f5b1?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8c21hbGwlMjBidXNpbmVzcyUyMG93bmVyJTIwcGFja2luZyUyMG9yZGVyc3xlbnwxfDB8fHwxNzg2MjcwMjQzfDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80',
     url: 'https://shopify.pxf.io/dyEmAj',
   },
   {
@@ -4322,6 +4322,7 @@ const PARTNER_CARDS = [
     // No photo: nothing in the library reads as short video or creators, and a
     // stock picture that doesn't mean anything is worse than the brand's own
     // black. build_partner_photos.js fills this in with a real one.
+    photo: 'https://images.unsplash.com/photo-1630797160666-38e8c5ba44c1?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8ZmlsbWluZyUyMHZpZGVvJTIwc21hcnRwaG9uZSUyMGNyZWF0b3J8ZW58MXwwfHx8MTc4NjI3MDI0NHww&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80',
     url: 'https://getstartedtiktok.partnerlinks.io/00n0j6kr0ids',
   },
   {
@@ -4339,7 +4340,7 @@ const PARTNER_CARDS = [
     cta: 'Order now',
     tint: '#141414',
     logo: 'assets/business/barrons-of-beef.png',
-    photo: '',
+    photo: 'https://images.unsplash.com/photo-1597417321971-45e034f7a993?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8YnV0Y2hlciUyMHNob3AlMjBtZWF0JTIwY291bnRlcnxlbnwxfDB8fHwxNzg2MjcwMjQ1fDA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80',
     // Ordered through Vendaru rather than sent off to a website: this opens a
     // special request with the shop already filled in, which is the flow a
     // courier collection actually runs on. Still a paid placement, so still
@@ -4360,7 +4361,7 @@ const PARTNER_CARDS = [
     tint: '#1D4ED8',
     // Its own mark, served as SVG by the site itself, so it stays sharp.
     logo: 'https://utraveluk.net/favicon.svg',
-    photo: 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?auto=format&fit=crop&w=800&q=80',
+    photo: 'https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?ixid=M3wxMDIxNDkyfDB8MXxzZWFyY2h8MXx8dHJhdmVsJTIwcGxhbm5pbmclMjBtYXAlMjBob2xpZGF5fGVufDF8MHx8fDE3ODYyNzAyNDR8MA&ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80',
     url: 'https://utraveluk.net/',
     kind: 'ours',
     // Rendered at the head of New to Vendaru rather than in the partners band,
