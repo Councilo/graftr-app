@@ -194,55 +194,6 @@ function saveLoggedOrders() {
   try { localStorage.setItem('graftr_logged_orders', JSON.stringify(state.orders)); } catch(e){}
 }
 
-// ---- Loyalty card -------------------------------------------------------
-// A stamp per delivered order of £30+. Stamps are derived from the orders
-// themselves rather than kept as a counter, so an order that's cancelled or
-// never delivered simply stops counting — nothing to unwind by hand. Only the
-// number already spent on rewards is stored.
-const LOYALTY_MIN_ORDER = 30;
-const LOYALTY_STAMPS_PER_REWARD = 6;
-const LOYALTY_REWARD_MAX = 5;
-
-function loadLoyaltyRedeemed() {
-  try {
-    const saved = localStorage.getItem('graftr_loyalty');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed && typeof parsed.redeemed === 'number') return Math.max(0, parsed.redeemed);
-    }
-  } catch (e) { /* ignore corrupt storage */ }
-  return 0;
-}
-
-function saveLoyalty() {
-  try {
-    localStorage.setItem('graftr_loyalty', JSON.stringify({ redeemed: state.loyaltyRedeemed }));
-  } catch (e) { /* ignore write failure */ }
-}
-
-function qualifyingOrderCount() {
-  return (state.orders || []).filter(o =>
-    o.status === 'Delivered' && (o.total || 0) >= LOYALTY_MIN_ORDER
-  ).length;
-}
-
-function loyaltyState() {
-  const earned = qualifyingOrderCount();
-  // A reward sitting unpaid in the basket is reserved, not spent: it counts
-  // against the balance so you can't claim two, but it's released the moment
-  // the item leaves the basket.
-  const spent = ((state.loyaltyRedeemed || 0) + loyaltyPendingFree()) * LOYALTY_STAMPS_PER_REWARD;
-  // If stamps vanish (an order was cancelled after a reward was claimed) the
-  // balance can go negative — clamp so the card never shows nonsense.
-  const available = Math.max(0, earned - spent);
-  return {
-    earned,
-    stamps: available % LOYALTY_STAMPS_PER_REWARD,
-    rewardsReady: Math.floor(available / LOYALTY_STAMPS_PER_REWARD),
-    redeemed: state.loyaltyRedeemed || 0,
-  };
-}
-
 function loadCourierStats() {
   try {
     const saved = localStorage.getItem('graftr_courier_stats');
@@ -347,16 +298,10 @@ function finalizeOrder(snapshot) {
     tip: 0,
     scheduledAt,
     scheduledFor: scheduledAt ? scheduleLabelFor(scheduledAt) : null,
-    loyaltyDiscount: snapshot.loyaltyDiscount || 0,
   };
   state.orders.unshift(newOrder);
   state.activeOrderId = newId;
 
-  // The order is real now, so the reserved rewards are finally spent.
-  if (snapshot.loyaltyUsed) {
-    state.loyaltyRedeemed = (state.loyaltyRedeemed || 0) + snapshot.loyaltyUsed;
-    saveLoyalty();
-  }
   // Paid bookings become real appointments the business can see and work.
   bookedServices.forEach((bk, i) => {
     state.bookings.unshift({
@@ -387,7 +332,6 @@ function finalizeOrder(snapshot) {
   }
   state.bookingCart = [];
 
-  state.loyaltyFree = {};
   state.cart = {};
   state.showCheckoutModal = false;
   state.mode = 'shopper';
@@ -439,6 +383,17 @@ function isPaymentBackendUnavailable(res, data) {
 
 function checkStripeRedirectResult() {
   const params = new URLSearchParams(window.location.search);
+
+  // Coming back from taking out a membership.
+  const membership = params.get('membership');
+  if (membership) {
+    const rawMember = localStorage.getItem(PENDING_MEMBER_KEY);
+    if (membership === 'success' && rawMember) {
+      try { applyMembership(JSON.parse(rawMember)); } catch (e) { /* malformed, nothing to apply */ }
+    } else {
+      try { localStorage.removeItem(PENDING_MEMBER_KEY); } catch (e) { /* ignore */ }
+    }
+  }
 
   // Coming back from subscribing to a listing plan.
   const plan = params.get('plan');
@@ -1026,6 +981,11 @@ const state = {
   openBoardPicker: null,           // which board slot has its chooser open
   pendingBoardScroll: null,        // slot to scroll to once it has been drawn
   expandedBoardSlot: null,         // slot showing its full card; phones only
+  membership: null,                // { tier, billing, since }; read below
+  memberBilling: null,             // monthly | annual, while choosing
+  memberChoice: null,              // tier being considered on the account card
+  memberBuying: false,
+  memberError: null,
   shopCategory: '',                // narrows the shops band; '' is all of them
   favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
@@ -1071,12 +1031,9 @@ const state = {
   deliveryLater: false,
   deliveryDayOffset: 0,
   deliverySlot: null,
-  loyaltyRedeemed: loadLoyaltyRedeemed(),
   // productId -> how many units of it are free in the basket right now. Held in
   // memory alongside the cart on purpose: the stamp isn't spent until the order
   // is placed, so emptying the basket or reloading hands the reward back.
-  loyaltyFree: {},
-  showLoyaltyPicker: false,
   ...loadInbox(),
   basketCheckedOut: false,
   trackStep: 2,
@@ -1167,40 +1124,12 @@ function cartCount() {
   return cartLines().reduce((sum, l) => sum + l.qty, 0);
 }
 
-// Free units can never outnumber what's actually in the basket — if the item is
-// removed or reduced, the reward stops applying (and the stamp comes back).
-function freeQtyFor(productId, cartQty) {
-  const claimed = (state.loyaltyFree || {})[productId] || 0;
-  return Math.max(0, Math.min(claimed, cartQty));
-}
-
-// Drop reservations for items that have left the basket, so re-adding the same
-// product later doesn't quietly come out free.
-function pruneLoyaltyFree() {
-  Object.keys(state.loyaltyFree || {}).forEach((id) => {
-    const inCart = state.cart[id] || 0;
-    if (inCart <= 0) delete state.loyaltyFree[id];
-    else if (state.loyaltyFree[id] > inCart) state.loyaltyFree[id] = inCart;
-  });
-}
-
-// Rewards attached to the current basket but not yet paid for.
-function loyaltyPendingFree() {
-  return cartLines().reduce((sum, l) => sum + freeQtyFor(l.product.id, l.qty), 0);
-}
-
 function cartSubtotal() {
   return cartLines().reduce((sum, l) => sum + l.qty * l.product.estimated_price_gbp, 0);
 }
 
-function loyaltyDiscount() {
-  return cartLines().reduce(
-    (sum, l) => sum + freeQtyFor(l.product.id, l.qty) * l.product.estimated_price_gbp, 0
-  );
-}
-
 function cartTotal() {
-  return Math.max(0, cartSubtotal() - loyaltyDiscount());
+  return cartSubtotal();
 }
 
 const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -4852,16 +4781,12 @@ function renderShopperBasket() {
             </div>
 
             ${lines.map((l, i) => {
-              const free = freeQtyFor(l.product.id, l.qty);
-              const charged = (l.qty - free) * l.product.estimated_price_gbp;
+              const charged = l.qty * l.product.estimated_price_gbp;
               return `
               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
                 <div style="flex:1;min-width:0">
                   <div style="font-size:13.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(l.product.name)}</div>
                   <div style="font-size:12.5px;color:#6b6b6b">£${l.product.estimated_price_gbp.toFixed(2)} each</div>
-                  ${free > 0
-                    ? `<div style="font-size:12.5px;font-weight:600;color:#c9447a;margin-top:1px">${free} free · loyalty reward</div>`
-                    : ''}
                   <button type="button" data-action="saveForLater" data-arg="${l.product.id}" style="background:none;border:none;padding:2px 0 0;font-size:12.5px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit">Save for later</button>
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto">
@@ -4950,10 +4875,6 @@ function renderShopperBasket() {
     </div>`
     : '';
 
-  // The free item is chosen here rather than on Account — it lands in this
-  // basket, so the card only shows up once there's a reward waiting.
-  const loyaltyCard = loyaltyState().rewardsReady > 0 ? renderLoyaltyCard('basket') : '';
-
   // Service bookings ride in the same basket as the shopping.
   const bookings = bookingLines();
   const bookingsCard = bookings.length
@@ -4990,7 +4911,6 @@ function renderShopperBasket() {
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
         <div style="font-size:25px;font-weight:700;color:#141414">Basket</div>
       </div>
-      ${loyaltyCard}
       ${bookingsCard}
       <!-- "Your basket is empty" would contradict a basket holding bookings. -->
       ${(state.basketCheckedOut || lines.length > 0 || bookings.length === 0) ? basketBox : ''}
@@ -5080,12 +5000,11 @@ function renderCheckoutModal() {
   const missing = missingProfileFields();
   const lines = cartLines();
   const subtotal = cartSubtotal();
-  const discount = loyaltyDiscount();
   const bookings = bookingLines();
   const bookingsSum = bookingsTotal();
   // A basket of bookings alone has nothing to carry, so no delivery fee.
   const serviceFee = SERVICE_FEE;
-  const grandTotal = subtotal - discount + bookingsSum + serviceFee;
+  const grandTotal = subtotal + bookingsSum + serviceFee;
   const p = state.userProfile;
   // "Schedule" picked but no slot chosen — otherwise the order would quietly
   // go out as an immediate one.
@@ -5095,16 +5014,11 @@ function renderCheckoutModal() {
   const sectionLabel = 'font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0';
   const summaryRow = 'display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#6b6b6b;padding:3px 0';
 
-  const itemsListHtml = lines.map((l, i) => {
-    const free = freeQtyFor(l.product.id, l.qty);
-    return `
+  const itemsListHtml = lines.map((l, i) => `
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : 'margin-top:4px;'}">
-      <span style="font-size:13.5px;color:#141414;min-width:0">${l.qty} × ${escapeHtml(l.product.name)}${
-        free > 0 ? `<span style="display:block;font-size:12.5px;font-weight:600;color:#c9447a">${free} free · loyalty reward</span>` : ''
-      }</span>
+      <span style="font-size:13.5px;color:#141414;min-width:0">${l.qty} × ${escapeHtml(l.product.name)}</span>
       <span style="font-size:13.5px;font-weight:600;flex:0 0 auto">£${(l.qty * l.product.estimated_price_gbp).toFixed(2)}</span>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 
   return `
     <div class="graftr-modal-overlay">
@@ -5153,9 +5067,6 @@ function renderCheckoutModal() {
           ${itemsListHtml}
           <div style="border-top:1px solid #f0f0f0;padding-top:10px;margin-top:2px">
             <div style="${summaryRow}"><span>Subtotal</span><span>£${subtotal.toFixed(2)}</span></div>
-            ${discount > 0
-              ? `<div style="${summaryRow};color:#c9447a;font-weight:600"><span>Loyalty reward</span><span>−£${discount.toFixed(2)}</span></div>`
-              : ''}
             ${bookingsSum > 0 ? `<div style="${summaryRow}"><span>Bookings</span><span>£${bookingsSum.toFixed(2)}</span></div>` : ''}
             <div style="${summaryRow}"><span>Service fee</span><span>£${serviceFee.toFixed(2)}</span></div>
             <div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;font-weight:600;color:#141414;padding-top:9px;margin-top:5px;border-top:1px solid #f0f0f0">
@@ -5234,168 +5145,154 @@ function renderTermsModal() {
 // UI — it's the loyalty card, so it should look like a card in your wallet.
 // `context` is 'account' (progress, points you at the basket) or 'basket'
 // (where the free item is actually chosen, since that's the shopping cart).
-// Standing on Vendaru, earned rather than bought. It counts the same thing the
-// loyalty card does — delivered orders over the minimum — because that number
-// is already kept and already means something, and inventing a second metric
-// would only give the two cards a way to disagree.
+// Customer membership, built the same way the listing plans are: a ladder of
+// paid tiers, monthly or annual, bought through the same Stripe endpoint. Free
+// is a real rung rather than the absence of one, so somebody who never pays
+// still has a membership rather than a blank.
 //
-// Deliberately no perks attached. Nothing in the app gives a member a discount
-// or a faster courier, so saying otherwise on a badge would be a promise the
-// code doesn't keep. What a tier does is say how long someone has been here.
+// Annual is ten months' money for twelve, matching the listing plans — one
+// pricing idea across the site rather than two.
 const MEMBER_TIERS = [
-  { id: 'member',  label: 'Member',  from: 0,  blurb: 'Where everyone starts' },
-  { id: 'regular', label: 'Regular', from: 3,  blurb: 'Three orders in' },
-  { id: 'local',   label: 'Local',   from: 8,  blurb: 'Eight orders — you shop here properly' },
-  { id: 'patron',  label: 'Patron',  from: 15, blurb: 'Fifteen orders. You keep the lights on' },
+  {
+    id: 'free', label: 'Free', monthly: 0, annual: 0, rank: 0,
+    summary: 'Everything you need to shop and book',
+    features: ['Browse and book every listing', 'Your board, all fifteen slots', 'Special requests by courier'],
+  },
+  {
+    id: 'plus', label: 'Plus', monthly: 3, annual: 30, rank: 1,
+    summary: 'No service fee on anything you order',
+    features: ['Everything in Free', `No £${SERVICE_FEE.toFixed(2)} service fee, ever`, 'Priority on the courier queue'],
+  },
+  {
+    id: 'pro', label: 'Pro', monthly: 7, annual: 70, rank: 2,
+    summary: 'Free delivery and first pick of new listings',
+    features: ['Everything in Plus', 'Free delivery on every order', 'New businesses before anyone else'],
+  },
 ];
 
-function memberTier() {
-  const orders = qualifyingOrderCount();
-  let tier = MEMBER_TIERS[0];
-  MEMBER_TIERS.forEach((t) => { if (orders >= t.from) tier = t; });
-  const next = MEMBER_TIERS[MEMBER_TIERS.indexOf(tier) + 1] || null;
-  return {
-    tier,
-    next,
-    orders,
-    toNext: next ? next.from - orders : 0,
-    // Progress through the current step, not through the whole ladder, so the
-    // bar means "how close to the next one" rather than something vaguer.
-    pct: next
-      ? Math.max(0, Math.min(100, Math.round(((orders - tier.from) / (next.from - tier.from)) * 100)))
-      : 100,
+const PENDING_MEMBER_KEY = 'graftr_pending_membership';
+
+// Applied on the way back from Stripe, or straight away when there is no
+// billing backend to go to.
+function applyMembership(pending) {
+  if (!pending || !pending.tier) return;
+  state.membership = {
+    tier: memberTierById(pending.tier).id,
+    billing: pending.billing === 'annual' ? 'annual' : 'monthly',
+    since: Date.now(),
   };
+  state.memberChoice = null;
+  saveMembership();
+  try { localStorage.removeItem(PENDING_MEMBER_KEY); } catch (e) { /* ignore */ }
 }
 
-// The badge. Same mark everywhere it appears, filling in as the tier climbs, so
-// it reads at a glance without needing the word next to it.
+const MEMBER_KEY = 'graftr_membership';
+const DEFAULT_MEMBER_TIER = 'free';
+
+function loadMembership() {
+  try {
+    const raw = localStorage.getItem(MEMBER_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (parsed && typeof parsed === 'object') return parsed;
+  } catch (e) { /* ignore corrupt storage */ }
+  return { tier: DEFAULT_MEMBER_TIER, billing: 'monthly', since: null };
+}
+
+function saveMembership() {
+  try { localStorage.setItem(MEMBER_KEY, JSON.stringify(state.membership || {})); } catch (e) { /* ignore */ }
+}
+
+function memberTierById(id) {
+  return MEMBER_TIERS.find(t => t.id === id) || MEMBER_TIERS[0];
+}
+
+function memberTier() {
+  return memberTierById((state.membership || {}).tier || DEFAULT_MEMBER_TIER);
+}
+
+function memberPrice(tier, billing) {
+  return billing === 'annual' ? tier.annual : tier.monthly;
+}
+
+// The badge: one pip per rung, filled to the tier held. Reads at a glance and
+// needs no artwork, so adding a tier is a line of data rather than a new asset.
 function memberBadgeHtml(tier, size) {
-  const level = MEMBER_TIERS.findIndex(t => t.id === tier.id);
   return `
     <span class="member-badge is-${escapeHtml(tier.id)}${size === 'sm' ? ' is-sm' : ''}" aria-hidden="true">
-      ${[0, 1, 2, 3].map(i => `<span class="member-pip${i <= level ? ' is-on' : ''}"></span>`).join('')}
+      ${MEMBER_TIERS.map((t) => `<span class="member-pip${t.rank <= tier.rank ? ' is-on' : ''}"></span>`).join('')}
     </span>`;
 }
 
 function memberChipHtml() {
-  const m = memberTier();
+  const tier = memberTier();
   return `
-    <span class="member-chip" title="${escapeHtml(m.tier.blurb)}">
-      ${memberBadgeHtml(m.tier, 'sm')}
-      <span class="member-chip-label">${escapeHtml(m.tier.label)}</span>
+    <span class="member-chip" title="Vendaru ${escapeHtml(tier.label)} membership">
+      ${memberBadgeHtml(tier, 'sm')}
+      <span class="member-chip-label">${escapeHtml(tier.label)}</span>
     </span>`;
 }
 
 function renderMembershipCard() {
-  const m = memberTier();
-  return `
-    <div class="shop-card" style="${SERVICE_CARD_SHELL}">
-      <div style="padding:16px">
-        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">Membership</div>
+  const held = memberTier();
+  const billing = state.memberBilling || (state.membership || {}).billing || 'monthly';
+  const chosen = memberTierById(state.memberChoice || held.id);
+  const cardShell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;background:#fff';
 
-        <div class="member-head">
-          ${memberBadgeHtml(m.tier)}
-          <div style="min-width:0">
-            <div class="member-tier-name">${escapeHtml(m.tier.label)}</div>
-            <div class="member-tier-blurb">${escapeHtml(m.tier.blurb)}</div>
-          </div>
-        </div>
+  const toggle = ['monthly', 'annual'].map(id => `
+    <button type="button" class="view-opt${billing === id ? ' is-on' : ''}"
+      data-action="setMemberBilling" data-arg="${id}">${id === 'annual' ? 'Annual' : 'Monthly'}</button>`).join('');
 
-        <div class="fav-bar" style="margin-top:12px"><span style="width:${m.pct}%"></span></div>
-        <div class="member-next">
-          ${m.next
-            ? `${m.toNext} more order${m.toNext === 1 ? '' : 's'} to ${escapeHtml(m.next.label)}`
-            : 'Top tier — nothing above this one'}
-          <span style="color:#9a9a9a"> · ${m.orders} order${m.orders === 1 ? '' : 's'} so far</span>
-        </div>
+  const rows = MEMBER_TIERS.map((t) => {
+    const isHeld = t.id === held.id;
+    const isChosen = t.id === chosen.id;
+    const price = memberPrice(t, billing);
+    return `
+      <button type="button" class="member-plan${isChosen ? ' is-chosen' : ''}"
+        data-action="setMemberChoice" data-arg="${t.id}">
+        <span class="member-plan-top">
+          <span class="member-plan-name">${escapeHtml(t.label)}${isHeld ? ' <span class="member-plan-current">Current</span>' : ''}</span>
+          <span class="member-plan-price">${price ? `£${price}<span>/${billing === 'annual' ? 'yr' : 'mo'}</span>` : 'Free'}</span>
+        </span>
+        <span class="member-plan-summary">${escapeHtml(t.summary)}</span>
+        <span class="member-plan-features">${t.features.map(f => `<span>${escapeHtml(f)}</span>`).join('')}</span>
+      </button>`;
+  }).join('');
 
-        <div class="member-note">Counted on delivered orders over £${LOYALTY_MIN_ORDER}. It is a standing, not a subscription — there is nothing to pay and nothing to cancel.</div>
-      </div>
-    </div>`;
-}
-
-function renderLoyaltyCard(context = 'account') {
-  const l = loyaltyState();
-  const ready = l.rewardsReady > 0;
-
-  // On the order that completes a card the remainder wraps to 0, which would
-  // blank every stamp at the exact moment the reward lands. Show a full card
-  // instead until the reward is claimed.
-  const shown = ready && l.stamps === 0 ? LOYALTY_STAMPS_PER_REWARD : l.stamps;
-
-  // Earned stamps fill in a deeper rose than the card itself so they read as
-  // stamped rather than printed; white numerals need that much contrast.
-  const dots = Array.from({ length: LOYALTY_STAMPS_PER_REWARD }, (_, i) =>
-    `<span class="loyalty-stamp${i < shown ? ' is-filled' : ''}">${i + 1}</span>`
-  ).join('');
-
-  const toGo = LOYALTY_STAMPS_PER_REWARD - l.stamps;
-
-  // Same shell, section label and footer-row-with-a-pill as every other card;
-  // only the fill colour is the brand pink.
-  const cardShell = 'border:1.5px solid rgba(20,20,20,0.12);border-radius:16px;overflow:hidden;background:#ffcbe1';
-  const sectionLabel = 'font-size:12.5px;font-weight:600;color:rgba(20,20,20,0.6);padding:13px 0 0';
-  const pill = 'background:#141414;color:#fff;border-radius:14px;padding:10px 18px;font-weight:600;font-size:13.5px;cursor:pointer;flex:0 0 auto';
-
-  const footer = ready
-    ? `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid rgba(20,20,20,0.1);padding-top:13px;margin-top:13px">
-         <span style="font-size:12.5px;color:rgba(20,20,20,0.7);line-height:1.45">
-           Free item unlocked${l.rewardsReady > 1 ? ` ×${l.rewardsReady}` : ''} · up to £${LOYALTY_REWARD_MAX}.00
-         </span>
-         ${context === 'basket'
-           ? `<div class="press" data-action="openLoyaltyPicker" style="${pill}">Choose item</div>`
-           : `<div class="press" data-action="goBasket" style="${pill}">Go to basket</div>`}
-       </div>`
-    : `<div style="font-size:12.5px;color:rgba(20,20,20,0.7);line-height:1.45;border-top:1px solid rgba(20,20,20,0.1);padding-top:13px;margin-top:13px">
-         ${toGo} more order${toGo === 1 ? '' : 's'} over £${LOYALTY_MIN_ORDER} to unlock a free item worth up to £${LOYALTY_REWARD_MAX}.00. Stamps land once an order is delivered.
-       </div>`;
+  const canBuy = chosen.rank > 0 && chosen.id !== held.id;
+  const canCancel = held.rank > 0;
 
   return `
     <div class="shop-card" style="${cardShell}">
-      <div style="padding:4px 16px 14px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;${sectionLabel}">
-          <span>Vendaru loyalty</span>
-          <span style="font-weight:500">${shown}/${LOYALTY_STAMPS_PER_REWARD}</span>
+      <div style="padding:4px 16px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12.5px;font-weight:600;color:#6b6b6b;padding:13px 0 0">
+          <span>Membership</span>
+          ${memberBadgeHtml(held, 'sm')}
         </div>
 
-        <div style="display:flex;gap:7px;justify-content:space-between;margin-top:13px">${dots}</div>
-
-        ${footer}
-
-        ${l.redeemed > 0
-          ? `<div style="font-size:12px;color:rgba(20,20,20,0.55);margin-top:9px">${l.redeemed} reward${l.redeemed === 1 ? '' : 's'} claimed so far</div>`
-          : ''}
-      </div>
-    </div>`;
-}
-
-// Free-item picker: only things at or under the reward cap.
-function renderLoyaltyPickerModal() {
-  if (!state.showLoyaltyPicker) return '';
-  const eligible = PRODUCTS
-    .filter(p => p.estimated_price_gbp <= LOYALTY_REWARD_MAX)
-    .sort((a, b) => b.estimated_price_gbp - a.estimated_price_gbp);
-
-  return `
-    <div class="graftr-modal-overlay" style="z-index:99998;justify-content:center;align-items:center;padding:24px">
-      <div style="width:100%;max-width:370px;max-height:100%;overflow-y:auto;background:#fff;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:17px;font-weight:700;color:#141414">Choose your free item</div>
-          <button type="button" data-action="closeLoyaltyPicker" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b;padding:2px 6px;line-height:1">✕</button>
+        <div class="member-head">
+          <div style="min-width:0">
+            <div class="member-tier-name">${escapeHtml(held.label)}</div>
+            <div class="member-tier-blurb">${escapeHtml(held.summary)}</div>
+          </div>
         </div>
-        <div style="font-size:13px;color:#6b6b6b;line-height:1.5;margin-top:-6px">Anything up to £${LOYALTY_REWARD_MAX}.00, on us.</div>
-        <div style="display:flex;flex-direction:column">
-          ${eligible.map((p, i) => `
-            <button type="button" data-action="redeemLoyaltyItem" data-arg="${p.id}" style="display:flex;align-items:center;gap:11px;text-align:left;background:none;border:none;padding:10px 0;${i > 0 ? 'border-top:1px solid #f0f0f0;' : ''}cursor:pointer;font-family:inherit;width:100%">
-              <span style="width:38px;height:38px;border-radius:10px;flex:0 0 auto;background:#f2f2f2 center/cover url('${state.productImages[p.id] || p.image}')"></span>
-              <span style="flex:1;min-width:0">
-                <span style="display:block;font-size:13.5px;font-weight:500;color:#141414;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(p.name)}</span>
-                <span style="display:block;font-size:12.5px;color:#6b6b6b">${escapeHtml(p.weight_or_volume || '')}</span>
-              </span>
-              <span style="font-size:13px;color:#6b6b6b;flex:0 0 auto">£${p.estimated_price_gbp.toFixed(2)}</span>
-            </button>
-          `).join('')}
+
+        <div class="view-toggle" style="margin:12px 0 4px">${toggle}</div>
+        <div class="member-plans">${rows}</div>
+
+        ${state.memberError ? `<div class="member-error">${escapeHtml(state.memberError)}</div>` : ''}
+
+        <div class="member-actions">
+          ${canBuy
+            ? `<button type="button" class="member-buy" data-action="subscribeMembership"${state.memberBuying ? ' disabled' : ''}>
+                 ${state.memberBuying ? 'Redirecting…' : `Get ${escapeHtml(chosen.label)} · £${memberPrice(chosen, billing)}/${billing === 'annual' ? 'yr' : 'mo'}`}
+               </button>`
+            : ''}
+          ${canCancel
+            ? `<button type="button" class="board-clear" data-action="cancelMembership">Cancel membership</button>`
+            : ''}
         </div>
+
+        <div class="member-note">Billed by Stripe. Cancel any time — you keep the tier until the period you have paid for runs out.</div>
       </div>
     </div>`;
 }
@@ -5492,8 +5389,6 @@ function renderShopperAccount() {
     </div>
 
     ${renderMembershipCard()}
-
-    ${renderLoyaltyCard()}
 
     <!-- Help -->
     <div class="shop-card" style="${cardStyle}">
@@ -6240,6 +6135,7 @@ function saveBoard() {
 // straight into loadBoard's own catch — which hands back an empty board and
 // says nothing. Everything saved would come back missing on reload.
 state.board = loadBoard();
+state.membership = loadMembership();
 
 // Phones get the compact card — the Basic-tier row — and open the full one on
 // a tap. There is room for the banner on a wide screen, so it is always shown
@@ -7264,7 +7160,6 @@ function render() {
   const checkoutModal = renderCheckoutModal();
   const authModal = renderAuthModal();
   const termsModal = renderTermsModal();
-  const loyaltyPicker = renderLoyaltyPickerModal();
   const bookingPicker = renderBookingPickerModal();
 
   root.innerHTML = `
@@ -7275,7 +7170,6 @@ function render() {
     ${checkoutModal}
     ${authModal}
     ${termsModal}
-    ${loyaltyPicker}
     ${bookingPicker}
   `;
 
@@ -7606,24 +7500,16 @@ const actions = {
       render();
       return;
     }
-    const sub = cartTotal();                 // already net of any free items
+    const sub = cartTotal();
     // One flat fee, whatever the basket holds.
     const deliveryFee = SERVICE_FEE;
-    const freeUsed = loyaltyPendingFree();
     const bookings = bookingLines();
 
-    // Free units are billed as their own zero-priced line so they show up on
-    // the Stripe receipt as a reward rather than silently vanishing.
-    const billedLines = [];
-    lines.forEach(l => {
-      const free = freeQtyFor(l.product.id, l.qty);
-      if (l.qty - free > 0) {
-        billedLines.push({ name: l.product.name, qty: l.qty - free, unitPrice: l.product.estimated_price_gbp });
-      }
-      if (free > 0) {
-        billedLines.push({ name: `${l.product.name} (loyalty reward)`, qty: free, unitPrice: 0 });
-      }
-    });
+    const billedLines = lines.map(l => ({
+      name: l.product.name,
+      qty: l.qty,
+      unitPrice: l.product.estimated_price_gbp,
+    }));
 
     // Each booking bills as its own line so it shows on the Stripe receipt.
     bookings.forEach(bk => {
@@ -7635,13 +7521,10 @@ const actions = {
         name: l.product.name,
         qty: l.qty,
         price: l.product.estimated_price_gbp,
-        freeQty: freeQtyFor(l.product.id, l.qty),
       })),
       subtotal: sub + bookingsTotal(),
       deliveryFee,
       bookings: bookings.map(bk => ({ businessId: bk.businessId, businessName: bk.businessName, serviceId: bk.serviceId, serviceName: bk.serviceName, price: bk.price, at: bk.at })),
-      loyaltyUsed: freeUsed,
-      loyaltyDiscount: loyaltyDiscount(),
       address: `${state.userProfile.address}, ${state.userProfile.postcode}`,
       scheduledAt: selectedDeliveryTimestamp(),
     };
@@ -7965,6 +7848,73 @@ const actions = {
     if (isAdmin()) state.adminEditingId = fresh.id;   // edit the new one straight away
     render();
   },
+  // --- membership ----------------------------------------------------------
+  setMemberBilling: (id) => { state.memberBilling = id === 'annual' ? 'annual' : 'monthly'; state.memberError = null; render(); },
+  setMemberChoice: (id) => { state.memberChoice = String(id); state.memberError = null; render(); },
+
+  // Bought through the same endpoint the listing plans use, so there is one
+  // billing path to keep working rather than two.
+  subscribeMembership: async () => {
+    if (state.memberBuying) return;
+    const billing = state.memberBilling || (state.membership || {}).billing || 'monthly';
+    const tier = memberTierById(state.memberChoice || DEFAULT_MEMBER_TIER);
+    if (tier.rank === 0) return;
+
+    state.memberBuying = true;
+    state.memberError = null;
+    render();
+
+    // Held so the tier can be applied when Stripe sends the browser back.
+    const pending = { tier: tier.id, billing };
+    try { localStorage.setItem(PENDING_MEMBER_KEY, JSON.stringify(pending)); } catch (e) { /* ignore */ }
+
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription: {
+            name: `Vendaru ${tier.label} membership`,
+            amount: memberPrice(tier, billing),
+            interval: billing === 'annual' ? 'year' : 'month',
+          },
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+
+      // No billing backend is the expected setup locally, so apply it directly
+      // rather than blocking. A real failure is surfaced instead.
+      if (isPaymentBackendUnavailable(res, data)) {
+        applyMembership(pending);
+        state.memberBuying = false;
+        render();
+        return;
+      }
+
+      state.memberBuying = false;
+      state.memberError = data.error ? `Subscription failed: ${data.error}` : 'Could not start the membership. Please try again.';
+      try { localStorage.removeItem(PENDING_MEMBER_KEY); } catch (e) { /* ignore */ }
+      render();
+    } catch (err) {
+      state.memberBuying = false;
+      state.memberError = 'Could not reach the billing service. Please try again.';
+      try { localStorage.removeItem(PENDING_MEMBER_KEY); } catch (e) { /* ignore */ }
+      render();
+    }
+  },
+
+  cancelMembership: () => {
+    state.membership = { tier: DEFAULT_MEMBER_TIER, billing: 'monthly', since: null };
+    state.memberChoice = null;
+    saveMembership();
+    render();
+  },
+
   // --- plans ---------------------------------------------------------------
   setPlanBilling: (id) => { state.planBilling = String(id); state.planError = null; render(); },
   setPlanChoice: (id) => { state.planChoice = String(id); state.planError = null; render(); },
@@ -8164,7 +8114,6 @@ const actions = {
     if (!state.cart[id]) return;
     state.cart[id] -= 1;
     if (state.cart[id] <= 0) delete state.cart[id];
-    pruneLoyaltyFree();
     render();
   },
   goShopperInbox: () => { state.screen = 'shopper-inbox'; render(); },
@@ -8371,7 +8320,6 @@ const actions = {
     if (!qty) return;
     state.savedForLater[id] = (state.savedForLater[id] || 0) + qty;
     delete state.cart[id];
-    pruneLoyaltyFree();                   // parking it gives the reward back
     saveSavedForLater();
     render();
   },
@@ -8397,41 +8345,8 @@ const actions = {
     saveSavedForLater();
     render();
   },
-  openLoyaltyPicker: () => {
-    if (loyaltyState().rewardsReady < 1) return;
-    state.showLoyaltyPicker = true;
-    render();
-  },
-  closeLoyaltyPicker: () => { state.showLoyaltyPicker = false; render(); },
-  redeemLoyaltyItem: (productId) => {
-    const l = loyaltyState();
-    if (l.rewardsReady < 1) return;                       // nothing to spend
-    const product = PRODUCTS.find(p => String(p.id) === String(productId));
-    if (!product || product.estimated_price_gbp > LOYALTY_REWARD_MAX) return;
-
-    // The stamp isn't spent here — it's reserved by loyaltyFree and only
-    // committed when the order is actually placed.
-    state.cart[product.id] = (state.cart[product.id] || 0) + 1;
-    state.loyaltyFree[product.id] = (state.loyaltyFree[product.id] || 0) + 1;
-    state.showLoyaltyPicker = false;
-
-    state.shopperInbox.unshift({
-      tag: 'Loyalty',
-      text: `Reward claimed — ${product.name} added to your basket free.`,
-      createdAt: Date.now(),
-      read: false,
-    });
-    saveInbox();
-
-    state.screen = 'shopper-basket';
-    render();
-  },
-  toggleCourierRead: (i) => { state.courierInbox[i].read = !state.courierInbox[i].read; saveInbox(); render(); },
-  toggleShopperRead: (i) => { state.shopperInbox[i].read = !state.shopperInbox[i].read; saveInbox(); render(); },
-  markAllCourierRead: () => { state.courierInbox.forEach(m => m.read = true); saveInbox(); render(); },
-  markAllShopperRead: () => { state.shopperInbox.forEach(m => m.read = true); saveInbox(); render(); },
-  newBasket: () => { state.basketCheckedOut = false; state.cart = {}; state.loyaltyFree = {}; render(); },
-  emptyBasket: () => { state.cart = {}; state.loyaltyFree = {}; render(); },
+  newBasket: () => { state.basketCheckedOut = false; state.cart = {}; render(); },
+  emptyBasket: () => { state.cart = {}; render(); },
   advanceTrack: () => { state.trackStep = Math.min(state.trackStep + 1, 3); render(); },
   // A shop card starts the request with the store already filled in.
   requestFromShop: (arg) => {

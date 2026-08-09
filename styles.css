@@ -601,41 +601,7 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-/* Loyalty stamps. Unearned slots are a faint outline holding the number;
-   earning one fills it with a deeper rose than the card's own pink, which is
-   dark enough to carry white numerals (4.6:1). */
-.loyalty-stamp {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.42);
-  color: rgba(20, 20, 20, 0.32);
-  border: 1.5px solid rgba(20, 20, 20, 0.1);
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
-}
-.loyalty-stamp.is-filled {
-  background: #c9447a;
-  color: #ffffff;
-  border-color: #c9447a;
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
-  animation: loyaltyStampIn 0.28s ease-out;
-}
 
-@keyframes loyaltyStampIn {
-  0% { transform: scale(0.6); opacity: 0.4; }
-  60% { transform: scale(1.12); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .loyalty-stamp.is-filled { animation: none; }
-}
 
 .graftr-input-group {
   display: flex;
@@ -1347,6 +1313,138 @@ body::-webkit-scrollbar {
   margin-top: 8px;
 }
 
+/* The tiers, laid out the way the listing plans are — one per row, the whole
+   row a button, the chosen one outlined in black. */
+.member-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.member-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(20, 20, 20, 0.14);
+  border-radius: 16px;
+  background: #ffffff;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+.member-plan:hover {
+  border-color: rgba(20, 20, 20, 0.4);
+}
+
+.member-plan.is-chosen {
+  border-color: #141414;
+  border-width: 2px;
+  padding: 11.5px 13.5px;   /* keeps the row from shifting as the border thickens */
+}
+
+.member-plan-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.member-plan-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #141414;
+}
+
+.member-plan-current {
+  margin-left: 6px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #141414;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.member-plan-price {
+  flex: 0 0 auto;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #141414;
+}
+
+.member-plan-price span {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #6b6b6b;
+}
+
+.member-plan-summary {
+  font-size: 12.5px;
+  color: #6b6b6b;
+  line-height: 1.4;
+}
+
+.member-plan-features {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.member-plan-features span {
+  font-size: 11.5px;
+  color: #9a9a9a;
+  line-height: 1.4;
+}
+
+.member-plan-features span::before {
+  content: '· ';
+}
+
+.member-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.member-buy {
+  flex: 1 1 auto;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 14px;
+  background: #141414;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-buy[disabled] {
+  background: rgba(20, 20, 20, 0.35);
+  cursor: default;
+}
+
+.member-error {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1.5px solid #d4d4d4;
+  border-radius: 12px;
+  background: #f2f2f2;
+  font-size: 12.5px;
+  color: #141414;
+  line-height: 1.4;
+}
+
 .board-progress {
   display: flex;
   align-items: center;
@@ -1567,68 +1665,7 @@ body::-webkit-scrollbar {
   background: none;
 }
 
-/* Movement in the empty wells, so the gaps catch the eye rather than sitting
-   there quietly. Done in CSS rather than with a GIF per slot: thirteen animated
-   images would be a megabyte of network and a jerky page, and this costs
-   nothing to send and runs on the compositor.
 
-   All of it is inside a reduced-motion guard. A wall of pulsing boxes is
-   unpleasant at best for anyone sensitive to movement, and the board is still
-   perfectly usable still. */
-@media (prefers-reduced-motion: no-preference) {
-  /* A slow sheen crossing the well, like light moving over an empty shelf. */
-  .board-slots .fav-empty-card:not(.board-none)::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -60%;
-    width: 60%;
-    background: linear-gradient(100deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(20, 20, 20, 0.05) 45%,
-      rgba(255, 255, 255, 0) 100%);
-    animation: boardSheen 3.6s ease-in-out infinite;
-    pointer-events: none;
-  }
-
-  /* The button breathes, so the thing you are meant to press is the thing
-     moving most. */
-  .board-slots .fav-add-btn {
-    animation: boardBreathe 3.6s ease-in-out infinite;
-  }
-
-  /* Staggered, or thirteen wells pulse in lockstep and the page strobes. The
-     offsets are prime-ish fractions of the cycle so they stay out of step. */
-  .board-slots .fav-slot:nth-child(3n + 2) .fav-empty-card::after,
-  .board-slots .fav-slot:nth-child(3n + 2) .fav-add-btn {
-    animation-delay: 1.2s;
-  }
-
-  .board-slots .fav-slot:nth-child(3n + 3) .fav-empty-card::after,
-  .board-slots .fav-slot:nth-child(3n + 3) .fav-add-btn {
-    animation-delay: 2.4s;
-  }
-
-  /* The rail's open tiles get the same heartbeat, quieter — they are small, and
-     a row of them jumping would be a lot. */
-  .board-quick-plus {
-    animation: boardBreathe 3.6s ease-in-out infinite;
-  }
-
-  .board-quick-btn:nth-child(2n) .board-quick-plus { animation-delay: 0.9s; }
-  .board-quick-btn:nth-child(3n) .board-quick-plus { animation-delay: 1.8s; }
-}
-
-@keyframes boardSheen {
-  0%   { left: -60%; }
-  55%  { left: 110%; }
-  100% { left: 110%; }   /* holds off-screen, so the sweep is a pass not a strobe */
-}
-
-@keyframes boardBreathe {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.08); }
 }
 
 /* A slot Vendaru can't fill yet — no listings in that trade, or the trade isn't
