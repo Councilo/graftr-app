@@ -4051,17 +4051,32 @@ function shopCategory() {
 // The pool a search draws from: a chosen town narrows it, exactly as it narrows
 // which businesses are shown. Not narrowed by the category chip, which belongs
 // to the band rather than to a search.
-function searchableShops() {
-  const loc = locationChosen();
+function shopsInTown(loc) {
   if (!loc) return SHOPS_100;
   return SHOPS_100.filter(s => String(s.town).toLowerCase() === loc.toLowerCase());
 }
 
-// What the Shops band draws: the chosen town if there is one, narrowed further
-// by the category chip.
+function searchableShops() {
+  return shopsInTown(locationChosen());
+}
+
+// What the Shops band draws: the chosen town, narrowed by the category chip —
+// and if that leaves nothing, the country rather than an empty page.
+//
+// The shops are independents in twenty-five towns; the location chip offers
+// thirty-nine, most of them Greater Manchester. Picking Bolton emptied the
+// whole section, which reads as a broken page rather than as "none here yet".
+// Showing the rest, and saying that is what you are looking at, is better than
+// showing nothing.
 function shopsForLocation() {
   const cat = shopCategory();
-  return searchableShops().filter(s => !cat || s.category === cat);
+  const byCat = (list) => list.filter(s => !cat || s.category === cat);
+  const loc = locationChosen();
+
+  const here = byCat(shopsInTown(loc));
+  if (!loc || here.length) return { shops: here, elsewhere: false, loc };
+
+  return { shops: byCat(SHOPS_100), elsewhere: true, loc };
 }
 
 function shopCardHtml(shop) {
@@ -4075,7 +4090,9 @@ function shopCardHtml(shop) {
       <div class="biz-card-body">
         <div class="biz-card-name">${escapeHtml(shop.name)}</div>
         <div class="biz-card-desc">${escapeHtml(shop.sells)}</div>
-        <div class="biz-card-town">${ICON_PIN} ${escapeHtml(shop.town)}</div>
+        <div class="biz-card-meta">
+          <span class="biz-card-town">${ICON_PIN} ${escapeHtml(shop.town)}</span>
+        </div>
         <div class="biz-card-actions">
           <button type="button" class="biz-card-action" data-action="requestFromShop" data-arg="${arg}">Send a courier</button>
         </div>
@@ -4400,7 +4417,7 @@ function shopLocalSectionHtml() {
 // shop cards before the directory even starts would bury everything under it.
 // The Shops button is the whole list.
 function shopShopsSectionHtml({ limit = 0 } = {}) {
-  const all = shopsForLocation();
+  const { shops: all, elsewhere } = shopsForLocation();
   const loc = locationChosen();
   const cat = shopCategory();
 
@@ -4414,17 +4431,14 @@ function shopShopsSectionHtml({ limit = 0 } = {}) {
     </div>`;
 
   if (!all.length) {
-    // Which of the two filters emptied it decides what to say — telling someone
-    // there are no shops in Bath when they've filtered to Florists is a lie.
-    const why = cat && loc ? `No ${escapeHtml(cat.toLowerCase())} in ${escapeHtml(loc)} yet`
-      : cat ? `No ${escapeHtml(cat.toLowerCase())} listed yet`
-      : `No shops in ${escapeHtml(loc)} yet`;
+    // With the nationwide fallback in place, the only way to empty this is a
+    // category nobody is listed under at all.
     return `
       <div class="page-band"><span>Shops</span></div>
       ${chips}
       <div class="shop-card" style="${SERVICE_CARD_SHELL}">
         <div style="padding:22px 16px;text-align:center">
-          <div style="font-size:15px;font-weight:600;color:#141414">${why}</div>
+          <div style="font-size:15px;font-weight:600;color:#141414">No ${escapeHtml((cat || 'shops').toLowerCase())} listed yet</div>
           <div style="font-size:13px;color:#6b6b6b;margin-top:3px;line-height:1.5">Special Requests still works from any shop, anywhere — name it and a courier collects.</div>
         </div>
       </div>`;
@@ -4433,9 +4447,12 @@ function shopShopsSectionHtml({ limit = 0 } = {}) {
   const shown = limit ? all.slice(0, limit) : all;
   return `
     <div class="page-band">
-      <span>${loc ? `Shops in ${escapeHtml(loc)}` : 'Independent shops'}</span>
+      <span>${elsewhere || !loc ? 'Independent shops' : `Shops in ${escapeHtml(loc)}`}</span>
       <span class="page-band-count">${limit && all.length > limit ? `${shown.length} of ${all.length}` : all.length}</span>
     </div>
+    ${elsewhere
+      ? `<div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">None in ${escapeHtml(loc)} yet — these are elsewhere, and a courier still collects.</div>`
+      : ''}
     ${chips}
     <div class="biz-card-grid">${shown.map(shopCardHtml).join('')}</div>
     ${limit && all.length > limit
