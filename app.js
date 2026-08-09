@@ -4340,7 +4340,13 @@ const PARTNER_CARDS = [
     tint: '#141414',
     logo: 'assets/business/barrons-of-beef.png',
     photo: '',
-    url: '',
+    // Ordered through Vendaru rather than sent off to a website: this opens a
+    // special request with the shop already filled in, which is the flow a
+    // courier collection actually runs on. Still a paid placement, so still
+    // marked Ad — what's bought is the position, not a pretence that it isn't
+    // advertising.
+    action: 'requestFromShop',
+    arg: 'Barrons of Beef',
   },
   {
     // Ours, so it is marked as ours rather than as an ad: nobody pays us for
@@ -4385,9 +4391,10 @@ function sameBrand(a, b) {
 }
 
 function partnerCards() {
-  // No destination, no card. Keeps a half-set-up entry off the page rather than
-  // shipping a button that does nothing.
-  const band = PARTNER_CARDS.filter(p => !p.slot && p.url);
+  // No destination, no card — whether that destination is a website or a screen
+  // in the app. Keeps a half-set-up entry off the page rather than shipping a
+  // button that does nothing.
+  const band = PARTNER_CARDS.filter(p => !p.slot && (p.url || p.action));
   const live = (livePartners || []).filter(p => p && p.url && p.name);
   if (!live.length) return band;
 
@@ -4438,8 +4445,10 @@ function partnerCardHtml(p) {
         <div class="biz-card-name">${escapeHtml(p.name)}</div>
         <div class="biz-card-desc">${escapeHtml(p.blurb)}</div>
         <div class="biz-card-actions">
-          <a class="biz-card-action" href="${escapeHtml(p.url)}"
-             target="_blank" rel="${rel}">${escapeHtml(p.cta)}</a>
+          ${p.action
+            ? `<button type="button" class="biz-card-action" data-action="${escapeHtml(p.action)}"${p.arg ? ` data-arg="${escapeHtml(p.arg)}"` : ''}>${escapeHtml(p.cta)}</button>`
+            : `<a class="biz-card-action" href="${escapeHtml(p.url)}"
+                  target="_blank" rel="${rel}">${escapeHtml(p.cta)}</a>`}
         </div>
       </div>
     </div>`;
