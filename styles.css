@@ -2842,3 +2842,17 @@ body::-webkit-scrollbar {
   text-decoration: none;
   white-space: nowrap;
 }
+
+/* A button with nothing behind it. Kept in the row so every card is the same
+   shape, but clearly not a thing you can press: the outline and label drop to
+   grey, the pointer stays an arrow, and the hover fill doesn't happen. */
+.biz-card-action.is-dead {
+  border-color: rgba(20, 20, 20, 0.18);
+  color: rgba(20, 20, 20, 0.32);
+  cursor: default;
+}
+
+.biz-card-action.is-dead:hover {
+  background: #ffffff;
+  color: rgba(20, 20, 20, 0.32);
+}

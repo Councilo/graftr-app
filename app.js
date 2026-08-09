@@ -2180,6 +2180,33 @@ const ICON_CROSSHAIR = '<svg width="17" height="17" viewBox="0 0 20 20" fill="no
 const ICON_CARET = '<svg width="9" height="9" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7.5L10 13l5.5-5.5"/></svg>';
 const ICON_CAMERA = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M2.8 6.9h2.6l1.2-1.9h6.8l1.2 1.9h2.6a1 1 0 011 1v7.2a1 1 0 01-1 1H2.8a1 1 0 01-1-1V7.9a1 1 0 011-1z"/><circle cx="10" cy="11.2" r="2.9"/></svg>';
 const ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>';
+// The three actions every card carries, in the same order and the same places.
+//
+// These used to be dropped when a listing had no website or no phone, so a card
+// with both showed three buttons, one with neither showed one, and a column of
+// them stepped in and out as you scrolled. The row is fixed now: a missing
+// target leaves the button in place, greyed and inert, so every card is the same
+// shape and the eye can learn where Call is once.
+//
+// The dead button carries its own data-action rather than none at all. Clicks
+// resolve to the nearest ancestor with one, so a plain <span> here would hand
+// the tap to the card underneath and open the very thing the button is supposed
+// not to do.
+function cardActionsHtml({ site, tel, primary }) {
+  const dead = (icon, label) =>
+    `<span class="biz-card-action is-dead" data-action="noop" aria-disabled="true">${icon} ${label}</span>`;
+  return `
+    <div class="biz-card-actions">
+      ${site
+        ? `<a class="biz-card-action" href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">${ICON_GLOBE} Website</a>`
+        : dead(ICON_GLOBE, 'Website')}
+      ${tel
+        ? `<a class="biz-card-action" href="${escapeHtml(tel)}">${ICON_PHONE} Call</a>`
+        : dead(ICON_PHONE, 'Call')}
+      ${primary}
+    </div>`;
+}
+
 // The directory card. Lifted out of the search results so the Services page
 // can lay the same card out when it isn't searching.
 function businessGridCard(b) {
@@ -2219,11 +2246,11 @@ function businessGridCard(b) {
         <div class="biz-card-meta">
           <span class="biz-card-rating">4.8 <span aria-hidden="true">★</span> <span style="font-weight:400;color:#6b6b6b">(107)</span></span>
         </div>
-        <div class="biz-card-actions">
-          ${site ? `<a class="biz-card-action" href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">${ICON_GLOBE} Website</a>` : ''}
-          ${tel ? `<a class="biz-card-action" href="${escapeHtml(tel)}">${ICON_PHONE} Call</a>` : ''}
-          <button type="button" class="biz-card-action" data-action="openBusiness" data-arg="${b.id}">Overview</button>
-        </div>
+        ${cardActionsHtml({
+          site,
+          tel,
+          primary: `<button type="button" class="biz-card-action" data-action="openBusiness" data-arg="${b.id}">Overview</button>`,
+        })}
       </div>
     </div>`;
 }
@@ -4146,9 +4173,14 @@ function shopCardHtml(shop) {
         <div class="biz-card-meta">
           <span class="biz-card-town">${ICON_PIN} ${escapeHtml(shop.town)}</span>
         </div>
-        <div class="biz-card-actions">
-          <button type="button" class="biz-card-action" data-action="requestFromShop" data-arg="${arg}">Send a courier</button>
-        </div>
+        ${cardActionsHtml({
+          // Shops are known at town level: a domain where there is one, and no
+          // phone number for any of them, so Call is dead across the board
+          // rather than invented.
+          site: shop.domain ? `https://${shop.domain}` : '',
+          tel: '',
+          primary: `<button type="button" class="biz-card-action" data-action="requestFromShop" data-arg="${arg}">Courier</button>`,
+        })}
       </div>
     </div>`;
 }
@@ -8536,6 +8568,12 @@ const actions = {
     saveFavourites();
     render();
   },
+
+  // The dead half of a card's button row. Registered rather than left to fall
+  // through as an unknown name, because an unknown name returns before
+  // preventDefault and a real handler named "noop" could be added later without
+  // anyone noticing it had become live.
+  noop: () => {},
 };
 
 document.addEventListener('DOMContentLoaded', () => {
