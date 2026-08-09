@@ -6237,20 +6237,51 @@ function boardChoiceHtml(slot, b) {
     </button>`;
 }
 
+// The top of the board is a page about a person, not a screen of the app: their
+// picture, their name said out loud, and what the board is for underneath. The
+// photo is the account's, so setting it here or there sets it in both places.
+function boardHeroHtml(filled, total) {
+  const p = state.userProfile || {};
+  const who = ((state.authUser && state.authUser.name) || p.name || '').trim();
+  const first = who ? who.split(/\s+/)[0] : '';
+  const initials = who
+    ? who.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase()
+    : '';
+  const where = locationChosen();
+
+  return `
+    <div class="board-hero">
+      <label class="board-portrait" title="Change photo">
+        ${p.avatarSrc
+          ? `<img src="${escapeHtml(p.avatarSrc)}" alt="" />`
+          : `<span class="board-portrait-initials">${escapeHtml(initials || '＋')}</span>`}
+        <span class="board-portrait-name">${escapeHtml(who || 'Add your photo')}</span>
+        <span class="board-portrait-role">${escapeHtml(where || 'Your board')}</span>
+        <input type="file" accept="image/*" data-upload-avatar />
+      </label>
+
+      <div class="board-hero-text">
+        <button type="button" class="board-profile-tag" data-action="goShopperAccount">Profile</button>
+        <div class="board-hey">Hey,</div>
+        <div class="board-name">${escapeHtml(first || 'there')}</div>
+        <div class="board-lede">${filled
+          ? 'Everyone you’d call, in one place.'
+          : 'Put the people you’d call in one place, before you need them.'}</div>
+        <div class="board-progress">
+          <div class="fav-bar" aria-hidden="true"><span style="width:${total ? Math.round((filled / total) * 100) : 0}%"></span></div>
+          <span class="board-progress-count">${filled} of ${total}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderBoardSection() {
   const filled = boardFilledCount();
   const total = boardSlotCount();
   return `
-    <div class="page-band">
-      <span>Your board</span>
-      <span class="page-band-count">${filled} of ${total}</span>
-    </div>
-    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">
-      ${filled
-        ? 'Everything in one place, so you are not hunting for it when something goes wrong.'
-        : 'Put the people you would call in one place, before you need them.'}
-    </div>
-    <div class="fav-bar"><span style="width:${total ? Math.round((filled / total) * 100) : 0}%"></span></div>
+    ${boardHeroHtml(filled, total)}
+
+    <div class="board-lede-2">Explore further and fill in:</div>
 
     ${BOARD_AREAS.map(area => `
       <div class="board-area">
@@ -6295,7 +6326,6 @@ function renderShopperInbox() {
     </div>`;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:25px;font-weight:700;color:#141414">Board</div>
     ${renderBoardSection()}
 
     <!-- What the page used to open with. Still a tap away, no longer first. -->
