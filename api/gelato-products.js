@@ -35,12 +35,20 @@ const GELATO_ECOMMERCE = 'https://ecommerce.gelatoapis.com/v1';
 const PAGE_SIZE = 250;
 const MAX_PAGES = 6;
 
+// Shopify Markets prices by the requester's location and products.json never
+// says which currency it answered in. Called from a US address this feed returns
+// the US market's converted prices — every product 1.40× the UK one — which
+// Vendaru would then print with a £ sign, overstating a real shop's prices by
+// 40%. Two things keep it in sterling: the function runs in London (regions in
+// vercel.json), so the request originates in the UK, and country=GB asks for the
+// GB market explicitly. The belt matters as much as the braces here, because a
+// wrong answer is indistinguishable from a right one in the response body.
 async function shopifyProducts(domain) {
   const all = [];
   for (let page = 1; page <= MAX_PAGES; page++) {
     const res = await fetch(
-      `https://${domain}/products.json?limit=${PAGE_SIZE}&page=${page}`,
-      { headers: { Accept: 'application/json' } });
+      `https://${domain}/products.json?limit=${PAGE_SIZE}&page=${page}&country=GB`,
+      { headers: { Accept: 'application/json', 'X-Shopify-Country': 'GB' } });
     if (!res.ok) {
       const err = new Error(`${domain} returned ${res.status}`);
       err.status = res.status;
