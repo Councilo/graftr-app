@@ -6310,7 +6310,7 @@ function boardQuickSlots() {
 // is still open.
 function boardQuickIconHtml({ slot, chosen, cat }) {
   if (!chosen) {
-    return `<span class="board-quick-icon">${cat ? cat.emoji : '＋'}</span>`;
+    return `<span class="board-quick-icon"><span class="board-quick-plus" aria-hidden="true">+</span></span>`;
   }
   const fallback = chosen.domain
     ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(chosen.domain)}&sz=128`
@@ -6352,16 +6352,12 @@ function boardHeroHtml(filled, total) {
   const initials = who
     ? who.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase()
     : '';
-  const where = locationChosen();
-
   return `
     <div class="board-hero">
       <label class="board-portrait" title="Change photo">
         ${p.avatarSrc
           ? `<img src="${escapeHtml(p.avatarSrc)}" alt="" />`
           : `<span class="board-portrait-initials">${escapeHtml(initials || '＋')}</span>`}
-        <span class="board-portrait-name">${escapeHtml(who || 'Add your photo')}</span>
-        <span class="board-portrait-role">${escapeHtml(where || 'Your board')}</span>
         <input type="file" accept="image/*" data-upload-avatar />
       </label>
 
