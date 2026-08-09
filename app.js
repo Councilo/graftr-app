@@ -5234,6 +5234,86 @@ function renderTermsModal() {
 // UI — it's the loyalty card, so it should look like a card in your wallet.
 // `context` is 'account' (progress, points you at the basket) or 'basket'
 // (where the free item is actually chosen, since that's the shopping cart).
+// Standing on Vendaru, earned rather than bought. It counts the same thing the
+// loyalty card does — delivered orders over the minimum — because that number
+// is already kept and already means something, and inventing a second metric
+// would only give the two cards a way to disagree.
+//
+// Deliberately no perks attached. Nothing in the app gives a member a discount
+// or a faster courier, so saying otherwise on a badge would be a promise the
+// code doesn't keep. What a tier does is say how long someone has been here.
+const MEMBER_TIERS = [
+  { id: 'member',  label: 'Member',  from: 0,  blurb: 'Where everyone starts' },
+  { id: 'regular', label: 'Regular', from: 3,  blurb: 'Three orders in' },
+  { id: 'local',   label: 'Local',   from: 8,  blurb: 'Eight orders — you shop here properly' },
+  { id: 'patron',  label: 'Patron',  from: 15, blurb: 'Fifteen orders. You keep the lights on' },
+];
+
+function memberTier() {
+  const orders = qualifyingOrderCount();
+  let tier = MEMBER_TIERS[0];
+  MEMBER_TIERS.forEach((t) => { if (orders >= t.from) tier = t; });
+  const next = MEMBER_TIERS[MEMBER_TIERS.indexOf(tier) + 1] || null;
+  return {
+    tier,
+    next,
+    orders,
+    toNext: next ? next.from - orders : 0,
+    // Progress through the current step, not through the whole ladder, so the
+    // bar means "how close to the next one" rather than something vaguer.
+    pct: next
+      ? Math.max(0, Math.min(100, Math.round(((orders - tier.from) / (next.from - tier.from)) * 100)))
+      : 100,
+  };
+}
+
+// The badge. Same mark everywhere it appears, filling in as the tier climbs, so
+// it reads at a glance without needing the word next to it.
+function memberBadgeHtml(tier, size) {
+  const level = MEMBER_TIERS.findIndex(t => t.id === tier.id);
+  return `
+    <span class="member-badge is-${escapeHtml(tier.id)}${size === 'sm' ? ' is-sm' : ''}" aria-hidden="true">
+      ${[0, 1, 2, 3].map(i => `<span class="member-pip${i <= level ? ' is-on' : ''}"></span>`).join('')}
+    </span>`;
+}
+
+function memberChipHtml() {
+  const m = memberTier();
+  return `
+    <span class="member-chip" title="${escapeHtml(m.tier.blurb)}">
+      ${memberBadgeHtml(m.tier, 'sm')}
+      <span class="member-chip-label">${escapeHtml(m.tier.label)}</span>
+    </span>`;
+}
+
+function renderMembershipCard() {
+  const m = memberTier();
+  return `
+    <div class="shop-card" style="${SERVICE_CARD_SHELL}">
+      <div style="padding:16px">
+        <div style="font-size:12.5px;font-weight:600;color:#6b6b6b">Membership</div>
+
+        <div class="member-head">
+          ${memberBadgeHtml(m.tier)}
+          <div style="min-width:0">
+            <div class="member-tier-name">${escapeHtml(m.tier.label)}</div>
+            <div class="member-tier-blurb">${escapeHtml(m.tier.blurb)}</div>
+          </div>
+        </div>
+
+        <div class="fav-bar" style="margin-top:12px"><span style="width:${m.pct}%"></span></div>
+        <div class="member-next">
+          ${m.next
+            ? `${m.toNext} more order${m.toNext === 1 ? '' : 's'} to ${escapeHtml(m.next.label)}`
+            : 'Top tier — nothing above this one'}
+          <span style="color:#9a9a9a"> · ${m.orders} order${m.orders === 1 ? '' : 's'} so far</span>
+        </div>
+
+        <div class="member-note">Counted on delivered orders over £${LOYALTY_MIN_ORDER}. It is a standing, not a subscription — there is nothing to pay and nothing to cancel.</div>
+      </div>
+    </div>`;
+}
+
 function renderLoyaltyCard(context = 'account') {
   const l = loyaltyState();
   const ready = l.rewardsReady > 0;
@@ -5410,6 +5490,8 @@ function renderShopperAccount() {
         <span style="opacity:0.4;flex:0 0 auto">›</span>
       </div>
     </div>
+
+    ${renderMembershipCard()}
 
     ${renderLoyaltyCard()}
 
@@ -6365,6 +6447,7 @@ function boardHeroHtml(filled, total) {
         <button type="button" class="board-profile-tag" data-action="goShopperAccount">Profile</button>
         <div class="board-hey">Hey,</div>
         <div class="board-name">${escapeHtml(first || 'there')}</div>
+        ${memberChipHtml()}
         <div class="board-lede">${filled
           ? 'Everyone you’d call, in one place.'
           : 'Put the people you’d call in one place, before you need them.'}</div>

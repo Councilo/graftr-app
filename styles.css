@@ -1259,6 +1259,94 @@ body::-webkit-scrollbar {
   margin-top: 8px;
 }
 
+/* Membership. The badge is four pips that fill as the tier climbs — readable at
+   a glance and at any size, with no artwork to load and nothing that has to be
+   redrawn if a tier is ever added. */
+.member-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  border: 1.5px solid #141414;
+  border-radius: 999px;
+}
+
+.member-pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(20, 20, 20, 0.16);
+}
+
+.member-pip.is-on {
+  background: #141414;
+}
+
+.member-badge.is-sm {
+  padding: 4px 6px;
+  gap: 2px;
+  border-width: 1px;
+}
+
+.member-badge.is-sm .member-pip {
+  width: 5px;
+  height: 5px;
+}
+
+/* On the board, under the name. */
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 999px;
+  background: #f2f2f2;
+}
+
+.member-chip-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #141414;
+}
+
+/* On the account card. */
+.member-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.member-tier-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #141414;
+  letter-spacing: -0.01em;
+}
+
+.member-tier-blurb {
+  font-size: 12.5px;
+  color: #6b6b6b;
+  margin-top: 1px;
+}
+
+.member-next {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #141414;
+  margin-top: 8px;
+}
+
+.member-note {
+  font-size: 11.5px;
+  color: #9a9a9a;
+  line-height: 1.45;
+  margin-top: 8px;
+}
+
 .board-progress {
   display: flex;
   align-items: center;
