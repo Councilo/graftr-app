@@ -550,7 +550,7 @@ const SCREEN_ROUTES = [
   { screen: 'shopper-business', path: '/listing/:id' },
   { screen: 'shopper-favourites', path: '/favourites' },
   { screen: 'shopper-basket', path: '/basket' },
-  { screen: 'shopper-inbox', path: '/activity' },
+  { screen: 'shopper-inbox', path: '/board' },
   { screen: 'shopper-account', path: '/account' },
   { screen: 'shopper-special-request', path: '/special-request' },
   { screen: 'courier-activity', path: ROLE_PATH },
@@ -1022,6 +1022,8 @@ const state = {
   listTitle: loadListTitle(),      // what they've named their own wall
   servicesView: 'cards',           // directory layout: 'cards' or 'icons'
   shopFilter: 'all',               // which part of Shop: see SHOP_FILTERS
+  board: {},                       // slot id -> business id; see BOARD_AREAS
+  openBoardPicker: null,           // which board slot has its chooser open
   shopCategory: '',                // narrows the shops band; '' is all of them
   favourites: loadFavourites(),    // business ids the shopper has kept
   activeBusinessId: null,          // business page being viewed
@@ -2245,7 +2247,7 @@ const SCREEN_NAV = {
   'shopper-all-services': { action: 'goAllServices', label: 'Services' },
   'shopper-browse': { action: 'goBrowse', label: 'Groceries' },
   'shopper-basket': { action: 'goBasket', label: 'Basket' },
-  'shopper-inbox': { action: 'goShopperInbox', label: 'Activity' },
+  'shopper-inbox': { action: 'goShopperInbox', label: 'Board' },
   'shopper-account': { action: 'goShopperAccount', label: 'Account' },
   'shopper-favourites': { action: 'goFavourites', label: 'Your list' },
   'shopper-special-request': { action: 'goSpecialRequest', label: 'Special request' },
@@ -4931,7 +4933,7 @@ function renderShopperBasket() {
           ? orderRowsHtml(activeOrders)
           : `<div style="padding:14px 0 4px">
                <div style="font-size:13.5px;font-weight:500;color:#141414">No active orders</div>
-               <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Place an order to follow it here and on Activity.</div>
+               <div style="font-size:12.5px;color:#6b6b6b;margin-top:3px;line-height:1.5">Place an order to follow it here and on your Board.</div>
              </div>`}
       </div>
     </div>`;
@@ -5344,7 +5346,7 @@ function renderShopperAccount() {
     },
     {
       q: 'Can I cancel an active order?',
-      a: 'Yes. Use Cancel Order on your Basket or Activity tab any time before the courier leaves with your items.'
+      a: 'Yes. Use Cancel Order on your Basket or Board tab any time before the courier leaves with your items.'
     },
     {
       q: 'How do I contact support?',
@@ -5603,7 +5605,7 @@ function renderShopperTabs() {
         <svg width="20" height="20" viewBox="0 0 20 20"><path d="M4 3 H16 V15 L15 16.5 L14 15 L13 16.5 L12 15 L11 16.5 L10 15 L9 16.5 L8 15 L7 16.5 L6 15 L5 16.5 L4 15 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 7H13.5M6.5 10H13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
         ${state.shopperInbox.some(m => !m.read) ? '<span class="tab-badge"></span>' : ''}
       </span>
-      Activity
+      Board
     </div>
     <!-- The last tab is the way in until there's an account behind it. -->
     ${state.authUser ? `
@@ -6094,6 +6096,169 @@ function renderLoggedOrdersCard() {
     </div>`;
 }
 
+// The board: the things a household actually has to keep track of, grouped the
+// way people think about them rather than by trade. A slot names the job, not
+// the category — "emergency breakdown" and "local garage" are both garages, and
+// they are rarely the same phone number, which is why what fills a slot is
+// remembered against the slot rather than worked out from the business.
+//
+// cat is the directory category a slot draws from. null means Vendaru has no
+// listings for it yet — insurers and mortgage lenders are not on here — and the
+// slot says so rather than offering a button that opens an empty list.
+const BOARD_AREAS = [
+  { id: 'car', label: 'Car', emoji: '🚗', slots: [
+    { id: 'car-garage',    label: 'Local garage',        does: 'MOT, servicing, the noise it has started making', cat: 'auto' },
+    { id: 'car-breakdown', label: 'Emergency breakdown', does: 'Who you ring from the hard shoulder',              cat: 'auto' },
+    { id: 'car-insurance', label: 'Car insurance',       does: 'Who you are with, and when it renews',            cat: null },
+  ] },
+  { id: 'house', label: 'House', emoji: '🏠', slots: [
+    { id: 'house-mortgage',  label: 'Mortgage or rent', does: 'Who holds it, and the date it renews',   cat: 'real-estate' },
+    { id: 'house-insurance', label: 'Home insurance',   does: 'Buildings and contents',                 cat: null },
+    { id: 'house-repairs',   label: 'Repairs & upkeep', does: 'The one who actually turns up',          cat: 'trades' },
+    { id: 'house-cleaner',   label: 'Cleaner',          does: 'A regular going-over, or one big reset', cat: 'cleaning' },
+  ] },
+  { id: 'pets', label: 'Pets', emoji: '🐾', slots: [
+    { id: 'pets-vet',    label: 'Vet',        does: 'Jabs, and the number for a bad night',   cat: 'pets' },
+    { id: 'pets-walker', label: 'Dog walker', does: 'Midday walks when you cannot get back',  cat: 'dog-walkers' },
+  ] },
+  { id: 'health', label: 'Health', emoji: '💚', slots: [
+    { id: 'health-dentist', label: 'Dentist & physio', does: 'Before it becomes urgent',           cat: 'health' },
+    { id: 'health-beauty',  label: 'Hair & beauty',    does: 'The one who knows how you like it',  cat: 'beauty' },
+  ] },
+  { id: 'money', label: 'Money & legal', emoji: '📄', slots: [
+    { id: 'money-legal', label: 'Solicitor or accountant', does: 'Tax return, a will, the letter you are avoiding', cat: 'legal' },
+  ] },
+  { id: 'family', label: 'Family', emoji: '🎒', slots: [
+    { id: 'family-tutor', label: 'Tutor', does: 'Help before the exams, not after', cat: 'tutoring' },
+  ] },
+  { id: 'plans', label: 'Plans', emoji: '✈️', slots: [
+    { id: 'plans-travel', label: 'Getting away', does: 'Booked by someone who does it all day', cat: 'travel' },
+    { id: 'plans-events', label: 'Occasions',    does: 'Birthdays, the wedding, the big one',   cat: 'events' },
+  ] },
+];
+
+const BOARD_KEY = 'graftr_board';
+
+function loadBoard() {
+  try {
+    const raw = localStorage.getItem(BOARD_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (e) { return {}; }
+}
+
+function saveBoard() {
+  try { localStorage.setItem(BOARD_KEY, JSON.stringify(state.board || {})); } catch (e) { /* ignore */ }
+}
+
+// Read here rather than up with the other stores: loadBoard is hoisted, but
+// BOARD_KEY above it is a const, and touching that before this line throws
+// straight into loadBoard's own catch — which hands back an empty board and
+// says nothing. Everything saved would come back missing on reload.
+state.board = loadBoard();
+
+function boardBusiness(slotId) {
+  const id = (state.board || {})[slotId];
+  if (!id) return null;
+  return (state.businesses || []).filter(isBusinessLive).find(b => String(b.id) === String(id)) || null;
+}
+
+function boardSlotCount() {
+  return BOARD_AREAS.reduce((n, a) => n + a.slots.length, 0);
+}
+
+function boardFilledCount() {
+  return BOARD_AREAS.reduce((n, a) => n + a.slots.filter(sl => boardBusiness(sl.id)).length, 0);
+}
+
+// Reuses the wall's slot styling, so a slot looks the same wherever it appears
+// and there is one place to change how it looks.
+function boardSlotHtml(area, slot) {
+  const chosen = boardBusiness(slot.id);
+  const cat = slot.cat ? serviceCategory(slot.cat) : null;
+
+  const head = `
+    <div class="fav-slot-head">
+      <span class="fav-slot-icon">${cat ? cat.emoji : area.emoji}</span>
+      <span class="fav-slot-titles">
+        <span class="fav-slot-label">${escapeHtml(slot.label)}</span>
+        <span class="fav-slot-does">${escapeHtml(slot.does)}</span>
+      </span>
+    </div>`;
+
+  if (chosen) {
+    return `
+      <div class="fav-slot">
+        ${head}
+        ${businessCardHtml(chosen, { variant: 'compact' })}
+        <button type="button" class="board-clear" data-action="clearBoardSlot" data-arg="${escapeHtml(slot.id)}">Change</button>
+      </div>`;
+  }
+
+  const live = (state.businesses || []).filter(isBusinessLive).filter(servesLocation);
+  const choices = cat ? live.filter(b => b.category === slot.cat).sort(byTierThenRecency) : [];
+
+  if (!choices.length) {
+    return `
+      <div class="fav-slot is-empty">
+        ${head}
+        <div class="fav-empty-card board-none">
+          <span>${slot.cat ? 'Nobody listed yet' : 'Not on Vendaru yet'}</span>
+        </div>
+      </div>`;
+  }
+
+  const open = state.openBoardPicker === slot.id;
+  return `
+    <div class="fav-slot is-empty">
+      ${head}
+      <div class="fav-empty-card">
+        <button type="button" class="fav-add-btn${open ? ' is-open' : ''}" data-action="toggleBoardPicker"
+          data-arg="${escapeHtml(slot.id)}" title="Choose your ${escapeHtml(slot.label.toLowerCase())}"
+          aria-label="Choose your ${escapeHtml(slot.label.toLowerCase())}">+</button>
+      </div>
+      ${open ? `<div class="fav-choices">${choices.map(b => boardChoiceHtml(slot, b)).join('')}</div>` : ''}
+    </div>`;
+}
+
+function boardChoiceHtml(slot, b) {
+  const fallback = b.domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(b.domain)}&sz=64` : '';
+  const initials = (b.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const mark = b.logoSrc
+    ? `<img class="fav-choice-logo" src="${escapeHtml(b.logoSrc)}" alt="" onload="__fitLogo(this)" onerror="this.onerror=null;${fallback ? `this.src='${fallback}'` : `this.replaceWith(Object.assign(document.createElement('span'),{className:'fav-choice-logo is-initials',textContent:'${escapeHtml(initials)}'}))`}" />`
+    : `<span class="fav-choice-logo is-initials">${escapeHtml(initials)}</span>`;
+  return `
+    <button type="button" class="fav-choice" data-action="setBoardSlot" data-arg="${escapeHtml(slot.id)}|${b.id}">
+      ${mark}
+      <span class="fav-choice-text">
+        <span class="fav-choice-name">${escapeHtml(b.name)}</span>
+        <span class="fav-choice-desc">${escapeHtml(b.tagline || (serviceCategory(b.category) || {}).label || '')}</span>
+      </span>
+    </button>`;
+}
+
+function renderBoardSection() {
+  const filled = boardFilledCount();
+  const total = boardSlotCount();
+  return `
+    <div class="page-band">
+      <span>Your board</span>
+      <span class="page-band-count">${filled} of ${total}</span>
+    </div>
+    <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin:-4px 0 2px">
+      ${filled
+        ? 'Everything in one place, so you are not hunting for it when something goes wrong.'
+        : 'Put the people you would call in one place, before you need them.'}
+    </div>
+    <div class="fav-bar"><span style="width:${total ? Math.round((filled / total) * 100) : 0}%"></span></div>
+
+    ${BOARD_AREAS.map(area => `
+      <div class="board-area">
+        <div class="board-area-head">${area.emoji} ${escapeHtml(area.label)}</div>
+        <div class="board-slots">${area.slots.map(sl => boardSlotHtml(area, sl)).join('')}</div>
+      </div>`).join('')}`;
+}
+
 function renderShopperInbox() {
   const currentOrder = state.orders.find(o => o.id === state.activeOrderId) || state.orders[0];
 
@@ -6130,7 +6295,11 @@ function renderShopperInbox() {
     </div>`;
 
   return `<div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:14px">
-    <div style="font-size:25px;font-weight:700;color:#141414">Activity</div>
+    <div style="font-size:25px;font-weight:700;color:#141414">Board</div>
+    ${renderBoardSection()}
+
+    <!-- What the page used to open with. Still a tap away, no longer first. -->
+    <div class="page-band"><span>Activity</span></div>
     ${trackingCard}
     ${renderLoggedOrdersCard()}
     ${messagesCard}
@@ -8082,6 +8251,29 @@ const actions = {
   },
   // '' is every kind. Anything unrecognised falls back to that rather than
   // leaving the band filtered to a category that no longer exists.
+  // One slot's chooser at a time — two open lists on a page of slots is a mess
+  // to read and nobody is filling two at once.
+  toggleBoardPicker: (slotId) => {
+    state.openBoardPicker = state.openBoardPicker === slotId ? null : String(slotId);
+    render();
+  },
+  setBoardSlot: (arg) => {
+    const [slotId, bizId] = String(arg).split('|');
+    if (!slotId || !bizId) return;
+    state.board = { ...(state.board || {}), [slotId]: bizId };
+    state.openBoardPicker = null;
+    saveBoard();
+    render();
+  },
+  clearBoardSlot: (slotId) => {
+    const next = { ...(state.board || {}) };
+    delete next[String(slotId)];
+    state.board = next;
+    // Straight back to choosing, since Change is only ever pressed to swap.
+    state.openBoardPicker = String(slotId);
+    saveBoard();
+    render();
+  },
   setShopCategory: (cat) => {
     state.shopCategory = shopCategories().indexOf(cat) === -1 ? '' : cat;
     render();

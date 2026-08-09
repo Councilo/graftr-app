@@ -1141,6 +1141,61 @@ body::-webkit-scrollbar {
   text-transform: uppercase;
 }
 
+/* The board: slots grouped by the part of life they belong to, rather than by
+   trade. The slot itself reuses the wall's styling — same shape, one place to
+   change it. */
+.board-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.board-area-head {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #6b6b6b;
+  padding-top: 4px;
+}
+
+.board-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+/* A slot Vendaru can't fill yet — no listings in that trade, or the trade isn't
+   on here at all. Dashed and quiet: it shows the board's shape without offering
+   a button that would open an empty list. */
+.board-none {
+  border-style: dashed;
+  color: #9a9a9a;
+  font-size: 12.5px;
+  text-align: center;
+  padding: 0 12px;
+}
+
+/* Swapping who's in a slot. Understated — it only matters once a slot is
+   filled, and then only occasionally. */
+.board-clear {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b6b6b;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.board-clear:hover {
+  color: #141414;
+}
+
 /* Sits where a listing's brand mark sits, bottom-left of the picture. White
    plate behind it because these arrive as favicons with transparent corners,
    which vanish against a dark photo. */
