@@ -657,6 +657,10 @@ const SERVICE_CATEGORIES = [
   { id: 'travel', label: 'Travel', emoji: '✈️' },
   { id: 'legal', label: 'Legal & Tax', emoji: '⚖️' },
   { id: 'events', label: 'Events', emoji: '🎉' },
+  // Added for the board slots nothing could fill: banking, insurance of every
+  // kind, nurseries and home care had no category to be listed under.
+  { id: 'money', label: 'Money & insurance', emoji: '💷' },
+  { id: 'care', label: 'Childcare & care', emoji: '🧸' },
 ];
 
 function serviceCategory(id) {
@@ -3134,25 +3138,26 @@ function renderShopperBusiness() {
       <!-- 1. Their card, full size — this is the top of their page -->
       ${businessCardHtml(b, { linked: false, variant: 'large' })}
 
-      ${b.about ? `
+      <!-- About, and how to reach them. The card shows whichever it has: a
+           listing with no description still needs its Website button, and one
+           with no website still gets its description. Tying the buttons to the
+           paragraph meant a listing without one had no way through to the
+           business at all. -->
+      ${(b.about || b.websiteUrl || b.domain || b.phone) ? `
         <div class="shop-card" style="${SERVICE_CARD_SHELL}">
           <div style="padding:4px 16px 14px">
-            <div style="${SERVICE_SECTION_LABEL}">About</div>
-            <!-- pre-line keeps the paragraph breaks the owner typed. -->
-            <div style="font-size:13.5px;color:#141414;line-height:1.55;margin-top:6px;white-space:pre-line">${escapeHtml(b.about)}</div>
-            <!-- The same two buttons as the card this page was opened from,
-                 built from the same class and the same icons so they can't
-                 drift apart. They were a line of coloured emoji with the
-                 number and address as text — the only pair of controls on the
-                 site not wearing the outlined pill. -->
+            <div style="${SERVICE_SECTION_LABEL}">${b.about ? 'About' : 'Get in touch'}</div>
+            ${b.about
+              ? `<div style="font-size:13.5px;color:#141414;line-height:1.55;margin-top:6px;white-space:pre-line">${escapeHtml(b.about)}</div>`
+              : ''}
             ${(() => {
-              // Matching the card's fallback too: a listing with a domain but
-              // no full URL still gets a Website button.
+              // Matching the card's fallback: a listing with a domain but no
+              // full URL still gets a Website button.
               const site = b.websiteUrl || (b.domain ? `https://${b.domain}` : '');
               const tel = b.phone ? `tel:${String(b.phone).replace(/[^\d+]/g, '')}` : '';
               if (!site && !tel) return '';
               return `
-                <div class="biz-detail-actions">
+                <div class="biz-detail-actions"${b.about ? '' : ' style="border-top:none;margin-top:10px;padding-top:0"'}>
                   ${site ? `<a class="biz-card-action" href="${escapeHtml(site)}" target="_blank" rel="noopener noreferrer">${ICON_GLOBE} Website</a>` : ''}
                   ${tel ? `<a class="biz-card-action" href="${escapeHtml(tel)}">${ICON_PHONE} Call</a>` : ''}
                 </div>`;
@@ -5989,28 +5994,28 @@ const BOARD_AREAS = [
   { id: 'health', label: 'Health', emoji: '💚', slots: [
     { id: 'health-gp',       label: 'Primary care & GP',        does: 'Check-ups, and someone to call when it is not right', cat: 'health', match: /nuffield|bupa health/i },
     { id: 'health-dental',   label: 'Dental care',              does: 'Six-monthly, and the one that cannot wait',           cat: 'health', match: /dental|dentist/i },
-    { id: 'health-physio',   label: 'Physiotherapy & rehab',    does: 'Backs, knees, and getting moving again',              cat: 'health', match: /physio|rehab|sports injury/i },
-    { id: 'health-pharmacy', label: 'Pharmacy & prescriptions', does: 'Repeat prescriptions, and what you need today',       cat: 'health', match: /pharmacy|chemist/i },
+    { id: 'health-physio',   label: 'Physiotherapy & rehab',    does: 'Backs, knees, and getting moving again',              cat: 'health', match: /physio|ascenti|bodyset|rehab/i },
+    { id: 'health-pharmacy', label: 'Pharmacy & prescriptions', does: 'Repeat prescriptions, and what you need today',       cat: 'health', match: /pharmacy|chemist|rowlands/i },
   ] },
 
   { id: 'home', label: 'Home', emoji: '🏠', slots: [
     { id: 'home-plumbing', label: 'Plumbing & heating', does: 'Leaks, boilers, no hot water on a Sunday',     cat: 'trades', match: /plumb|dyno|boiler|heating|homeserve|british gas/i },
     { id: 'home-electric', label: 'Electrical work',    does: 'Rewiring, sockets, anything that trips',       cat: 'trades', match: /electric|niceic/i },
     { id: 'home-handyman', label: 'Handyman & repairs', does: 'Shelves, locks, the jobs that pile up',        cat: 'trades', match: /checkatrade|mybuilder|handyman|timpson|screwfix/i },
-    { id: 'home-waste',    label: 'Waste & skip hire',  does: 'Clearing out, and getting rid of it properly', cat: 'trades', match: /waste|skip|junk|clearance/i },
+    { id: 'home-waste',    label: 'Waste & skip hire',  does: 'Clearing out, and getting rid of it properly', cat: 'trades', match: /waste|skip|junk|clearabee|biffa/i },
   ] },
 
   { id: 'pets', label: 'Pets', emoji: '🐾', slots: [
     { id: 'pets-supplies',  label: 'Supplies & nutrition',  does: 'Food, bedding, the treats they hold out for', cat: 'pets', match: /pets at home|jollyes|groom/i },
     { id: 'pets-vet',       label: 'Veterinary care',       does: 'Jabs, and the number for a bad night',        cat: 'pets', match: /vet|pdsa|linnaeus|cvs/i },
     { id: 'pets-walker',    label: 'Daily care & exercise', does: 'Midday walks when you cannot get back',       cat: 'dog-walkers' },
-    { id: 'pets-insurance', label: 'Pet insurance',         does: 'The bill you hope never lands',               cat: 'pets', match: /insur/i },
+    { id: 'pets-insurance', label: 'Pet insurance',         does: 'The bill you hope never lands',               cat: 'pets', match: /insur|petplan|animal friends/i },
   ] },
 
   { id: 'money', label: 'Money & legal', emoji: '📄', slots: [
-    { id: 'money-bank',      label: 'Banking & accounts', does: 'Where it comes in, and where it goes',          cat: null,    match: /bank|hsbc|barclays|monzo|building society/i },
+    { id: 'money-bank',      label: 'Banking & accounts', does: 'Where it comes in, and where it goes',          cat: 'money', match: /bank|hsbc|barclays|monzo|starling/i },
     { id: 'money-wills',     label: 'Wills & estate law', does: 'A will, probate, the letter you are avoiding',  cat: 'legal', match: /solicitor|law|legal|mitchell|shoosmith|gordon/i },
-    { id: 'money-insurance', label: 'Insurance brokers',  does: 'One person who knows what you are covered for', cat: null,    match: /insurance broker|compare the market|aon/i },
+    { id: 'money-insurance', label: 'Insurance brokers',  does: 'One person who knows what you are covered for', cat: 'money', match: /broker|compare the market|gallagher|howden/i },
     { id: 'money-tax',       label: 'Tax & accounting',   does: 'The return, and someone to ring about it',      cat: 'legal', match: /tax|account|kpmg|bdo/i },
   ] },
 
@@ -6018,21 +6023,21 @@ const BOARD_AREAS = [
     { id: 'auto-service',   label: 'Servicing & repairs',  does: 'MOT, servicing, the noise it has started making', cat: 'auto', match: /kwik|halfords|autocentre|servicing|chipsaway|autoglass|lookers/i },
     { id: 'auto-tyres',     label: 'Tyres & wheels',       does: 'The one that goes down every fortnight',          cat: 'auto', match: /tyre|euromaster|kwik/i },
     { id: 'auto-breakdown', label: 'Breakdown & recovery', does: 'Who you ring from the hard shoulder',             cat: 'auto', match: /rac|automobile association|breakdown|recovery/i },
-    { id: 'auto-insurance', label: 'Vehicle insurance',    does: 'Who you are with, and when it renews',            cat: null,   match: /admiral|aviva|car insurance/i },
+    { id: 'auto-insurance', label: 'Vehicle insurance',    does: 'Who you are with, and when it renews',            cat: 'money', match: /admiral|aviva|direct line/i },
   ] },
 
   { id: 'family', label: 'Family', emoji: '🎒', slots: [
-    { id: 'family-childcare', label: 'Early years childcare', does: 'Nursery, and the wraparound either side',  cat: null,       match: /nursery|childcare|busy bees|bright horizons/i },
+    { id: 'family-childcare', label: 'Early years childcare', does: 'Nursery, and the wraparound either side',  cat: 'care',     match: /nurser|busy bees|bright horizons|kids planet/i },
     { id: 'family-tutor',     label: 'Academic tutoring',     does: 'Help before the exams, not after',         cat: 'tutoring', match: /tutor|kumon|explore learning|kip mcgrath/i },
     { id: 'family-cleaning',  label: 'Home cleaning',         does: 'A regular going-over, or one big reset',   cat: 'cleaning', match: /molly|domestic|fantastic|ovenu|safeclean/i },
-    { id: 'family-eldercare', label: 'Elderly home care',     does: 'Someone looking in, and help staying put', cat: null,       match: /home instead|helping hands|home care|care at home/i },
+    { id: 'family-eldercare', label: 'Elderly home care',     does: 'Someone looking in, and help staying put', cat: 'care',     match: /home instead|helping hands|bluebird/i },
   ] },
 
   { id: 'plans', label: 'Plans & travel', emoji: '✈️', slots: [
     { id: 'plans-agent',     label: 'Travel agency & bookings', does: 'Booked by someone who does it all day',    cat: 'travel', match: /tui|hays|trailfinders|flight centre|virgin|travel/i },
-    { id: 'plans-insurance', label: 'Travel insurance',         does: 'The bit everyone leaves until the airport', cat: null,    match: /travel insurance|staysure|coverwise/i },
+    { id: 'plans-insurance', label: 'Travel insurance',         does: 'The bit everyone leaves until the airport', cat: 'money', match: /staysure|coverwise|allclear/i },
     { id: 'plans-transfer',  label: 'Airport transit',          does: 'Getting there at five in the morning',      cat: 'travel', match: /national express|addison lee|coach|chauffeur|taxi|transfer/i },
-    { id: 'plans-gear',      label: 'Luggage & travel gear',    does: 'A case that survives the carousel',         cat: null,    match: /luggage|antler|mountain warehouse|samsonite/i },
+    { id: 'plans-gear',      label: 'Luggage & travel gear',    does: 'A case that survives the carousel',         cat: 'travel', match: /luggage|antler|mountain warehouse|cotswold/i },
   ] },
 ];
 
