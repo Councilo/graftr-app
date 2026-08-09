@@ -5141,10 +5141,6 @@ function renderTermsModal() {
   `;
 }
 
-// The one place the brand pink is allowed back into an otherwise monochrome
-// UI — it's the loyalty card, so it should look like a card in your wallet.
-// `context` is 'account' (progress, points you at the basket) or 'basket'
-// (where the free item is actually chosen, since that's the shopping cart).
 // Customer membership, built the same way the listing plans are: a ladder of
 // paid tiers, monthly or annual, bought through the same Stripe endpoint. Free
 // is a real rung rather than the absence of one, so somebody who never pays
