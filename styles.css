@@ -2856,3 +2856,34 @@ body::-webkit-scrollbar {
   background: #ffffff;
   color: rgba(20, 20, 20, 0.32);
 }
+
+/* Cookie consent banner. Sits above the floating tab bar (z-index 9999) so it
+   can't be hidden behind it, and clears the bar's own height plus safe area
+   so nothing overlaps on a short phone. */
+.cookie-banner {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 398px;
+  bottom: calc(20px + 62px + 14px + env(safe-area-inset-bottom, 0px));
+  z-index: 10000;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: aiFadeIn 0.25s ease-out;
+}
+
+.cookie-banner-inner {
+  padding: 16px 18px;
+}
+
+@media (min-width: 900px) {
+  .cookie-banner {
+    left: auto;
+    right: 32px;
+    transform: none;
+    width: 360px;
+    bottom: 32px;
+  }
+}

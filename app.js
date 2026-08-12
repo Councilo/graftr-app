@@ -948,9 +948,73 @@ function basketHasDelivery() {
   return cartLines().length > 0;
 }
 
+// --- cookie consent --------------------------------------------------------
+//
+// The ad loader used to sit in index.html and ran on first paint, which set
+// advertising cookies before anyone had been asked. Under PECR/UK GDPR that
+// consent has to come first, so the script is injected from here and only
+// once somebody has said yes. This has to live above `state` because state
+// reads the saved choice while it's being built; AD_CLIENT is declared much
+// further down, so its use here is deferred into a function body rather than
+// read at this point in the file.
+
+const COOKIE_CONSENT_KEY = 'vendaru_cookie_consent';   // 'all' | 'essential'
+
+function loadCookieConsent() {
+  try {
+    const v = localStorage.getItem(COOKIE_CONSENT_KEY);
+    return v === 'all' || v === 'essential' ? v : null;
+  } catch (e) { return null; }
+}
+
+function saveCookieConsent(value) {
+  try { localStorage.setItem(COOKIE_CONSENT_KEY, value); } catch (e) { /* ignore */ }
+}
+
+function adsAllowed() {
+  return state.cookieConsent === 'all';
+}
+
+let adLoaderRequested = false;
+
+function loadAdScriptIfAllowed() {
+  if (!adsAllowed() || adLoaderRequested) return;
+  adLoaderRequested = true;
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + AD_CLIENT;
+  s.crossOrigin = 'anonymous';
+  document.head.appendChild(s);
+}
+
+function renderCookieBanner() {
+  // Only while there's no decision on record.
+  if (state.cookieConsent) return '';
+
+  return `
+    <div class="cookie-banner">
+      <div class="cookie-banner-inner">
+        <div style="font-size:14px;font-weight:600;color:#141414">Cookies on Vendaru</div>
+        <div style="font-size:12.5px;color:#6b6b6b;line-height:1.5;margin-top:5px">
+          We need a few essentials to keep you signed in and hold your basket. With your
+          agreement we'd also use Google AdSense cookies to fund the directory by showing
+          adverts. You can change this whenever you like under Account.
+        </div>
+        <div style="display:flex;gap:9px;margin-top:12px;flex-wrap:wrap">
+          <button type="button" data-action="acceptAllCookies" style="flex:1;min-width:130px;background:#141414;color:#fff;border:none;padding:12px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit">Accept all</button>
+          <button type="button" data-action="essentialCookiesOnly" style="flex:1;min-width:130px;background:#fff;border:1.5px solid rgba(20,20,20,0.15);padding:12px;border-radius:14px;font-weight:600;font-size:13.5px;cursor:pointer;font-family:inherit">Essential only</button>
+        </div>
+        <button type="button" data-action="openTermsModal" data-arg="cookies" style="background:none;border:none;padding:9px 0 0;font-size:12.5px;font-weight:500;color:#6b6b6b;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px">
+          What we store
+        </button>
+      </div>
+    </div>`;
+}
+
 const state = {
   screen: 'login',
   mode: null,
+  cookieConsent: loadCookieConsent(),
   authRole: PATH_ROLE,
   showAuthModal: false,
   authProvider: null,
@@ -2756,6 +2820,7 @@ function vendaruFooterHtml() {
         <a href="/privacy.html" style="color:#141414;text-decoration:none">Privacy Policy</a>
         <a href="/terms.html" style="color:#141414;text-decoration:none">Terms of Service</a>
         <a href="/contact.html" style="color:#141414;text-decoration:none">Contact Us</a>
+        <button type="button" data-action="openTermsModal" data-arg="cookies" style="background:none;border:none;padding:0;font:inherit;color:#141414;font-weight:600;cursor:pointer">Cookies</button>
         <a href="/ads.txt" style="color:#141414;text-decoration:none">ads.txt</a>
       </div>
       <div>&copy; 2026 Vendaru UK Directory. Verified Local Services &amp; Shopping.</div>
@@ -5126,40 +5191,59 @@ function renderCheckoutModal() {
   `;
 }
 
+// Condensed from the full policies at /terms.html, /privacy.html and
+// /ads.txt — those are the source of truth for anything legal; this is the
+// in-app summary so nobody has to leave the app to read it.
 function renderTermsModal() {
   if (!state.showTermsModal) return '';
-  const isTerms = state.termsModalTab !== 'privacy';
+  const tab = state.termsModalTab === 'privacy' ? 'privacy'
+    : state.termsModalTab === 'cookies' ? 'cookies'
+    : 'terms';
+
+  const titles = { terms: '📜 Terms of Service', privacy: '🔒 Privacy Policy', cookies: '🍪 Cookies' };
+  const tabBtn = (id, label) => `
+    <button type="button" data-action="setTermsTab" data-arg="${id}" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;background:${tab === id ? '#fff' : 'transparent'};color:${tab === id ? '#141414' : '#6b6b6b'};box-shadow:${tab === id ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">${label}</button>`;
+
+  const bodies = {
+    terms: `
+      <p><b>1. Platform overview</b><br>Vendaru is an online local services directory and marketplace connecting UK consumers with independent verified businesses, trade professionals, service providers and grocery retailers.</p>
+      <p><b>2. Business listings</b><br>Listed businesses are responsible for their own service execution, pricing and fulfilment. Vendaru verifies business registration and contact details but is not a party to the agreement between you and the business.</p>
+      <p><b>3. Payments &amp; cancellations</b><br>Payments are processed securely through Stripe. Orders and bookings may be cancelled subject to the terms shown at checkout and, for grocery orders, before a courier departs with the items.</p>
+      <p><b>4. User responsibilities</b><br>You agree to provide accurate information when booking a service, requesting a quote, or placing a store order. Misuse of the messaging or booking features is prohibited.</p>
+      <p style="color:#6b6b6b">Full terms: <a href="/terms.html" style="color:#141414;font-weight:600">vendaru.com/terms.html</a></p>
+    `,
+    privacy: `
+      <p><b>1. Information we collect</b><br>Account details (name, email, phone, delivery address); booking and order details, including your communications with listed businesses; and technical data such as IP address and device information.</p>
+      <p><b>2. How we use it</b><br>To run your account, connect you with the business or store you're contacting, process bookings and orders, and improve the platform. We do not sell your data.</p>
+      <p><b>3. Data sharing</b><br>Shared only with the specific business you book or order from, and with Stripe to take payment. Nothing is shared with third-party marketers.</p>
+      <p><b>4. Your rights</b><br>Under UK GDPR you can request access to, correction of, or deletion of your data at any time by emailing <a href="mailto:privacy@vendaru.com" style="color:#141414;font-weight:600">privacy@vendaru.com</a>.</p>
+      <p style="color:#6b6b6b">Full policy: <a href="/privacy.html" style="color:#141414;font-weight:600">vendaru.com/privacy.html</a></p>
+    `,
+    cookies: `
+      <p><b>Essential</b><br>Used to keep you signed in, remember your basket, and hold a business's saved page while they're editing it. These are on regardless of your choice below — the app can't function without them.</p>
+      <p><b>Advertising</b><br>With your agreement, Vendaru uses <b>Google AdSense</b> to fund the directory. Google and its partners set cookies (including the DoubleClick cookie) to serve and measure ads based on your visit to this and other sites. You can opt out of personalised ads generally at <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener" style="color:#141414;font-weight:600">Google Ads Settings</a>.</p>
+      <p><b>Your choice</b><br>Current setting: <b>${state.cookieConsent === 'all' ? 'All cookies accepted' : state.cookieConsent === 'essential' ? 'Essential only' : 'Not yet chosen'}</b>.</p>
+      <button type="button" data-action="reopenCookieChoice" style="background:none;border:1.5px solid rgba(20,20,20,0.15);border-radius:12px;padding:9px 14px;font-size:12.5px;font-weight:600;color:#141414;cursor:pointer;font-family:inherit">Change my cookie choice</button>
+    `,
+  };
 
   return `
     <div class="graftr-modal-overlay">
       <div class="graftr-modal-card" style="max-height:85vh;overflow-y:auto">
         <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e5e5e5;padding-bottom:12px;position:sticky;top:0;background:#fff;z-index:2">
-          <div style="font-size:17px;font-weight:800;color:#141414">${isTerms ? '📜 Terms of Service' : '🔒 Privacy Policy'}</div>
+          <div style="font-size:17px;font-weight:800;color:#141414">${titles[tab]}</div>
           <button data-action="closeTermsModal" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b6b6b">✕</button>
         </div>
 
         <!-- Modal Tab Switcher -->
         <div style="display:flex;background:#f2f2f2;border-radius:12px;padding:4px;gap:4px;margin-top:12px">
-          <button type="button" data-action="setTermsTab" data-arg="terms" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${isTerms ? '#fff' : 'transparent'};color:${isTerms ? '#141414' : '#6b6b6b'};box-shadow:${isTerms ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
-            Terms of Service
-          </button>
-          <button type="button" data-action="setTermsTab" data-arg="privacy" style="flex:1;padding:8px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:${!isTerms ? '#fff' : 'transparent'};color:${!isTerms ? '#141414' : '#6b6b6b'};box-shadow:${!isTerms ? '0 2px 6px rgba(0,0,0,0.06)' : 'none'}">
-            Privacy Policy
-          </button>
+          ${tabBtn('terms', 'Terms')}
+          ${tabBtn('privacy', 'Privacy')}
+          ${tabBtn('cookies', 'Cookies')}
         </div>
 
         <div style="font-size:13px;line-height:1.6;color:#444444;display:flex;flex-direction:column;gap:12px;margin-top:14px">
-          ${isTerms ? `
-            <p><b>1. Introduction</b><br>Welcome to Vendaru ("Company", "we", "our", "us"). These Terms of Service govern your use of our local delivery network mobile and web applications operating in Bolton, Greater Manchester, UK.</p>
-            <p><b>2. Delivery Services &amp; Timelines</b><br>Vendaru provides on-demand courier dispatch connecting local customers with independent couriers and local retail merchants (such as Morrisons Daily). Standard delivery estimates range between 15 to 30 minutes subject to courier availability and local traffic conditions.</p>
-            <p><b>3. Payments &amp; Cancellations</b><br>All payments are securely processed. Orders may be cancelled penalty-free prior to courier departure. Once a courier accepts and departs with an order, cancellation requests may be subject to a restock fee.</p>
-            <p><b>4. User Responsibilities</b><br>Customers must provide accurate delivery addresses and contact information to ensure successful dispatch.</p>
-          ` : `
-            <p><b>1. Information We Collect</b><br>We collect personal information necessary for delivery fulfillment including your name, contact telephone number, delivery address, and device location coordinates for live GPS courier tracking.</p>
-            <p><b>2. How We Use Information</b><br>Your information is used strictly to process orders, facilitate live GPS navigation for couriers, send order status updates, and provide customer support.</p>
-            <p><b>3. Data Security</b><br>We implement SSL encryption and strict data protection measures. We do not sell or share your personal data with third-party marketers.</p>
-            <p><b>4. Contacting Data Protection</b><br>If you have questions about your personal data, contact us at privacy@graftr.co.uk.</p>
-          `}
+          ${bodies[tab]}
         </div>
 
         <button type="button" data-action="closeTermsModal" style="background:#141414;color:#fff;border:none;padding:12px;border-radius:14px;font-weight:700;font-size:13.5px;cursor:pointer;margin-top:16px">
@@ -5356,20 +5440,28 @@ function renderShopperAccount() {
 
   const faqs = [
     {
-      q: 'How fast is delivery in Bolton?',
-      a: 'Orders are fulfilled by local couriers in Bolton. Standard delivery is 15–30 minutes, direct from merchants like Morrisons Daily.'
+      q: 'What is Vendaru?',
+      a: 'A UK directory of local businesses and bookable services — tradespeople, estate agents, cleaners, beauty and more — alongside on-demand grocery ordering from local stores.'
     },
     {
-      q: 'How does live tracking work?',
-      a: 'Once an order is placed it is broadcast to nearby couriers. As soon as one accepts and leaves the store, live tracking turns on so you can follow their route on the map.'
+      q: 'How do I book a service?',
+      a: 'Open a business’s page from its listing, choose a service and a time, and pay through the same basket you’d use for a grocery order. The business gets your booking straight away.'
     },
     {
-      q: 'Can I cancel an active order?',
-      a: 'Yes. Use Cancel Order on your Basket or Board tab any time before the courier leaves with your items.'
+      q: 'How fast is grocery delivery?',
+      a: 'Where a store offers it, orders are fulfilled by local couriers. Standard delivery is 15–30 minutes, with live tracking once a courier has left the store.'
+    },
+    {
+      q: 'Can I cancel an order or booking?',
+      a: 'Yes. Cancel a grocery order any time before the courier leaves with your items from Basket or Activity. Cancelling a service booking depends on the business’s own policy, shown on their page.'
+    },
+    {
+      q: 'I run a business — how do I get listed?',
+      a: 'Email partners@vendaru.com or use the List your business link on the home screen. Listings are verified before they go live.'
     },
     {
       q: 'How do I contact support?',
-      a: 'Chat to the assistant any time, email support@vendaru.com, or call +44 161 800 9000.'
+      a: 'Chat to the assistant any time, or email support@vendaru.com.'
     }
   ];
 
@@ -5436,7 +5528,8 @@ function renderShopperAccount() {
       ${faqListHtml}
     </div>
 
-    <!-- Contact -->
+    <!-- Contact. Matches the addresses on /contact.html — no phone number,
+         because there isn't one to answer it. -->
     <div class="shop-card" style="${cardStyle}">
       <div style="${sectionLabel}">Contact</div>
       <button type="button" data-action="openContactChat" style="${rowBase}">
@@ -5444,12 +5537,16 @@ function renderShopperAccount() {
         <span style="${rowValue}">24/7</span>
       </button>
       <a href="mailto:support@vendaru.com" style="${linkRow};${divider}">
-        <span style="font-weight:500">Email</span>
+        <span style="font-weight:500">General enquiries</span>
         <span style="${rowValue}">support@vendaru.com</span>
       </a>
-      <a href="tel:+441618009000" style="${linkRow};${divider}">
-        <span style="font-weight:500">Phone</span>
-        <span style="${rowValue}">+44 161 800 9000</span>
+      <a href="mailto:partners@vendaru.com" style="${linkRow};${divider}">
+        <span style="font-weight:500">List a business</span>
+        <span style="${rowValue}">partners@vendaru.com</span>
+      </a>
+      <a href="mailto:privacy@vendaru.com" style="${linkRow};${divider}">
+        <span style="font-weight:500">Privacy &amp; data requests</span>
+        <span style="${rowValue}">privacy@vendaru.com</span>
       </a>
     </div>
 
@@ -5461,6 +5558,10 @@ function renderShopperAccount() {
       </button>
       <button type="button" data-action="openTermsModal" data-arg="privacy" style="${rowBase};${divider}">
         <span style="font-weight:500">Privacy Policy</span>
+      </button>
+      <button type="button" data-action="openTermsModal" data-arg="cookies" style="${rowBase};${divider}">
+        <span style="font-weight:500">Cookies</span>
+        <span style="${rowValue}">${state.cookieConsent === 'all' ? 'All accepted' : state.cookieConsent === 'essential' ? 'Essential only' : 'Not set'}</span>
       </button>
     </div>
 
@@ -7231,6 +7332,7 @@ function render() {
   const authModal = renderAuthModal();
   const termsModal = renderTermsModal();
   const bookingPicker = renderBookingPickerModal();
+  const cookieBanner = renderCookieBanner();
 
   root.innerHTML = `
     <div class="app-scroll" style="flex:1;overflow:auto;padding-top:calc(56px + env(safe-area-inset-top, 0px));${bottomPad}">${content}</div>
@@ -7241,9 +7343,13 @@ function render() {
     ${authModal}
     ${termsModal}
     ${bookingPicker}
+    ${cookieBanner}
   `;
 
-  mountAdUnit();
+  // Ad units are only mounted once cookies have been accepted — the loader
+  // script itself is gated the same way, so before that there's nothing for
+  // adsbygoogle.push to fill anyway.
+  if (adsAllowed()) mountAdUnit();
 
   if (typeof state.scanningBarcodeIndex === 'number' && state.scanningBarcodeIndex !== null) {
     if (scannerStartedForIndex !== state.scanningBarcodeIndex) {
@@ -8242,6 +8348,25 @@ const actions = {
     state.termsModalTab = tab || 'terms';
     render();
   },
+  acceptAllCookies: () => {
+    state.cookieConsent = 'all';
+    saveCookieConsent('all');
+    render();
+    loadAdScriptIfAllowed();
+  },
+  essentialCookiesOnly: () => {
+    state.cookieConsent = 'essential';
+    saveCookieConsent('essential');
+    render();
+  },
+  // Lets someone change their mind later from Account, without clearing the
+  // rest of their session — reload only matters for the ad script itself,
+  // since a script tag can't be un-injected once it's run.
+  reopenCookieChoice: () => {
+    state.cookieConsent = null;
+    try { localStorage.removeItem(COOKIE_CONSENT_KEY); } catch (e) { /* ignore */ }
+    render();
+  },
   closeTermsModal: () => {
     state.showTermsModal = false;
     render();
@@ -8821,6 +8946,10 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPartners();
 
   checkStripeRedirectResult();
+
+  // A returning visitor who already said yes shouldn't be asked again or
+  // have ads withheld until they revisit the banner.
+  loadAdScriptIfAllowed();
 
   // Scheduled orders join the courier pool on their own once the window is
   // near, including for slots that came due while the app was closed.
