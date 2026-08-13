@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vendaru.com/sitemap.xml
+Sitemap: https://www.vendaru.com/sitemap.xml
