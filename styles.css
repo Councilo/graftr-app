@@ -2887,3 +2887,78 @@ body::-webkit-scrollbar {
     bottom: 32px;
   }
 }
+
+/* Top-of-page hero banner: five Unsplash photos cross-fading with a slow push
+   in, entirely animation-driven so nothing here re-renders the page.
+
+   Built for exactly 5 slides at 5s each = a 25s cycle. If HERO_SLIDES in app.js
+   ever changes count, these percentages (each slot is 1/5 = 20% of the cycle,
+   with a 3% cross-fade at each edge) need updating to match, and HERO_CYCLE's
+   animation-duration below has to track HERO_SLIDES.length * HERO_PER. */
+.hero-band {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #eef0ee;
+  margin: 2px 0 4px;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: hero-fade 25s infinite;
+}
+
+.hero-shot {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: hero-pan 25s infinite;
+}
+
+/* Reduced motion: the slides still change, because that's the point of the
+   banner, but nothing pans and the cut is a plain cross-fade rather than a
+   moving image — the class of motion the setting exists to remove. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-shot { animation: none; }
+}
+
+@keyframes hero-fade {
+  0%, 3%    { opacity: 0; }
+  5%, 17%   { opacity: 1; }
+  20%, 100% { opacity: 0; }
+}
+
+@keyframes hero-pan {
+  0%   { transform: scale(1.06) translateX(0); }
+  20%  { transform: scale(1.12) translateX(-1.5%); }
+  100% { transform: scale(1.12) translateX(-1.5%); }
+}
+
+.hero-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 11px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.hero-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  animation: hero-dot 25s infinite;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes hero-dot {
+  0%, 3%    { background: rgba(255, 255, 255, 0.5); width: 6px; }
+  5%, 17%   { background: #ffffff; width: 16px; }
+  20%, 100% { background: rgba(255, 255, 255, 0.5); width: 6px; }
+}

@@ -2244,6 +2244,72 @@ const ICON_CROSSHAIR = '<svg width="17" height="17" viewBox="0 0 20 20" fill="no
 const ICON_CARET = '<svg width="9" height="9" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7.5L10 13l5.5-5.5"/></svg>';
 const ICON_CAMERA = '<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M2.8 6.9h2.6l1.2-1.9h6.8l1.2 1.9h2.6a1 1 0 011 1v7.2a1 1 0 01-1 1H2.8a1 1 0 01-1-1V7.9a1 1 0 011-1z"/><circle cx="10" cy="11.2" r="2.9"/></svg>';
 const ICON_CHECK = '<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>';
+// ---- Top-of-page banner --------------------------------------------------
+//
+// Five photographs from Unsplash, cross-fading with a slow push in. Chosen to
+// span what Vendaru covers rather than five versions of the same thing: a shop
+// counter, a service being performed, a retail interior, an event, a trade.
+//
+// The rotation is entirely CSS. A JS timer would have to call render() to change
+// slide, and render() rebuilds the whole page from innerHTML — an animation
+// costing a full re-render every five seconds, forever, on the busiest screen in
+// the app.
+const HERO_SLIDES = [
+  { id: 'photo-1597417321971-45e034f7a993', alt: 'A butcher’s counter stocked with cuts of meat' },
+  { id: 'photo-1593702288056-7927b442d0fa', alt: 'A barber cutting a customer’s hair' },
+  { id: 'photo-1576602976047-174e57a47881', alt: 'The shelves of a small pharmacy' },
+  { id: 'photo-1519225421980-715cb0215aed', alt: 'A long table laid for a wedding reception' },
+  { id: 'photo-1599256872237-5dcc0fbe9668', alt: 'A mechanic working under the bonnet of a car' },
+];
+
+// Seconds each slide holds, and the length of one full turn. Kept here because
+// the CSS keyframes are written in percentages of the same cycle and the two
+// have to agree or the dots drift away from the pictures.
+const HERO_PER = 5;
+const HERO_CYCLE = HERO_SLIDES.length * HERO_PER;
+
+// Set once when app.js loads, not on render. The animations are anchored to it,
+// so a re-render — a keystroke in the search box, a chip being tapped — picks the
+// rotation up where it actually is instead of snapping back to the first slide.
+const HERO_EPOCH = Date.now();
+
+// Negative delay = "this animation is already this far in". Phase is measured
+// from when slide i is due, and JS % keeps the sign of the left operand, so it
+// is normalised before being negated.
+function heroPhase(i) {
+  const t = (Date.now() - HERO_EPOCH) / 1000;
+  const phase = (((t - i * HERO_PER) % HERO_CYCLE) + HERO_CYCLE) % HERO_CYCLE;
+  return -phase.toFixed(2);
+}
+
+function heroBannerHtml() {
+  const slides = HERO_SLIDES.map((s, i) => {
+    const src = (w, h) => `https://images.unsplash.com/${s.id}?auto=format&fit=crop&q=75&w=${w}&h=${h}`;
+    return `
+      <div class="hero-slide" style="animation-delay:${heroPhase(i)}s">
+        <img class="hero-shot" src="${src(1000, 380)}"
+             srcset="${src(1000, 380)} 1000w, ${src(1600, 610)} 1600w"
+             sizes="(max-width: 700px) 100vw, 700px"
+             alt="${escapeHtml(s.alt)}"
+             ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"
+             style="animation-delay:${heroPhase(i)}s">
+      </div>`;
+  }).join('');
+
+  // Dots are indicators, not controls: there is nothing to press, so they are
+  // spans and the whole strip is hidden from screen readers rather than
+  // announcing five empty buttons.
+  const dots = HERO_SLIDES.map((_, i) =>
+    `<span class="hero-dot" style="animation-delay:${heroPhase(i)}s"></span>`).join('');
+
+  return `
+    <div class="hero-band" role="img" aria-label="Local shops, trades and services around the UK">
+      ${slides}
+      <div class="hero-dots" aria-hidden="true">${dots}</div>
+    </div>`;
+}
+
+
 // The three actions every card carries, in the same order and the same places.
 //
 // These used to be dropped when a listing had no website or no phone, so a card
@@ -4672,6 +4738,7 @@ function renderShopperShop() {
            style="width:200px;max-width:62%;height:auto;display:block" />
     </div>
     <div style="font-size:15px;opacity:0.55;font-weight:600">Good afternoon</div>
+    ${searching ? '' : heroBannerHtml()}
     ${locationSearchBarHtml('shop-search-input')}
     <!-- Which part of the app you're after. The grocery aisle rail used to sit
          under this; the aisles are inside Morrisons Daily, which is a card on
