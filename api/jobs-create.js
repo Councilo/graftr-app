@@ -1,6 +1,6 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
-const { computeQuote, QuoteError } = require('../lib/geocode');
+const { computeQuote, QuoteError, GeocodeServiceError } = require('../lib/geocode');
 const { sendError } = require('../lib/respond');
 
 module.exports = async (req, res) => {
@@ -31,10 +31,14 @@ module.exports = async (req, res) => {
 
     let q;
     try {
-      q = computeQuote(pickup_address, dropoff_address);
+      q = await computeQuote(pickup_address, dropoff_address);
     } catch (err) {
       if (err instanceof QuoteError) {
         res.status(422).json({ detail: err.message });
+        return;
+      }
+      if (err instanceof GeocodeServiceError) {
+        res.status(502).json({ detail: 'The map service is unavailable right now — try again in a moment.' });
         return;
       }
       throw err;

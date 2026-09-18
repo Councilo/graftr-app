@@ -38,7 +38,11 @@
     authError: null,
     authBusy: false,
 
-    compose: { pickup_address: '', dropoff_address: '', start: '', end: '', quote: null, quoteError: null, busy: false },
+    compose: {
+      pickup_address: '', dropoff_address: '', start: '', end: '',
+      quote: null, quoteError: null, busy: false,
+      locating: false, locateError: null,
+    },
 
     jobs: [],
     available: [],
@@ -346,6 +350,53 @@
           .catch(() => { /* the job card still works without a name */ });
       }
     },
+    // "Use my location" for the pickup field only — a courier's dropoff is
+    // wherever the parcel is going, never wherever the customer happens to
+    // be standing, so this button only ever appears on the pickup side.
+    // Goes straight to fetch() rather than through api(): reverse-geocoding
+    // needs no account and no auth, and calling it directly means it still
+    // works to fill in a real address even in the client-side test-mode
+    // preview, which has no other real backend behind it.
+    useMyLocation() {
+      if (!('geolocation' in navigator)) {
+        state.compose.locateError = "This browser doesn't support location — type the address instead.";
+        render();
+        return;
+      }
+      state.compose.locating = true;
+      state.compose.locateError = null;
+      render();
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const { latitude, longitude } = pos.coords;
+            const res = await fetch(`/api/reverse-geocode?lat=${latitude}&lng=${longitude}`);
+            const data = await res.json().catch(() => null);
+            if (!res.ok) throw new Error((data && data.detail) || 'Could not look up that location');
+            state.compose.pickup_address = data.address;
+            state.compose.quote = null; // the address just changed under it
+            state.compose.quoteError = null;
+          } catch (err) {
+            state.compose.locateError = err.message;
+          } finally {
+            state.compose.locating = false;
+            render();
+          }
+        },
+        (err) => {
+          const messages = {
+            1: 'Location access was denied — you can still type the address.',
+            2: "Your location isn't available right now — you can still type the address.",
+            3: 'Finding your location took too long — you can still type the address.',
+          };
+          state.compose.locating = false;
+          state.compose.locateError = messages[err.code] || 'Could not get your location.';
+          render();
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+      );
+    },
     async getQuote() {
       const { pickup_address, dropoff_address } = state.compose;
       state.compose.quoteError = null;
@@ -381,7 +432,11 @@
           method: 'POST',
           json: { pickup_address, dropoff_address, pickup_window_start: start, pickup_window_end: end },
         });
-        state.compose = { pickup_address: '', dropoff_address: '', start: '', end: '', quote: null, quoteError: null, busy: false };
+        state.compose = {
+          pickup_address: '', dropoff_address: '', start: '', end: '',
+          quote: null, quoteError: null, busy: false,
+          locating: false, locateError: null,
+        };
         await loadLists();
       } catch (err) {
         state.compose.quoteError = err.message;
@@ -522,6 +577,10 @@
         <div class="field">
           <label>Pickup address</label>
           <input data-bind="compose.pickup_address" value="${escapeHtml(c.pickup_address)}" placeholder="12 High St, Manchester" />
+          <button type="button" class="refresh-btn" style="align-self:flex-start" data-action="useMyLocation" ${c.locating ? 'disabled' : ''}>
+            ${c.locating ? 'Finding your location…' : '📍 Use my current location'}
+          </button>
+          ${c.locateError ? `<div class="form-error">${escapeHtml(c.locateError)}</div>` : ''}
         </div>
         <div class="field">
           <label>Dropoff address</label>
@@ -548,8 +607,7 @@
           <button class="btn btn-primary" data-action="submitJob" ${c.busy || !c.quote ? 'disabled' : ''}>Post job</button>
         </div>
         <p class="hint" style="margin-top:10px;margin-bottom:0">
-          Quotes are priced from a fixed table of UK towns and cities, not a live map — mention a recognised UK town
-          or city in each address.
+          Addresses and pricing use OpenStreetMap — include a street, postcode or town so it can be found.
         </p>
       </div>`;
   }
