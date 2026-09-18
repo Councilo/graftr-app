@@ -69,6 +69,14 @@
   let courierMarkers = {}; // job.id -> the courier's live-position marker on that job's map
   let activeIntervals = {}; // job.id -> setInterval id, for location push (courier) or poll (customer)
 
+  // Address-autocomplete: kept outside `state` and updated by writing
+  // directly into the suggestion box's own innerHTML rather than through
+  // render() — a full render on every keystroke would rebuild the input
+  // out from under whoever's still typing into it.
+  let suggestTimers = { pickup: null, dropoff: null };
+  let suggestSeq = { pickup: 0, dropoff: 0 };     // guards against a slow, stale request overwriting a faster, newer one
+  let suggestResults = { pickup: [], dropoff: [] };
+
   // ---------------- tiny helpers ----------------
   function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -375,6 +383,27 @@
           .catch(() => { /* the job card still works without a name */ });
       }
     },
+    // Picking a suggestion from the address-autocomplete dropdown. `field`
+    // arrives as this action's second argument (see the click listener in
+    // boot()) rather than through the usual single data-arg, since this is
+    // the one action that needs to know both which suggestion and which of
+    // the two fields it belongs to.
+    selectSuggestion(index, field) {
+      const r = (suggestResults[field] || [])[index];
+      if (!r) return;
+      if (field === 'pickup') {
+        state.compose.pickup_address = r.display_name;
+        // Nominatim's own coordinates for the chosen candidate — the same
+        // instant-preview treatment "use my location" already gets, since
+        // picking an exact suggestion is just as precise as a GPS fix.
+        state.compose.pickupCoords = { lat: r.lat, lng: r.lng };
+      } else {
+        state.compose.dropoff_address = r.display_name;
+      }
+      state.compose.quote = null;
+      suggestResults[field] = [];
+      render();
+    },
     // "Use my location" for the pickup field only — a courier's dropoff is
     // wherever the parcel is going, never wherever the customer happens to
     // be standing, so this button only ever appears on the pickup side.
@@ -619,7 +648,10 @@
       <div class="compose-col">
         <div class="field">
           <label>Pickup address</label>
-          <input data-bind="compose.pickup_address" value="${escapeHtml(c.pickup_address)}" placeholder="12 High St, Manchester" />
+          <div class="addr-input-wrap">
+            <input data-bind="compose.pickup_address" data-suggest-field="pickup" value="${escapeHtml(c.pickup_address)}" placeholder="12 High St, Manchester" autocomplete="off" />
+            <div class="addr-suggestions" id="pickup-suggestions"></div>
+          </div>
           <button type="button" class="refresh-btn" style="align-self:flex-start" data-action="useMyLocation" ${c.locating ? 'disabled' : ''}>
             ${c.locating ? 'Finding your location…' : '📍 Use my current location'}
           </button>
@@ -627,7 +659,10 @@
         </div>
         <div class="field">
           <label>Dropoff address</label>
-          <input data-bind="compose.dropoff_address" value="${escapeHtml(c.dropoff_address)}" placeholder="4 Kings Rd, Leeds" />
+          <div class="addr-input-wrap">
+            <input data-bind="compose.dropoff_address" data-suggest-field="dropoff" value="${escapeHtml(c.dropoff_address)}" placeholder="4 Kings Rd, Leeds" autocomplete="off" />
+            <div class="addr-suggestions" id="dropoff-suggestions"></div>
+          </div>
         </div>
         <div class="window-row">
           <div class="field">
@@ -928,6 +963,51 @@
     }
   }
 
+  // ---------------- address autocomplete ----------------
+  //
+  // "pickup" | "dropoff" -> the field's own suggestion box, matching the id
+  // each one is given in renderComposeCard().
+  const SUGGEST_DEBOUNCE_MS = 350;
+  const SUGGEST_MIN_LENGTH = 3;
+
+  function scheduleAddressSuggest(field, query) {
+    clearTimeout(suggestTimers[field]);
+    const box = document.getElementById(`${field}-suggestions`);
+    const text = query.trim();
+    if (text.length < SUGGEST_MIN_LENGTH) {
+      suggestResults[field] = [];
+      if (box) box.innerHTML = '';
+      return;
+    }
+    const mySeq = ++suggestSeq[field];
+    suggestTimers[field] = setTimeout(async () => {
+      let results = [];
+      try {
+        const res = await fetch(`/api/address-search?q=${encodeURIComponent(text)}`);
+        const data = await res.json().catch(() => null);
+        results = (data && data.results) || [];
+      } catch {
+        // Left empty — a failed lookup just means no dropdown, not an error
+        // shown over someone's shoulder while they're mid-sentence typing.
+      }
+      // A later keystroke may have already fired its own request; if this
+      // one lost the race, its results are for text that no longer matches
+      // what's in the box, so they're dropped rather than shown.
+      if (suggestSeq[field] !== mySeq) return;
+      suggestResults[field] = results;
+      renderAddressSuggestions(field);
+    }, SUGGEST_DEBOUNCE_MS);
+  }
+
+  function renderAddressSuggestions(field) {
+    const box = document.getElementById(`${field}-suggestions`);
+    if (!box) return;
+    box.innerHTML = suggestResults[field].map((r, i) => `
+      <div class="addr-suggestion" data-action="selectSuggestion" data-arg="${i}" data-field="${field}">
+        ${escapeHtml(r.display_name)}
+      </div>`).join('');
+  }
+
   // ---------------- live courier tracking ----------------
   //
   // Tied to a job's detail panel being open, not to the job existing: a
@@ -998,7 +1078,9 @@
       if (!action) return;
       const raw = el.dataset.arg;
       const arg = raw === undefined ? undefined : (/^-?\d+$/.test(raw) ? Number(raw) : raw);
-      action(arg);
+      // el.dataset.field is only meaningful to selectSuggestion below; every
+      // other action already takes one argument and simply ignores a second.
+      action(arg, el.dataset.field);
     });
 
     root.addEventListener('input', (e) => {
@@ -1013,7 +1095,21 @@
       if (path === 'compose.pickup_address' || path === 'compose.dropoff_address') {
         state.compose.quote = null;
         if (path === 'compose.pickup_address') state.compose.pickupCoords = null;
+        scheduleAddressSuggest(path === 'compose.pickup_address' ? 'pickup' : 'dropoff', e.target.value);
       }
+    });
+
+    // Closes a dropdown when focus leaves its input for any reason other
+    // than clicking one of its own suggestions — that click is handled (and
+    // the dropdown already cleared) by the click listener above before this
+    // ever needs to run, since render() there is synchronous.
+    root.addEventListener('focusout', (e) => {
+      const field = e.target.dataset.suggestField;
+      if (!field) return;
+      setTimeout(() => {
+        const box = document.getElementById(`${field}-suggestions`);
+        if (box) box.innerHTML = '';
+      }, 150);
     });
 
     root.addEventListener('change', (e) => {
