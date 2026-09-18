@@ -11,6 +11,21 @@
 
   const TOKEN_KEY = 'vendaru_token';
 
+  // TEMPORARY, for testing only. Real sign-in can't work yet anyway — it
+  // needs Postgres, Blob and JWT_SECRET attached in Vercel first — so a
+  // bypass that just skipped the login screen would drop straight into a
+  // dashboard where every single action 401s immediately, which isn't much
+  // of a test. Instead this routes the whole app at a client-side stand-in
+  // backend (see "TEST MODE MOCK BACKEND" below): real distance/pricing
+  // math, an in-memory job board, uploaded photos previewed via object
+  // URLs. Nothing here ever touches the real API or weakens real auth in
+  // any way — it's a separate code path, entered only by clicking the
+  // clearly-labelled test button. Set this to false (or delete this flag,
+  // the skipLogin action, the button in renderAuth, and the mock backend
+  // section) once real sign-in is wired up and ready to test for real.
+  const TEST_MODE_SKIP_LOGIN = true;
+  let testMode = false;
+
   const state = {
     token: localStorage.getItem(TOKEN_KEY) || null,
     user: null,
@@ -66,7 +81,10 @@
   }
 
   // ---------------- API ----------------
-  async function api(path, { method = 'GET', json, form, auth = true } = {}) {
+  async function api(path, opts = {}) {
+    if (testMode) return mockApi(path, opts);
+
+    const { method = 'GET', json, form, auth = true } = opts;
     const headers = {};
     if (auth && state.token) headers.Authorization = 'Bearer ' + state.token;
     let body;
@@ -84,6 +102,115 @@
       throw err;
     }
     return data;
+  }
+
+  // ---------------- TEST MODE MOCK BACKEND (temporary — see TEST_MODE_SKIP_LOGIN) ----------------
+  //
+  // A client-side stand-in for the real API, used only after clicking
+  // "Skip sign-in" on the auth screen. Same UK town table, haversine
+  // distance and pricing formula as lib/geocode.js on the server — kept in
+  // sync by hand since this is temporary scaffolding, not shared code, and
+  // deleted along with the rest of this section once real sign-in works.
+  const MOCK_UK_PLACES = {
+    london: [51.5074, -0.1278], birmingham: [52.4862, -1.8904], manchester: [53.4808, -2.2426],
+    leeds: [53.8008, -1.5491], glasgow: [55.8642, -4.2518], liverpool: [53.4084, -2.9916],
+    newcastle: [54.9783, -1.6178], sheffield: [53.3811, -1.4701], bristol: [51.4545, -2.5879],
+    edinburgh: [55.9533, -3.1883], cardiff: [51.4816, -3.1791], belfast: [54.5973, -5.9301],
+    nottingham: [52.9548, -1.1581], leicester: [52.6369, -1.1398], coventry: [52.4068, -1.5197],
+    oxford: [51.7520, -1.2577], cambridge: [52.2053, 0.1218], york: [53.9600, -1.0873],
+    brighton: [50.8225, -0.1372], bath: [51.3811, -2.3590], 'milton keynes': [52.0406, -0.7594],
+  };
+  function mockGeocode(address) {
+    const text = String(address || '').toLowerCase();
+    const names = Object.keys(MOCK_UK_PLACES).sort((a, b) => b.length - a.length);
+    for (const name of names) if (text.includes(name)) return MOCK_UK_PLACES[name];
+    return null;
+  }
+  function mockQuote(pickup_address, dropoff_address) {
+    const p = mockGeocode(pickup_address);
+    const d = mockGeocode(dropoff_address);
+    if (!p || !d) {
+      const bad = !p ? pickup_address : dropoff_address;
+      throw new Error(`Couldn't place '${bad}' — include a UK town or city name so the quote reflects a real distance, not a guess.`);
+    }
+    const rad = (x) => (x * Math.PI) / 180;
+    const dphi = rad(d[0] - p[0]);
+    const dlambda = rad(d[1] - p[1]);
+    const a = Math.sin(dphi / 2) ** 2 + Math.cos(rad(p[0])) * Math.cos(rad(d[0])) * Math.sin(dlambda / 2) ** 2;
+    const distance_km = Math.round(2 * 6371 * Math.asin(Math.sqrt(a)) * 100) / 100;
+    const price_gbp = Math.round(Math.max(5, 3.5 + 0.85 * distance_km) * 100) / 100;
+    return { pickup_lat: p[0], pickup_lng: p[1], dropoff_lat: d[0], dropoff_lng: d[1], distance_km, price_gbp };
+  }
+
+  let mockJobs = [];
+  let mockJobSeq = 1;
+  const MOCK_NAMES = { '-1': 'Test Customer', '-2': 'Test Courier' };
+
+  function mockApi(path, { method = 'GET', json, form } = {}) {
+    const [route, qs] = path.split('?');
+    const jobId = qs ? Number(new URLSearchParams(qs).get('jobId')) : null;
+    const fail = (message) => { throw new Error(message); };
+    const find = (id) => mockJobs.find((j) => j.id === id) || fail('No such job');
+
+    if (route === '/api/jobs-quote' && method === 'POST') {
+      const q = mockQuote(json.pickup_address, json.dropoff_address);
+      return { pickup_address: json.pickup_address, dropoff_address: json.dropoff_address, distance_km: q.distance_km, price_gbp: q.price_gbp };
+    }
+    if (route === '/api/jobs-create' && method === 'POST') {
+      const q = mockQuote(json.pickup_address, json.dropoff_address);
+      const start = new Date(json.pickup_window_start);
+      const end = new Date(json.pickup_window_end);
+      if (end <= start) fail('pickup_window_end must be after pickup_window_start');
+      const job = {
+        id: mockJobSeq++, customer_id: state.user.id, courier_id: null,
+        pickup_address: json.pickup_address, dropoff_address: json.dropoff_address,
+        pickup_window_start: start.toISOString(), pickup_window_end: end.toISOString(),
+        ...q, status: 'OPEN', pickup_photo_url: null, delivery_photo_url: null,
+        created_at: new Date().toISOString(), accepted_at: null, collected_at: null, delivered_at: null,
+      };
+      mockJobs.unshift(job);
+      return job;
+    }
+    if (route === '/api/jobs-mine' && method === 'GET') {
+      return mockJobs.filter((j) => j.customer_id === state.user.id);
+    }
+    if (route === '/api/jobs-available' && method === 'GET') {
+      return mockJobs.filter((j) => j.status === 'OPEN');
+    }
+    if (route === '/api/jobs-courier-mine' && method === 'GET') {
+      return mockJobs.filter((j) => j.courier_id === state.user.id);
+    }
+    if (route === '/api/jobs-accept' && method === 'POST') {
+      const job = find(json.jobId);
+      if (job.status !== 'OPEN') fail(`Job is ${job.status}, not open`);
+      job.courier_id = state.user.id;
+      job.status = 'ACCEPTED';
+      job.accepted_at = new Date().toISOString();
+      return job;
+    }
+    if (route === '/api/jobs-pickup' && method === 'POST') {
+      const job = find(jobId);
+      if (job.courier_id !== state.user.id) fail("This job isn't assigned to you");
+      if (job.status !== 'ACCEPTED') fail(`Job is ${job.status}, expected ACCEPTED`);
+      job.pickup_photo_url = URL.createObjectURL(form.get('photo'));
+      job.status = 'COLLECTED';
+      job.collected_at = new Date().toISOString();
+      return job;
+    }
+    if (route === '/api/jobs-deliver' && method === 'POST') {
+      const job = find(jobId);
+      if (job.courier_id !== state.user.id) fail("This job isn't assigned to you");
+      if (job.status !== 'COLLECTED') fail(`Job is ${job.status}, expected COLLECTED`);
+      job.delivery_photo_url = URL.createObjectURL(form.get('photo'));
+      job.status = 'DELIVERED';
+      job.delivered_at = new Date().toISOString();
+      return job;
+    }
+    if (route === '/api/jobs-tracking' && method === 'GET') {
+      const job = find(jobId);
+      return { ...job, courier_name: job.courier_id ? MOCK_NAMES[String(job.courier_id)] : null };
+    }
+    return fail(`(test mode) no mock for ${method} ${route}`);
   }
 
   // ---------------- data loading ----------------
@@ -165,6 +292,7 @@
       state.available = [];
       state.listsLoaded = false;
       state.expanded = new Set();
+      testMode = false;
       // Reset to a neutral login screen rather than leaving whatever role/mode
       // was last used — otherwise logging out after registering a courier
       // account strands the next person on "create courier account" with an
@@ -177,6 +305,23 @@
     },
     goDashboard() {
       if (state.user) { state.screen = 'dashboard'; render(); }
+    },
+    // TEMPORARY testing bypass — see TEST_MODE_SKIP_LOGIN above. A fake
+    // local user, no token, nothing sent to the real API: logging out drops
+    // straight back to the real auth screen with no trace of it. Fixed
+    // negative ids (rather than 0 for both) so a customer and a courier
+    // opened this way are distinguishable — otherwise "accept my own job"
+    // and "an unrelated courier's job" would look identical to the mock.
+    skipLogin(role) {
+      testMode = true;
+      const id = role === 'customer' ? -1 : -2;
+      state.user = { id, email: `test-${role}@example.com`, full_name: `Test ${role === 'customer' ? 'Customer' : 'Courier'}`, role };
+      state.screen = 'dashboard';
+      state.jobs = [];
+      state.available = [];
+      state.listsLoaded = false;
+      render();
+      loadLists();
     },
     refreshLists() {
       loadLists();
@@ -342,6 +487,14 @@
           <p class="hint" style="margin-top:14px;text-align:center">
             ${state.authRole === 'customer' ? 'Send a parcel with a courier near you.' : 'Deliver parcels and earn on your own schedule.'}
           </p>
+
+          ${TEST_MODE_SKIP_LOGIN ? `
+            <button class="btn btn-ghost" data-action="skipLogin" data-arg="${state.authRole}" style="margin-top:14px;border-style:dashed">
+              Skip sign-in — preview as ${state.authRole} (testing)
+            </button>
+            <p class="hint" style="margin-top:6px;text-align:center">
+              Temporary: real accounts can't work yet without a database attached. This bypasses sign-in to preview the dashboard only.
+            </p>` : ''}
         </div>
       </div>`;
   }
