@@ -1,5 +1,6 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
+const { serializeJobs } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
 // The marketplace: every OPEN job, oldest first, so a courier scrolling down
@@ -17,7 +18,7 @@ module.exports = async (req, res) => {
     const { rows } = await sql`
       SELECT * FROM jobs WHERE status = 'OPEN' ORDER BY created_at ASC
     `;
-    res.status(200).json(rows);
+    res.status(200).json(serializeJobs(rows));
   } catch (err) {
     sendError(res, err);
   }

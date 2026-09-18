@@ -1,6 +1,7 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
 const { savePhoto, UploadError } = require('../lib/upload');
+const { serializeJob } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
 module.exports = async (req, res) => {
@@ -46,13 +47,18 @@ module.exports = async (req, res) => {
       throw err;
     }
 
+    // The courier's last live position is cleared along with delivery — a
+    // finished job has nothing left to track, and the alternative is a
+    // stale dot sitting on the map forever pointing at wherever they
+    // happened to be when the job ended.
     const updated = await sql`
       UPDATE jobs
-      SET delivery_photo_url = ${photoUrl}, status = 'DELIVERED', delivered_at = now()
+      SET delivery_photo_url = ${photoUrl}, status = 'DELIVERED', delivered_at = now(),
+          courier_lat = NULL, courier_lng = NULL, courier_location_updated_at = NULL
       WHERE id = ${jobId}
       RETURNING *
     `;
-    res.status(200).json(updated.rows[0]);
+    res.status(200).json(serializeJob(updated.rows[0]));
   } catch (err) {
     sendError(res, err);
   }

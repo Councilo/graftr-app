@@ -32,6 +32,9 @@ module.exports = async (req, res) => {
         pickup_lng: q.pickup_lng,
         dropoff_lat: q.dropoff_lat,
         dropoff_lng: q.dropoff_lng,
+        // The real road route, when OSRM had one — null falls back to a
+        // straight line on the map, same as before this existed.
+        route_geometry: q.route_geometry,
       });
     } catch (err) {
       if (err instanceof QuoteError) {

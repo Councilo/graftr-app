@@ -1,6 +1,7 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
 const { savePhoto, UploadError } = require('../lib/upload');
+const { serializeJob } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
 module.exports = async (req, res) => {
@@ -55,7 +56,7 @@ module.exports = async (req, res) => {
       WHERE id = ${jobId}
       RETURNING *
     `;
-    res.status(200).json(updated.rows[0]);
+    res.status(200).json(serializeJob(updated.rows[0]));
   } catch (err) {
     sendError(res, err);
   }

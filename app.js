@@ -57,7 +57,10 @@
   };
 
   let root;
-  let liveMaps = []; // every Leaflet map instance created during the last render, torn down before the next one
+  let liveMaps = [];       // every Leaflet map instance created during the last render, torn down before the next one
+  let mapsByJob = {};      // job.id -> its live map instance, for targeted updates that shouldn't tear the map down
+  let courierMarkers = {}; // job.id -> the courier's live-position marker on that job's map
+  let activeIntervals = {}; // job.id -> setInterval id, for location push (courier) or poll (customer)
 
   // ---------------- tiny helpers ----------------
   function escapeHtml(s) {
@@ -508,8 +511,16 @@
 
   // ---------------- rendering ----------------
   function render() {
+    // Intervals are cleared before the maps/markers they update are torn
+    // down — otherwise a tick that fires in between would try to move a
+    // marker on a map that no longer exists.
+    Object.values(activeIntervals).forEach(clearInterval);
+    activeIntervals = {};
     liveMaps.forEach((m) => m.remove());
     liveMaps = [];
+    mapsByJob = {};
+    courierMarkers = {};
+
     root.innerHTML = state.screen === 'auth' ? renderAuth() : renderDashboard();
     if (state.screen === 'dashboard') {
       if (state.user.role === 'customer') initComposeMap();
@@ -760,11 +771,24 @@
   const UK_DEFAULT_CENTER = [54.5, -3.2];
   const UK_DEFAULT_ZOOM = 5;
 
-  // `route`, when given, is { distance_km, price_gbp } — drawn as a label
-  // sitting directly on the route line itself (a permanent Leaflet tooltip,
-  // not a popup that needs a click to reveal), so the number a courier or
-  // customer actually wants — how far, how much — reads straight off the
-  // map rather than living only in text somewhere else on the page.
+  // Black-and-white tiles. There's no separate grayscale tile server worth
+  // depending on for this (most either need an API key or have their own,
+  // stricter usage limits) — a CSS filter on the same free OpenStreetMap
+  // tiles gets the same result without a second service to fall over. Scoped
+  // to `.job-map .leaflet-tile-pane` in styles.css, not set here, so it
+  // applies to every map (compose and job-detail alike) with nothing to wire
+  // up per instance.
+
+  // `route`, when given, is { distance_km, price_gbp, geometry } — geometry
+  // is the real road-by-road path from OSRM (an array of [lat,lng] points),
+  // and drives a solid line through the actual streets a courier would
+  // drive. When OSRM had nothing to say (down, rate-limited, no path found),
+  // geometry is null/absent and this falls back to the dashed straight line
+  // between the two points this app always had — a different line style so
+  // "real route" and "straight-line estimate" don't look identical.
+  // Distance/price sit as a permanent label directly on whichever line gets
+  // drawn, not a popup that needs a click, so the number that actually
+  // matters reads straight off the map.
   function createMap(el, pickup, dropoff, route) {
     if (!el || typeof L === 'undefined') return null;
     const map = L.map(el).setView(UK_DEFAULT_CENTER, UK_DEFAULT_ZOOM);
@@ -776,9 +800,11 @@
     if (dropoff) L.marker([dropoff.lat, dropoff.lng]).addTo(map).bindPopup('Dropoff');
 
     if (pickup && dropoff) {
-      const line = L.polyline([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]], {
-        color: '#141414', weight: 3, dashArray: '6,8',
-      }).addTo(map);
+      const hasRealRoute = route && Array.isArray(route.geometry) && route.geometry.length > 1;
+      const path = hasRealRoute ? route.geometry : [[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]];
+      const line = L.polyline(path, hasRealRoute
+        ? { color: '#141414', weight: 4 }
+        : { color: '#141414', weight: 3, dashArray: '6,8' }).addTo(map);
       if (route) {
         line.bindTooltip(`${miles(route.distance_km)} · ${money(route.price_gbp)}`, {
           permanent: true, direction: 'center', className: 'route-label',
@@ -796,14 +822,37 @@
     return map;
   }
 
+  // A courier's live position, added to or moved on an already-open map
+  // without touching anything else on it — createMap() is never called
+  // again for this, since that would tear down and refit the whole map
+  // (tiles, zoom, pan) on every 10-second location update. See
+  // startCourierLocationPush/startCustomerLocationPoll below for what
+  // drives this.
+  function upsertCourierMarker(jobId, lat, lng) {
+    const map = mapsByJob[jobId];
+    if (!map) return;
+    if (courierMarkers[jobId]) {
+      courierMarkers[jobId].setLatLng([lat, lng]);
+    } else {
+      courierMarkers[jobId] = L.circleMarker([lat, lng], {
+        radius: 9, weight: 3, color: '#fff', fillColor: '#e63946', fillOpacity: 1,
+      }).bindTooltip('Courier — live', { permanent: true, direction: 'top', className: 'route-label' }).addTo(map);
+    }
+  }
+
   function initMapFor(job) {
     const el = document.getElementById(`map-${job.id}`);
-    createMap(
+    const map = createMap(
       el,
       { lat: job.pickup_lat, lng: job.pickup_lng },
       { lat: job.dropoff_lat, lng: job.dropoff_lng },
-      { distance_km: job.distance_km, price_gbp: job.price_gbp },
+      { distance_km: job.distance_km, price_gbp: job.price_gbp, geometry: job.route_geometry },
     );
+    if (map) mapsByJob[job.id] = map;
+    if (job.courier_lat != null && job.courier_lng != null) {
+      upsertCourierMarker(job.id, job.courier_lat, job.courier_lng);
+    }
+    maybeStartTracking(job);
   }
 
   // The route preview on the "Send a parcel" screen — visible from the
@@ -819,13 +868,72 @@
         el,
         { lat: c.quote.pickup_lat, lng: c.quote.pickup_lng },
         { lat: c.quote.dropoff_lat, lng: c.quote.dropoff_lng },
-        { distance_km: c.quote.distance_km, price_gbp: c.quote.price_gbp },
+        { distance_km: c.quote.distance_km, price_gbp: c.quote.price_gbp, geometry: c.quote.route_geometry },
       );
     } else if (c.pickupCoords) {
       createMap(el, c.pickupCoords, null);
     } else {
       createMap(el, null, null);
     }
+  }
+
+  // ---------------- live courier tracking ----------------
+  //
+  // Tied to a job's detail panel being open, not to the job existing: a
+  // courier who has 5 jobs accepted isn't broadcasting location for all 5
+  // at once, only the one they currently have expanded, and a customer only
+  // polls for the one job they're actually looking at. Both sides stop the
+  // moment the panel closes, the job reaches DELIVERED, or any other
+  // render() happens to tear down the map this was updating (render()
+  // clears every interval before it clears the maps, so nothing is left
+  // pushing to or reading a marker that no longer exists).
+  const LOCATION_INTERVAL_MS = 10000;
+
+  function maybeStartTracking(job) {
+    const trackable = job.status === 'ACCEPTED' || job.status === 'COLLECTED';
+    if (!trackable || activeIntervals[job.id]) return;
+    if (state.user.role === 'courier' && job.courier_id === state.user.id) {
+      startCourierLocationPush(job.id);
+    } else if (state.user.role === 'customer' && job.courier_id) {
+      startCustomerLocationPoll(job.id);
+    }
+  }
+
+  function startCourierLocationPush(jobId) {
+    if (!('geolocation' in navigator)) return;
+    const pushOnce = () => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          api('/api/jobs-location', {
+            method: 'POST',
+            json: { jobId, lat: pos.coords.latitude, lng: pos.coords.longitude },
+          }).catch(() => { /* one missed update is fine; the next tick tries again */ });
+        },
+        () => {
+          // Permission denied or unavailable: stop rather than re-prompt
+          // every 10 seconds — a courier who's said no gets left alone.
+          clearInterval(activeIntervals[jobId]);
+          delete activeIntervals[jobId];
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 },
+      );
+    };
+    pushOnce();
+    activeIntervals[jobId] = setInterval(pushOnce, LOCATION_INTERVAL_MS);
+  }
+
+  function startCustomerLocationPoll(jobId) {
+    const pollOnce = () => {
+      api(`/api/jobs-tracking?jobId=${jobId}`)
+        .then((t) => {
+          if (t.courier_lat != null && t.courier_lng != null) {
+            upsertCourierMarker(jobId, t.courier_lat, t.courier_lng);
+          }
+        })
+        .catch(() => { /* the map just keeps showing the last known position */ });
+    };
+    pollOnce();
+    activeIntervals[jobId] = setInterval(pollOnce, LOCATION_INTERVAL_MS);
   }
 
   // ---------------- event wiring ----------------

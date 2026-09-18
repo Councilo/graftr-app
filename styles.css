@@ -394,3 +394,12 @@ input:focus, textarea:focus { outline: none; border-color: #141414; }
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 .route-label::before { display: none; } /* Leaflet's default tooltip arrow */
+
+/* Black-and-white basemap: a CSS filter on the same free OpenStreetMap
+   tiles, rather than a second, separately-rate-limited tile service just
+   for a colour change. Scoped to the tile images only, so markers, the
+   route line and its label stay in full colour and still read clearly
+   against the desaturated map underneath. */
+.job-map .leaflet-tile-pane {
+  filter: grayscale(1) contrast(1.05) brightness(1.03);
+}

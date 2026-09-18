@@ -1,5 +1,6 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireUser } = require('../lib/auth');
+const { serializeJob } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
 module.exports = async (req, res) => {
@@ -33,7 +34,7 @@ module.exports = async (req, res) => {
       res.status(403).json({ detail: 'Not your job to track' });
       return;
     }
-    res.status(200).json(job);
+    res.status(200).json(serializeJob(job));
   } catch (err) {
     sendError(res, err);
   }

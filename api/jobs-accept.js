@@ -1,5 +1,6 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
+const { serializeJob } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
 module.exports = async (req, res) => {
@@ -34,7 +35,7 @@ module.exports = async (req, res) => {
     `;
 
     if (rows.length) {
-      res.status(200).json(rows[0]);
+      res.status(200).json(serializeJob(rows[0]));
       return;
     }
 

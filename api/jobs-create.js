@@ -1,6 +1,7 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
 const { computeQuote, QuoteError, GeocodeServiceError } = require('../lib/geocode');
+const { serializeJob } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
 module.exports = async (req, res) => {
@@ -49,15 +50,17 @@ module.exports = async (req, res) => {
       INSERT INTO jobs (
         customer_id, pickup_address, dropoff_address,
         pickup_lat, pickup_lng, dropoff_lat, dropoff_lng,
-        pickup_window_start, pickup_window_end, distance_km, price_gbp, status
+        pickup_window_start, pickup_window_end, distance_km, price_gbp, status,
+        route_geometry
       ) VALUES (
         ${customer.id}, ${pickup_address}, ${dropoff_address},
         ${q.pickup_lat}, ${q.pickup_lng}, ${q.dropoff_lat}, ${q.dropoff_lng},
-        ${start.toISOString()}, ${end.toISOString()}, ${q.distance_km}, ${q.price_gbp}, 'OPEN'
+        ${start.toISOString()}, ${end.toISOString()}, ${q.distance_km}, ${q.price_gbp}, 'OPEN',
+        ${q.route_geometry ? JSON.stringify(q.route_geometry) : null}
       )
       RETURNING *
     `;
-    res.status(201).json(rows[0]);
+    res.status(201).json(serializeJob(rows[0]));
   } catch (err) {
     sendError(res, err);
   }

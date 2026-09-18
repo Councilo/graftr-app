@@ -1,5 +1,6 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
+const { serializeJobs } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
 module.exports = async (req, res) => {
@@ -15,7 +16,7 @@ module.exports = async (req, res) => {
     const { rows } = await sql`
       SELECT * FROM jobs WHERE courier_id = ${courier.id} ORDER BY created_at DESC
     `;
-    res.status(200).json(rows);
+    res.status(200).json(serializeJobs(rows));
   } catch (err) {
     sendError(res, err);
   }
