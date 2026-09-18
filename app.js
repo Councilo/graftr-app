@@ -41,7 +41,7 @@
     compose: {
       pickup_address: '', dropoff_address: '', start: '', end: '',
       quote: null, quoteError: null, busy: false,
-      locating: false, locateError: null,
+      locating: false, locateError: null, pickupCoords: null,
     },
 
     jobs: [],
@@ -57,7 +57,7 @@
   };
 
   let root;
-  let trackingMap = null; // the one live Leaflet map instance, if a job detail is open
+  let liveMaps = []; // every Leaflet map instance created during the last render, torn down before the next one
 
   // ---------------- tiny helpers ----------------
   function escapeHtml(s) {
@@ -369,13 +369,20 @@
 
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          // The map can show exactly where the phone says it is straight
+          // away — precise GPS coordinates, no geocoding round trip needed
+          // for that part. The text field still waits on reverse-geocoding,
+          // since that's the only way to get a readable address out of a
+          // raw lat/lng.
+          state.compose.pickupCoords = { lat: latitude, lng: longitude };
+          state.compose.quote = null; // the pickup point just changed under it
+          render();
           try {
-            const { latitude, longitude } = pos.coords;
             const res = await fetch(`/api/reverse-geocode?lat=${latitude}&lng=${longitude}`);
             const data = await res.json().catch(() => null);
             if (!res.ok) throw new Error((data && data.detail) || 'Could not look up that location');
             state.compose.pickup_address = data.address;
-            state.compose.quote = null; // the address just changed under it
             state.compose.quoteError = null;
           } catch (err) {
             state.compose.locateError = err.message;
@@ -435,7 +442,7 @@
         state.compose = {
           pickup_address: '', dropoff_address: '', start: '', end: '',
           quote: null, quoteError: null, busy: false,
-          locating: false, locateError: null,
+          locating: false, locateError: null, pickupCoords: null,
         };
         await loadLists();
       } catch (err) {
@@ -491,9 +498,11 @@
 
   // ---------------- rendering ----------------
   function render() {
-    if (trackingMap) { trackingMap.remove(); trackingMap = null; }
+    liveMaps.forEach((m) => m.remove());
+    liveMaps = [];
     root.innerHTML = state.screen === 'auth' ? renderAuth() : renderDashboard();
     if (state.screen === 'dashboard') {
+      if (state.user.role === 'customer') initComposeMap();
       state.expanded.forEach((jobId) => {
         const job = findJob(jobId);
         if (job) initMapFor(job);
@@ -574,6 +583,7 @@
     const c = state.compose;
     return `
       <div class="card">
+        <div class="job-map" id="compose-map" style="margin-bottom:14px"></div>
         <div class="field">
           <label>Pickup address</label>
           <input data-bind="compose.pickup_address" value="${escapeHtml(c.pickup_address)}" placeholder="12 High St, Manchester" />
@@ -733,21 +743,67 @@
       </div>`;
   }
 
-  function initMapFor(job) {
-    const el = document.getElementById(`map-${job.id}`);
-    if (!el || typeof L === 'undefined') return;
-    const map = L.map(el).setView([job.pickup_lat, job.pickup_lng], 7);
+  // Shared by the compose screen's route preview and a job's own detail
+  // panel — one of them may have only a pickup point (GPS taken, no quote
+  // yet), the other always has both, so both are optional and the view
+  // adapts to whichever is actually known.
+  const UK_DEFAULT_CENTER = [54.5, -3.2];
+  const UK_DEFAULT_ZOOM = 5;
+
+  function createMap(el, pickup, dropoff) {
+    if (!el || typeof L === 'undefined') return null;
+    const map = L.map(el).setView(UK_DEFAULT_CENTER, UK_DEFAULT_ZOOM);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
-    L.marker([job.pickup_lat, job.pickup_lng]).addTo(map).bindPopup('Pickup');
-    L.marker([job.dropoff_lat, job.dropoff_lng]).addTo(map).bindPopup('Dropoff');
-    const line = L.polyline(
-      [[job.pickup_lat, job.pickup_lng], [job.dropoff_lat, job.dropoff_lng]],
-      { color: '#141414', weight: 2, dashArray: '4,6' },
-    ).addTo(map);
-    map.fitBounds(line.getBounds(), { padding: [24, 24] });
-    trackingMap = map;
+
+    if (pickup) L.marker([pickup.lat, pickup.lng]).addTo(map).bindPopup('Pickup');
+    if (dropoff) L.marker([dropoff.lat, dropoff.lng]).addTo(map).bindPopup('Dropoff');
+
+    if (pickup && dropoff) {
+      const line = L.polyline([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]], {
+        color: '#141414', weight: 2, dashArray: '4,6',
+      }).addTo(map);
+      map.fitBounds(line.getBounds(), { padding: [24, 24] });
+    } else if (pickup) {
+      map.setView([pickup.lat, pickup.lng], 12);
+    }
+    // With neither point known yet, it stays on the whole-UK default view —
+    // a blank grey box isn't a map you can plan anything on, so there's
+    // always something to look at, even before an address is typed.
+
+    liveMaps.push(map);
+    return map;
+  }
+
+  function initMapFor(job) {
+    const el = document.getElementById(`map-${job.id}`);
+    createMap(
+      el,
+      { lat: job.pickup_lat, lng: job.pickup_lng },
+      { lat: job.dropoff_lat, lng: job.dropoff_lng },
+    );
+  }
+
+  // The route preview on the "Send a parcel" screen — visible from the
+  // moment the screen opens, not only after a job exists to expand. Prefers
+  // the last quote's coordinates (both points, real route) over a bare GPS
+  // fix (pickup only), since a quote is strictly more complete information.
+  function initComposeMap() {
+    const el = document.getElementById('compose-map');
+    if (!el) return;
+    const c = state.compose;
+    if (c.quote) {
+      createMap(
+        el,
+        { lat: c.quote.pickup_lat, lng: c.quote.pickup_lng },
+        { lat: c.quote.dropoff_lat, lng: c.quote.dropoff_lng },
+      );
+    } else if (c.pickupCoords) {
+      createMap(el, c.pickupCoords, null);
+    } else {
+      createMap(el, null, null);
+    }
   }
 
   // ---------------- event wiring ----------------
@@ -768,6 +824,15 @@
       const path = e.target.dataset.bind;
       if (!path) return;
       set(state, path, e.target.value);
+      // Editing either address invalidates whatever was last quoted — the
+      // price and the map on screen would otherwise keep describing a route
+      // that isn't what's typed anymore. No render() here (that would drop
+      // the cursor mid-keystroke); this just makes sure the next render,
+      // whenever it happens, doesn't show stale data alongside fresh text.
+      if (path === 'compose.pickup_address' || path === 'compose.dropoff_address') {
+        state.compose.quote = null;
+        if (path === 'compose.pickup_address') state.compose.pickupCoords = null;
+      }
     });
 
     root.addEventListener('change', (e) => {

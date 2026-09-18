@@ -25,6 +25,13 @@ module.exports = async (req, res) => {
         dropoff_address,
         distance_km: q.distance_km,
         price_gbp: q.price_gbp,
+        // Coordinates travel with the quote so the compose screen can draw
+        // the route on a map without geocoding the same two addresses
+        // again just to plot them.
+        pickup_lat: q.pickup_lat,
+        pickup_lng: q.pickup_lng,
+        dropoff_lat: q.dropoff_lat,
+        dropoff_lng: q.dropoff_lng,
       });
     } catch (err) {
       if (err instanceof QuoteError) {
