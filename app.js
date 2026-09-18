@@ -10,6 +10,7 @@
   'use strict';
 
   const TOKEN_KEY = 'vendaru_token';
+  const MAP_SIDE_KEY = 'vendaru_map_side';
 
   // TEMPORARY, for testing only. Real sign-in can't work yet anyway — it
   // needs Postgres, Blob and JWT_SECRET attached in Vercel first — so a
@@ -37,6 +38,12 @@
     authFields: { full_name: '', email: '', password: '' },
     authError: null,
     authBusy: false,
+
+    // Desktop-only layout preference for the compose screen — 'right' puts
+    // the map on the right and the form on the left (the default asked
+    // for), 'left' swaps them. Remembered per-viewer; below the desktop
+    // breakpoint the two stack and this has no visible effect.
+    mapSide: localStorage.getItem(MAP_SIDE_KEY) === 'left' ? 'left' : 'right',
 
     compose: {
       pickup_address: '', dropoff_address: '', start: '', end: '',
@@ -343,6 +350,11 @@
     refreshLists() {
       loadLists();
     },
+    setMapSide(side) {
+      state.mapSide = side;
+      localStorage.setItem(MAP_SIDE_KEY, side);
+      render();
+    },
     toggleExpand(jobId) {
       if (state.expanded.has(jobId)) {
         state.expanded.delete(jobId);
@@ -602,9 +614,9 @@
 
   function renderComposeCard() {
     const c = state.compose;
-    return `
-      <div class="card">
-        <div class="job-map" id="compose-map" style="margin-bottom:14px"></div>
+
+    const formCol = `
+      <div class="compose-col">
         <div class="field">
           <label>Pickup address</label>
           <input data-bind="compose.pickup_address" value="${escapeHtml(c.pickup_address)}" placeholder="12 High St, Manchester" />
@@ -640,6 +652,27 @@
         <p class="hint" style="margin-top:10px;margin-bottom:0">
           Addresses and pricing use OpenStreetMap — include a street, postcode or town so it can be found.
         </p>
+      </div>`;
+
+    const mapCol = `
+      <div class="compose-col">
+        <div class="job-map" id="compose-map"></div>
+      </div>`;
+
+    // Order alone decides left vs right — the layout is a plain flex row on
+    // desktop (first child left, second right) and a plain flex column on
+    // mobile, so swapping which string comes first is the whole mechanism;
+    // nothing else has to know which side is which.
+    const columns = state.mapSide === 'left' ? mapCol + formCol : formCol + mapCol;
+
+    return `
+      <div class="card">
+        <div class="side-toggle">
+          <span class="hint" style="margin:0">Map:</span>
+          <button type="button" class="${state.mapSide === 'left' ? 'is-active' : ''}" data-action="setMapSide" data-arg="left">Left</button>
+          <button type="button" class="${state.mapSide === 'right' ? 'is-active' : ''}" data-action="setMapSide" data-arg="right">Right</button>
+        </div>
+        <div class="compose-layout">${columns}</div>
       </div>`;
   }
 
