@@ -379,3 +379,18 @@ input:focus, textarea:focus { outline: none; border-color: #141414; }
   .window-row { grid-template-columns: 1fr; }
   .photo-thumb { width: 72px; height: 72px; }
 }
+
+/* The distance/price label sitting directly on a route line (a permanent
+   Leaflet tooltip, not the browser's default arrow-and-shadow styling). */
+.route-label {
+  background: #141414;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.route-label::before { display: none; } /* Leaflet's default tooltip arrow */

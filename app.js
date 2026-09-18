@@ -64,6 +64,11 @@
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
   function money(n) { return '£' + Number(n).toFixed(2); }
+  // Distance is computed and stored in km (that's what the haversine formula
+  // and the pricing tier are built on) but shown in miles — UK road
+  // distances are read in miles, not km, and a courier estimating a trip
+  // wants the number they actually think in.
+  function miles(km) { return (Number(km) * 0.621371).toFixed(1) + ' mi'; }
   function when(iso) {
     if (!iso) return '';
     return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -158,7 +163,12 @@
 
     if (route === '/api/jobs-quote' && method === 'POST') {
       const q = mockQuote(json.pickup_address, json.dropoff_address);
-      return { pickup_address: json.pickup_address, dropoff_address: json.dropoff_address, distance_km: q.distance_km, price_gbp: q.price_gbp };
+      return {
+        pickup_address: json.pickup_address, dropoff_address: json.dropoff_address,
+        distance_km: q.distance_km, price_gbp: q.price_gbp,
+        pickup_lat: q.pickup_lat, pickup_lng: q.pickup_lng,
+        dropoff_lat: q.dropoff_lat, dropoff_lng: q.dropoff_lng,
+      };
     }
     if (route === '/api/jobs-create' && method === 'POST') {
       const q = mockQuote(json.pickup_address, json.dropoff_address);
@@ -608,7 +618,7 @@
         </div>
 
         <div class="quote-line">
-          ${c.quote ? `<strong>${c.quote.distance_km} km</strong> · estimated <strong>${money(c.quote.price_gbp)}</strong>` : ''}
+          ${c.quote ? `<strong>${miles(c.quote.distance_km)}</strong> · estimated <strong>${money(c.quote.price_gbp)}</strong>` : ''}
         </div>
         ${c.quoteError ? `<div class="form-error">${escapeHtml(c.quoteError)}</div>` : ''}
 
@@ -681,7 +691,7 @@
           <div class="job-route">${escapeHtml(job.pickup_address)}<span class="arrow">→</span>${escapeHtml(job.dropoff_address)}</div>
           <div class="job-meta">
             <span class="job-price">${money(job.price_gbp)}</span>
-            <span>${job.distance_km} km</span>
+            <span>${miles(job.distance_km)}</span>
             <span>${when(job.pickup_window_start)} – ${when(job.pickup_window_end)}</span>
           </div>
         </div>
@@ -750,7 +760,12 @@
   const UK_DEFAULT_CENTER = [54.5, -3.2];
   const UK_DEFAULT_ZOOM = 5;
 
-  function createMap(el, pickup, dropoff) {
+  // `route`, when given, is { distance_km, price_gbp } — drawn as a label
+  // sitting directly on the route line itself (a permanent Leaflet tooltip,
+  // not a popup that needs a click to reveal), so the number a courier or
+  // customer actually wants — how far, how much — reads straight off the
+  // map rather than living only in text somewhere else on the page.
+  function createMap(el, pickup, dropoff, route) {
     if (!el || typeof L === 'undefined') return null;
     const map = L.map(el).setView(UK_DEFAULT_CENTER, UK_DEFAULT_ZOOM);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -762,9 +777,14 @@
 
     if (pickup && dropoff) {
       const line = L.polyline([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]], {
-        color: '#141414', weight: 2, dashArray: '4,6',
+        color: '#141414', weight: 3, dashArray: '6,8',
       }).addTo(map);
-      map.fitBounds(line.getBounds(), { padding: [24, 24] });
+      if (route) {
+        line.bindTooltip(`${miles(route.distance_km)} · ${money(route.price_gbp)}`, {
+          permanent: true, direction: 'center', className: 'route-label',
+        });
+      }
+      map.fitBounds(line.getBounds(), { padding: [32, 32] });
     } else if (pickup) {
       map.setView([pickup.lat, pickup.lng], 12);
     }
@@ -782,6 +802,7 @@
       el,
       { lat: job.pickup_lat, lng: job.pickup_lng },
       { lat: job.dropoff_lat, lng: job.dropoff_lng },
+      { distance_km: job.distance_km, price_gbp: job.price_gbp },
     );
   }
 
@@ -798,6 +819,7 @@
         el,
         { lat: c.quote.pickup_lat, lng: c.quote.pickup_lng },
         { lat: c.quote.dropoff_lat, lng: c.quote.dropoff_lng },
+        { distance_km: c.quote.distance_km, price_gbp: c.quote.price_gbp },
       );
     } else if (c.pickupCoords) {
       createMap(el, c.pickupCoords, null);
