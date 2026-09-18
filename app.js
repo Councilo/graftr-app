@@ -705,11 +705,15 @@
         </div>
       </div>`;
 
-    // Order alone decides left vs right — the layout is a plain flex row on
-    // desktop (first child left, second right) and a plain flex column on
-    // mobile, so swapping which string comes first is the whole mechanism;
-    // nothing else has to know which side is which.
-    const columns = state.mapSide === 'left' ? mapCol + formCol : formCol + mapCol;
+    // The map is always first in the actual markup, full stop — on mobile
+    // and tablet that's the only thing that decides stacking order (map on
+    // top), and the side-toggle has no say there; there's no "side" to a
+    // column that's stacked, only a top and bottom. At the desktop
+    // breakpoint, CSS flex `order` reorders the two purely visually (see
+    // .compose-layout.side-left/.side-right in styles.css) without moving
+    // either one in the DOM, so swapping sides on a wide screen never
+    // touches what a narrow one shows.
+    const columns = mapCol + formCol;
 
     return `
       <div class="card">
@@ -718,7 +722,7 @@
           <button type="button" class="${state.mapSide === 'left' ? 'is-active' : ''}" data-action="setMapSide" data-arg="left">Left</button>
           <button type="button" class="${state.mapSide === 'right' ? 'is-active' : ''}" data-action="setMapSide" data-arg="right">Right</button>
         </div>
-        <div class="compose-layout">${columns}</div>
+        <div class="compose-layout side-${state.mapSide}">${columns}</div>
       </div>`;
   }
 

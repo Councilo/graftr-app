@@ -295,9 +295,10 @@ input:focus, textarea:focus { outline: none; border-color: #141414; }
 }
 .side-toggle button.is-active { background: #141414; color: #fff; border-color: #141414; }
 
-/* Stacked by default (form, then map) — the order the two columns are
-   rendered in is what actually decides left vs right, so this rule doesn't
-   need to know or care which side is which. */
+/* Stacked by default — map, then form, always in that DOM order, which on
+   mobile and tablet is also the visual order: map on top. The side-toggle
+   has no effect down here on purpose; "left or right" isn't a question a
+   single stacked column can answer. */
 .compose-layout {
   display: flex;
   flex-direction: column;
@@ -310,6 +311,13 @@ input:focus, textarea:focus { outline: none; border-color: #141414; }
   .side-toggle { display: flex; }
   .compose-layout { flex-direction: row; align-items: flex-start; }
   .compose-col { flex: 1; }
+  /* Only here does "side" mean anything — reordered visually with flex
+     `order`, not by moving either column in the markup, so the DOM order
+     above (and therefore mobile's stacking) is never affected by this. */
+  .side-right .compose-col:first-child { order: 2; } /* map: visually second = right */
+  .side-right .compose-col:last-child { order: 1; }  /* form: visually first = left */
+  .side-left .compose-col:first-child { order: 1; }  /* map: visually first = left */
+  .side-left .compose-col:last-child { order: 2; }   /* form: visually second = right */
 }
 
 .window-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
