@@ -656,7 +656,18 @@
 
     const mapCol = `
       <div class="compose-col">
-        <div class="job-map" id="compose-map"></div>
+        <div class="map-wrap">
+          <div class="job-map" id="compose-map"></div>
+          <button type="button" class="locate-btn" data-action="useMyLocation" title="Use my current location" ${c.locating ? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <line x1="12" y1="2" x2="12" y2="5"></line>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+              <line x1="2" y1="12" x2="5" y2="12"></line>
+              <line x1="19" y1="12" x2="22" y2="12"></line>
+            </svg>
+          </button>
+        </div>
       </div>`;
 
     // Order alone decides left vs right — the layout is a plain flex row on
@@ -824,7 +835,14 @@
   // matters reads straight off the map.
   function createMap(el, pickup, dropoff, route) {
     if (!el || typeof L === 'undefined') return null;
-    const map = L.map(el).setView(UK_DEFAULT_CENTER, UK_DEFAULT_ZOOM);
+    // Attribution moved to bottom-left: bottom-right is where the locate
+    // button lives (see .locate-btn), and Leaflet's default attribution
+    // corner would otherwise sit directly underneath it — the two aren't
+    // just close, they measurably overlap at this map size. The
+    // attribution itself is still required and still shown, just not
+    // fighting the button for the same eight square centimetres.
+    const map = L.map(el, { attributionControl: false }).setView(UK_DEFAULT_CENTER, UK_DEFAULT_ZOOM);
+    L.control.attribution({ position: 'bottomleft' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);

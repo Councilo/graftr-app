@@ -362,6 +362,32 @@ input:focus, textarea:focus { outline: none; border-color: #141414; }
   margin-bottom: 12px;
 }
 
+/* The floating "centre on my location" button, bottom-right of the map —
+   the same Google Maps / Leaflet-locate-control convention, sitting beside
+   the map rather than inside it so it never fights Leaflet's own DOM. */
+.map-wrap { position: relative; }
+.locate-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1000; /* above Leaflet's own panes and zoom control */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  color: #141414;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+.locate-btn:hover:not(:disabled) { background: #f4f4f4; }
+.locate-btn:disabled { opacity: 0.5; cursor: default; }
+.locate-btn svg { width: 20px; height: 20px; }
+
 .timeline { display: flex; flex-direction: column; gap: 0; margin-bottom: 12px; }
 
 .timeline-row {
