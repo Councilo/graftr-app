@@ -1,2964 +1,381 @@
+/* Vendaru — peer-to-peer courier delivery
+   A normal responsive web app layout, not a phone-mockup frame: this is a
+   working tool two different people use to hand a parcel from one to the
+   other, not a marketing page showing the app off inside a phone. */
+
 * { box-sizing: border-box; }
-
-/* Inter stands in for Uber Move, which is proprietary and can't be redistributed.
-   It's the closest freely-licensed match: same geometric-grotesque feel and
-   tight negative tracking at display sizes. */
-body,
-button,
-input,
-textarea,
-select {
-  font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
-  letter-spacing: -0.011em;
-}
-
-/* Uber-style display type: tighter tracking as size increases. */
-.app-scroll [style*="font-size:25px"],
-.app-scroll [style*="font-size:27px"],
-.app-scroll [style*="font-size:32px"],
-.app-scroll [style*="font-size:36px"] {
-  letter-spacing: -0.028em;
-}
-
-/* iOS zooms the page in when you focus a field whose text is under 16px, and
-   leaves it scaled and panned after you tap away — most visibly on the search
-   bars. 16px is the threshold, so every field meets it on a touch screen.
-   Done this way rather than by pinning the viewport with maximum-scale, which
-   would take pinch-zoom away from everyone to fix one behaviour.
-   !important because nearly every field here carries an inline font-size. */
-@media (max-width: 900px), (pointer: coarse) {
-  input,
-  textarea,
-  select {
-    font-size: 16px !important;
-  }
-}
-
-html {
-  height: 100%;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar {
-  display: none;
-}
+html, body { margin: 0; padding: 0; }
 
 body {
-  margin: 0;
-  height: 100%;
-  /* The page itself never scrolls — .app-scroll is the only scroller. Without
-     this the document grows past the viewport and mobile browser chrome drags
-     the bottom pill and FAB out of view as it shows/hides. */
-  overflow: hidden;
-  /* Backdrop either side of the app column on desktop. Never visible on a
-     phone, where the column fills the screen. */
-  background: #ebebeb;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  /* Stop iOS rubber-banding the whole page behind the fixed app shell. */
-  overscroll-behavior-y: none;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  color: #141414;
+  background: #f7f7f5;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Height chain down to #app, whose inline height:100% is otherwise measured
-   against auto-height parents and collapses to content height. */
-.frame-bg {
-  height: 100vh;
-  height: 100dvh;
-}
+a { color: inherit; }
 
-.phone {
-  height: 100%;
-}
-
-body::-webkit-scrollbar {
-  display: none;
-}
-
-
-.press {
-  transition: transform 0.08s ease;
-}
-
-.press:active {
-  transform: scale(0.97);
-}
-
-.shop-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-image {
-  position: relative;
-  height: 110px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #eef0ee;
-  cursor: pointer;
-  margin: 0;
-}
-
-
-/* Business listing banner. Same height as the shop cards' picture area so
-   the two card families line up. */
-.biz-banner {
-  height: 110px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-image input[type="file"] {
-  display: none;
-}
-
-.card-image .upload-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: rgba(20, 20, 20, 0.55);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.card-image:hover .upload-overlay,
-.card-image:focus-within .upload-overlay {
-  opacity: 1;
-}
-
-.product-thumb {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  border-radius: 10px;
-  background-color: #f2f2f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
-  margin: 0;
-}
-
-.product-thumb input[type="file"] {
-  display: none;
-}
-
-.product-thumb-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(20, 20, 20, 0.55);
-  color: #fff;
-  font-size: 15px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.product-thumb:hover .product-thumb-overlay,
-.product-thumb:focus-within .product-thumb-overlay {
-  opacity: 1;
-}
-
-/* The app shell is the viewport now — no phone mockup wrapper.
-   100dvh tracks the real visible area as mobile browser chrome
-   shows/hides; the 100vh line is the fallback for older engines.
-
-   max-width keeps phone proportions on desktop: below 430px (any real
-   phone) it's full-bleed and this does nothing; above it, the app stays
-   a centred phone-width column instead of stretching across the monitor.
-   Everything absolutely positioned — nav pill, AI button, modals — is
-   anchored to #app, so it all stays inside the column automatically. */
 #app {
-  position: relative;
-  height: 100vh;
-  height: 100dvh;
-  width: 100%;
-  max-width: 430px;
-  margin: 0 auto;
-  background: #ffffff;
-  overflow: hidden;
-}
-
-.app-scroll {
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.app-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-/* Absolute against #app, not fixed against the viewport: on mobile a fixed
-   bottom element is positioned against the layout viewport, so it slides under
-   the address bar as chrome expands. #app is the visible area, so anchoring
-   here keeps the pill floating in the same spot through any scroll. */
-.floating-tabbar {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 398px;
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  height: 62px;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 31px;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 6px;
-  z-index: 9999;
-}
-
-.floating-tab {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  font-size: 10px;
-  cursor: pointer;
-  padding: 4px 6px;
 }
 
-/* Unread dot on a tab icon. Monochrome, so it reads as a solid ink dot
-   with a white knockout ring to stay visible against the icon. */
-.tab-badge {
-  position: absolute;
-  top: -1px;
-  right: -3px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #141414;
-  border: 1.5px solid #ffffff;
-}
-
-.ai-fab {
-  position: absolute;
-  right: 20px;
-  bottom: calc(94px + env(safe-area-inset-bottom, 0px));
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #141414;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 28px rgba(20, 20, 20, 0.32);
-  cursor: pointer;
-  z-index: 9999;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-}
-.ai-fab:hover {
-  transform: scale(1.06);
-  box-shadow: 0 14px 36px rgba(20, 20, 20, 0.4);
-}
-.ai-fab:active {
-  transform: scale(0.92);
-}
-
-/* AI Assistant popup. Not a modal — it's a launcher-anchored card that opens
-   out of the FAB in the bottom-right corner of the app.
-
-   It pins itself with right/bottom rather than sitting in an alignment
-   wrapper, so no inherited flex or auto-margin rule can drag it off the
-   corner. There is deliberately no full-page layer behind it: the page stays
-   visible AND clickable while the chat is open. */
-.ai-chat-sheet {
-  position: absolute;
-  /* Matches .ai-fab's inset, so the card's edge lines up with the button it
-     opens from; the bottom clears the FAB and the tab pill stacked below. */
-  right: 20px;
-  bottom: calc(158px + env(safe-area-inset-bottom, 0px));
-  z-index: 100000;
-  /* Caps keep it a corner card; the calc terms stop it outgrowing the app
-     column or a short viewport. */
-  width: min(360px, calc(100% - 40px));
-  height: min(460px, calc(100% - 174px - env(safe-area-inset-bottom, 0px)));
-  background: #ffffff;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.24), 0 0 0 1px rgba(15, 23, 42, 0.06);
-  overflow: hidden;
-  transform-origin: bottom right;
-  animation: aiPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes aiPopIn {
-  from { opacity: 0; transform: translateY(12px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.ai-sheet-header {
-  padding: 14px 18px;
-  background: #141414;
-  color: #ffffff;
+/* ---------- top bar ---------- */
+.topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.ai-chat-body {
-  flex: 1;
-  padding: 16px 18px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
   gap: 12px;
-  background: #f8fafc;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.ai-chat-body::-webkit-scrollbar {
-  display: none;
-}
-
-.ai-msg {
-  max-width: 85%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  word-break: break-word;
-  animation: aiMsgFade 0.2s ease-out;
-}
-
-@keyframes aiMsgFade {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.ai-msg.user {
-  align-self: flex-end;
+  padding: 14px 20px;
   background: #141414;
-  color: #ffffff;
-  border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  color: #fff;
 }
 
-.ai-msg.bot {
-  align-self: flex-start;
-  background: #ffffff;
-  color: #0f172a;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  border: 1px solid #e2e8f0;
-  border-bottom-left-radius: 4px;
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
 }
 
-.ai-product-card {
+.topbar-brand img { width: 26px; height: 26px; display: block; }
+
+.topbar-who {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 8px 12px;
-  margin-top: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.ai-chip-suggestions {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 10px 16px;
-  flex: 0 0 auto;
-  background: #ffffff;
-  border-top: 1px solid #f1f5f9;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.ai-chip-suggestions::-webkit-scrollbar {
-  display: none;
-}
-
-.ai-chip {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  padding: 6px 14px;
-  border-radius: 18px;
-  font-size: 12px;
-  font-weight: 500;
-  font-family: inherit;
-  color: #334155;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.ai-chip:hover {
-  background: #141414;
-  color: #ffffff;
-  border-color: #141414;
-}
-
-.ai-product-chip {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 200px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 24px;
-  padding: 4px 14px 4px 4px;
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-  transition: border-color 0.15s ease, transform 0.08s ease;
-}
-.ai-product-chip:hover { border-color: #141414; }
-.ai-product-chip:active { transform: scale(0.96); }
-
-.ai-product-chip-img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  flex: 0 0 auto;
-  background-color: #f1f5f9;
-  background-size: cover;
-  background-position: center;
-}
-
-.ai-product-chip-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: #0f172a;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ai-product-chip-price {
-  font-size: 12px;
+.role-pill {
+  font-size: 11px;
   font-weight: 700;
-  color: #0f172a;
-  flex: 0 0 auto;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
 }
 
-.ai-chat-footer {
-  padding: 12px 16px;
-  background: #ffffff;
-  border-top: 1px solid #f1f5f9;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.ai-chat-footer input {
-  flex: 1;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 24px;
-  padding: 10px 16px;
-  font-size: 13.5px;
-  background: #f8fafc;
-  color: #0f172a;
-  outline: none;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-.ai-chat-footer input:focus {
-  border-color: #141414;
-  background: #ffffff;
-}
-
-.ai-send-btn {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  border-radius: 50%;
-  background: #141414;
-  color: #ffffff;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease;
-}
-.ai-send-btn:hover {
-  background: #262626;
-  transform: scale(1.04);
-}
-.ai-send-btn:active {
-  transform: scale(0.94);
-}
-
-.ai-mic-btn-inline {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  border-radius: 50%;
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 0;
-  transition: all 0.15s ease;
-}
-.ai-mic-btn-inline:hover {
-  border-color: #141414;
-  color: #141414;
-}
-
-.ai-mic-btn-inline.listening {
-  background: #ef4444;
-  border-color: #ef4444;
-  color: #ffffff;
-  animation: aiMicPulse 1.1s ease-out infinite;
-}
-
-@keyframes aiMicPulse {
-  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
-  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-}
-
-@keyframes aiFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes aiSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-/* Custom Leaflet Map Markers */
-.custom-map-icon {
+.logout-btn {
   background: transparent;
-  border: none;
-}
-.courier-icon div {
-  animation: courierPulse 2s infinite;
-}
-@keyframes courierPulse {
-  0% { box-shadow: 0 0 0 0 rgba(20, 20, 20, 0.55); }
-  70% { box-shadow: 0 0 0 14px rgba(20, 20, 20, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(20, 20, 20, 0); }
-}
-
-/* Modal Overlay & Form Styles for Checkout & Profile */
-.graftr-modal-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(20, 20, 20, 0.6);
-  backdrop-filter: blur(5px);
-  /* Above the tab pill, the FAB and the AI panel (9999 and 100000). At 90 the
-     desktop rail painted straight over the sheet's left edge, cutting off the
-     labels and half of every field. */
-  z-index: 100001;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  animation: aiFadeIn 0.2s ease-out;
-}
-
-/* Sheets cap their height and let an inner region scroll, so a sheet with a
-   pinned header/footer keeps those visible instead of scrolling them away. */
-.graftr-modal-card {
-  background: #ffffff;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-height: 88%;
-  overflow-y: auto;
-  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
-  animation: aiSlideUp 0.25s ease-out;
-  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-}
-
-/* Day/time slot rows scroll sideways without showing a scrollbar. */
-.slot-scroll {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.slot-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-
-
-.graftr-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.graftr-input-group label {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  border-radius: 10px;
+  padding: 6px 12px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #6b6b6b;
-}
-
-/* box-sizing and width:100% stop the side-by-side City/Postcode pair from
-   overflowing their row once padding and border are counted. 16px type keeps
-   iOS from zooming the viewport when a field is focused. */
-.graftr-input-group input,
-.graftr-input-group textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1.5px solid rgba(20, 20, 20, 0.15);
-  border-radius: 12px;
-  padding: 11px 13px;
-  font-size: 16px;
-  line-height: 1.3;
+  cursor: pointer;
   font-family: inherit;
-  color: #141414;
-  background: #ffffff;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  transition: border-color 0.12s ease;
 }
+.logout-btn:hover { background: rgba(255, 255, 255, 0.1); }
 
-.graftr-input-group textarea {
-  /* No drag handle: inside a bottom sheet, resizing fights the pinned footer. */
-  resize: none;
-  min-height: 62px;
-}
-
-.graftr-input-group input::placeholder,
-.graftr-input-group textarea::placeholder {
-  color: #9a9a9a;
-}
-
-.graftr-input-group input:focus,
-.graftr-input-group textarea:focus {
-  border-color: #141414;
-}
-
-
-
-
-
-
-/* The way home from any page below Shop. Sits above the page title rather
-   than beside it, so it lands in the same spot on every screen. */
-.back-bar {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  align-self: flex-start;
-  padding: 6px 12px 6px 8px;
-  margin-bottom: 2px;
-  border-radius: 16px;
-  background: #f2f2f2;
-  color: #141414;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Dismisses the login screen into signed-out browsing. Solid ink rather than
-   grey-on-grey — as a faint 32px mark in a corner it was missable, and it is
-   the only way past the screen. */
-.login-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: #141414;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 17px;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(20, 20, 20, 0.22);
-  transition: transform 0.08s ease, opacity 0.12s ease;
-}
-
-.login-close:hover {
-  opacity: 0.86;
-}
-
-.login-close:active {
-  transform: scale(0.92);
-}
-
-.back-bar-arrow {
-  font-size: 17px;
-  line-height: 1;
-  margin-top: -2px;
-}
-
-/* Directory cards. The photo is square rather than a letterbox strip, and the
-   column is capped at 200px so a card is at most 200x200 above the text —
-   without a fixed width, which would leave dead space on a phone. */
-.biz-card-grid {
-  display: grid;
-  /* 1fr, not a 200px max: auto-fill counts tracks by the max when it's a fixed
-     length, which left a phone with a single card per row. The cap lives on the
-     card instead, so a narrow screen still fits two. */
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  justify-items: center;
-  gap: 12px;
-}
-
-/* Four buttons don't fit a 200x200 square, so the card grows to suit its
-   content and the photo keeps the 1:1 crop on its own. */
-/* In the phone column the card sizes to its content and the photo keeps the
-   square: forcing the card square there leaves ~10px for the picture once the
-   text and buttons have taken their share. The fixed 300x300 is a desktop
-   treatment, further down. */
-.biz-card {
-  width: 100%;
-  max-width: 300px;
-  background: #ffffff;
-  border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-}
-
-.biz-card-photo {
-  position: relative;
-  flex: 0 0 auto;
-  aspect-ratio: 1 / 1;
-  background-color: #f4f4f5;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* Only what fits: name, price, rating. */
-.biz-card-body {
-  flex: 0 0 auto;
-  padding: 7px 10px 9px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.biz-card-name {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #141414;
-  line-height: 1.25;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Reviews sit against the right edge, clear of the name and description on
-   the left. */
-.biz-card-meta {
-  display: flex;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-/* What the business does, in place of the price. Two lines then ellipsis, so
-   a longer line can't push the buttons around. */
-.biz-card-desc {
-  font-size: 11.5px;
-  line-height: 1.35;
-  color: #6b6b6b;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 2.7em;
-}
-
-.biz-card-rating {
-  flex: 0 0 auto;
-  font-size: 11px;
-  font-weight: 700;
-  color: #141414;
-}
-
-/* The star was the last colour on the card; monochrome like everything else. */
-.biz-card-rating [aria-hidden="true"] {
-  color: #141414;
-}
-
-/* Website, Call, Overview. They wrap rather than squeezing, so a narrow card
-   stacks them instead of clipping the labels. */
-.biz-card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 5px;
-}
-
-/* Outlined: black rule, black label, white ground. Icons are drawn in
-   currentColor, so they take the same ink. */
-.biz-card-action {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 7px 10px;
-  border: 1.5px solid #141414;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #141414;
-  font-family: inherit;
-  font-size: 11.5px;
-  font-weight: 600;
-  line-height: 1.2;
-  white-space: nowrap;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
-}
-
-/* Fills on hover, so the outline reads as the resting state of a real button. */
-.biz-card-action:hover {
-  background: #141414;
-  color: #ffffff;
-}
-
-.biz-card-action svg {
-  flex: 0 0 auto;
-}
-
-.biz-card-action:active {
-  transform: scale(0.97);
-}
-
-/* The card's buttons, reused on the listing page under the description. They
-   size to their labels rather than splitting the row: a card is 300px wide and
-   wants them to fill it, but this page is as wide as the screen, where two
-   stretched pills read as a form rather than a pair of links. */
-.biz-detail-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.biz-detail-actions .biz-card-action {
-  flex: 0 0 auto;
-  font-size: 12.5px;
-  padding: 9px 16px;
-}
-
-/* The brand mark, square, sitting on the photo where the badge used to be.
-   Borderless — no tile, no plate. drop-shadow rather than box-shadow so it
-   follows the logo's own shape and keeps it legible on a busy photo instead
-   of shadowing an invisible box. */
-.biz-card-logo {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  width: 44px;
-  height: 44px;
-  box-sizing: border-box;
-  object-fit: contain;
-  /* White behind the mark — dark and transparent logos vanished straight on
-     the photo. No border and no padding: inset padding read as a thick white
-     trim. The white only shows through the logo's own transparency now.
-     22% is the same squircle as the icon tiles. */
-  background: #ffffff;
-  padding: 0;
-  border-radius: 22%;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
-}
-
-/* Set by __fitLogo on near-square art: fills the tile so the corners are the
-   tile's own, not a white frame around someone else's icon. */
-.biz-card-logo.is-fill,
-.app-tile-icon.is-fill {
-  object-fit: cover;
-}
-
-/* Initials are text, so this one still needs something behind it. */
-.biz-card-logo.is-initials {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #141414;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 700;
-  filter: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
-
-/* Keep control, top-right of a card photo — opposite corner to the logo. */
-.biz-card-keep {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  color: #141414;
-  cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
-  transition: transform 0.08s ease, background 0.12s ease;
-}
-
-.biz-card-keep svg {
-  fill: none;
-}
-
-/* Kept: the same glyph, filled in. Solid black against the white disc, so the
-   difference between kept and not is the glyph going solid rather than a
-   colour appearing — the same read as every other control on the site. */
-.biz-card-keep.is-on {
-  background: #ffffff;
-  color: #141414;
-}
-
-.biz-card-keep.is-on svg {
-  fill: #141414;
-}
-
-.biz-card-keep:active {
-  transform: scale(0.9);
-}
-
-/* On a card with no picture behind it, the translucent disc has nothing to
-   sit against — give it the card's own white and a hairline. */
-.biz-card-keep.is-flat {
-  background: #ffffff;
-  border: 1px solid rgba(20, 20, 20, 0.12);
-  box-shadow: none;
-}
-
-.biz-card-keep.is-flat.is-on {
-  background: #ffffff;
-  border-color: #141414;
-}
-
-/* The listing page has room for words. */
-.biz-keep-wide {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  flex: 0 0 auto;
-  padding: 7px 12px;
-  border: 1.5px solid #141414;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #141414;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
-}
-
-.biz-keep-wide svg {
-  fill: none;
-}
-
-.biz-keep-wide:hover {
-  background: #141414;
-  color: #ffffff;
-}
-
-.biz-keep-wide.is-on {
-  background: #141414;
-  color: #ffffff;
-}
-
-.biz-keep-wide.is-on svg {
-  fill: #ffffff;
-  stroke: #ffffff;
-}
-
-/* Ad socket. Sits below the page's own content with clear separation, and
-   takes no height at all until an ad actually fills it — a blocked or unfilled
-   unit leaves no gap. Spans the grid rather than sitting in a card column. */
-.ad-slot {
-  grid-column: 1 / -1;
-  min-width: 0;
-  margin-top: 6px;
-  /* The unit renders wider than the phone column if left alone, which makes
-     the whole page scroll sideways. Hold it to the column's width so it lays
-     itself out to fit rather than being cropped. */
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.ad-slot ins,
-.ad-slot iframe {
-  max-width: 100% !important;
-}
-
-/* An ad taking a card's place in the grid. Same shell as .biz-card — border,
-   radius, white ground — so the run of cards keeps its rhythm. The ad's own
-   "Ads by Google" attribution stays as Google renders it: this is meant to
-   sit in the feed, not to pass for a listing. */
-.ad-card {
-  width: 100%;
-  max-width: 300px;
-  background: #ffffff;
-  border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-}
-
-.ad-card ins,
-.ad-card iframe {
-  max-width: 100% !important;
-}
-
-/* Nothing served: collapse rather than leave a hole in the run. AdSense marks
-   a slot it has processed but couldn't fill as unfilled — without this the
-   card sits there blank, which is worse than not being there at all. */
-.ad-card:empty,
-.ad-card.is-unfilled,
-.ad-card > ins:not([data-adsbygoogle-status]) {
-  display: none;
-}
-
-/* The ad sits in the middle of the card at whatever size it comes in. */
-.ad-card > ins {
-  width: 100%;
-}
-
-.ad-slot:empty,
-.ad-slot > ins:not([data-adsbygoogle-status]) {
-  display: none;
-}
-
-/* A paid placement. Same card as the rest of the page on purpose — it should
-   not be dressed up as something it isn't — but it carries an Ad mark, and no
-   heart, because there is nothing here to keep. */
-.partner-card {
-  cursor: default;
-}
-
-.partner-mark {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 14px;
-  color: #ffffff;
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  text-align: center;
-}
-
-/* Top-right, where a listing's heart sits, so the eye finds it in the same
-   place it looks for a card's status. */
-.partner-tag {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #141414;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-/* The board opens on a person rather than a screen: their picture down one
-   side, their name said out loud beside it. Stacks on a phone, side by side
-   from 560px, where the portrait can have a column of its own. */
-.board-hero {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  margin-bottom: 4px;
-}
-
-@media (min-width: 560px) {
-  .board-hero {
-    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
-    align-items: stretch;
-  }
-}
-
-/* Tall portrait, the way a photo of someone actually wants to be cropped. It's
-   a label wrapping a file input, so tapping it changes the picture. */
-.board-portrait {
-  position: relative;
-  display: block;
-  aspect-ratio: 3 / 4;
-  border-radius: 24px;
-  overflow: hidden;
-  background: #f2f2f2;
-  border: 1.5px solid rgba(20, 20, 20, 0.12);
-  cursor: pointer;
-}
-
-/* On a phone the 3:4 crop runs to well over half the screen before a word of
-   the board shows, so the height is capped and the picture crops to suit. The
-   ratio still governs on a wide screen, where there's a column for it. */
-@media (max-width: 559px) {
-  .board-portrait {
-    /* The ratio has to go, not just the height: keeping it would shrink the
-       width to match and leave the picture stranded in half its column. */
-    aspect-ratio: auto;
-    height: 300px;
-  }
-}
-
-.board-portrait img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.board-portrait input[type="file"] {
-  display: none;
-}
-
-.board-portrait-initials {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
-  font-weight: 700;
-  color: #b0b0b0;
-}
-
-.board-hero-text {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  padding-right: 132px;  /* clear of the membership crest */
-}
-
-/* Membership, in the corner the Profile button had. It is a status rather than
-   a link, so it wears more than a pill: a rule down the side, the word Member
-   above the tier, and the pips that appear everywhere else membership does.
-   Tapping it goes to the account, which is where a membership is managed. */
-.member-crest {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px 8px 11px;
-  border: 1.5px solid rgba(20, 20, 20, 0.16);
-  border-radius: 14px;
-  background: #ffffff;
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
-}
-
-/* The rule is the bit of ceremony: a bar of ink down the leading edge that
-   fills in as the tier climbs. */
-.member-crest-rule {
-  width: 3px;
-  align-self: stretch;
-  border-radius: 2px;
-  background: rgba(20, 20, 20, 0.2);
-}
-
-.member-crest-body {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.1;
-}
-
-.member-crest-kicker {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #9a9a9a;
-}
-
-.member-crest-tier {
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: #141414;
-}
-
-.member-crest-pips {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-/* Paid tiers invert, so the corner reads as something held rather than
-   something offered — and Pro keeps a hairline inside the fill, which is as
-   much ceremony as a monochrome site should ask for. */
-.member-crest.is-plus,
-.member-crest.is-pro {
-  background: #141414;
-  border-color: #141414;
-}
-
-.member-crest.is-plus .member-crest-tier,
-.member-crest.is-pro .member-crest-tier {
-  color: #ffffff;
-}
-
-.member-crest.is-plus .member-crest-kicker,
-.member-crest.is-pro .member-crest-kicker {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.member-crest.is-plus .member-crest-rule,
-.member-crest.is-pro .member-crest-rule {
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.member-crest.is-plus .member-pip,
-.member-crest.is-pro .member-pip {
-  background: rgba(255, 255, 255, 0.28);
-}
-
-.member-crest.is-plus .member-pip.is-on,
-.member-crest.is-pro .member-pip.is-on {
-  background: #ffffff;
-}
-
-.member-crest.is-pro {
-  box-shadow: inset 0 0 0 1.5px #141414, inset 0 0 0 2.5px rgba(255, 255, 255, 0.55);
-}
-
-.member-crest:hover {
-  border-color: #141414;
-}
-
-.board-hey {
-  font-size: 30px;
-  font-weight: 500;
-  line-height: 1.05;
-  color: #141414;
-  letter-spacing: -0.02em;
-}
-
-.board-name {
-  font-size: 34px;
-  font-weight: 800;
-  line-height: 1.05;
-  color: #141414;
-  letter-spacing: -0.03em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.board-lede {
-  font-size: 13.5px;
-  color: #6b6b6b;
-  line-height: 1.5;
-  margin-top: 8px;
-}
-
-/* Membership. The badge is four pips that fill as the tier climbs — readable at
-   a glance and at any size, with no artwork to load and nothing that has to be
-   redrawn if a tier is ever added. */
-.member-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  flex: 0 0 auto;
-  padding: 6px 8px;
-  border: 1.5px solid #141414;
-  border-radius: 999px;
-}
-
-.member-pip {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgba(20, 20, 20, 0.16);
-}
-
-.member-pip.is-on {
-  background: #141414;
-}
-
-.member-badge.is-sm {
-  padding: 4px 6px;
-  gap: 2px;
-  border-width: 1px;
-}
-
-.member-badge.is-sm .member-pip {
-  width: 5px;
-  height: 5px;
-}
-
-/* On the account card. */
-.member-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.member-tier-name {
-  font-size: 17px;
-  font-weight: 800;
-  color: #141414;
-  letter-spacing: -0.01em;
-}
-
-.member-tier-blurb {
-  font-size: 12.5px;
-  color: #6b6b6b;
-  margin-top: 1px;
-}
-
-.member-next {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #141414;
-  margin-top: 8px;
-}
-
-.member-note {
-  font-size: 11.5px;
-  color: #9a9a9a;
-  line-height: 1.45;
-  margin-top: 8px;
-}
-
-/* The tiers, laid out the way the listing plans are — one per row, the whole
-   row a button, the chosen one outlined in black. */
-.member-plans {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.member-plan {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  width: 100%;
-  padding: 12px 14px;
-  border: 1.5px solid rgba(20, 20, 20, 0.14);
-  border-radius: 16px;
-  background: #ffffff;
-  font-family: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.12s ease;
-}
-
-.member-plan:hover {
-  border-color: rgba(20, 20, 20, 0.4);
-}
-
-.member-plan.is-chosen {
-  border-color: #141414;
-  border-width: 2px;
-  padding: 11.5px 13.5px;   /* keeps the row from shifting as the border thickens */
-}
-
-.member-plan-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.member-plan-name {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: #141414;
-}
-
-.member-plan-current {
-  margin-left: 6px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: #141414;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.member-plan-price {
-  flex: 0 0 auto;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: #141414;
-}
-
-.member-plan-price span {
-  font-size: 11.5px;
-  font-weight: 500;
-  color: #6b6b6b;
-}
-
-.member-plan-summary {
-  font-size: 12.5px;
-  color: #6b6b6b;
-  line-height: 1.4;
-}
-
-/* The trial is the offer, so it gets the one bit of emphasis on the row. */
-.member-plan-trial {
-  align-self: flex-start;
-  margin-top: 4px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: #141414;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.member-plan.is-chosen .member-plan-trial {
-  background: #141414;
-}
-
-.member-plan-features {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: 4px;
-}
-
-.member-plan-features span {
-  font-size: 11.5px;
-  color: #9a9a9a;
-  line-height: 1.4;
-}
-
-.member-plan-features span::before {
-  content: '· ';
-}
-
-.member-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 14px;
-  margin-top: 12px;
-}
-
-.member-buy {
-  flex: 1 1 auto;
-  padding: 12px 18px;
-  border: none;
-  border-radius: 14px;
-  background: #141414;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.member-buy[disabled] {
-  background: rgba(20, 20, 20, 0.35);
-  cursor: default;
-}
-
-.member-error {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border: 1.5px solid #d4d4d4;
-  border-radius: 12px;
-  background: #f2f2f2;
-  font-size: 12.5px;
-  color: #141414;
-  line-height: 1.4;
-}
-
-.board-progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.board-progress .fav-bar {
-  flex: 1;
-  margin: 0;
-}
-
-.board-progress-count {
-  flex: 0 0 auto;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #9a9a9a;
-}
-
-.board-progress-note {
-  font-size: 12px;
-  color: #6b6b6b;
-  line-height: 1.45;
-  margin-top: 6px;
-}
-
-/* Every empty slot as an app icon, above the first card. Filling a board
-   otherwise means scrolling the length of it looking for the next hole. */
-.board-quick {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.board-quick-head {
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9a9a9a;
-}
-
-.board-quick-rail {
-  display: flex;
-  gap: 10px;
-  margin: 0 -18px;
-  padding: 2px 18px 6px;
-  overflow-x: auto;
-}
-
-.board-quick-btn {
-  flex: 0 0 auto;
-  width: 72px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  padding: 0;
-  border: none;
-  background: none;
-  font-family: inherit;
-  cursor: pointer;
-  transition: transform 0.08s ease;
-}
-
-.board-quick-btn:active {
-  transform: scale(0.96);
-}
-
-.board-quick-icon {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px dashed rgba(20, 20, 20, 0.25);
-  border-radius: 18px;
-  background: #ffffff;
-  font-size: 23px;
-  overflow: hidden;
-}
-
-/* Dashed while the slot is open, solid once it is taken: the rail reads as the
-   holes closing one by one. */
-/* An open slot: a circle with a plus in it, inside the dashed tile. Says "put
-   someone here" rather than naming a trade the label underneath already names. */
-.board-quick-plus {
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px solid rgba(20, 20, 20, 0.3);
-  border-radius: 50%;
-  color: #6b6b6b;
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 1;
-  padding-bottom: 2px;   /* optical centring of the glyph */
-  box-sizing: border-box;
-}
-
-.board-quick-btn:hover .board-quick-plus {
-  border-color: #141414;
-  color: #141414;
-}
-
-.board-quick-icon.is-filled {
-  border-style: solid;
-  border-color: rgba(20, 20, 20, 0.12);
-}
-
-.board-quick-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 7px;
-  box-sizing: border-box;
-}
-
-/* Logos that are a solid block of colour want the whole tile, not a margin —
-   __fitLogo tags those, the same call the cards make. */
-.board-quick-icon img.is-fill {
-  object-fit: cover;
-  padding: 0;
-}
-
-.board-quick-initials {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #141414;
-  color: #ffffff;
-  font-size: 19px;
-  font-weight: 600;
-}
-
-.board-quick-btn:hover .board-quick-icon {
-  border-style: solid;
-  border-color: #141414;
-}
-
-.board-quick-label {
-  font-size: 10.5px;
-  line-height: 1.25;
-  color: #141414;
-  text-align: center;
-}
-
-/* The line that hands you on to the slots, as the reference does. */
-.board-lede-2 {
-  font-size: 15px;
-  font-weight: 600;
-  color: #141414;
-  padding-top: 6px;
-}
-
-/* The board: slots grouped by the part of life they belong to, rather than by
-   trade. The slot itself reuses the wall's styling — same shape, one place to
-   change it. */
-.board-area {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.board-area-head {
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #9a9a9a;
-  padding-top: 4px;
-}
-
-.board-slots {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 12px;
-  align-items: start;
-}
-
-/* Scoped to the board so the favourites wall keeps its own look. Each slot
-   becomes one of the reference's outlined cards: a generous radius, a real
-   border rather than a shadow, and the job's name carrying the weight. */
-.board-slots .fav-slot {
-  border: 1.5px solid rgba(20, 20, 20, 0.14);
-  border-radius: 22px;
-  padding: 14px;
-  background: #ffffff;
-}
-
-.board-slots .fav-slot-label {
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: #141414;
-}
-
-.board-slots .fav-slot-does {
-  font-size: 12px;
-  color: #6b6b6b;
-}
-
-/* The empty well loses its own border — the card around it is the outline
-   now, and two nested rules read as a mistake. */
-.board-slots .fav-empty-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 16px;
-  background: #fafafa;
-}
-
-.board-slots .board-none {
-  background: none;
-}
-
-
-}
-
-/* A slot Vendaru can't fill yet — no listings in that trade, or the trade isn't
-   on here at all. Dashed and quiet: it shows the board's shape without offering
-   a button that would open an empty list. */
-.board-none {
-  border-style: dashed;
-  color: #9a9a9a;
-  font-size: 12.5px;
-  text-align: center;
-  padding: 0 12px;
-}
-
-/* The card in a slot. On a phone it is the tap target that opens the full one,
-   so it wants to look pressable without wearing a second border. */
-.board-card {
-  margin-top: 2px;
-}
-
-.board-slot-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-/* Swapping who's in a slot, previewing them, opening their page. Understated —
-   they only matter once a slot is filled, and then only occasionally. */
-.board-clear {
-  align-self: flex-start;
-  padding: 0;
-  border: none;
-  background: none;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 500;
-  color: #6b6b6b;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.board-clear:hover {
-  color: #141414;
-}
-
-/* Sits where a listing's brand mark sits, bottom-left of the picture. White
-   plate behind it because these arrive as favicons with transparent corners,
-   which vanish against a dark photo. */
-.partner-logo {
-  background: #ffffff;
-  object-fit: contain;
-  padding: 5px;
-}
-
-/* Our own sites. Outlined rather than filled, so Ad stays the louder of the
-   two — the one that has to be noticed is the one someone pays us for. */
-.partner-tag.is-ours {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  color: #ffffff;
-}
-
-/* A shop's monogram, in place of a logo it hasn't got. The colour comes from
-   the name, so it is set inline; everything else matches the brand marks it
-   sits alongside. */
-.shop-mark {
-  color: #ffffff;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-/* A real shop's real logo, on the white plate the brand marks use — these
-   arrive as favicons with transparent corners, which vanish on a photo. */
-.shop-logo {
-  background: #ffffff;
-  object-fit: contain;
-  padding: 6px;
-}
-
-.shop-logo.is-fill {
-  object-fit: cover;
-  padding: 0;
-}
-
-/* Which town's branch this is. Sits where a listing's rating sits — right, with
-   the rating — so a shop card and a listing card keep the same rhythm. */
-.biz-card-town {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 11px;
-  color: #6b6b6b;
-}
-
-.biz-card-town svg {
-  flex: 0 0 auto;
-  opacity: 0.55;
-}
-
-/* Stands in for a picture we haven't got, at the size the photo would be. */
-.biz-card-photo-empty {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 34px;
-  opacity: 0.3;
-}
-
-/* Shop runs several sections down one page — the app's own two services, then
-   local shops, then the directory — so each gets a heading with its count
-   rather than sections running into each other. */
-.page-band {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 6px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #6b6b6b;
-}
-
-.page-band-count {
-  flex: 0 0 auto;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #9a9a9a;
-}
-
-/* Their face and their name for the wall. */
-.fav-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-.fav-avatar {
-  position: relative;
-  flex: 0 0 auto;
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #141414;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(20, 20, 20, 0.18);
-}
-
-.fav-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.fav-avatar input[type="file"] {
-  display: none;
-}
-
-.fav-avatar-initials {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-/* The camera only asks for attention on hover; on touch the whole disc is
-   the target anyway. */
-.fav-avatar-edit {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(20, 20, 20, 0.72);
-  color: #ffffff;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.fav-avatar:hover .fav-avatar-edit,
-.fav-avatar:focus-within .fav-avatar-edit {
-  opacity: 1;
-}
-
-.fav-header-text {
-  min-width: 0;
-  flex: 1;
-}
-
-/* Reads as the heading it replaces until you put a caret in it. */
-.fav-title {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: none;
-  padding: 0;
-  font-family: inherit;
-  font-size: 25px;
-  font-weight: 700;
-  color: #141414;
-  letter-spacing: -0.028em;
-  border-bottom: 1.5px solid transparent;
-  transition: border-color 0.15s ease;
-}
-
-.fav-title:hover {
-  border-bottom-color: rgba(20, 20, 20, 0.12);
-}
-
-.fav-title:focus {
-  border-bottom-color: #141414;
-}
-
-.fav-sub {
-  font-size: 13px;
-  color: #6b6b6b;
-  margin-top: 2px;
-}
-
-/* The favourites board. One slot per category so it reads as a set of roles
-   to fill, not a flat list. */
-/* One slot a row on a phone, two once there's width — the same rhythm the
-   Shop page's cards keep. */
-.fav-board {
-  display: grid;
-  grid-template-columns: 1fr;
-  /* start, not stretch: an empty slot beside a filled one would otherwise be
-     dragged to the full height of the tallest card in the row. */
-  align-items: start;
-  gap: 14px 12px;
-  margin-top: 4px;
-}
-
-.fav-slot {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.fav-slot-head {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #6b6b6b;
-}
-
-.fav-slot-titles {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-/* The role is a heading now, not a faint category tag above a card. */
-.fav-slot-label {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #141414;
-}
-
-/* What the role is for, under its name — the reason to fill the slot. */
-.fav-slot-does {
-  font-size: 11.5px;
-  font-weight: 400;
-  color: #9a9a9a;
-  line-height: 1.3;
-}
-
-/* How far through staffing the house they are. */
-.fav-bar {
-  height: 4px;
-  border-radius: 2px;
-  background: #f2f2f2;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.fav-bar > span {
-  display: block;
-  height: 100%;
-  border-radius: 2px;
-  background: #141414;
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.fav-slot-icon {
-  font-size: 14px;
-}
-
-/* An unfilled role. The card-shaped hole below carries the outline, so the
-   slot itself is just the stack. */
-.fav-slot.is-empty {
-  gap: 8px;
-}
-
-/* Same footprint as a filled card: the 110px picture area plus the three text
-   rows under it, measured off the real thing. A gap holds its place in the
-   wall rather than collapsing to the height of a button. */
-.fav-empty-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 201px;
-  border: 1.5px dashed rgba(20, 20, 20, 0.22);
-  border-radius: 16px;
-  background: #fcfcfc;
-}
-
-.fav-add-btn {
-  width: 46px;
-  height: 46px;
-  border: none;
-  border-radius: 50%;
-  background: #141414;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 26px;
-  font-weight: 400;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(20, 20, 20, 0.2);
-  transition: transform 0.08s ease, opacity 0.12s ease;
-}
-
-.fav-add-btn:hover {
-  opacity: 0.86;
-}
-
-.fav-add-btn:active {
-  transform: scale(0.92);
-}
-
-/* Open: the button turns into the thing you'd press to close it. */
-.fav-add-btn.is-open {
-  transform: rotate(45deg);
-}
-
-/* Who could fill the slot. Card width, so choosing doesn't shift the wall,
-   and capped so a long category scrolls instead of pushing the grid apart. */
-.fav-choices {
-  width: 100%;
-  max-height: 232px;
-  overflow-y: auto;
-  border: 1.5px solid rgba(20, 20, 20, 0.12);
-  border-radius: 14px;
-  background: #ffffff;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.fav-choices::-webkit-scrollbar {
-  display: none;
-}
-
-.fav-choice {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 9px 11px;
-  border: none;
-  border-bottom: 1px solid rgba(20, 20, 20, 0.06);
-  background: none;
-  font-family: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.12s ease;
-}
-
-.fav-choice:last-child {
-  border-bottom: none;
-}
-
-.fav-choice:hover {
-  background: #fafafa;
-}
-
-.fav-choice-logo {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 auto;
-  border-radius: 22%;
-  background: #ffffff;
-  object-fit: contain;
-}
-
-.fav-choice-logo.is-fill {
-  object-fit: cover;
-}
-
-.fav-choice-logo.is-initials {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #141414;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.fav-choice-text {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.fav-choice-name {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #141414;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fav-choice-desc {
-  font-size: 11px;
-  color: #6b6b6b;
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Which part of the app Shop is showing: All, Services, Local businesses, New
-   to Vendaru. Scrolls sideways rather than wrapping or shrinking the labels, so
-   adding another one later doesn't reflow the page. Same outlined-to-filled
-   treatment as the card buttons, so a pressed one reads as chosen. */
-.quick-rail {
-  display: flex;
-  gap: 8px;
-  margin: 12px -18px 2px;
-  padding: 2px 18px 4px;
-  overflow-x: auto;
-}
-
-.quick-btn {
-  flex: 0 0 auto;
-  padding: 8px 15px;
-  border: 1.5px solid rgba(20, 20, 20, 0.18);
-  border-radius: 20px;
-  background: #ffffff;
-  color: #141414;
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.2;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
-}
-
-.quick-btn:hover {
-  border-color: #141414;
-}
-
-.quick-btn.is-on {
-  background: #141414;
-  border-color: #141414;
-  color: #ffffff;
-}
-
-.quick-btn:active {
-  transform: scale(0.97);
-}
-
-/* Cards or icons — the only two ways to view the directory. */
-.view-toggle {
-  display: inline-flex;
-  align-self: flex-start;
-  padding: 3px;
-  border-radius: 14px;
-  background: #f2f2f2;
-  margin: 10px 0 4px;
-}
-
-.view-opt {
-  border: none;
-  background: none;
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #6b6b6b;
-  padding: 6px 14px;
-  border-radius: 11px;
-  cursor: pointer;
-}
-
-.view-opt.is-on {
-  background: #ffffff;
-  color: #141414;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Business directory — square logo tiles laid out like app icons on a phone
-   home screen. Four a row on a phone, six on desktop. */
-.app-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px 10px;
-}
-
-.app-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  min-width: 0;
-}
-
-.app-tile-icon {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 22%;
-  /* White behind every mark — plenty are dark or transparent and vanish
-     without it. No border and no inset trim; the shadow separates the tile. */
-  background-color: #ffffff;
-  object-fit: contain;
-  /* contain, so a wide wordmark is not cropped to fit a square */
-  background-size: 74%;
-  background-position: center;
-  background-repeat: no-repeat;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.app-tile-initials {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #141414;
-  border-color: #141414;
-  color: #ffffff;
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.app-tile-label {
-  font-size: 11.5px;
-  line-height: 1.3;
-  color: #141414;
-  text-align: center;
-  /* Two lines then ellipsis, so one long name cannot shove the row out */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  width: 100%;
-}
-
-
-
-/* ---------------------------------------------------------------------------
-   Desktop layout
-   The phone column is the design; on a wide screen it just wastes the space
-   either side of it. Past 900px the bottom pill becomes a left rail and the
-   content gets room to breathe. Everything below 900px is untouched.
-   --------------------------------------------------------------------------- */
-
-/* Brand mark at the top of the rail. Hidden on the phone, where the tab bar
-   is a floating pill with no room for it. */
-
-/* Page container. Was an inline flex column on every screen; pulled into CSS
-   so the desktop breakpoint can lay the card pages out as a grid instead. */
+/* ---------- page shell ---------- */
 .page {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 22px 18px 60px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+
+.page-sub {
+  font-size: 13.5px;
+  color: #6b6b6b;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.section-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a8a8a;
+  margin: 28px 0 10px;
+}
+.section-label:first-child { margin-top: 0; }
+
+/* ---------- auth screen ---------- */
+.auth-wrap {
+  max-width: 380px;
+  margin: 40px auto;
+  padding: 0 18px;
+}
+
+.auth-card {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.role-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  background: #f2f2f0;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.role-toggle button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 9px 0;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  color: #6b6b6b;
+}
+.role-toggle button.is-active { background: #fff; color: #141414; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+
+.mode-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  margin-bottom: 18px;
+  color: #6b6b6b;
+}
+.mode-toggle button {
+  border: none;
+  background: none;
+  font: inherit;
+  color: #6b6b6b;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.mode-toggle button.is-active { color: #141414; font-weight: 700; text-decoration: underline; }
+
+.field {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 5px;
+  margin-bottom: 12px;
 }
 
-.tabbar-brand {
-  display: none;
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b6b6b;
 }
 
-@media (min-width: 900px) {
-  body {
-    background: #f4f5f7;
-  }
-
-  /* Fill the screen — a capped shell just leaves dead grey either side. */
-  #app {
-    max-width: none;
-    background: #f4f5f7;
-  }
-
-  .app-scroll {
-    padding-left: 148px;
-    padding-right: 40px;
-  }
-
-  /* One readable column rather than text running the full width. */
-  .app-scroll > div {
-    max-width: 1120px;
-    margin: 0 auto;
-  }
-
-  /* Two cards a row. A single 1120px-wide card is a lot of empty space next
-     to a 200px image; at ~550px each they sit at a sensible shape. */
-  .page-cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-  }
-
-  /* Same two-up rhythm for the favourites slots. */
-  .fav-board {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-  }
-
-  /* A sheet rising off the bottom edge suits a phone. With the whole window to
-     work with it's a dialog: centred, and only as wide as the form needs. */
-  .graftr-modal-overlay {
-    justify-content: center;
-    align-items: center;
-    padding: 24px;
-  }
-
-  .graftr-modal-card {
-    width: 520px;
-    max-width: 100%;
-    max-height: 84%;
-    border-radius: 24px;
-    padding-bottom: 20px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
-    animation: aiPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  /* Headings, the search bar, the quick row and section labels are not cards —
-     they run the full width above the grid. */
-  .page-cards > *:not(.shop-card) {
-    grid-column: 1 / -1;
-  }
-
-  /* Square, and free to take its share of the row — the cap would otherwise
-     hold it at 300 and leave the difference as gutters. */
-  .biz-card,
-  /* The ad card takes the same shape as a listing card, or it reads as a hole
-     in the grid rather than one of the cards. */
-  .ad-card {
-    aspect-ratio: 1 / 1;
-    max-width: none;
-  }
-
-  .biz-card-photo {
-    flex: 1;
-    min-height: 0;
-    aspect-ratio: auto;
-  }
-
-  /* Tracks share the row rather than sitting at a fixed 300 and centring,
-     which left an 80px gutter either side while the search bar above ran the
-     full width. 300 is the floor now, so the grid lines up with the bar at
-     both edges. */
-  .biz-card-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    justify-content: stretch;
-    justify-items: stretch;
-    /* Each card keeps its own height: an ad that comes in taller than a square
-       shouldn't drag the cards beside it taller with it. */
-    align-items: start;
-  }
-
-  /* Six a row rather than thirteen tiny ones across a wide column. */
-  .app-grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 22px 16px;
-  }
-
-  .app-tile-label {
-    font-size: 12.5px;
-  }
-
-  /* A card twice the width needs a taller picture, or the photo reads as a
-     letterboxed strip. */
-  .card-image,
-  .biz-banner {
-    height: 200px;
-  }
-
-  /* Desktop Web Left Navigation Sidebar */
-  .floating-tabbar {
-    position: fixed;
-    left: 0;
-    right: auto;
-    top: 0;
-    bottom: 0;
-    transform: none;
-    width: 118px;
-    height: 100vh;
-    background: #ffffff;
-    padding: 22px 10px;
-    border-radius: 0;
-    border-right: 1px solid rgba(20, 20, 20, 0.08);
-    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    gap: 4px;
-    z-index: 9999;
-  }
-
-  .tabbar-brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px 0 18px;
-    cursor: pointer;
-  }
-
-  .tabbar-brand img {
-    width: 74px;
-    height: auto;
-    display: block;
-  }
-
-  .floating-tab {
-    gap: 5px;
-    /* tabStyle() sets font-size inline, so this needs to win */
-    font-size: 11px !important;
-    padding: 11px 6px;
-    border-radius: 14px;
-    transition: background 0.12s ease;
-  }
-
-  .floating-tab:hover {
-    background: rgba(20, 20, 20, 0.05);
-  }
-
-  /* Desktop Floating AI FAB */
-  .ai-fab {
-    position: fixed;
-    right: 32px;
-    bottom: 32px;
-    left: auto;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: #141414;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 28px rgba(20, 20, 20, 0.32);
-    cursor: pointer;
-    z-index: 9999;
-  }
-
-  /* No tab pill down here — the FAB alone is what the card has to clear, and
-     it sits at a 32px inset rather than 20px. */
-  .ai-chat-sheet {
-    right: 32px;
-    bottom: 96px;
-    width: min(390px, calc(100% - 64px));
-    height: min(540px, calc(100% - 120px));
-  }
-}
-
-/* ── Location search bar ──────────────────────────────────────────────────── */
-
-.loc-search-wrap {
-  position: relative;
-  margin-top: 10px;
-  margin-bottom: 2px;
-}
-
-.loc-search-bar {
-  display: flex;
-  align-items: center;
-  border: 1.5px solid rgba(20,20,20,0.15);
-  border-radius: 26px;
-  padding: 10px 10px 10px 16px;
-  background: #fff;
-  gap: 0;
-  transition: border-color 0.15s;
-}
-
-.loc-search-bar:focus-within {
-  border-color: rgba(20,20,20,0.35);
-}
-
-.loc-search-icon {
-  opacity: 0.4;
-  font-size: 15px;
-  flex: 0 0 auto;
-  padding-right: 8px;
-  line-height: 1;
-}
-
-.loc-search-input {
-  border: none;
-  outline: none;
-  flex: 1;
-  font-size: 13.5px;
+input, textarea {
   font-family: inherit;
-  background: transparent;
-  min-width: 0;
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1.5px solid #e2e2e0;
+  border-radius: 10px;
+  background: #fff;
   color: #141414;
+  width: 100%;
 }
+input:focus, textarea:focus { outline: none; border-color: #141414; }
 
-.loc-search-input::placeholder {
-  color: rgba(20,20,20,0.38);
-}
-
-.loc-divider {
-  width: 1px;
-  height: 20px;
-  background: rgba(20,20,20,0.1);
-  flex: 0 0 auto;
-  margin: 0 8px;
-}
-
-/* The same shape and weight as the app's other buttons: 12px corner, 600,
-   soft grey resting, solid ink once it's doing something. */
-.loc-btn {
-  flex: 0 0 auto;
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 6px;
   border: none;
   border-radius: 12px;
-  padding: 7px 10px;
-  font-size: 11.5px;
-  font-weight: 600;
-  line-height: 1.2;
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-  max-width: 150px;
-  transition: background 0.12s ease, color 0.12s ease;
-  background: #f2f2f2;
-  color: #141414;
-}
-
-.loc-btn:hover {
-  background: #e6e6e6;
-}
-
-.loc-btn.active,
-.loc-btn.is-open {
-  background: #141414;
-  color: #ffffff;
-}
-
-.loc-btn.active:hover,
-.loc-btn.is-open:hover {
-  background: #141414;
-  opacity: 0.86;
-}
-
-.loc-btn-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.loc-btn svg {
-  flex: 0 0 auto;
-}
-
-.loc-btn-caret {
-  flex: 0 0 auto;
-  opacity: 0.6;
-  display: inline-flex;
-}
-
-/* Rows carry the mark in line weight, like the rest of the app's icons. */
-.loc-picker-icon {
-  flex: 0 0 auto;
-  display: inline-flex;
-  color: rgba(20, 20, 20, 0.45);
-}
-
-.loc-picker-count {
-  flex: 0 0 auto;
-  font-size: 11px;
-  font-weight: 600;
-  color: #6b6b6b;
-}
-
-.loc-picker-notice {
-  padding: 10px 16px;
-  font-size: 12px;
-  line-height: 1.4;
-  color: #6b6b6b;
-  background: #fafafa;
-  border-bottom: 1px solid #f2f2f2;
-}
-
-/* Picker dropdown */
-.loc-picker {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 6px);
-  background: #fff;
-  border: 1.5px solid rgba(20,20,20,0.1);
-  border-radius: 20px;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
-  z-index: 9500;
-  overflow: hidden;
-  animation: loc-drop-in 0.18s cubic-bezier(0.16,1,0.3,1);
-  transform-origin: top center;
-}
-
-@keyframes loc-drop-in {
-  from { opacity: 0; transform: scaleY(0.92) translateY(-6px); }
-  to   { opacity: 1; transform: scaleY(1)   translateY(0); }
-}
-
-.loc-picker-gps {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-bottom: 1px solid #f2f2f2;
-  cursor: pointer;
-}
-
-.loc-picker-gps:hover,
-.loc-picker-row:hover {
-  background: #fafafa;
-}
-
-.loc-picker-gps-title {
+  padding: 11px 18px;
   font-size: 13.5px;
   font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+}
+.btn:disabled { opacity: 0.5; cursor: default; }
+.btn-primary { background: #141414; color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #2b2b2b; }
+.btn-ghost { background: #fff; color: #141414; border: 1.5px solid #e2e2e0; }
+.btn-ghost:hover:not(:disabled) { background: #f7f7f5; }
+.btn-small { width: auto; padding: 7px 13px; font-size: 12.5px; border-radius: 9px; }
+
+.form-error {
+  font-size: 12.5px;
+  color: #b3261e;
+  background: #fdecea;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 4px 0 12px;
+}
+
+/* ---------- compose card (post a job) ---------- */
+.card {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.window-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.quote-line {
+  font-size: 13.5px;
   color: #141414;
+  min-height: 18px;
+  margin: 10px 0 2px;
 }
+.quote-line strong { font-weight: 800; }
 
-.loc-picker-gps-sub {
-  font-size: 11.5px;
-  color: #6b6b6b;
-  margin-top: 1px;
-}
+.compose-actions { display: flex; gap: 8px; margin-top: 4px; }
+.compose-actions .btn { width: auto; flex: 1; }
 
-.loc-picker-anywhere {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f2f2f2;
+/* ---------- job cards ---------- */
+.job-card {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
   cursor: pointer;
 }
 
-.loc-picker-list {
-  max-height: 230px;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-.loc-picker-list::-webkit-scrollbar { display: none; }
-
-.loc-picker-row {
+.job-card-top {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 16px;
-  font-size: 13px;
-  color: #141414;
-  cursor: pointer;
-  border-bottom: 1px solid rgba(20,20,20,0.04);
-}
-
-.loc-picker-row.selected,
-.loc-picker-anywhere.selected {
-  background: #fafafa;
-  font-weight: 600;
-}
-
-.loc-picker-row.selected .loc-picker-icon,
-.loc-picker-anywhere.selected .loc-picker-icon {
-  color: #141414;
-}
-
-.loc-picker-badge {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #141414;
-  color: #ffffff;
-}
-
-
-/* Live shop products on a listing page (Pixcision Stock).
-   A row rather than a grid: the shop has hundreds of items, the page is showing
-   twelve, and a scroller reads as a sample where a truncated grid reads as the
-   whole stock. */
-.shopfeed-row {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  margin: 8px -16px 0;
-  padding: 2px 16px 4px;
-}
-
-.shopfeed-row::-webkit-scrollbar {
-  display: none;
-}
-
-.shopfeed-card {
-  flex: 0 0 auto;
-  width: 132px;
-  scroll-snap-align: start;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
-
-/* Fixed box with the image contained inside it: these are canvases in several
-   aspect ratios, and cropping them to a square cuts the framing off the frame. */
-.shopfeed-shot {
-  width: 132px;
-  height: 132px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #f4f4f4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.shopfeed-shot img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.shopfeed-title {
-  font-size: 12.5px;
-  color: #141414;
-  line-height: 1.35;
-  margin-top: 7px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.shopfeed-price {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #141414;
-  margin-top: 3px;
-}
-
-/* Holds the row's height while the feed loads, so the sections below don't jump
-   down the page when it arrives. */
-.shopfeed-ghost {
-  height: 132px;
-  border-radius: 12px;
-  background: #f4f4f4;
-}
-
-.shopfeed-foot {
-  display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
+  gap: 10px;
+}
+
+.job-id { font-weight: 700; font-size: 13.5px; }
+
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.status-OPEN { background: #eef2ff; color: #3730a3; }
+.status-ACCEPTED { background: #fef3c7; color: #92400e; }
+.status-COLLECTED { background: #dbeafe; color: #1e40af; }
+.status-DELIVERED { background: #dcfce7; color: #166534; }
+
+.job-route {
+  font-size: 13.5px;
+  color: #333;
+  margin: 8px 0 4px;
+  line-height: 1.4;
+}
+.job-route .arrow { color: #b0b0ac; margin: 0 4px; }
+
+.job-meta {
+  font-size: 12px;
+  color: #8a8a8a;
+  display: flex;
+  gap: 10px;
   flex-wrap: wrap;
-  font-size: 12.5px;
-  color: #6b6b6b;
+}
+
+.job-price { font-weight: 800; color: #141414; }
+
+.empty-note {
+  font-size: 13px;
+  color: #9a9a95;
+  padding: 18px 4px;
+  text-align: center;
+}
+
+/* ---------- job detail (expanded in place) ---------- */
+.job-detail {
+  margin-top: 10px;
   padding-top: 12px;
-  margin-top: 2px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.shopfeed-foot a {
-  color: #141414;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-/* A button with nothing behind it. Kept in the row so every card is the same
-   shape, but clearly not a thing you can press: the outline and label drop to
-   grey, the pointer stays an arrow, and the hover fill doesn't happen. */
-.biz-card-action.is-dead {
-  border-color: rgba(20, 20, 20, 0.18);
-  color: rgba(20, 20, 20, 0.32);
+  border-top: 1px solid #f0f0ee;
   cursor: default;
 }
 
-.biz-card-action.is-dead:hover {
-  background: #ffffff;
-  color: rgba(20, 20, 20, 0.32);
-}
-
-/* Cookie consent banner. Sits above the floating tab bar (z-index 9999) so it
-   can't be hidden behind it, and clears the bar's own height plus safe area
-   so nothing overlaps on a short phone. */
-.cookie-banner {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 398px;
-  bottom: calc(20px + 62px + 14px + env(safe-area-inset-bottom, 0px));
-  z-index: 10000;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08);
-  animation: aiFadeIn 0.25s ease-out;
-}
-
-.cookie-banner-inner {
-  padding: 16px 18px;
-}
-
-@media (min-width: 900px) {
-  .cookie-banner {
-    left: auto;
-    right: 32px;
-    transform: none;
-    width: 360px;
-    bottom: 32px;
-  }
-}
-
-/* Top-of-page hero banner: five Unsplash photos cross-fading with a slow push
-   in, entirely animation-driven so nothing here re-renders the page.
-
-   Built for exactly 5 slides at 5s each = a 25s cycle. If HERO_SLIDES in app.js
-   ever changes count, these percentages (each slot is 1/5 = 20% of the cycle,
-   with a 3% cross-fade at each edge) need updating to match, and HERO_CYCLE's
-   animation-duration below has to track HERO_SLIDES.length * HERO_PER. */
-.hero-band {
-  position: relative;
+.job-map {
   width: 100%;
-  height: 190px;
-  border-radius: 18px;
+  height: 200px;
+  border-radius: 10px;
   overflow: hidden;
   background: #eef0ee;
-  margin: 2px 0 4px;
+  margin-bottom: 12px;
 }
 
-.hero-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  animation: hero-fade 25s infinite;
-}
+.timeline { display: flex; flex-direction: column; gap: 0; margin-bottom: 12px; }
 
-.hero-shot {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  animation: hero-pan 25s infinite;
-}
-
-/* Reduced motion: the slides still change, because that's the point of the
-   banner, but nothing pans and the cut is a plain cross-fade rather than a
-   moving image — the class of motion the setting exists to remove. */
-@media (prefers-reduced-motion: reduce) {
-  .hero-shot { animation: none; }
-}
-
-@keyframes hero-fade {
-  0%, 3%    { opacity: 0; }
-  5%, 17%   { opacity: 1; }
-  20%, 100% { opacity: 0; }
-}
-
-@keyframes hero-pan {
-  0%   { transform: scale(1.06) translateX(0); }
-  20%  { transform: scale(1.12) translateX(-1.5%); }
-  100% { transform: scale(1.12) translateX(-1.5%); }
-}
-
-.hero-dots {
-  position: absolute;
-  left: 50%;
-  bottom: 11px;
-  transform: translateX(-50%);
+.timeline-row {
   display: flex;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 12.5px;
 }
 
-.hero-dot {
-  width: 6px;
-  height: 6px;
+.timeline-dot {
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  animation: hero-dot 25s infinite;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  background: #d8d8d4;
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+.timeline-row.is-done .timeline-dot { background: #141414; }
+.timeline-row.is-done { color: #141414; }
+.timeline-row:not(.is-done) { color: #b0b0ac; }
+
+.photo-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.photo-thumb {
+  width: 84px;
+  height: 84px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #ececec;
+  display: block;
 }
 
-@keyframes hero-dot {
-  0%, 3%    { background: rgba(255, 255, 255, 0.5); width: 6px; }
-  5%, 17%   { background: #ffffff; width: 16px; }
-  20%, 100% { background: rgba(255, 255, 255, 0.5); width: 6px; }
+.upload-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.upload-row input[type="file"] { font-size: 12px; max-width: 160px; }
+
+/* ---------- misc ---------- */
+.refresh-btn {
+  background: none;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #141414;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.hint {
+  font-size: 12px;
+  color: #9a9a95;
+  margin: -4px 0 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .window-row { grid-template-columns: 1fr; }
+  .photo-thumb { width: 72px; height: 72px; }
 }

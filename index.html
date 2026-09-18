@@ -2,24 +2,16 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<!-- Pin document-relative paths to root for SPA nested routes -->
-<script>
-  if (location.protocol !== 'file:') {
-    var b = document.createElement('base');
-    b.href = '/';
-    document.head.appendChild(b);
-  }
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#141414">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <!-- SEO Meta Tags -->
-<title>Vendaru | UK Business Directory, Local Services & Grocery Shopping</title>
-<meta name="description" content="Discover 100+ verified UK local businesses, certified tradespeople, estate agents, car repair, beauty salons, tutors & local grocery delivery on Vendaru. Compare prices & book local services across the UK.">
-<meta name="keywords" content="Vendaru, UK business directory, local tradesmen, plumber UK, electrician UK, estate agents UK, auto repair UK, groceries delivery UK, local services UK">
+<title>Vendaru | Peer-to-Peer Courier Delivery, UK</title>
+<meta name="description" content="Vendaru is a peer-to-peer courier marketplace: post a parcel from A to B, get an instant quote, and a courier near you picks it up and delivers it, with a photo at each end.">
+<meta name="keywords" content="Vendaru, courier, parcel delivery UK, same day courier, peer to peer delivery, send a parcel">
 <meta name="author" content="Vendaru UK">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://vendaru.com/" />
@@ -28,42 +20,40 @@
      no effect on the page and must stay in the served HTML for as long as that
      account is live, or the check quietly starts failing. -->
 <meta name="google-site-verification" content="BprHwWsOfzbvPd7fHdSNuZzOeYzTTLk_q95j5-IxrkA" />
-<meta name="google-site-verification" content="google-site-verification=BprHwWsOfzbvPd7fHdSNuZzOeYzTTLk_q95j5-IxrkA" />
-<meta name="impact-site-verification" value="28d38c21-507c-4b81-adda-e576b3456e6f">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://vendaru.com/">
-<meta property="og:title" content="Vendaru | UK Business Directory, Local Services & Grocery Shopping">
-<meta property="og:description" content="Connect with verified UK tradespeople, local services, estate agents, auto repairs, and grocery stores with transparent pricing across London, Manchester, Birmingham & nationwide.">
+<meta property="og:title" content="Vendaru | Peer-to-Peer Courier Delivery">
+<meta property="og:description" content="Post a parcel from A to B, get an instant quote, and a courier near you picks it up and delivers it — with a photo at pickup and at drop-off.">
 <meta property="og:image" content="https://vendaru.com/assets/brand/logo.svg">
 <meta property="og:site_name" content="Vendaru">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://vendaru.com/">
-<meta name="twitter:title" content="Vendaru | UK Business Directory & Local Marketplace">
-<meta name="twitter:description" content="Discover 100+ verified UK local businesses, tradespeople, auto repairs, beauty salons, and grocery stores.">
+<meta name="twitter:title" content="Vendaru | Peer-to-Peer Courier Delivery">
+<meta name="twitter:description" content="Post a parcel from A to B, get an instant quote, and a courier near you picks it up and delivers it.">
 <meta name="twitter:image" content="https://vendaru.com/assets/brand/logo.svg">
 
-<!-- The app itself, fetched alongside the HTML rather than after the libraries
+<!-- The app itself, fetched alongside the HTML rather than after the library
      at the foot of the page. Until it runs, what's on screen is the
      pre-rendered article below, so every millisecond here is a millisecond of
      the wrong page. -->
-<link rel="preload" href="app.js?v=149" as="script">
+<link rel="preload" href="app.js?v=200" as="script">
 
 <!-- Favicon & Styles -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f2c1d8'/%3E%3Ctext x='32' y='47' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='40' fill='%23ffffff' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141414'/%3E%3Ctext x='32' y='47' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='40' fill='%23ffffff' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- These two load without holding anything up. A plain <script> is not allowed
-     to execute while a stylesheet is still pending, so app.js — and therefore
-     the moment the app replaces the article below — was waiting on a round trip
-     to fonts.googleapis.com and another to unpkg. Neither is needed to draw the
-     first screen: the font already carries display=swap, and Leaflet's CSS only
-     styles the tracking map. Flipping media on load is what makes the browser
-     fetch them at low priority instead of blocking on them. -->
+<!-- These load without holding anything up. A plain <script> is not allowed to
+     execute while a stylesheet is still pending, so app.js — and therefore the
+     moment the app replaces the article below — was waiting on a round trip to
+     fonts.googleapis.com and another to unpkg. Neither is needed to draw the
+     first screen: the font already carries display=swap, and Leaflet's CSS
+     only styles the tracking map. Flipping media on load is what makes the
+     browser fetch them at low priority instead of blocking on them. -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
       media="print" onload="this.media='all'">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -73,158 +63,77 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </noscript>
 
-<!-- Google AdSense loads only after cookie consent -- see loadAdScriptIfAllowed() in app.js -->
-
-<!-- Structured Data (JSON-LD) for Search Engines & AdSense Verification -->
+<!-- Structured Data (JSON-LD) for Search Engines -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebSite",
+  "@type": "Service",
   "name": "Vendaru",
   "url": "https://vendaru.com/",
-  "description": "The UK's premier local business directory and instant shopping marketplace connecting consumers with verified trades, services, and local stores.",
-  "publisher": {
+  "serviceType": "Peer-to-peer courier delivery",
+  "areaServed": "GB",
+  "description": "Post a parcel from A to B, get an instant quote, and a courier near you picks it up and delivers it.",
+  "provider": {
     "@type": "Organization",
     "name": "Vendaru UK",
     "url": "https://vendaru.com/",
     "logo": "https://vendaru.com/assets/brand/logo.svg"
-  },
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://vendaru.com/shop?q={search_term_string}",
-    "query-input": "required name=search_term_string"
   }
 }
 </script>
 
-<!-- Asks for the listings while the HTML is still being parsed, so the file is
-     already in flight — usually already arrived — by the time app.js has
-     downloaded and run. Kicking it off from inside app.js meant queueing it
-     behind app.js's own download and parse, and the directory is the first
-     thing on the page. Kept above styles.css deliberately: a blocking stylesheet
-     would hold this script up, and the two sheets above it are media="print"
-     until they load, so they don't. -->
-<script>
-  window.__vendaruListings = fetch('assets/businesses.json', { cache: 'no-cache' })
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .catch(function () { return null; });
-</script>
-
-<link rel="stylesheet" href="styles.css?v=149">
+<link rel="stylesheet" href="styles.css?v=200">
 </head>
 <body>
-<div class="frame-bg">
-  <div class="phone">
-    <div id="app" style="height:100%;display:flex;flex-direction:column;background:#fff;font-family:-apple-system,system-ui,sans-serif;color:#141414">
-      
-      <!-- Pre-rendered Semantic HTML for Crawlers, Search Engines & AdSense Compliance -->
-      <article style="padding:24px 20px;overflow-y:auto;line-height:1.6;color:#141414;font-family:'Inter',sans-serif">
-        <!-- Laid out like the app's first screen — centred mark, then the same
-             pill buttons the app uses — because this is what a visitor sees for
-             the moment before app.js takes over. Wearing a left logo and a
-             desktop nav bar made that moment look like a different website. The
-             links and the text are unchanged; only the arrangement is. -->
-        <header style="display:flex;flex-direction:column;align-items:center;gap:12px;padding-bottom:18px">
-          <img src="assets/brand/logo.svg" alt="Vendaru UK Business Directory" width="200" style="width:200px;max-width:62%;height:auto;display:block" />
-          <nav style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px">
-            <a class="quick-btn" href="/shop" style="text-decoration:none">Shop</a>
-            <a class="quick-btn" href="/services" style="text-decoration:none">Services</a>
-            <a class="quick-btn" href="/about.html" style="text-decoration:none">About</a>
-            <a class="quick-btn" href="/contact.html" style="text-decoration:none">Contact</a>
-          </nav>
-        </header>
+<div id="app">
 
-        <section style="margin-top:24px">
-          <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:12px;color:#141414">
-            Vendaru — UK Local Business Directory, Services &amp; Grocery Shopping Marketplace
-          </h1>
-          <p style="font-size:14.5px;color:#444;margin-bottom:20px">
-            Welcome to <strong>Vendaru</strong>, the United Kingdom's leading digital directory and local marketplace connecting UK consumers directly with over 100 verified independent businesses, certified trade professionals, professional services, local grocery stores, and essential service providers across the UK.
-          </p>
+  <!-- Pre-rendered semantic HTML for crawlers. A plain <script> can't run
+       while a stylesheet is still pending (see the print-media trick above),
+       so this is what's on screen for the moment before app.js takes over —
+       it stays truthful to what the app actually does rather than describing
+       something else. -->
+  <article style="padding:32px 20px;max-width:640px;margin:0 auto;line-height:1.6;font-family:'Inter',sans-serif">
+    <header style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
+      <img src="assets/brand/logo.svg" alt="Vendaru" width="30" height="30" style="display:block" />
+      <span style="font-size:19px;font-weight:800;letter-spacing:-0.01em">Vendaru</span>
+    </header>
 
-          <h2 style="font-size:18px;font-weight:700;margin-top:28px;margin-bottom:10px">Explore Verified Local UK Service Categories</h2>
-          
-          <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px">
-            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
-              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🛠️ Verified Trades &amp; Home Improvements</h3>
-              <p style="font-size:13px;color:#555;margin:0">Find accredited UK plumbers, certified electricians, emergency gas engineers, roofers, joiners, plasterers, and general builders. View upfront pricing, portfolios, and contact details for top providers like Checkatrade, MyBuilder, Pimlico Plumbers, and Homeserve UK.</p>
-            </div>
+    <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:10px">
+      Send a parcel with a courier near you
+    </h1>
+    <p style="font-size:14.5px;color:#444;margin-bottom:20px">
+      Vendaru is a peer-to-peer courier marketplace covering the UK. Tell us where a parcel needs to go, get an instant
+      price based on the real distance, and a courier picks it up and delivers it — with a photo taken at pickup and
+      another at drop-off, so you can see it actually happened.
+    </p>
 
-            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
-              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🏠 Real Estate &amp; Property Services</h3>
-              <p style="font-size:13px;color:#555;margin:0">Browse leading UK estate agencies, letting specialists, property valuation experts, and conveyancing firms. Access listings and consultation services from Purplebricks, Savills, Foxtons, Yopa, and Connells.</p>
-            </div>
+    <h2 style="font-size:17px;font-weight:700;margin-bottom:8px">How it works</h2>
+    <ol style="font-size:13.5px;color:#444;padding-left:20px;margin-bottom:22px">
+      <li>Post a pickup address, a drop-off address, and a time window.</li>
+      <li>Get a quote — a courier accepts the job.</li>
+      <li>They photograph the parcel at pickup, then again at drop-off.</li>
+      <li>Track the job's status the whole way through.</li>
+    </ol>
 
-            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
-              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🚗 Automotive Repair, MOT &amp; Servicing</h3>
-              <p style="font-size:13px;color:#555;margin:0">Book MOT tests, full car servicing, tyre replacements, bodywork repair, and breakdown assistance from nationwide autocentres including Kwik Fit, Halfords Autocentres, RAC, The AA, and Autoglass UK.</p>
-            </div>
+    <h2 style="font-size:17px;font-weight:700;margin-bottom:8px">Two accounts, one platform</h2>
+    <p style="font-size:13.5px;color:#444;margin-bottom:22px">
+      Register as a <strong>customer</strong> to send parcels, or as a <strong>courier</strong> to earn by delivering
+      them. Every job is priced from the real straight-line distance between the two UK towns named in the addresses.
+    </p>
 
-            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
-              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">💇 Hair Salons, Barbers &amp; Beauty Clinics</h3>
-              <p style="font-size:13px;color:#555;margin:0">Discover top-rated UK hair salons, barbershops, nail studios, skincare clinics, and spa treatments near you. Featuring Rush Hair &amp; Beauty, Toni &amp; Guy, SK:N Clinics, and Townhouse Nails.</p>
-            </div>
-
-            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
-              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🏋️ Health, Fitness &amp; Dental Care</h3>
-              <p style="font-size:13px;color:#555;margin:0">Locate certified dental surgeries, opticians, gyms, and health clubs across the UK, including Bupa Dental Care, PureGym, Specsavers, Nuffield Health, and David Lloyd Clubs.</p>
-            </div>
-
-            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
-              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🧹 Professional Domestic &amp; Commercial Cleaning</h3>
-              <p style="font-size:13px;color:#555;margin:0">Book vetted house cleaners, end-of-tenancy specialists, carpet cleaning, oven cleaning, and window cleaners from Fantastic Services, MOLLY MAID, and Ovenu.</p>
-            </div>
-
-            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
-              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">🐾 Pet Care, Vets &amp; Professional Dog Walking</h3>
-              <p style="font-size:13px;color:#555;margin:0">Connect with reliable local dog walkers, pet sitters, veterinary hospitals, and pet grooming salons including Pets at Home Groom Room, Vets4Pets, Barking Mad, and Rover UK.</p>
-            </div>
-
-            <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:16px">
-              <h3 style="font-size:15px;font-weight:700;margin:0 0 6px">📚 Academic Tutors &amp; Approved Driving Schools</h3>
-              <p style="font-size:13px;color:#555;margin:0">Find experienced UK tutors for primary, GCSE, A-Level, and university subjects, alongside DVSA certified driving instructors from RED Driving School, BSM, and Kumon UK.</p>
-            </div>
-          </div>
-
-          <h2 style="font-size:18px;font-weight:700;margin-top:28px;margin-bottom:10px">On-Demand Local Groceries &amp; Independent Store Shopping</h2>
-          <p style="font-size:13.5px;color:#444">
-            In addition to professional local services, Vendaru enables customers to shop fresh groceries, bakery goods, dairy essentials, snacks, beverages, and household supplies from local UK supermarkets and independent high-street stores with convenient local delivery options.
-          </p>
-
-          <h2 style="font-size:18px;font-weight:700;margin-top:28px;margin-bottom:10px">Nationwide UK Coverage</h2>
-          <p style="font-size:13.5px;color:#444">
-            Vendaru connects consumers with local businesses across all major UK cities, including London, Manchester, Birmingham, Leeds, Liverpool, Sheffield, Bristol, Edinburgh, Glasgow, Cardiff, Newcastle, Nottingham, Leicester, Southampton, Portsmouth, Brighton, Oxford, Cambridge, York, Norwich, Exeter, Bath, Derby, Coventry, Reading, Milton Keynes, Plymouth, Stoke-on-Trent, Wolverhampton, and Belfast.
-          </p>
-
-          <h2 style="font-size:18px;font-weight:700;margin-top:28px;margin-bottom:10px">Why Choose Vendaru?</h2>
-          <ul style="font-size:13.5px;color:#444;padding-left:20px;margin-bottom:24px">
-            <li><strong>Verified UK Companies:</strong> Every business listing features real registered head office addresses, verified contact numbers, and official web links.</li>
-            <li><strong>Interactive Price Range Filtering:</strong> Easily search services by price ranges (Free Quotes, Under £50, £50–£150, £150+) to fit your budget.</li>
-            <li><strong>Location-Aware Search:</strong> Auto-detect your current GPS location or filter listings by your preferred UK city.</li>
-            <li><strong>Direct Contact &amp; Transparent Booking:</strong> Call, visit official websites, or request quotes directly with zero middleman markups.</li>
-          </ul>
-        </section>
-
-        <footer style="margin-top:36px;padding-top:20px;border-top:1px solid #eee;font-size:12.5px;color:#666;text-align:center">
-          <div style="display:flex;justify-content:center;gap:16px;margin-bottom:12px;flex-wrap:wrap">
-            <a href="/about.html" style="color:#141414;text-decoration:none;font-weight:600">About Us</a>
-            <a href="/privacy.html" style="color:#141414;text-decoration:none;font-weight:600">Privacy Policy</a>
-            <a href="/terms.html" style="color:#141414;text-decoration:none;font-weight:600">Terms of Service</a>
-            <a href="/contact.html" style="color:#141414;text-decoration:none;font-weight:600">Contact Us</a>
-            <a href="/ads.txt" style="color:#141414;text-decoration:none;font-weight:600">ads.txt</a>
-          </div>
-          <p style="margin:4px 0">&copy; 2026 Vendaru UK Ltd. All rights reserved. The UK's premier business directory &amp; local shopping marketplace.</p>
-        </footer>
-      </article>
-
-    </div>
-  </div>
+    <footer style="margin-top:30px;padding-top:18px;border-top:1px solid #eee;font-size:12.5px;color:#666">
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px">
+        <a href="/about.html" style="color:#141414;text-decoration:none;font-weight:600">About</a>
+        <a href="/privacy.html" style="color:#141414;text-decoration:none;font-weight:600">Privacy</a>
+        <a href="/terms.html" style="color:#141414;text-decoration:none;font-weight:600">Terms</a>
+        <a href="/contact.html" style="color:#141414;text-decoration:none;font-weight:600">Contact</a>
+      </div>
+      <p style="margin:4px 0">&copy; 2026 Vendaru UK Ltd.</p>
+    </footer>
+  </article>
 </div>
 
-<!-- Scripts -->
 <script async src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script async src="https://unpkg.com/@zxing/library@0.23.0/umd/index.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="app.js?v=149"></script>
+<script src="app.js?v=200"></script>
 </body>
 </html>
