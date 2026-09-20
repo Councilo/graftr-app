@@ -124,7 +124,7 @@ window.VENDARU_FAQ = [
     id: "track-parcel",
     cat: "tracking",
     q: "How do I follow my delivery?",
-    a: "Open your order in the app. You can see its status (Open, Accepted, Collected, Delivered or Cancelled) and, while a courier is on the job, their position on the map. You can also chat with the courier while the job is active."
+    a: "Open your order in the app. You can see its status (Open, Accepted, Collected, Delivered or Cancelled) and, once the courier has set off (they press Start order first, so you won't see them while they are still at home), their position on the map and the road route they are taking to the pickup. You can also chat with the courier while the job is active."
   },
   {
     id: "recipient-link",
@@ -160,7 +160,7 @@ window.VENDARU_FAQ = [
     id: "courier-location",
     cat: "couriers",
     q: "Why does Vendaru use my location as a courier?",
-    a: "So the customer can follow their delivery. You agree to this when you sign up as a courier. After you accept a job, while the app is open on your device, it shares your position about every 10 seconds until the job is delivered, cancelled or handed back.\n\nOnly your latest position for the job is kept, not a trail, and it is cleared when the job ends. You can turn location off in your device settings, but then the customer sees no live dot. Keep the app open while you are on a job.",
+    a: "So the customer can follow their delivery. You agree to this when you sign up as a courier. Accepting a job shares nothing. When you set off for the pickup you press Start order; from then on, while the app is open on your device, it shares your position about every 10 seconds until the job is delivered, cancelled or handed back.\n\nOnly your latest position for the job is kept, not a trail, and it is cleared when the job ends. You can turn location off in your device settings, but then the customer sees no live dot. Keep the app open while you are on a job.",
     link: { label: "Location Tracking Policy", href: "/location-policy.html" }
   },
   {

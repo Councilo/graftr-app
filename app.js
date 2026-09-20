@@ -90,7 +90,6 @@
     user: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
     help: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
     shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-    brandFork: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="19" r="2"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><path d="M12 17V12"/><path d="M12 12C12 9 6 9 6 8"/><path d="M12 12C12 9 18 9 18 8"/></svg>`,
     home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
     truck: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
     chat: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
@@ -112,6 +111,14 @@
     return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
   function money(n) { return '£' + Number(n).toFixed(2); }
+
+  // The Vendaru wordmark (sign-in screen), and the square "V" icon that stands for it (sidebar badge).
+  function brandWordmark() {
+    return '<img class="auth-wordmark" src="/assets/brand/logo-wide-480.png" alt="Vendaru" width="480" height="177" draggable="false" />';
+  }
+  function brandLogo(alt) {
+    return `<img src="/assets/brand/icon-128.png" alt="${alt || ''}" width="128" height="128" draggable="false" />`;
+  }
   function freshAuthFields() {
     return { full_name: '', email: '', password: '', accept_terms: false, accept_courier_terms: false, location_consent: false };
   }
@@ -195,6 +202,88 @@
     if (code === 1) return new Error("Location is blocked for this site. Allow it in your browser's site settings, or type the address.");
     if (code === 3) return new Error('Finding your location took too long. Try again, or type the address.');
     return new Error("Couldn't work out your location. Type the address instead.");
+  }
+
+  // ---------------- Live location for the pickup ----------------
+  // Tapping the locate button doesn't only fill the pickup in once: it switches live location on,
+  // and the pickup follows the customer while they get their order ready. The small switch above
+  // the pickup box turns it off, and so does typing in the box, choosing a suggestion, or leaving
+  // the order form (see render()).
+  let liveWatchId = null;                          // the browser's watch, while live location is on
+  let liveLast = { lat: null, lng: null, at: 0 };  // where the pickup address was last worked out
+  let liveLookupBusy = false;
+  let pickupMarker = null;                         // the pickup dot on the map, so a live fix can slide it
+
+  function metresBetween(a, b) {
+    const rad = (x) => (x * Math.PI) / 180;
+    const h = Math.sin(rad(b.lat - a.lat) / 2) ** 2
+      + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(rad(b.lng - a.lng) / 2) ** 2;
+    return 2 * 6371000 * Math.asin(Math.sqrt(h));
+  }
+
+  function startLiveLocation() {
+    if (liveWatchId !== null || !('geolocation' in navigator)) return;
+    state.compose.live = true;
+    liveWatchId = navigator.geolocation.watchPosition(onLiveFix, onLiveError, { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 });
+  }
+
+  function stopLiveLocation() {
+    if (liveWatchId !== null) {
+      try { navigator.geolocation.clearWatch(liveWatchId); } catch { /* already gone */ }
+      liveWatchId = null;
+    }
+    if (state.compose && state.compose.live) state.compose.live = false;
+    syncLiveUi();
+  }
+
+  // Typing in the pickup box switches live location off without redrawing the page, so the switch
+  // and the pulsing buttons have to be brought into line by hand.
+  function syncLiveUi() {
+    const live = !!(state.compose && state.compose.live);
+    for (const el of root.querySelectorAll('.live-toggle')) {
+      el.classList.toggle('is-on', live);
+      el.setAttribute('aria-checked', live ? 'true' : 'false');
+    }
+    for (const el of root.querySelectorAll('.addr-gps, .map-btn-solo, .map-btn-solo .map-btn')) el.classList.toggle('is-live', live);
+  }
+
+  async function onLiveFix(pos) {
+    const c = state.compose;
+    if (!c.live) return;
+    const here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    c.pickupCoords = here;
+    // With no quote yet the map is showing just the pickup: slide the dot and follow it.
+    if (pickupMarker && !c.quote) {
+      pickupMarker.setLatLng([here.lat, here.lng]);
+      if (workspaceMap) workspaceMap.setView([here.lat, here.lng], workspaceMap.getZoom(), { animate: false });
+    }
+    // Work out a new address only after a real move, and not more than once every few seconds.
+    if (liveLookupBusy) return;
+    if (liveLast.lat !== null && (metresBetween(liveLast, here) < 40 || Date.now() - liveLast.at < 8000)) return;
+    liveLookupBusy = true;
+    try {
+      const found = await reverseLookup(here.lat, here.lng);
+      if (!state.compose.live) return;
+      liveLast = { lat: here.lat, lng: here.lng, at: Date.now() };
+      if (found.address && found.address !== c.pickup_address) {
+        c.pickup_address = found.address;
+        c.pickupPlace = found.place_token || null;
+        c.quote = null;
+        c.quoteError = null;
+        const input = root.querySelector('[data-bind="compose.pickup_address"]');
+        if (input && document.activeElement !== input) input.value = found.address;
+        actions.maybeAutoQuote();
+      }
+    } catch { /* a missed lookup: the next fix tries again */ } finally { liveLookupBusy = false; }
+  }
+
+  function onLiveError(err) {
+    // Only a withdrawn permission ends it; a timeout or a lost signal just waits for the next fix.
+    if (err && err.code === 1) {
+      stopLiveLocation();
+      state.compose.locateError = "Location is blocked for this site. Allow it in your browser's site settings, or type the address.";
+      render();
+    }
   }
 
   // Coordinates -> a street address (and the token that lets the quote use
@@ -454,6 +543,63 @@
 
   async function mockRoute(p, d) { return roadRoute(p, d); }
 
+  // ---- The courier's leg to the pickup ----
+  // Once a courier presses Start order the customer follows them to the collection point: a real
+  // road route from where the courier is now to the pickup (the same routing servers as the job's
+  // own route, never a straight line), redrawn as they move. Kept per job, and only fetched again
+  // after the courier has moved a fair way, so the map isn't rebuilt on every position update.
+  const legCache = new Map(); // job id -> { status: 'idle'|'loading'|'done'|'failed', geometry, distance_km, from, at, tries }
+  let legLine = null;         // the leg's line on the map on screen, so an update can slide it
+  const legLabel = (e) => `${miles(e.distance_km)} to the pickup`;
+
+  // job: { id, courier_lat, courier_lng, pickup_lat, pickup_lng } for an ACCEPTED job that has been started.
+  function legRefresh(job) {
+    if (job.courier_lat == null || job.courier_lng == null || job.pickup_lat == null || job.pickup_lng == null) return null;
+    const from = { lat: Number(job.courier_lat), lng: Number(job.courier_lng) };
+    const to = { lat: Number(job.pickup_lat), lng: Number(job.pickup_lng) };
+    let e = legCache.get(job.id);
+    if (!e) {
+      e = { status: 'idle', geometry: null, distance_km: null, from: null, at: 0, tries: 0 };
+      legCache.set(job.id, e);
+    }
+    if (e.status === 'loading') return e;
+    const age = Date.now() - e.at;
+    const due = e.geometry
+      ? (age > 20000 && metresBetween(e.from, from) > 250)   // it has moved on: draw the road it is on now
+      : (e.status === 'idle' || (e.status === 'failed' && age > 15000 && e.tries < 8));
+    if (due) {
+      e.status = 'loading';
+      e.tries += 1;
+      e.from = from;
+      roadRoute([from.lat, from.lng], [to.lat, to.lng]).then((route) => {
+        e.at = Date.now();
+        if (route) { e.status = 'done'; e.geometry = route.geometry; e.distance_km = route.distance_km; e.tries = 0; }
+        else e.status = e.geometry ? 'done' : 'failed';
+        legArrived(job.id);
+      });
+    }
+    return e;
+  }
+
+  // A route (or a failure worth saying so) has come back for this job's leg.
+  function legArrived(jobId) {
+    const active = getActiveJob();
+    if (!active || active.id !== jobId || state.screen !== 'dashboard' || state.activeModal) return;
+    const e = legCache.get(jobId);
+    if (legLine && e && e.geometry) { slideLeg(active); refreshActiveCards(); return; } // already drawn: update in place
+    const focused = document.activeElement;
+    if (focused && root.contains(focused) && focused.dataset && focused.dataset.bind) { setTimeout(() => legArrived(jobId), 1500); return; }
+    render();
+  }
+
+  // The courier moved: keep the line joined to the truck, and the label true.
+  function slideLeg(job) {
+    const e = legCache.get(job.id);
+    if (!legLine || !e || !e.geometry || job.courier_lat == null || job.courier_lng == null) return;
+    legLine.setLatLngs([[Number(job.courier_lat), Number(job.courier_lng)], ...e.geometry]);
+    if (legLine.getTooltip()) legLine.setTooltipContent(legLabel(e));
+  }
+
   // ---- A road route for anything that is drawn without one ----
   // Jobs and quotes normally arrive with their road route. If one doesn't (the routing server was
   // busy when it was planned, or it is a demo order) the browser fetches it, keeps it for the
@@ -536,6 +682,11 @@
     return Math.max(Math.round(MOCK_PRICING.minimum_fare_gbp * 100), pence) / 100;
   }
 
+  // A courier who has just set off for the pickup: a few miles out, not on the job's own route.
+  function mockHeadingIn(job) {
+    return [job.pickup_lat + 0.045, job.pickup_lng - 0.06];
+  }
+
   // Where a mock courier is, a fraction of the way along a job's road route
   // (or along the straight line when the job has none).
   function mockCourierAt(job, fraction) {
@@ -551,7 +702,7 @@
       pickup_address: '100 Oxford St, London W1D 1LL, UK',
       dropoff_address: 'New St, Birmingham B2 4QA, UK',
       pickup_lat: 51.5150, pickup_lng: -0.1370, dropoff_lat: 52.4780, dropoff_lng: -1.8980,
-      distance_km: 180, price_gbp: 42.50, status: 'ACCEPTED',
+      distance_km: 180, price_gbp: 42.50, status: 'ACCEPTED', started_at: new Date(Date.now() - 1800000).toISOString(),
       pickup_window_start: new Date(Date.now() - 3600000).toISOString(),
       pickup_window_end: new Date(Date.now() + 86400000).toISOString(),
       created_at: new Date(Date.now() - 7200000).toISOString(),
@@ -564,7 +715,7 @@
       pickup_address: 'Piccadilly Gardens, Manchester M1 1RN, UK',
       dropoff_address: 'City Square, Leeds LS1 2HT, UK',
       pickup_lat: 53.4770, pickup_lng: -2.2310, dropoff_lat: 53.7960, dropoff_lng: -1.5470,
-      distance_km: 68, price_gbp: 26.00, status: 'ACCEPTED',
+      distance_km: 68, price_gbp: 26.00, status: 'ACCEPTED', started_at: new Date(Date.now() - 1200000).toISOString(),
       pickup_window_start: new Date(Date.now() - 10800000).toISOString(),
       pickup_window_end: new Date(Date.now() + 172800000).toISOString(),
       created_at: new Date(Date.now() - 14400000).toISOString(),
@@ -635,7 +786,7 @@
       job.price_gbp = mockFare(route.distance_km);
       if (job.status === 'ACCEPTED' || job.status === 'COLLECTED') {
         // A courier heading to pickup is near it; one carrying the parcel is well along.
-        const at = mockCourierAt(job, job.status === 'COLLECTED' ? 0.65 : 0.03);
+        const at = job.status === 'COLLECTED' ? mockCourierAt(job, 0.65) : mockHeadingIn(job);
         job.courier_lat = at[0];
         job.courier_lng = at[1];
       }
@@ -736,16 +887,26 @@
       job.courier_id = state.user.id;
       job.status = 'ACCEPTED';
       job.accepted_at = new Date().toISOString();
-      const near = mockCourierAt(job, 0.02);
-      job.courier_lat = near[0];
-      job.courier_lng = near[1];
+      // Accepting shares nothing: the courier has to press Start order.
+      job.started_at = null;
+      job.courier_lat = null;
+      job.courier_lng = null;
+      return job;
+    }
+    if (route === '/api/jobs-start' && method === 'POST') {
+      const job = find(jobId);
+      job.started_at = job.started_at || new Date().toISOString();
+      const from = mockHeadingIn(job);
+      job.courier_lat = from[0];
+      job.courier_lng = from[1];
+      job.courier_location_updated_at = new Date().toISOString();
       return job;
     }
     if (route === '/api/jobs-cancel' && method === 'POST') {
       const job = find(jobId);
       if (state.user.role === 'courier') {
         // A courier handing a job back: it returns to the marketplace.
-        job.status = 'OPEN'; job.courier_id = null; job.accepted_at = null; job.courier_lat = null; job.courier_lng = null;
+        job.status = 'OPEN'; job.courier_id = null; job.accepted_at = null; job.started_at = null; job.courier_lat = null; job.courier_lng = null;
         return { ...job, outcome: 'relisted' };
       }
       job.status = 'CANCELLED';
@@ -769,6 +930,7 @@
         : MOCK_PHOTO;
       job.status = 'COLLECTED';
       job.collected_at = new Date().toISOString();
+      job.started_at = job.started_at || job.collected_at;
       const along = mockCourierAt(job, 0.45);
       job.courier_lat = along[0];
       job.courier_lng = along[1];
@@ -1098,6 +1260,7 @@
     },
     logout() {
       sessionGen++;
+      stopLiveLocation();
       try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* fine */ }
       if (window.VendaruPanels) window.VendaruPanels.close();
       testMode = false;
@@ -1146,6 +1309,7 @@
       const r = (suggestResults[field] || [])[index];
       if (!r) return;
       if (field === 'pickup') {
+        stopLiveLocation();
         state.compose.pickup_address = r.display_name;
         state.compose.pickupCoords = { lat: r.lat, lng: r.lng };
         state.compose.pickupPlace = r.token || null;
@@ -1188,9 +1352,14 @@
       }
       render();
     },
+    // The small switch above the pickup box. On: the pickup follows the device. Off: it stays put.
+    toggleLive() {
+      if (state.compose.live) { stopLiveLocation(); render(); return; }
+      actions.useMyLocation();
+    },
     clearAddress(field) {
       const c = state.compose;
-      if (field === 'pickup') { c.pickup_address = ''; c.pickupCoords = null; c.pickupPlace = null; c.locateError = null; c.locateNote = null; }
+      if (field === 'pickup') { stopLiveLocation(); c.pickup_address = ''; c.pickupCoords = null; c.pickupPlace = null; c.locateError = null; c.locateNote = null; }
       else { c.dropoff_address = ''; c.dropoffCoords = null; c.dropoffPlace = null; }
       c.quote = null;
       c.quoteError = null;
@@ -1234,12 +1403,15 @@
         c.pickup_address = found.address;
         c.pickupPlace = found.place_token || null;
         c.quoteError = null;
+        liveLast = { lat: latitude, lng: longitude, at: Date.now() };
+        startLiveLocation();
         // A network-only fix can be hundreds of metres out; say so instead of
         // presenting a guess as a fact.
         if (accuracy > 500) {
           c.locateNote = 'Your device gave an approximate location. Check the address, and adjust it if needed.';
         }
       } catch (err) {
+        stopLiveLocation();
         c.pickupCoords = null; // no address to go with it, so no pickup pin either
         c.locateError = err.message;
       } finally {
@@ -1437,11 +1609,23 @@
         state.courierTab = 'mine';
         state.selectedJobId = Number(jobId);
         await loadLists();
-        // Start sharing the courier's position straight away rather than at the next tick.
-        pushCourierLocation();
+        // Nothing is shared yet: that starts when the courier presses Start order.
       } catch (err) {
         toast(err.message, 'error');
         await loadLists(); // most often someone else got there first; show the current list
+      }
+    },
+    // The courier sets off for the pickup. Their phone starts sharing its position from here, and
+    // the customer can follow them to the collection point.
+    async startOrder(jobId) {
+      try {
+        await api('/api/jobs-start', { method: 'POST', json: { jobId: Number(jobId) } });
+        await loadLists();
+        pushCourierLocation(); // the first position, straight away rather than at the next tick
+      } catch (err) {
+        if (err && err.data && err.data.consent_required) setGps('consent');
+        toast(err.message, 'error');
+        await loadLists();
       }
     },
     async cancelJob(jobId) {
@@ -1758,6 +1942,8 @@
 
   // ---------------- Rendering ----------------
   function render() {
+    // Live location belongs to the order form only: any other page or step switches it off.
+    if (liveWatchId !== null && !(state.screen === 'dashboard' && state.user && state.user.role === 'customer' && state.customerTab === 'compose' && state.compose.step !== 'review')) stopLiveLocation();
     // Rebuilding root.innerHTML destroys whichever field the user is typing
     // in, so note it now and put the cursor back afterwards. Without this a
     // background refresh (the chat poll, a status change) would drop focus
@@ -1780,6 +1966,8 @@
     liveMaps.forEach((m) => m.remove());
     liveMaps = [];
     workspaceMap = null;
+    pickupMarker = null;
+    legLine = null;
     courierMarkers = {};
 
     root.innerHTML = state.screen === 'auth' ? renderAuth() : renderDashboard();
@@ -1811,7 +1999,7 @@
       return `
         <div class="auth-container">
           <div class="auth-glass-box" style="text-align:center;">
-            <div class="auth-logo-header"><div class="auth-logo-badge">${ICONS.brandFork}</div><div class="auth-app-name">Vendaru</div></div>
+            <div class="auth-logo-header">${brandWordmark()}</div>
             <p style="margin:8px 0 16px;color:var(--text-2);">${escapeHtml(state.bootError)}</p>
             <button class="btn-primary-pill" data-action="retryBoot">Try again</button>
             <button class="btn-details" data-action="logout" style="margin-top:10px;background:transparent;border:1.5px solid var(--line-strong);color:var(--muted);">Sign out</button>
@@ -1824,10 +2012,7 @@
       <div class="auth-container">
         ${themeButton('icon-btn-round auth-theme-toggle')}
         <div class="auth-glass-box">
-          <div class="auth-logo-header">
-            <div class="auth-logo-badge">${ICONS.brandFork}</div>
-            <div class="auth-app-name">Vendaru</div>
-          </div>
+          <div class="auth-logo-header">${brandWordmark()}</div>
 
           <div class="segmented-tabs" style="margin: 0 0 20px;">
             <button data-action="switchAuthRole" data-arg="customer" class="tab-pill ${state.authRole === 'customer' ? 'is-active' : ''}">Customer</button>
@@ -1889,7 +2074,7 @@
     return `
       <aside class="app-icon-nav">
         <div class="brand-badge" data-action="goDashboard" title="Vendaru">
-          ${ICONS.brandFork}
+          ${brandLogo('Vendaru')}
         </div>
 
         <div class="nav-icon-group">
@@ -2114,12 +2299,17 @@
     return `
       <div class="compose-glass-card">
         <div class="input-field-group">
-          <label class="input-field-label">Pickup address</label>
+          <div class="label-row">
+            <label class="input-field-label">Pickup address</label>
+            <button type="button" class="live-toggle ${c.live ? 'is-on' : ''}" role="switch" aria-checked="${c.live ? 'true' : 'false'}" data-action="toggleLive" title="${c.live ? 'Live location is on: your pickup follows you. Tap to turn it off.' : 'Turn on live location so your pickup follows you'}">
+              <span class="live-toggle-text">Live location</span><span class="live-toggle-track" aria-hidden="true"><span></span></span>
+            </button>
+          </div>
           <div class="addr-input-wrap has-gps">
             <span class="addr-search-icon" aria-hidden="true">${ICONS.search}</span>
             <input class="modern-input addr-input" data-bind="compose.pickup_address" data-suggest-field="pickup" value="${escapeHtml(c.pickup_address)}" placeholder="12 High St, Manchester" autocomplete="off" autocapitalize="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="pickup-suggestions" />
             <button type="button" class="addr-clear" data-action="clearAddress" data-arg="pickup" aria-label="Clear pickup address">${ICONS.close}</button>
-            <button type="button" class="addr-gps ${c.locating ? 'is-locating' : ''}" data-action="useMyLocation" aria-label="${c.locating ? 'Finding your location' : 'Use my current location'}" title="${c.locating ? 'Finding your location…' : 'Use my current location'}" ${c.locating ? 'disabled' : ''}>${ICONS.navigate}</button>
+            <button type="button" class="addr-gps ${c.locating ? 'is-locating' : ''} ${c.live ? 'is-live' : ''}" data-action="useMyLocation" aria-label="${c.locating ? 'Finding your location' : 'Use my current location'}" title="${c.locating ? 'Finding your location…' : 'Use my current location'}" ${c.locating ? 'disabled' : ''}>${ICONS.navigate}</button>
             <div class="addr-suggestions" id="pickup-suggestions" role="listbox"></div>
           </div>
           ${c.locating ? '<div class="field-hint locate-msg">Finding your location…</div>' : ''}
@@ -2187,13 +2377,29 @@
   function arrivalLine(job) {
     const pickup = pickupInfo(job);
     if (job.status === 'OPEN') return pickup && !pickup.asap ? `Pickup ${pickup.text}` : 'Waiting for a courier to accept';
-    if (job.status === 'ACCEPTED') return pickup && !pickup.asap ? `Pickup ${pickup.text}` : 'Courier is heading to collect it';
+    if (job.status === 'ACCEPTED') {
+      if (!job.started_at) return pickup && !pickup.asap ? `Pickup ${pickup.text}` : 'Accepted — the courier will set off soon';
+      const leg = legCache.get(job.id);
+      if (leg && leg.distance_km != null) return `Courier is about ${Math.max(1, Math.round((leg.distance_km / 40) * 60))} min from the pickup`;
+      return 'Courier is on the way to collect it';
+    }
     const eta = etaDate(job);
     return eta ? `Arriving about ${clockTime(eta)}` : 'On the way to the drop-off';
   }
 
   // Live distance and how fresh the courier's position is (once the parcel is moving).
   function liveCaption(job) {
+    if (job.status === 'ACCEPTED') {
+      if (!job.started_at) return 'You will see them on the map as soon as they set off.';
+      if (job.courier_lat == null || job.courier_lng == null) return "Waiting for the courier's location…";
+      const leg = legCache.get(job.id);
+      const away = leg && leg.distance_km != null
+        ? leg.distance_km
+        : kmBetween(Number(job.courier_lat), Number(job.courier_lng), Number(job.pickup_lat), Number(job.pickup_lng)) * 1.3;
+      const at = job.courier_location_updated_at ? new Date(job.courier_location_updated_at).getTime() : null;
+      const age = at && !Number.isNaN(at) ? Math.round((Date.now() - at) / 1000) : null;
+      return `about ${miles(away)} from the pickup${age !== null ? (age > 90 ? ' · signal lost' : ` · updated ${age}s ago`) : ''}`;
+    }
     if (job.status !== 'COLLECTED') return '';
     if (job.courier_lat == null || job.courier_lng == null) return "Waiting for the courier's location…";
     const left = kmBetween(Number(job.courier_lat), Number(job.courier_lng), Number(job.dropoff_lat), Number(job.dropoff_lng));
@@ -2203,7 +2409,7 @@
   }
 
   function activeCardHead(job, isExpanded) {
-    const title = { OPEN: 'Finding a courier', ACCEPTED: 'Courier assigned', COLLECTED: 'On the way' }[job.status] || job.status;
+    const title = { OPEN: 'Finding a courier', ACCEPTED: job.started_at ? 'Heading to the pickup' : 'Courier assigned', COLLECTED: 'On the way' }[job.status] || job.status;
     const labels = ['Listed', 'Accepted', 'Collected', 'Delivered'];
     const current = { OPEN: 1, ACCEPTED: 2, COLLECTED: 3 }[job.status];
     const steps = labels.map((label, i) => {
@@ -2229,7 +2435,7 @@
   function activeCardCourier(job) {
     const hasCourier = job.status === 'ACCEPTED' || job.status === 'COLLECTED';
     const name = hasCourier ? counterparty(job).name : 'Finding a courier…';
-    const state_ = job.status === 'OPEN' ? 'Waiting for a courier to accept' : (job.status === 'ACCEPTED' ? 'Heading to collect your parcel' : 'On the way with your parcel');
+    const state_ = job.status === 'OPEN' ? 'Waiting for a courier to accept' : (job.status === 'ACCEPTED' ? (job.started_at ? 'Heading to collect your parcel' : "Accepted — hasn't set off yet") : 'On the way with your parcel');
     const live = liveCaption(job);
     return `
       <div class="ac-courier">
@@ -2501,14 +2707,21 @@
             </div>` : ''}
 
           ${isCourier && job.status === 'OPEN' ? `
-            <button class="btn-details" style="background:#16a34a;color:#fff;" data-action="acceptJob" data-arg="${job.id}">
+            <button class="btn-details" data-action="acceptJob" data-arg="${job.id}">
               Accept delivery (${money(job.price_gbp)})
             </button>` : ''}
 
-          ${isCourier && (job.status === 'ACCEPTED' || job.status === 'COLLECTED') ? `
+          ${isCourier && job.status === 'ACCEPTED' && !job.started_at ? `
+            <div style="margin-top:12px;background:rgba(var(--glass-rgb),0.7);padding:12px;border-radius:16px;border:1px solid var(--border-glass-subtle);">
+              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">Step 1: Start order</div>
+              <p style="font-size:12.5px;line-height:1.45;color:var(--text-2);margin:0 0 10px;">Tap Start when you set off for the pickup. The customer can follow you to the collection point from then on. Nothing is shared before that, so accepting a job at home shows nothing.</p>
+              <button class="btn-details" data-action="startOrder" data-arg="${job.id}">Start order</button>
+            </div>` : ''}
+
+          ${isCourier && ((job.status === 'ACCEPTED' && job.started_at) || job.status === 'COLLECTED') ? `
             <div style="margin-top:12px;background:rgba(var(--glass-rgb),0.7);padding:12px;border-radius:16px;border:1px solid var(--border-glass-subtle);">
               <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">
-                ${job.status === 'ACCEPTED' ? 'Step 1: Confirm Pickup' : 'Step 2: Complete Dropoff'}
+                ${job.status === 'ACCEPTED' ? 'Step 2: Confirm pickup' : 'Step 3: Complete dropoff'}
               </div>
               ${job.status === 'COLLECTED' && job.pin_required ? `<label class="pin-field"><span>Delivery PIN</span><input class="modern-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" data-bind="deliveryPins.${job.id}" value="${escapeHtml(state.deliveryPins[job.id] || '')}" placeholder="4-digit PIN from the recipient" ${state.uploadBusy[job.id] ? 'disabled' : ''} /></label>` : ''}
               <input type="file" accept="image/*" data-photo-for="${job.id}" style="font-size:12px;margin-bottom:8px;width:100%;" ${state.uploadBusy[job.id] ? 'disabled' : ''} aria-label="Choose a photo" />
@@ -2534,7 +2747,7 @@
             ${canShare ? `<button class="btn-mini" data-action="shareLink" data-arg="${job.id}">Share tracking link</button>` : ''}
             ${canRefund ? `<button class="btn-mini" data-action="requestRefund" data-arg="${job.id}">Request refund</button>` : ''}
             ${job.status !== 'OPEN' ? `<button class="btn-mini" data-action="openHelp" data-arg="${job.id}">${job.status === 'COLLECTED' ? 'Report a problem' : 'Get help'}</button>` : ''}
-            <button class="btn-details" style="flex:1;background:var(--ink);margin-top:0;" data-action="toggleExpand" data-arg="${job.id}">Close</button>
+            <button class="btn-details" style="flex:1;margin-top:0;" data-action="toggleExpand" data-arg="${job.id}">Close</button>
           </div>
           ` : ''}
         ` : ''}
@@ -2814,8 +3027,8 @@
             <button type="button" class="map-btn" data-action="mapZoom" data-arg="-1" aria-label="Zoom out" title="Zoom out">${ICONS.minus}</button>
           </div>
           ${isCustomer ? `
-          <div class="map-btn-solo">
-            <button type="button" class="map-btn" data-action="useMyLocation" aria-label="Use my location" title="Use my location">${ICONS.navigate}</button>
+          <div class="map-btn-solo ${state.compose.live ? 'is-live' : ''}">
+            <button type="button" class="map-btn ${state.compose.live ? 'is-live' : ''}" data-action="useMyLocation" aria-label="Use my location" title="Use my location">${ICONS.navigate}</button>
           </div>` : ''}
         </div>
 
@@ -2911,7 +3124,7 @@
   function initWorkspaceMap() {
     const el = document.getElementById('workspace-map');
     if (!el || typeof L === 'undefined') return;
-    if (window.innerWidth <= 960 && !state.mapSplit) return; // phones/tablets show the map only when asked
+    if (!state.mapSplit) return; // the map is shown only when asked (the map button splits the screen)
 
     const activeJob = getActiveJob();
     const c = state.compose;
@@ -2931,10 +3144,10 @@
         if (activeJob.courier_lat != null && activeJob.courier_lng != null) {
           // Where the courier's phone last reported it.
           courierPos = [Number(activeJob.courier_lat), Number(activeJob.courier_lng)];
-        } else if (testMode) {
+        } else if (testMode && (activeJob.status === 'COLLECTED' || activeJob.started_at)) {
           // Test-mode fixtures only. A real job with no reported position shows
           // no truck at all rather than one placed on a guess.
-          const ratio = activeJob.status === 'COLLECTED' ? 0.65 : 0.25;
+          const ratio = activeJob.status === 'COLLECTED' ? 0.65 : 0.02;
           courierPos = [pickup.lat + (dropoff.lat - pickup.lat) * ratio, pickup.lng + (dropoff.lng - pickup.lng) * ratio];
         }
       }
@@ -2964,11 +3177,11 @@
     if (pickup) {
       const pickupIcon = L.divIcon({
         className: 'pickup-dot-container',
-        html: `<div style="width:14px;height:14px;border-radius:50%;background:var(--ink);border:2.5px solid var(--paper);box-shadow:0 2px 6px rgba(0,0,0,0.3)"></div>`,
+        html: `<div style="width:14px;height:14px;border-radius:50%;background:var(--brand);border:2.5px solid var(--paper);box-shadow:0 2px 6px rgba(0,0,0,0.3)"></div>`,
         iconSize: [14, 14],
         iconAnchor: [7, 7],
       });
-      L.marker([pickup.lat, pickup.lng], { icon: pickupIcon }).addTo(map).bindPopup('Pickup: ' + escapeHtml(pickup.lat.toFixed(4) + ', ' + pickup.lng.toFixed(4)));
+      pickupMarker = L.marker([pickup.lat, pickup.lng], { icon: pickupIcon }).addTo(map).bindPopup('Pickup: ' + escapeHtml(pickup.lat.toFixed(4) + ', ' + pickup.lng.toFixed(4)));
     }
 
     if (dropoff) {
@@ -3011,6 +3224,12 @@
         });
     }
 
+    // A courier who has pressed Start order: follow them to the pickup along a real road route.
+    let leg = null;
+    if (activeJob && activeJob.status === 'ACCEPTED' && activeJob.started_at && courierPos && pickup) {
+      leg = legRefresh({ id: activeJob.id, courier_lat: courierPos[0], courier_lng: courierPos[1], pickup_lat: pickup.lat, pickup_lng: pickup.lng });
+    }
+
     if (pickup && dropoff) {
       let geometry = route && Array.isArray(route.geometry) && route.geometry.length > 1 ? route.geometry : null;
       let entry = null;
@@ -3024,11 +3243,11 @@
       if (geometry) {
         const line = L.polyline(geometry, {
           className: 'route-line',
-          color: '#111827', // fallback only; the stylesheet sets the real, theme-aware colour
+          color: '#ec4899', // fallback only; the stylesheet sets the real colour
           weight: 4,
-          opacity: 0.85,
+          opacity: leg ? 0.3 : 0.85, // the job's own route steps back while the courier is still on the way to it
         }).addTo(map);
-        if (route) {
+        if (route && !leg) {
           line.bindTooltip(`${miles(route.distance_km)} · ${money(route.price_gbp)}`, {
             permanent: true, direction: 'center', className: 'route-label',
           });
@@ -3044,13 +3263,26 @@
         }).addTo(map);
         bounds = L.latLngBounds([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]]);
       }
-      const isMobile = window.innerWidth <= 960;
+      if (leg) {
+        const here = [courierPos[0], courierPos[1]];
+        if (leg.geometry) {
+          legLine = L.polyline([here, ...leg.geometry], { className: 'route-line leg-line', color: '#ec4899', weight: 5, opacity: 0.95 }).addTo(map);
+          legLine.bindTooltip(legLabel(leg), { permanent: true, direction: 'center', className: 'route-label' });
+          bounds = legLine.getBounds().extend([pickup.lat, pickup.lng]);
+        } else {
+          const failed = leg.status === 'failed';
+          L.marker([(here[0] + pickup.lat) / 2, (here[1] + pickup.lng) / 2], {
+            interactive: false,
+            keyboard: false,
+            icon: L.divIcon({ className: 'route-status-icon', iconSize: [0, 0], html: `<span class="route-status ${failed ? '' : 'is-loading'}">${failed ? "Courier's route unavailable" : "Finding the courier's route…"}</span>` }),
+          }).addTo(map);
+          bounds = L.latLngBounds([here, [pickup.lat, pickup.lng]]);
+        }
+      }
       // No animation: the map is rebuilt from scratch on every render(), and
       // an animation still running when the next render tears it down throws
       // inside Leaflet.
-      const paddingOptions = isMobile
-        ? { padding: [40, 40], animate: false }
-        : { paddingTopLeft: [460, 40], paddingBottomRight: [40, 140], animate: false };
+      const paddingOptions = { padding: [40, 40], animate: false };
       map.fitBounds(bounds, paddingOptions);
     } else if (pickup) {
       map.setView([pickup.lat, pickup.lng], 12, { animate: false });
@@ -3096,6 +3328,7 @@
       if (marker && j.courier_lat != null && j.courier_lng != null) {
         marker.setLatLng([Number(j.courier_lat), Number(j.courier_lng)]);
         marker.setTooltipContent(trackingTooltip(j));
+        if (j.status === 'ACCEPTED' && j.started_at) { legRefresh(j); slideLeg(j); }
       }
     });
     refreshActiveCards();
@@ -3176,7 +3409,9 @@
 
   function pushCourierLocation() {
     if (testMode || !state.user || state.user.role !== 'courier' || !('geolocation' in navigator)) return;
-    const live = state.jobs.filter((j) => j.status === 'ACCEPTED' || j.status === 'COLLECTED');
+    // Only orders the courier has started (or already collected) share a position: accepting a job
+    // while at home must not show a home address.
+    const live = state.jobs.filter((j) => j.status === 'COLLECTED' || (j.status === 'ACCEPTED' && j.started_at));
     holdScreenAwake(live.length > 0);
     if (!live.length || !state.broadcastingGps) return;
     if (!state.user.location_consent_at) { if (state.gps.status !== 'consent') setGps('consent'); return; }
@@ -3236,16 +3471,6 @@
       logout: () => actions.logout(),
     };
 
-    let wasCompact = window.innerWidth <= 960;
-    let resizeTimer = null;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        const compact = window.innerWidth <= 960;
-        if (compact !== wasCompact) { wasCompact = compact; if (state.screen === 'dashboard') render(); }
-      }, 200);
-    });
-
     window.addEventListener('hashchange', () => {
       if (state.screen === 'dashboard' && applyPageFromHash()) render();
     });
@@ -3284,6 +3509,7 @@
         state.compose.quoteError = null;
         // Editing the text means it's no longer the place that was picked.
         if (path === 'compose.pickup_address') {
+          stopLiveLocation();
           state.compose.pickupCoords = null;
           state.compose.pickupPlace = null;
           state.compose.locateError = null;

@@ -62,10 +62,10 @@
   .tk-privacy { margin: 18px 0 0; padding: 12px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; font-size: 14px; color: var(--muted); }
   .tk-marker-wrap { background: transparent; border: 0; }
   .tk-dot { display: block; width: 22px; height: 22px; margin: 2px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 1px 6px rgba(0,0,0,0.45); }
-  .tk-dot-drop { background: #141414; }
-  .tk-dot-courier { background: #1f6feb; animation: tk-pulse 2s ease-out infinite; }
+  .tk-dot-drop { background: #ec4899; }
+  .tk-dot-courier { background: #ec4899; animation: tk-pulse 2s ease-out infinite; }
   .tk-stale .tk-dot-courier { background: #8b95a5; animation: none; }
-  @keyframes tk-pulse { 0% { box-shadow: 0 0 0 0 rgba(31,111,235,0.5), 0 1px 6px rgba(0,0,0,0.45); } 70% { box-shadow: 0 0 0 14px rgba(31,111,235,0), 0 1px 6px rgba(0,0,0,0.45); } 100% { box-shadow: 0 0 0 0 rgba(31,111,235,0), 0 1px 6px rgba(0,0,0,0.45); } }
+  @keyframes tk-pulse { 0% { box-shadow: 0 0 0 0 rgba(236,72,153,0.5), 0 1px 6px rgba(0,0,0,0.45); } 70% { box-shadow: 0 0 0 14px rgba(236,72,153,0), 0 1px 6px rgba(0,0,0,0.45); } 100% { box-shadow: 0 0 0 0 rgba(236,72,153,0), 0 1px 6px rgba(0,0,0,0.45); } }
   @media (prefers-reduced-motion: reduce) { .tk-dot-courier { animation: none; } }
   /* Map tiles: same filters as the main app's map. */
   .tk-map .leaflet-tile-pane { filter: grayscale(100%) contrast(108%) brightness(102%); }
@@ -91,11 +91,14 @@
     .tk-live-text { font-size: 17px; }
   }
 </style>
+<link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=2">
 </head>
 <body data-theme-button>
 <a class="skip" href="#main">Skip to main content</a>
 <header class="tk-header">
-  <a href="/" class="brand"><img src="/assets/brand/logo.svg" alt="" width="30" height="30"><span>Vendaru</span></a>
+  <a href="/" class="brand"><img src="/assets/brand/logo-wide-480.png" alt="Vendaru" width="86" height="32"></a>
 </header>
 <main id="main" class="tk-main" tabindex="-1">
   <p class="tk-eyebrow">Delivery tracking</p>

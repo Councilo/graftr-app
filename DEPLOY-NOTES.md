@@ -57,3 +57,7 @@ The local admin is `admin@example.com` (register it on the sign-up form).
 - Both people need the app open: a web page can't wake a locked phone, so it rings within about 3 seconds while a delivery is under way and the app is on screen.
 - Set the `TURN_*` variables above before relying on it: about one in five to one in three calls between two mobile networks won't connect with STUN alone. Test on two real phones on different networks before launch.
 - The site's headers allow the microphone for its own pages only (`Permissions-Policy: microphone=(self)`).
+
+## Start order (courier location)
+- A courier who accepts a job shares nothing. They press **Start order** when they set off for the pickup (`/api/jobs-start`, stored as `jobs.started_at`); only from then does their phone send positions (`/api/jobs-location` refuses with 409 before that) and does the customer see them, with a road route to the pickup drawn from the courier's position. Collecting the parcel also counts as starting, and handing a job back clears it.
+- The schema gained `started_at` (`SCHEMA_VERSION` 2026-09-20-c), added automatically on the first request after deploy. Jobs already accepted before this deploy show no courier position until their courier presses Start order.

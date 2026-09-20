@@ -47,6 +47,7 @@ const HANDLERS = {
   'jobs-mine': () => require('../handlers/jobs-mine'),
   'jobs-pickup': () => require('../handlers/jobs-pickup'),
   'jobs-quote': () => require('../handlers/jobs-quote'),
+  'jobs-start': () => require('../handlers/jobs-start'),
   'jobs-tracking': () => require('../handlers/jobs-tracking'),
   'login': () => require('../handlers/login'),
   'me': () => require('../handlers/me'),

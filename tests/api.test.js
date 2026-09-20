@@ -97,8 +97,10 @@ async function reg(role, n) {
   ok('courier accepts B (job_id form)', r.status === 200 && r.body.status === 'ACCEPTED', r);
   r = await call('POST', '/api/jobs-location', kt2, { jobId: B.id, lat: 51.5, lng: -0.1 });
   ok('non-assigned courier location -> 403', r.status === 403, r);
+  r = await call('POST', '/api/jobs-start', kt, { jobId: B.id });
+  ok('the assigned courier presses Start order -> 200, started_at set', r.status === 200 && !!r.body.started_at, r);
   r = await call('POST', '/api/jobs-location', kt, { jobId: B.id, lat: 51.5, lng: -0.12 });
-  ok('assigned courier location -> 200', r.status === 200 && Number(r.body.courier_lat) === 51.5, r);
+  ok('assigned courier location (after Start) -> 200', r.status === 200 && Number(r.body.courier_lat) === 51.5, r);
 
   r = await call('GET', '/api/jobs-mine', ct);
   const bMine = r.body.find((j) => j.id === B.id);

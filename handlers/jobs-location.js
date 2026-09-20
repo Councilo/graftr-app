@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
 
     await ensureSchema();
 
-    const { rows } = await sql`SELECT id, courier_id, status FROM jobs WHERE id = ${id}`;
+    const { rows } = await sql`SELECT id, courier_id, status, started_at FROM jobs WHERE id = ${id}`;
     const job = rows[0];
     if (!job) {
       res.status(404).json({ detail: 'No such job' });
@@ -50,6 +50,13 @@ module.exports = async (req, res) => {
     // there's nothing left to reach.
     if (job.status !== 'ACCEPTED' && job.status !== 'COLLECTED') {
       res.status(409).json({ detail: `Job is ${job.status} — nothing to track` });
+      return;
+    }
+
+    // Nothing is shared until the courier presses Start order (jobs-start): accepting a job
+    // while at home must not put a home address on the customer's map.
+    if (job.status === 'ACCEPTED' && !job.started_at) {
+      res.status(409).json({ detail: 'Press Start order before sharing your location.', not_started: true });
       return;
     }
 

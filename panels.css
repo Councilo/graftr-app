@@ -323,3 +323,14 @@ html.call-open { overflow: hidden; }
 /* More text links and figures: black rather than blue or green. */
 .field-hint a, .pn-link, .consent-row a, .auth-footer-links a, .notice a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
 .metric-val.indigo, .metric-val.green { color: var(--text); }
+
+/* Filled buttons and selected pills: the brand pink (see the Buttons block in styles.css). */
+.pn-btn-primary, .pn-pill.is-active, .acct-card-btn { background: var(--brand-strong); color: #fff; border-color: var(--brand-strong); }
+.pn-btn-primary:hover { background: var(--brand-strong-hover); }
+.pn-tab.is-active { border-bottom-color: var(--brand-strong); }
+
+/* Help, Account and the smaller panels keep to the same column width; the Admin dashboard, which is
+   made of wide tables, is the exception. */
+@media (min-width: 521px) {
+  .pn-sheet:not(.pn-sheet-admin) { max-width: var(--app-col, 480px); }
+}

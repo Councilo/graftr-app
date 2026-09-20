@@ -80,6 +80,9 @@
   html[data-theme="dark"] a:focus-visible, html[data-theme="dark"] button:focus-visible, html[data-theme="dark"] input:focus-visible, html[data-theme="dark"] select:focus-visible, html[data-theme="dark"] textarea:focus-visible, html[data-theme="dark"] summary:focus-visible, html[data-theme="dark"] [tabindex]:focus-visible { outline-color: #7db2ff; }
   html[data-theme="dark"] footer li, html[data-theme="dark"] footer p { color: #8b95a5; }
 </style>
+<link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/favicon-32.png?v=2">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=2">
 </head>
 <body data-theme-button>
 <a class="skip" href="#main">Skip to main content</a>
@@ -100,9 +103,9 @@
 
 <ul>
   <li><strong>Customers:</strong> we use your device location only if you press the "use my location" button when entering a pickup address. It isn't stored on its own.</li>
-  <li><strong>Couriers:</strong> once you accept a job, while the app is open, your position is shared roughly every 10 seconds until the job ends. You agree to this at sign-up.</li>
+  <li><strong>Couriers:</strong> accepting a job shares nothing. Your position is shared only from the moment you press <strong>Start order</strong> (when you set off for the pickup), while the app is open, roughly every 10 seconds until the job ends. You agree to this at sign-up.</li>
   <li>We keep <strong>one latest position per job</strong>, not a trail of where you've been, and clear it when the job ends.</li>
-  <li>The customer sees the courier's dot on a map while the job is accepted or collected. The recipient can see it only once the parcel has been collected, and only through a limited link.</li>
+  <li>The customer sees the courier's dot on a map, and the road route to the pickup, once the courier has pressed Start order and until the parcel is delivered. The recipient can see it only once the parcel has been collected, and only through a limited link.</li>
 </ul>
 </section>
 
@@ -120,7 +123,7 @@
 <p>Couriers must agree to location sharing when signing up. We record the time you agreed. Without that agreement, our server refuses location updates. Your browser or phone also asks for permission, and you can refuse or switch it off in your device settings at any time. If you do, the customer will simply see no live dot for your job.</p>
 <h3>When it happens</h3>
 <ul>
-  <li>It starts when you <strong>accept</strong> a job and stops when the job is delivered, cancelled or handed back.</li>
+  <li>It starts when you press <strong>Start order</strong>, not when you accept a job, and stops when the job is delivered, cancelled or handed back.</li>
   <li>While the app is open on your device, it sends your position about every 10 seconds.</li>
   <li>It doesn't track you when you aren't on a job.</li>
 </ul>
@@ -139,7 +142,7 @@
   <tbody>
     <tr><td><strong>Couriers browsing open jobs</strong></td><td>Only the <em>area</em> of a job (for example "Bolton BL1"), locations rounded to roughly 1 km and a coarse route. No full addresses or exact coordinates.</td></tr>
     <tr><td><strong>The courier who accepted the job</strong></td><td>The full pickup and drop-off addresses and exact coordinates for that job.</td></tr>
-    <tr><td><strong>The customer</strong></td><td>Their own job's addresses, and the courier's live position while the job is Accepted or Collected.</td></tr>
+    <tr><td><strong>The customer</strong></td><td>Their own job's addresses, and the courier's live position once the courier has pressed Start order and until the parcel is delivered.</td></tr>
     <tr><td><strong>Anyone with the recipient tracking link</strong></td><td>See the next section.</td></tr>
     <tr><td><strong>Vendaru administrators</strong></td><td>Job records, including addresses, when handling support, refunds and safety issues. What administrators do is recorded in an audit log.</td></tr>
   </tbody>

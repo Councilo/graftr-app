@@ -85,7 +85,7 @@ module.exports = async (req, res) => {
       // job.status is ACCEPTED here. Back to the marketplace, position wiped.
       const relisted = await sql`
         UPDATE jobs
-        SET status = 'OPEN', courier_id = NULL, accepted_at = NULL,
+        SET status = 'OPEN', courier_id = NULL, accepted_at = NULL, started_at = NULL,
             courier_lat = NULL, courier_lng = NULL, courier_location_updated_at = NULL
         WHERE id = ${jobId} AND courier_id = ${user.id} AND status = 'ACCEPTED'
         RETURNING *

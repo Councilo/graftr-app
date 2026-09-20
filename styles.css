@@ -1125,7 +1125,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--paper);
   color: var(--text);
 }
-path.route-line { stroke: var(--ink); }
+path.route-line { stroke: var(--brand); }
 
 /* Custom Destination Callout on Map */
 .destination-callout-pill {
@@ -1161,9 +1161,9 @@ path.route-line { stroke: var(--ink); }
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: var(--brand);
   border: 3px solid var(--paper);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 4px rgba(var(--brand-rgb), 0.4);
 }
 
 /* ==========================================================================
@@ -1242,7 +1242,7 @@ path.route-line { stroke: var(--ink); }
    Auth Screen
    ========================================================================== */
 .auth-container {
-  width: 100vw;
+  width: 100%; /* the column it sits in, not the window (the app is a centred column on wide screens) */
   height: 100vh;
   display: flex;
   align-items: center;
@@ -1439,7 +1439,7 @@ path.route-line { stroke: var(--ink); }
   position: absolute;
   inset: -6px;
   border-radius: 50%;
-  background: rgba(99, 102, 241, 0.35);
+  background: rgba(var(--brand-rgb), 0.35);
   animation: courierPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
@@ -1447,8 +1447,8 @@ path.route-line { stroke: var(--ink); }
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--brand);
+  color: #fff;
   border: 2.5px solid var(--paper);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
   display: flex;
@@ -1518,7 +1518,10 @@ path.route-line { stroke: var(--ink); }
 /* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
-@media (max-width: 960px) {
+/* The phone layout is the layout at EVERY screen size (bottom pill, full-page panels, a map
+   button that splits the screen). On tablets and desktops it is kept at phone proportions in a
+   centred column, see "Tablets and desktops" at the end of this file, and never stretched. */
+@media all {
   #app {
     flex-direction: column;
   }
@@ -1678,12 +1681,12 @@ html[data-theme="dark"] #app > article * {
 
 
 
-/* Header button that splits the screen with the map (phones and tablets only). */
+/* Header button that splits the screen with the map (every screen size). */
 .map-toggle { display: none; }
 .map-toggle.is-on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .map-toggle.is-on:hover { background: var(--ink-hover); color: var(--paper); }
 
-@media (max-width: 960px) {
+@media all {
   .map-toggle { display: flex; }
 }
 
@@ -1958,3 +1961,92 @@ button.inbox-row:hover { background: var(--fill); }
 .route-status { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; padding: 6px 14px; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 12px; font-weight: 700; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
 .route-status.is-loading { animation: routeWait 1.4s ease-in-out infinite; }
 @keyframes routeWait { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+/* The Vendaru wordmark on the sign-in screen, and the square "V" icon that stands for it in the sidebar badge. */
+.brand-badge { background: none; box-shadow: none; padding: 0; border-radius: 22%; overflow: hidden; }
+.brand-badge img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.auth-wordmark { display: block; width: min(190px, 60vw); height: auto; }
+
+/* ==========================================================================
+   Buttons: every filled button is the brand pink with white text, like the pink tab
+   pills in the Help panel. Grey and outlined buttons (secondary actions) and red ones
+   (cancel, remove, delete) keep their own colours.
+   ========================================================================== */
+.btn-primary-pill,
+.btn-details,
+.tab-pill.is-active,
+.pickup-toggle .tab-pill.is-active {
+  background: var(--brand-strong);
+  color: #fff;
+}
+.btn-primary-pill, .tab-pill.is-active, .pickup-toggle .tab-pill.is-active { box-shadow: 0 4px 12px rgba(var(--brand-rgb), 0.35); }
+.btn-primary-pill:hover:not(:disabled),
+.btn-details:hover { background: var(--brand-strong-hover); }
+.rv-choice.is-on { background: var(--brand-strong); color: #fff; border-color: var(--brand-strong); }
+.rv-switch.is-on { background: var(--brand-strong); }
+.rv-radio.is-on .rv-dot { border-color: var(--brand-strong); }
+.rv-radio.is-on .rv-dot::after { background: var(--brand-strong); }
+.map-toggle.is-on, .map-toggle.is-on:hover { background: var(--brand-strong); color: #fff; border-color: var(--brand-strong); }
+.nav-icon-btn.is-active { background: var(--nav-active-bg); color: var(--nav-active-fg); box-shadow: 0 6px 18px rgba(var(--brand-rgb), 0.35); }
+
+/* Stepper: the joining line runs behind the dots, so a dot must be opaque. The see-through
+   --fill tint let the line show inside the empty ones, and the halo round the current
+   dot is now a solid pale pink for the same reason (the older rgba() stays as the fallback). */
+.ac-dot { background-color: var(--paper); background-image: linear-gradient(var(--fill), var(--fill)); }
+.ac-step.current .ac-dot { box-shadow: 0 0 0 5px color-mix(in srgb, var(--brand) 22%, var(--paper)); }
+
+/* The step the delivery has reached pulses gently, so it reads as live: a soft ring spreads and
+   fades from the circle, which swells slightly. Switched off for people who ask for less motion. */
+.ac-step.current .ac-dot { --halo: rgba(var(--brand-rgb), 0.22); animation: stepPulse 1.9s ease-out infinite; }
+@supports (color: color-mix(in srgb, red, blue)) {
+  .ac-step.current .ac-dot { --halo: color-mix(in srgb, var(--brand) 22%, var(--paper)); }
+}
+.ac-step.current .ac-dot { box-shadow: 0 0 0 5px var(--halo); }
+@keyframes stepPulse {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 5px var(--halo), 0 0 0 5px rgba(var(--brand-rgb), 0.45); }
+  70%  { transform: scale(1.07); box-shadow: 0 0 0 5px var(--halo), 0 0 0 17px rgba(var(--brand-rgb), 0); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 5px var(--halo), 0 0 0 17px rgba(var(--brand-rgb), 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ac-step.current .ac-dot { animation: none; }
+}
+
+/* ------------------------------------------------------------------ live location */
+/* The locate button is centred in the box whatever its height (it was pinned 5px from the top, so
+   in a shorter box its bottom edge landed on the box's border and looked cropped). */
+.addr-gps { top: 0; bottom: 0; margin: auto 0; width: 30px; height: 30px; }
+
+/* While live location is on, the button turns pink and pulses. */
+.addr-gps.is-live, .map-btn.is-live { color: var(--brand-strong); }
+.addr-gps.is-live { border-color: var(--brand-strong); animation: liveRing 1.8s ease-out infinite; }
+.map-btn-solo.is-live { animation: liveRing 1.8s ease-out infinite; }
+@keyframes liveRing {
+  0%   { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), 0.55); }
+  70%  { box-shadow: 0 0 0 11px rgba(var(--brand-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .addr-gps.is-live, .map-btn-solo.is-live { animation: none; box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.3); }
+}
+
+/* The small switch above the pickup box. */
+.label-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.live-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 2px 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.live-toggle.is-on { color: var(--brand-strong); }
+.live-toggle-track { position: relative; flex: none; width: 30px; height: 18px; border-radius: 999px; background: var(--line-strong); transition: background 0.15s ease; }
+.live-toggle-track span { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); transition: transform 0.15s ease; }
+.live-toggle.is-on .live-toggle-track { background: var(--brand-strong); }
+.live-toggle.is-on .live-toggle-track span { transform: translateX(12px); }
+.live-toggle:focus-visible { outline: 2px solid var(--indigo); outline-offset: 3px; border-radius: 6px; }
+
+/* ==========================================================================
+   Tablets and desktops: the phone layout at phone proportions
+   The app is a centred column that never gets wider than a large phone, so nothing stretches
+   across a big screen. Below this width it simply fills the screen as before.
+   ========================================================================== */
+:root { --app-col: 480px; }
+@media (min-width: 521px) {
+  html, body { background: color-mix(in srgb, var(--bg-app) 93%, #000); }          /* the space either side */
+  #app { max-width: var(--app-col); margin: 0 auto; box-shadow: 0 0 0 1px var(--line), 0 24px 70px rgba(0, 0, 0, 0.10); }
+  .auth-theme-toggle { right: calc(50% - var(--app-col) / 2 + 16px); }             /* stay inside the column */
+}

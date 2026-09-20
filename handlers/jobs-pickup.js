@@ -56,7 +56,8 @@ module.exports = async (req, res) => {
     // back to life as COLLECTED.
     const updated = await sql`
       UPDATE jobs
-      SET pickup_photo_url = ${photoUrl}, status = 'COLLECTED', collected_at = now()
+      SET pickup_photo_url = ${photoUrl}, status = 'COLLECTED', collected_at = now(),
+          started_at = COALESCE(started_at, now())
       WHERE id = ${jobId} AND courier_id = ${courier.id} AND status = 'ACCEPTED'
       RETURNING *
     `;
