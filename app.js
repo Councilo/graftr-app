@@ -663,12 +663,12 @@
   }
 
   let mockJobSeq = 17210;
-  const MOCK_NAMES = { '-1': 'Jordan Duberry', '-2': 'Devon Lindsay' };
+  const MOCK_NAMES = { '-1': 'Alex Morgan', '-2': 'Devon Lindsay' };
 
   let mockMessages = {
     17205: [
       { id: 1, job_id: 17205, sender_id: -2, sender_name: 'Devon Lindsay', sender_role: 'courier', content: 'Hello! I have accepted your order and will be at 100 Oxford St shortly.', created_at: new Date(Date.now() - 1800000).toISOString() },
-      { id: 2, job_id: 17205, sender_id: -1, sender_name: 'Jordan Duberry', sender_role: 'customer', content: 'Thanks Devon! The parcel is at the front reception desk.', created_at: new Date(Date.now() - 1500000).toISOString() },
+      { id: 2, job_id: 17205, sender_id: -1, sender_name: 'Alex Morgan', sender_role: 'customer', content: 'Thanks Devon! The parcel is at the front reception desk.', created_at: new Date(Date.now() - 1500000).toISOString() },
       { id: 3, job_id: 17205, sender_id: -2, sender_name: 'Devon Lindsay', sender_role: 'courier', content: 'Understood! I will upload the pickup proof once collected.', created_at: new Date(Date.now() - 1200000).toISOString() },
     ],
     17209: [
@@ -1081,7 +1081,7 @@
       state.user = {
         id: role === 'courier' ? -2 : -1,
         email: role === 'courier' ? 'courier@test.local' : 'customer@test.local',
-        full_name: role === 'courier' ? 'Devon Lindsay' : 'Jordan Duberry',
+        full_name: role === 'courier' ? 'Devon Lindsay' : 'Alex Morgan',
         role: role,
       };
       state.screen = 'dashboard';
@@ -1842,7 +1842,7 @@
           ${isRegister ? `
             <div class="input-field-group">
               <label class="input-field-label">Full name</label>
-              <input class="modern-input" data-bind="authFields.full_name" value="${escapeHtml(f.full_name)}" placeholder="Jordan Duberry" />
+              <input class="modern-input" data-bind="authFields.full_name" value="${escapeHtml(f.full_name)}" placeholder="Your full name" />
             </div>` : ''}
 
           <div class="input-field-group">
@@ -2660,7 +2660,7 @@
               <div class="courier-info-left">
                 ${avatarHtml(state.user ? state.user.full_name : '')}
                 <div>
-                  <div class="courier-name">${escapeHtml(state.user ? state.user.full_name : 'Jordan Duberry')}</div>
+                  <div class="courier-name">${escapeHtml(state.user ? state.user.full_name : 'Alex Morgan')}</div>
                   <div class="courier-role">${escapeHtml(state.user ? state.user.email : 'user@example.com')} · <span class="status-pill status-OPEN">${state.user ? state.user.role : 'customer'}</span></div>
                 </div>
               </div>
