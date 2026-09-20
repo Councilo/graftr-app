@@ -11,46 +11,49 @@
     { "src": "assets/**", "use": "@vercel/static" },
     { "src": "vendor/**", "use": "@vercel/static" }
   ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "geolocation=(self), camera=(), microphone=(self), payment=(), usb=()" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.public.blob.vercel-storage.com; connect-src 'self' https://router.project-osrm.org https://routing.openstreetmap.de; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" }
-      ]
-    },
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store" }
-      ]
-    },
-    {
-      "source": "/track.html",
-      "headers": [
-        { "key": "Referrer-Policy", "value": "no-referrer" },
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
-        { "key": "Cache-Control", "value": "no-store" }
-      ]
-    },
-    {
-      "source": "/sitemap.xml",
-      "headers": [
-        { "key": "Content-Type", "value": "application/xml; charset=utf-8" }
-      ]
-    },
-    {
-      "source": "/robots.txt",
-      "headers": [
-        { "key": "Content-Type", "value": "text/plain; charset=utf-8" }
-      ]
-    }
-  ],
   "routes": [
+    {
+      "src": "/(.*)",
+      "headers": {
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "geolocation=(self), camera=(), microphone=(self), payment=(), usb=()",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.public.blob.vercel-storage.com; connect-src 'self' https://router.project-osrm.org https://routing.openstreetmap.de; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+      },
+      "continue": true
+    },
+    {
+      "src": "/api/(.*)",
+      "headers": {
+        "Cache-Control": "no-store"
+      },
+      "continue": true
+    },
+    {
+      "src": "/track.html",
+      "headers": {
+        "Referrer-Policy": "no-referrer",
+        "X-Robots-Tag": "noindex, nofollow",
+        "Cache-Control": "no-store"
+      },
+      "continue": true
+    },
+    {
+      "src": "/sitemap.xml",
+      "headers": {
+        "Content-Type": "application/xml; charset=utf-8"
+      },
+      "continue": true
+    },
+    {
+      "src": "/robots.txt",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8"
+      },
+      "continue": true
+    },
     { "src": "/api/(?<route>[^/?]+)", "dest": "/api/index.js?route=$route" },
     { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
     { "src": "/robots.txt", "dest": "/robots.txt" },

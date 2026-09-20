@@ -23,6 +23,8 @@ A missing setting is now reported by name in the API's error message instead of 
 
 **Why the API is one file.** Vercel's Hobby plan allows 12 serverless functions per deployment and the app had 19 endpoints, which is the likely reason deploys stopped going through. All endpoints now live in `handlers/` behind one function, `api/index.js`. To add an endpoint: create `handlers/<name>.js` **and** add it to the list in `api/index.js` (a test checks the two agree). `vercel.json` publishes only the public site files, so `lib/`, `handlers/` and source files are not downloadable.
 
+**Why the security headers are inside `routes`.** `vercel.json` uses the legacy `builds` + `routes` setup, and Vercel silently ignores a top-level `headers` list whenever `routes` is present. The first live deploy went out with no Content-Security-Policy, frame protection or cache rules for exactly that reason. The headers are now route entries with `"continue": true`, placed before the routes that serve pages; `tests/vercel-config.test.js` fails if they move back to a top-level `headers` list.
+
 **After the deploy, check**
 1. `https://<your-site>/api/me` answers `{"detail":"Not authenticated"}` (401) — the API is alive.
 2. `https://<your-site>/lib/auth.js` and `/handlers/login.js` give a 404 — source isn't public.
