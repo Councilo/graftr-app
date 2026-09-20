@@ -1,0 +1,165 @@
+const { sql, ensureSchema } = require('../lib/db');
+const { requireRole } = require('../lib/auth');
+const { computeQuote, QuoteError, GeocodeServiceError } = require('../lib/geocode');
+const { verifyQuote, sanitizeRoute } = require('../lib/quote-token');
+const { serializeJob } = require('../lib/jobs');
+const { createPayment } = require('../lib/payments');
+const { sendError } = require('../lib/respond');
+const { parseOrderOptions, newDeliveryPin } = require('../lib/order-options');
+const crypto = require('crypto');
+
+// Addresses are free text people type; a cap keeps a hostile request from
+// storing (and later having to render) megabytes.
+const MAX_ADDRESS_LENGTH = 300;
+
+// A customer can't leave an unlimited pile of jobs open on the marketplace.
+const MAX_OPEN_JOBS = 10;
+
+// Customers choose when pickup starts; they aren't asked when it ends. The job
+// still stores an end (the column is required and existing data expects it), so
+// it defaults to a day after the start, the same default the app used before
+// the field was removed. An API client that does send pickup_window_end still
+// gets it honoured, and validated.
+const DEFAULT_PICKUP_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+// "Now" is stamped by the customer's own device, so its clock can be a little
+// off; a pickup earlier than this is a mistake rather than a slow clock.
+const PAST_TOLERANCE_MS = 60 * 60 * 1000;
+
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+    res.status(405).json({ detail: 'Method not allowed' });
+    return;
+  }
+  try {
+    const customer = await requireRole(req, res, 'customer');
+    if (!customer) return;
+
+    const {
+      pickup_address, dropoff_address, pickup_window_start, pickup_window_end,
+      quote_token, route_geometry,
+    } = req.body || {};
+    if (typeof pickup_address !== 'string' || pickup_address.trim().length < 3
+      || typeof dropoff_address !== 'string' || dropoff_address.trim().length < 3) {
+      res.status(422).json({ detail: 'pickup_address and dropoff_address are required' });
+      return;
+    }
+    if (pickup_address.length > MAX_ADDRESS_LENGTH || dropoff_address.length > MAX_ADDRESS_LENGTH) {
+      res.status(422).json({ detail: `Addresses can be at most ${MAX_ADDRESS_LENGTH} characters` });
+      return;
+    }
+    const parsedOptions = parseOrderOptions(req.body);
+    if (parsedOptions.error) {
+      res.status(422).json({ detail: parsedOptions.error });
+      return;
+    }
+    const opt = parsedOptions.value;
+    const deliveryPin = opt.pinConfirmation ? newDeliveryPin() : null;
+
+    // A string only: new Date(null) and new Date(true) are valid dates in
+    // 1970, so anything else would be accepted as a pickup half a century ago.
+    const start = typeof pickup_window_start === 'string' && pickup_window_start.trim()
+      ? new Date(pickup_window_start)
+      : new Date(NaN);
+    if (Number.isNaN(start.getTime())) {
+      res.status(422).json({ detail: 'pickup_window_start must be a valid date' });
+      return;
+    }
+    if (start.getTime() < Date.now() - PAST_TOLERANCE_MS) {
+      res.status(422).json({ detail: 'pickup_window_start is in the past — choose a later time' });
+      return;
+    }
+    const endGiven = pickup_window_end !== undefined && pickup_window_end !== null && pickup_window_end !== '';
+    const end = endGiven ? new Date(pickup_window_end) : new Date(start.getTime() + DEFAULT_PICKUP_WINDOW_MS);
+    if (Number.isNaN(end.getTime())) {
+      res.status(422).json({ detail: 'pickup_window_end must be a valid date' });
+      return;
+    }
+    if (end <= start) {
+      res.status(422).json({ detail: 'pickup_window_end must be after pickup_window_start' });
+      return;
+    }
+
+    let q;
+    if (quote_token) {
+      // The customer is posting a quote they were shown: honour exactly that
+      // price and distance rather than quoting again, which could come out
+      // differently if the free routing service answers differently a
+      // moment later. A token that's expired or doesn't match is refused,
+      // not quietly re-priced — the customer should see the new price first.
+      const signed = verifyQuote(quote_token, customer.id, pickup_address, dropoff_address);
+      if (!signed) {
+        res.status(409).json({ detail: 'Your quote has expired, so the price has been refreshed. Check it, then post again.' });
+        return;
+      }
+      q = { ...signed, route_geometry: sanitizeRoute(route_geometry, signed) };
+    }
+    try {
+      if (!q) q = await computeQuote(pickup_address, dropoff_address);
+    } catch (err) {
+      if (err instanceof QuoteError) {
+        res.status(422).json({ detail: err.message });
+        return;
+      }
+      if (err instanceof GeocodeServiceError) {
+        res.status(502).json({ detail: 'The map service is unavailable right now — try again in a moment.' });
+        return;
+      }
+      throw err;
+    }
+
+    await ensureSchema();
+
+    const open = await sql`SELECT count(*) AS n FROM jobs WHERE customer_id = ${customer.id} AND status = 'OPEN'`;
+    if (Number(open.rows[0].n) >= MAX_OPEN_JOBS) {
+      res.status(429).json({ detail: `You already have ${MAX_OPEN_JOBS} parcels waiting for a courier. Wait for one to be picked up, or cancel one, before posting another.` });
+      return;
+    }
+
+    // One quote, one job: the same signed quote posted twice (a double tap, a
+    // retried request) must not create two parcels and two charges.
+    const quoteRef = typeof quote_token === 'string' && quote_token
+      ? crypto.createHash('sha256').update(quote_token).digest('hex')
+      : null;
+    if (quoteRef) {
+      const dupe = await sql`SELECT id FROM jobs WHERE customer_id = ${customer.id} AND quote_ref = ${quoteRef}`;
+      if (dupe.rows.length) {
+        res.status(409).json({ detail: 'That parcel has already been posted — check your orders.' });
+        return;
+      }
+    }
+
+    // The link a customer can hand to whoever is receiving the parcel: 24
+    // characters from 18 random bytes, so it can't be guessed or counted up to.
+    const trackingToken = crypto.randomBytes(18).toString('base64url');
+    const { rows } = await sql`
+      INSERT INTO jobs (
+        customer_id, pickup_address, dropoff_address,
+        pickup_lat, pickup_lng, dropoff_lat, dropoff_lng,
+        pickup_window_start, pickup_window_end, distance_km, price_gbp, status,
+        route_geometry, tracking_token, quote_ref,
+        customer_is_recipient, pickup_contact_name, dropoff_contact_name, pickup_handover, dropoff_handover,
+        pickup_instructions, dropoff_instructions, package_size, delivery_pin
+      ) VALUES (
+        ${customer.id}, ${pickup_address}, ${dropoff_address},
+        ${q.pickup_lat}, ${q.pickup_lng}, ${q.dropoff_lat}, ${q.dropoff_lng},
+        ${start.toISOString()}, ${end.toISOString()}, ${q.distance_km}, ${q.price_gbp}, 'OPEN',
+        ${q.route_geometry ? JSON.stringify(q.route_geometry) : null}, ${trackingToken}, ${quoteRef},
+        ${opt.customerIsRecipient}, ${opt.pickupContact}, ${opt.dropoffContact}, ${opt.pickupHandover}, ${opt.dropoffHandover},
+        ${opt.pickupInstructions}, ${opt.dropoffInstructions}, ${opt.packageSize}, ${deliveryPin}
+      )
+      RETURNING *
+    `;
+    // Every job has a payment record from the start (UNPAID until an admin
+    // records that it was settled), so refunds always have something to act on.
+    await createPayment(rows[0].id, customer.id, q.price_gbp);
+    res.status(201).json({
+      ...serializeJob(rows[0], { forCustomer: true }),
+      payment_status: 'UNPAID',
+      refunded_gbp: 0,
+      refund_status: null,
+    });
+  } catch (err) {
+    sendError(res, err);
+  }
+};

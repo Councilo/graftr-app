@@ -1,0 +1,52 @@
+/* Dark theme for the static legal pages (about, privacy, terms, contact).
+   Their light styling lives inline in each page; this only adds what changes
+   when theme.js sets <html data-theme="dark">, and the floating theme button
+   (they have no app to draw one). Same near-black palette as the app. */
+
+html[data-theme="dark"] { color-scheme: dark; }
+html[data-theme="dark"] body { background: #0a0c0f; color: #f1f5f9; }
+html[data-theme="dark"] .container {
+  background: #15181d;
+  border-color: #2a3038;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3 { color: #f1f5f9; }
+html[data-theme="dark"] h2 { border-bottom-color: #2a3038; }
+html[data-theme="dark"] p,
+html[data-theme="dark"] li { color: #b6c0cf; }
+html[data-theme="dark"] strong { color: #f1f5f9; }
+html[data-theme="dark"] a { color: #f1f5f9; }
+html[data-theme="dark"] .back-btn { background: #f8fafc; color: #111827; }
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .contact-box { background: #191c22; border-color: #2a3038; }
+html[data-theme="dark"] footer { border-top-color: #2a3038; color: #8b95a5; }
+
+/* Floating sun / crescent button, top-right. */
+.theme-toggle-floating {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+.theme-toggle-floating:hover { background: #f1f5f9; }
+.theme-toggle-floating svg { width: 20px; height: 20px; }
+.theme-toggle-floating .icon-moon,
+.theme-toggle-floating .icon-sun { display: flex; align-items: center; justify-content: center; }
+.theme-toggle-floating .icon-sun { display: none; }
+html[data-theme="dark"] .theme-toggle-floating { background: #15181d; border-color: #2a3038; color: #f8fafc; }
+html[data-theme="dark"] .theme-toggle-floating:hover { background: #1d2128; }
+html[data-theme="dark"] .theme-toggle-floating .icon-moon { display: none; }
+html[data-theme="dark"] .theme-toggle-floating .icon-sun { display: flex; }

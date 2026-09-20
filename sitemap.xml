@@ -1,23 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.vendaru.com/</loc>
-    <lastmod>2026-09-18</lastmod>
+    <loc>https://vendaru.com/</loc>
+    <lastmod>2026-09-19</lastmod>
   </url>
   <url>
-    <loc>https://www.vendaru.com/about.html</loc>
-    <lastmod>2026-09-18</lastmod>
+    <loc>https://vendaru.com/about.html</loc>
+    <lastmod>2026-09-19</lastmod>
   </url>
   <url>
-    <loc>https://www.vendaru.com/contact.html</loc>
-    <lastmod>2026-09-18</lastmod>
+    <loc>https://vendaru.com/contact.html</loc>
+    <lastmod>2026-09-19</lastmod>
   </url>
   <url>
-    <loc>https://www.vendaru.com/privacy.html</loc>
-    <lastmod>2026-09-18</lastmod>
+    <loc>https://vendaru.com/privacy.html</loc>
+    <lastmod>2026-09-19</lastmod>
   </url>
   <url>
-    <loc>https://www.vendaru.com/terms.html</loc>
-    <lastmod>2026-09-18</lastmod>
+    <loc>https://vendaru.com/terms.html</loc>
+    <lastmod>2026-09-19</lastmod>
+  </url>
+  <url>
+    <loc>https://vendaru.com/refund-policy.html</loc>
+    <lastmod>2026-09-19</lastmod>
+  </url>
+  <url>
+    <loc>https://vendaru.com/location-policy.html</loc>
+    <lastmod>2026-09-19</lastmod>
+  </url>
+  <url>
+    <loc>https://vendaru.com/courier-terms.html</loc>
+    <lastmod>2026-09-19</lastmod>
+  </url>
+  <url>
+    <loc>https://vendaru.com/prohibited-items.html</loc>
+    <lastmod>2026-09-19</lastmod>
+  </url>
+  <url>
+    <loc>https://vendaru.com/cookies.html</loc>
+    <lastmod>2026-09-19</lastmod>
+  </url>
+  <url>
+    <loc>https://vendaru.com/help.html</loc>
+    <lastmod>2026-09-19</lastmod>
   </url>
 </urlset>

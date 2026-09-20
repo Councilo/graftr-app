@@ -4,15 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#141414">
+<script src="theme.js?v=2"></script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <!-- SEO Meta Tags -->
 <title>Vendaru | Peer-to-Peer Courier Delivery, UK</title>
-<meta name="description" content="Vendaru is a peer-to-peer courier marketplace: post a parcel from A to B, get an instant quote, and a courier near you picks it up and delivers it, with a photo at each end.">
+<meta name="description" content="Vendaru is a peer-to-peer courier marketplace: post a parcel from A to B, get an instant quote, and a courier picks it up and delivers it, with a photo at each end.">
 <meta name="keywords" content="Vendaru, courier, parcel delivery UK, same day courier, peer to peer delivery, send a parcel">
-<meta name="author" content="Vendaru UK">
+<meta name="author" content="Vendaru">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://vendaru.com/" />
 
@@ -25,7 +26,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://vendaru.com/">
 <meta property="og:title" content="Vendaru | Peer-to-Peer Courier Delivery">
-<meta property="og:description" content="Post a parcel from A to B, get an instant quote, and a courier near you picks it up and delivers it — with a photo at pickup and at drop-off.">
+<meta property="og:description" content="Post a parcel from A to B, get an instant quote, and a courier picks it up and delivers it — with a photo at pickup and at drop-off.">
 <meta property="og:image" content="https://vendaru.com/assets/brand/logo.svg">
 <meta property="og:site_name" content="Vendaru">
 
@@ -33,34 +34,31 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://vendaru.com/">
 <meta name="twitter:title" content="Vendaru | Peer-to-Peer Courier Delivery">
-<meta name="twitter:description" content="Post a parcel from A to B, get an instant quote, and a courier near you picks it up and delivers it.">
+<meta name="twitter:description" content="Post a parcel from A to B, get an instant quote, and a courier picks it up and delivers it.">
 <meta name="twitter:image" content="https://vendaru.com/assets/brand/logo.svg">
 
 <!-- The app itself, fetched alongside the HTML rather than after the library
      at the foot of the page. Until it runs, what's on screen is the
      pre-rendered article below, so every millisecond here is a millisecond of
      the wrong page. -->
-<link rel="preload" href="app.js?v=210" as="script">
+<link rel="preload" href="app.js?v=270" as="script">
 
 <!-- Favicon & Styles -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141414'/%3E%3Ctext x='32' y='47' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='40' fill='%23ffffff' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- These load without holding anything up. A plain <script> is not allowed to
-     execute while a stylesheet is still pending, so app.js — and therefore the
-     moment the app replaces the article below — was waiting on a round trip to
-     fonts.googleapis.com and another to unpkg. Neither is needed to draw the
-     first screen: the font already carries display=swap, and Leaflet's CSS
-     only styles the tracking map. Flipping media on load is what makes the
-     browser fetch them at low priority instead of blocking on them. -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-      media="print" onload="this.media='all'">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      media="print" onload="this.media='all'">
+<!-- Loaded at low priority so they never hold up the first screen: a stylesheet
+     that is still pending would otherwise stop app.js running. media="print"
+     makes the browser fetch them without blocking; theme.js flips them to
+     "all" once the page is parsed (an inline onload handler would need a
+     weaker Content-Security-Policy). Leaflet is served from this site — no
+     third party sees a visitor just because the map exists. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" media="print" data-defer-style>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css" media="print" data-defer-style>
 <noscript>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 </noscript>
 
 <!-- Structured Data (JSON-LD) for Search Engines -->
@@ -72,17 +70,18 @@
   "url": "https://vendaru.com/",
   "serviceType": "Peer-to-peer courier delivery",
   "areaServed": "GB",
-  "description": "Post a parcel from A to B, get an instant quote, and a courier near you picks it up and delivers it.",
+  "description": "Post a parcel from A to B, get an instant quote, and a courier picks it up and delivers it.",
   "provider": {
     "@type": "Organization",
-    "name": "Vendaru UK",
+    "name": "Vendaru",
     "url": "https://vendaru.com/",
     "logo": "https://vendaru.com/assets/brand/logo.svg"
   }
 }
 </script>
 
-<link rel="stylesheet" href="styles.css?v=210">
+<link rel="stylesheet" href="styles.css?v=260">
+<link rel="stylesheet" href="panels.css?v=11">
 </head>
 <body>
 <div id="app">
@@ -99,41 +98,51 @@
     </header>
 
     <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:10px">
-      Send a parcel with a courier near you
+      Send a parcel with an independent courier
     </h1>
     <p style="font-size:14.5px;color:#444;margin-bottom:20px">
-      Vendaru is a peer-to-peer courier marketplace covering the UK. Tell us where a parcel needs to go, get an instant
-      price based on the real distance, and a courier picks it up and delivers it — with a photo taken at pickup and
-      another at drop-off, so you can see it actually happened.
+      Vendaru is a peer-to-peer courier marketplace covering the UK. Tell us where a parcel needs to go and see the
+      price before you post it, based on the real road distance. An independent courier accepts the job, collects the
+      parcel and delivers it, with a photo taken at pickup and another at drop-off so you can see it actually happened.
     </p>
 
     <h2 style="font-size:17px;font-weight:700;margin-bottom:8px">How it works</h2>
     <ol style="font-size:13.5px;color:#444;padding-left:20px;margin-bottom:22px">
-      <li>Post a pickup address, a drop-off address, and a time window.</li>
-      <li>Get a quote — a courier accepts the job.</li>
+      <li>Post a pickup address, a drop-off address and a pickup time (or &ldquo;now&rdquo;). The price is £3.50 plus £1.37 per road mile, with a minimum of £5.00, and it is fixed once you post.</li>
+      <li>A courier registered with Vendaru accepts the job.</li>
       <li>They photograph the parcel at pickup, then again at drop-off.</li>
-      <li>Track the job's status the whole way through.</li>
+      <li>Follow the job's status the whole way through and, while it is on its way, the courier's position on the map.</li>
     </ol>
 
     <h2 style="font-size:17px;font-weight:700;margin-bottom:8px">Two accounts, one platform</h2>
     <p style="font-size:13.5px;color:#444;margin-bottom:22px">
       Register as a <strong>customer</strong> to send parcels, or as a <strong>courier</strong> to earn by delivering
-      them. Every job is priced from the real straight-line distance between the two UK towns named in the addresses.
+      them. Couriers are independent people who choose which jobs to accept; Vendaru provides the platform that
+      connects you. There is no card payment yet: payment is settled manually and the instructions are shown in the app.
     </p>
 
     <footer style="margin-top:30px;padding-top:18px;border-top:1px solid #eee;font-size:12.5px;color:#666">
-      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px">
+      <div style="display:flex;gap:10px 14px;flex-wrap:wrap;margin-bottom:10px">
         <a href="/about.html" style="color:#141414;text-decoration:none;font-weight:600">About</a>
         <a href="/privacy.html" style="color:#141414;text-decoration:none;font-weight:600">Privacy</a>
         <a href="/terms.html" style="color:#141414;text-decoration:none;font-weight:600">Terms</a>
+        <a href="/refund-policy.html" style="color:#141414;text-decoration:none;font-weight:600">Refund &amp; Cancellation</a>
+        <a href="/courier-terms.html" style="color:#141414;text-decoration:none;font-weight:600">Courier Terms</a>
+        <a href="/location-policy.html" style="color:#141414;text-decoration:none;font-weight:600">Location Tracking</a>
+        <a href="/prohibited-items.html" style="color:#141414;text-decoration:none;font-weight:600">Prohibited Items</a>
+        <a href="/cookies.html" style="color:#141414;text-decoration:none;font-weight:600">Cookies &amp; Storage</a>
+        <a href="/help.html" style="color:#141414;text-decoration:none;font-weight:600">Help</a>
         <a href="/contact.html" style="color:#141414;text-decoration:none;font-weight:600">Contact</a>
       </div>
-      <p style="margin:4px 0">&copy; 2026 Vendaru UK Ltd.</p>
+      <p style="margin:4px 0">&copy; 2026 Vendaru.</p>
     </footer>
   </article>
 </div>
 
-<script async src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="app.js?v=210"></script>
+<script async src="vendor/leaflet/leaflet.js"></script>
+<script src="faq.js?v=2"></script>
+<script src="app.js?v=270"></script>
+<script src="panels.js?v=11"></script>
+<script src="calls.js?v=1"></script>
 </body>
 </html>
