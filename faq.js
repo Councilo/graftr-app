@@ -144,7 +144,7 @@ window.VENDARU_FAQ = [
     id: "courier-sees",
     cat: "tracking",
     q: "What do couriers see before they accept a job?",
-    a: "Only the area of the job (for example 'Bolton BL1'), locations rounded to roughly 1 km and a coarse route. They see the full addresses and exact locations only after they accept.",
+    a: "The town and postcode of each end (for example 'Bolton BL1 1AA'), a map pin rounded to about 100 metres, so it lands in the postcode and not on the door, and the road route between the two pins. They see the full addresses, exact locations and contact details only after they accept.",
     link: { label: "Location Tracking Policy", href: "/location-policy.html" }
   },
 

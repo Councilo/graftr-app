@@ -12,7 +12,7 @@ const path = require('path');
 const OFFLINE = process.argv.includes('--offline');
 const suites = [
   ['pricing', false], ['compact-address', false], ['route', false], ['quote-token', false], ['pickup-window', false],
-  ['api', false], ['features', false], ['races', false], ['expiry', false], ['calls', false], ['order-options', false], ['vercel-config', false], ['start-order', false], ['email', false], ['secret', false],
+  ['api', false], ['features', false], ['races', false], ['expiry', false], ['calls', false], ['order-options', false], ['vercel-config', false], ['start-order', false], ['email', false], ['secret', false], ['areas', false],
   ['address-search', true], ['place-quote', true],
 ];
 

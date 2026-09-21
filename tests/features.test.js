@@ -103,15 +103,17 @@ const jobOf = async (u, id) => (await mine(u)).find((j) => j.id === id);
   const d2 = await call('POST', '/api/jobs-create', alice.token, { pickup_address: PA, dropoff_address: DA, pickup_window_start: new Date(Date.now() + 3600e3).toISOString(), quote_token: tok });
   ok('the same quote posted twice creates one job (second -> 409)', d1.status === 201 && d2.status === 409, [d1.status, d2.status]);
 
-  console.log('\n[marketplace: couriers see areas, not addresses]');
+  console.log('\n[marketplace: couriers see the postcode, not the house]');
   const av = (await call('GET', '/api/jobs-available', carl.token)).body || [];
   const seen = av.find((j) => j.id === j1.id);
   ok('the open job is listed', !!seen);
   ok('addresses are area-only (no house number / street)', seen && !/High Street|Flat 7|12/.test(seen.pickup_address + seen.dropoff_address), seen && [seen.pickup_address, seen.dropoff_address]);
-  ok('area label keeps town + postcode district', seen && /Bolton BL1/.test(seen.pickup_address) && /Leeds LS1/.test(seen.dropoff_address), seen && [seen.pickup_address, seen.dropoff_address]);
-  ok('coordinates rounded to ~1km', seen && seen.pickup_lat === 53.58 && seen.pickup_lng === -2.43, seen && [seen.pickup_lat, seen.pickup_lng]);
+  ok('each end is the town and the whole postcode', seen && seen.pickup_address === 'Bolton BL1 1AA' && seen.dropoff_address === 'Leeds LS1 2HT', seen && [seen.pickup_address, seen.dropoff_address]);
+  ok('pins are rounded to about 100 m: a street, not the door', seen && seen.pickup_lat === 53.581 && seen.pickup_lng === -2.432 && seen.dropoff_lat === 53.8 && seen.dropoff_lng === -1.549, seen && [seen.pickup_lat, seen.pickup_lng, seen.dropoff_lat, seen.dropoff_lng]);
+  ok('the exact coordinates are not sent anywhere', seen && !JSON.stringify(seen).includes('53.5812') && !JSON.stringify(seen).includes('-2.4321'), seen);
+  ok('it never says the area is hidden', seen && !/hidden|until accepted/i.test(JSON.stringify(seen)), seen);
   ok('no customer id, no tracking token, flagged masked', seen && seen.customer_id === undefined && seen.tracking_token === undefined && seen.masked === true, seen);
-  ok('the coarse route is small (<= 60 points)', seen && seen.route_geometry && seen.route_geometry.length <= 60, seen && seen.route_geometry && seen.route_geometry.length);
+  ok('no stored route (it ends at the doors); the app draws the road route between the pins', seen && seen.route_geometry === null, seen && seen.route_geometry);
   ok('a customer cannot use the marketplace (403)', (await call('GET', '/api/jobs-available', alice.token)).status === 403);
 
   console.log('\n[cancel: refunds by the terms]');

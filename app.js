@@ -2739,7 +2739,6 @@
                 <div class="step-label">From (Pickup)</div>
                 <div class="step-address">${escapeHtml(job.pickup_address)}</div>
                 ${!job.masked ? stopDetails(job, 'pickup') : ''}
-                ${job.masked ? '<div class="step-when masked-note">Area only — the full address is shown once you accept.</div>' : ''}
                 ${pickup && awaitingPickup ? `<div class="step-when">${ICONS.clock}<span>Pickup: ${escapeHtml(pickup.text)}</span></div>` : ''}
               </div>
             </div>
@@ -2752,7 +2751,6 @@
                 <div class="step-label">To (Dropoff)</div>
                 <div class="step-address">${escapeHtml(job.dropoff_address)}</div>
                 ${!job.masked ? stopDetails(job, 'dropoff') : ''}
-                ${job.masked ? '<div class="step-when masked-note">Area only — the full address is shown once you accept.</div>' : ''}
               </div>
             </div>
           </div>
