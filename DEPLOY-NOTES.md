@@ -12,9 +12,9 @@
 
 | Name | Required | What it is |
 |---|---|---|
-| `JWT_SECRET` | yes | long random string used to sign logins, quotes and place tokens |
-| `POSTGRES_URL` | yes | added automatically when you attach Postgres (must be the *pooled* URL) |
-| `BLOB_READ_WRITE_TOKEN` | yes | added automatically when you attach Blob |
+| `JWT_SECRET` | recommended | long random string used to sign logins, quotes and place tokens. If it is missing, a key is worked out from `POSTGRES_URL` automatically (see `lib/secret.js`), so attaching the database is enough to get going. Changing either one later signs everyone out once. |
+| `POSTGRES_URL` | yes | added automatically when you attach Postgres (must be the *pooled* URL). Registration needs only this (plus the Resend key for email). |
+| `BLOB_READ_WRITE_TOKEN` | for proof photos | added automatically when you attach Blob. Not needed to register or place orders. |
 | `ADMIN_EMAILS` | yes, for the admin dashboard | comma-separated emails that get the Admin button, e.g. `you@vendaru.com` (that person must also register/sign in with that email) |
 | `PAYMENT_INSTRUCTIONS` | recommended | text shown under "How to pay" (bank details / invoice wording). Plain text; line breaks are kept |
 | `TURN_URLS`, `TURN_USERNAME`, `TURN_CREDENTIAL` | recommended for calls | a TURN relay for in-app calls (comma-separated `turn:`/`turns:` URLs). Without it calls use free STUN only, which fails on some mobile networks. Providers with a free tier include Cloudflare Realtime TURN and Metered |
