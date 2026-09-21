@@ -468,7 +468,7 @@
         <div class="pn-avatar" aria-hidden="true">${esc(initialsOf(u.full_name))}</div>
       </div>
       ${termsStale ? card('Review our updated Terms', 'We have updated the Terms & Privacy Policy. Please confirm you agree.', 'acceptTerms', 'I agree') : ''}
-      ${needsEmail ? card('Confirm your email', `We sent a link to ${u.email}. You need it before you can ${courier ? 'accept' : 'post'} an order.`, 'resendVerification', 'Send again') : ''}
+      ${needsEmail ? card('Confirm your email', `We sent a link to ${u.email}. Can't see it? Check your junk or spam folder. You need it before you can ${courier ? 'accept' : 'post'} an order.`, 'resendVerification', 'Send again') : ''}
       ${needsLocation ? card('Turn on location sharing', "Customers can't follow your deliveries until you agree.", 'enableLocation', 'Agree') : ''}
       <div class="acct-tiles">
         ${tile('data-pn="openHelpPanel"', 'help', 'Help')}
@@ -642,7 +642,7 @@
     try {
       const r = await withBusy(el, () => API('/api/email-resend', { method: 'POST', json: {} }));
       if (r && r.already_verified) { await refreshUser(); redraw(); toast('Your email is already confirmed.'); return; }
-      toast('Sent. Check your inbox, and your spam folder.');
+      toast('Sent. Check your inbox and your junk or spam folder.');
     } catch (err) { toast(errText(err), 'error'); }
   };
   ACTIONS.acceptTerms = async (el) => {

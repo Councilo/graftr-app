@@ -64,6 +64,7 @@ async function photo(token, endpoint, jobId) {
   const tokenA = tokenIn(box[0]);
   ok('it carries a confirm link in the fragment (never in the query string, so it is not logged)', !!tokenA && /\/#verify=/.test(box[0].text) && !/\?[^ ]*verify=/.test(box[0].text), box[0].text);
   ok('and a button in the HTML version', /Confirm my email/.test(box[0].html) && /#verify=/.test(box[0].html));
+  ok('and it asks them to mark it as not junk if it landed there', /junk or spam folder/.test(box[0].text) && /not junk/.test(box[0].html), box[0].text);
   let me = await call('GET', '/api/me', c1.token);
   ok('the new account starts unconfirmed', me.body.email_verified === false && me.body.email_verified_at === null, me.body);
   ok('/api/me says whether confirming is currently demanded', me.body.email_verification_required === false, me.body);

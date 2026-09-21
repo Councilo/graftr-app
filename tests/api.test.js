@@ -95,6 +95,10 @@ async function reg(role, n) {
   console.log('\n[accept + location + messages on B]');
   r = await call('POST', '/api/jobs-accept', kt, { job_id: B.id });
   ok('courier accepts B (job_id form)', r.status === 200 && r.body.status === 'ACCEPTED', r);
+  r = await call('GET', '/api/jobs-available', kt);
+  ok('an accepted job leaves the accepting courier\'s offers at once', r.status === 200 && !r.body.some(j => j.id === B.id), r.status);
+  r = await call('GET', '/api/jobs-available', kt2);
+  ok('and every other courier\'s offers too', r.status === 200 && !r.body.some(j => j.id === B.id), r.status);
   r = await call('POST', '/api/jobs-location', kt2, { jobId: B.id, lat: 51.5, lng: -0.1 });
   ok('non-assigned courier location -> 403', r.status === 403, r);
   r = await call('POST', '/api/jobs-start', kt, { jobId: B.id });
@@ -167,6 +171,8 @@ async function reg(role, n) {
   ok('courier-mine no longer lists it', r.status === 200 && !r.body.some(j => j.id === B.id), r.body && r.body.map && r.body.map(j => [j.id, j.status]));
   r = await call('GET', '/api/jobs-available', kt2);
   ok('it is back in the marketplace for other couriers', r.status === 200 && r.body.some(j => j.id === B.id), r.status);
+  r = await call('GET', '/api/jobs-available', kt);
+  ok('and back in the offers of the courier who handed it back', r.status === 200 && r.body.some(j => j.id === B.id), r.status);
   r = await call('GET', '/api/jobs-mine', ct);
   const relisted = r.body.find((j) => j.id === B.id);
   ok('the customer sees it OPEN again, not cancelled, and owes/loses nothing', relisted && relisted.status === 'OPEN' && relisted.payment_status === 'UNPAID' && relisted.courier_name === null, relisted && [relisted.status, relisted.payment_status]);

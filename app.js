@@ -61,7 +61,9 @@
     termsBusy: false,
     deliveryPins: {}, // jobId -> the PIN a courier is typing to finish a delivery
     // Phones and tablets: every page is a full page, and this splits the screen 50/50 with the map.
-    mapSplit: (() => { try { return localStorage.getItem('vendaru_map_split') === '1'; } catch (e) { return false; } })(),
+    // Where the page's top edge sits when the map is open (0-1 of the height); null = open just tall enough to fit the page.
+    sheetTop: (() => { try { const v = parseFloat(localStorage.getItem('vendaru_sheet_top')); return v > 0 && v < 1 ? v : null; } catch (e) { return null; } })(),
+    mapSplit: (() => { try { const v = localStorage.getItem('vendaru_map_split'); return v === '1' ? true : (v === '0' ? false : null); } catch (e) { return null; } })(), // null until the person chooses (see mapOpen)
   };
   let sessionGen = 0; // bumped on sign-out so a poll still in flight can't write the old user's data
 
@@ -69,6 +71,9 @@
   let liveMaps = [];
   let lastViewKey = ''; // which page/step render() last drew, so a redraw of the same one keeps its scroll position
   let workspaceMap = null;
+  let sheetAuto = { sig: null, frac: 0.5 }; // where the page's top edge opened, until the person drags it
+  let sheetDrag = null;                      // set while a drag is under way
+  let sheetRenderQueued = false;             // a redraw that arrived mid-drag, done when it ends
   let syncTimer = null;
   let gpsTimer = null;
   let gpsDenied = false;
@@ -1093,7 +1098,7 @@
       render();
     },
     toggleMapSplit() {
-      state.mapSplit = !state.mapSplit;
+      state.mapSplit = !mapOpen();
       try { localStorage.setItem('vendaru_map_split', state.mapSplit ? '1' : '0'); } catch (e) { /* not remembered, still works */ }
       render();
     },
@@ -1251,7 +1256,7 @@
       render();
       try {
         await api('/api/password-forgot', { method: 'POST', auth: false, json: { email } });
-        state.authNotice = "If that address has an account, we've sent it a link to choose a new password. It works once, for an hour. Check your spam folder if it doesn't arrive.";
+        state.authNotice = "If that address has an account, we've sent it a link to choose a new password. It works once, for an hour. If it doesn't arrive, check your junk or spam folder.";
       } catch (err) {
         state.authError = err.message;
       } finally {
@@ -1290,7 +1295,7 @@
           toast('Your email is already confirmed.');
           return;
         }
-        toast('Sent. Check your inbox, and your spam folder.');
+        toast('Sent. Check your inbox and your junk or spam folder.');
       } catch (err) {
         toast(err.message, 'error');
       }
@@ -1661,15 +1666,19 @@
       }
     },
     async acceptJob(jobId) {
+      const id = Number(jobId);
+      const leaveOffers = () => { state.available = state.available.filter((j) => j.id !== id); };
       try {
-        await api('/api/jobs-accept', { method: 'POST', json: { jobId: Number(jobId) } });
+        await api('/api/jobs-accept', { method: 'POST', json: { jobId: id } });
+        leaveOffers(); // out of the offers at once, without waiting for the lists to reload
         state.courierTab = 'mine';
         state.selectedJobId = Number(jobId);
         await loadLists();
         // Nothing is shared yet: that starts when the courier presses Start order.
       } catch (err) {
         toast(err.message, 'error');
-        await loadLists(); // most often someone else got there first; show the current list
+        if (err && err.status === 409) { leaveOffers(); render(); } // someone else got there first: it is no longer on offer
+        await loadLists(); // and show the current list
       }
     },
     // The courier sets off for the pickup. Their phone starts sharing its position from here, and
@@ -1999,6 +2008,7 @@
 
   // ---------------- Rendering ----------------
   function render() {
+    if (sheetDrag) { sheetRenderQueued = true; return; } // redrawing now would drop the handle mid-drag
     // Live location belongs to the order form only: any other page or step switches it off.
     if (liveWatchId !== null && !(state.screen === 'dashboard' && state.user && state.user.role === 'customer' && state.customerTab === 'compose' && state.compose.step !== 'review')) stopLiveLocation();
     // Rebuilding root.innerHTML destroys whichever field the user is typing
@@ -2029,6 +2039,7 @@
 
     root.innerHTML = state.screen === 'auth' ? renderAuth() : renderDashboard();
     if (state.screen === 'dashboard') {
+      applySheet(); // before the map is drawn, so it is fitted to the room it really has
       initWorkspaceMap();
     }
     if (keepScroll) {
@@ -2150,7 +2161,7 @@
         </div>
 
         <div class="nav-icon-group">
-          <button class="nav-icon-btn ${(isCustomer ? state.customerTab === 'compose' : state.courierTab === 'available') ? 'is-active' : ''}" data-action="${isCustomer ? 'setCustomerTab' : 'setCourierTab'}" data-arg="${isCustomer ? 'compose' : 'available'}" title="${isCustomer ? 'Home: send or receive' : 'Home: available jobs'}" aria-label="${isCustomer ? 'Home: send or receive' : 'Home: available jobs'}">
+          <button class="nav-icon-btn ${(isCustomer ? state.customerTab === 'compose' : state.courierTab === 'available') ? 'is-active' : ''}" data-action="${isCustomer ? 'setCustomerTab' : 'setCourierTab'}" data-arg="${isCustomer ? 'compose' : 'available'}" title="${isCustomer ? 'Home: send or receive' : 'Home: your job offers'}" aria-label="${isCustomer ? 'Home: send or receive' : 'Home: your job offers'}">
             ${ICONS.home}
           </button>
           <button class="nav-icon-btn ${(isCustomer ? state.customerTab === 'active' : state.courierTab === 'mine') ? 'is-active' : ''}" data-action="${isCustomer ? 'setCustomerTab' : 'setCourierTab'}" data-arg="${isCustomer ? 'active' : 'mine'}" title="${isCustomer ? 'On the way' : 'My deliveries'}" aria-label="${isCustomer ? 'On the way' : 'My deliveries'}">
@@ -2997,7 +3008,7 @@
       out.push(`<div class="notice" role="status">Please confirm you agree to our current <a href="/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>. <button type="button" class="link-btn" data-action="acceptTermsNow" ${state.termsBusy ? 'disabled' : ''}>I agree</button></div>`);
     }
     if (!testMode && u.email_verification_required && !u.email_verified) {
-      out.push(`<div class="notice" role="status">Confirm your email address: we sent a link to <strong>${escapeHtml(u.email)}</strong>. You need it before you can ${u.role === 'courier' ? 'accept' : 'post'} an order. <button type="button" class="link-btn" data-action="resendVerification">Send it again</button></div>`);
+      out.push(`<div class="notice" role="status">Please confirm your email address. We sent a link to <strong>${escapeHtml(u.email)}</strong>. <strong>Can't see it? Check your junk or spam folder.</strong> You need to confirm it before you can ${u.role === 'courier' ? 'accept' : 'post'} an order. <button type="button" class="link-btn" data-action="resendVerification">Send it again</button></div>`);
     }
     if (!testMode && u.role === 'courier' && !u.location_consent_at) {
       out.push('<div class="notice" role="status">Location sharing isn\'t agreed yet, so customers can\'t follow your deliveries. <button type="button" class="link-btn" data-action="enableLocation">Agree and turn on</button></div>');
@@ -3006,6 +3017,91 @@
       out.push(`<div class="notice notice-danger" role="alert">${escapeHtml(state.listError)}</div>`);
     }
     return out.join('');
+  }
+
+  // Whether the map is showing beside the list. Whatever the person chose last wins; until they have
+  // chosen, a courier gets it open (it is their main view) and a customer gets it closed.
+  function mapOpen() {
+    if (state.mapSplit !== null) return state.mapSplit;
+    return !!(state.user && state.user.role === 'courier');
+  }
+
+  // ---- The page over the map: how far up it sits ----
+  // Its bottom edge always stops above the floating pill (CSS, --pill-space). Its top edge is
+  // --sheet-top: the person's own choice once they have dragged the handle, otherwise half the screen,
+  // or higher when the page needs more room to sit clear of the pill (never past a fifth of the screen, which
+  // is what the map's buttons need).
+  function sheetLimits(ws) {
+    const H = ws.clientHeight;
+    const min = Math.min(Math.max(150, H * 0.2), H * 0.4); // room for the map's zoom buttons
+    const max = Math.max(min, H - 230);                    // enough of the page left to read its title and grab the handle
+    return { H, min, max };
+  }
+  function applySheet() {
+    const ws = root.querySelector('.app-workspace');
+    if (!ws || !ws.classList.contains('map-split')) return;
+    const { H, min, max } = sheetLimits(ws);
+    let frac = state.sheetTop;
+    if (frac == null) {
+      const panel = ws.querySelector('.tracking-panel');
+      const scroller = ws.querySelector('.panel-scroll-content');
+      const sig = lastViewKey + '|' + (scroller ? scroller.children.length : 0);
+      if (panel && scroller && sheetAuto.sig !== sig) {
+        const needed = panel.clientHeight - scroller.clientHeight + scroller.scrollHeight; // the height that shows it all (never below what it has now)
+        sheetAuto = { sig, frac: Math.min(max, Math.max(min, H - needed)) / H };
+      }
+      frac = sheetAuto.frac;
+    }
+    ws.style.setProperty('--sheet-top', (Math.min(max, Math.max(min, frac * H)) / H * 100).toFixed(2) + '%');
+  }
+  function saveSheetTop(ws, top, H) {
+    state.sheetTop = top / H;
+    try { localStorage.setItem('vendaru_sheet_top', state.sheetTop.toFixed(4)); } catch (e) { /* not remembered, still works */ }
+    ws.style.setProperty('--sheet-top', (state.sheetTop * 100).toFixed(2) + '%');
+    if (workspaceMap) workspaceMap.invalidateSize({ animate: false });
+  }
+  function sheetPointerDown(e) {
+    const handle = e.target.closest && e.target.closest('.sheet-handle');
+    if (!handle || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const ws = root.querySelector('.app-workspace');
+    const panel = ws && ws.querySelector('.tracking-panel');
+    if (!panel) return;
+    e.preventDefault();
+    const { H, min, max } = sheetLimits(ws);
+    sheetDrag = { ws, id: e.pointerId, startY: e.clientY, startTop: panel.getBoundingClientRect().top - ws.getBoundingClientRect().top, H, min, max, top: null, raf: 0 };
+    try { handle.setPointerCapture(e.pointerId); } catch (err) { /* the moves still arrive without it */ }
+    ws.classList.add('is-dragging-sheet');
+  }
+  function sheetPointerMove(e) {
+    const d = sheetDrag;
+    if (!d || e.pointerId !== d.id) return;
+    d.top = Math.min(d.max, Math.max(d.min, d.startTop + (e.clientY - d.startY)));
+    d.ws.style.setProperty('--sheet-top', d.top + 'px');
+    if (!d.raf) d.raf = requestAnimationFrame(() => { d.raf = 0; if (workspaceMap) workspaceMap.invalidateSize({ animate: false }); });
+  }
+  function sheetPointerEnd(e) {
+    const d = sheetDrag;
+    if (!d || e.pointerId !== d.id) return;
+    sheetDrag = null;
+    d.ws.classList.remove('is-dragging-sheet');
+    if (d.top !== null) saveSheetTop(d.ws, d.top, d.H);
+    if (sheetRenderQueued) { sheetRenderQueued = false; render(); }
+  }
+  function sheetKey(e) {
+    const ws = root.querySelector('.app-workspace');
+    const panel = ws && ws.querySelector('.tracking-panel');
+    if (!panel || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return false;
+    e.preventDefault();
+    const { H, min, max } = sheetLimits(ws);
+    const now = panel.getBoundingClientRect().top - ws.getBoundingClientRect().top;
+    saveSheetTop(ws, Math.min(max, Math.max(min, now + (e.key === 'ArrowUp' ? -1 : 1) * H * 0.06)), H);
+    return true;
+  }
+  function sheetReset() {
+    state.sheetTop = null;
+    sheetAuto.sig = null;
+    try { localStorage.removeItem('vendaru_sheet_top'); } catch (e) { /* fine */ }
+    render();
   }
 
   // Each section has its own heading and its own empty message: active deliveries and
@@ -3019,8 +3115,8 @@
       }[state.customerTab];
     }
     return {
-      available: { title: 'Available jobs', sub: 'Open jobs waiting for a courier', empty: 'No open jobs right now. New ones appear here as customers post them.' },
-      mine: { title: 'My deliveries', sub: 'Jobs you have accepted and are still carrying', empty: 'You have no active deliveries. Accept a job from Available jobs.' },
+      available: { title: 'Your job offers', sub: 'Jobs offered to you', empty: "You're all caught up. New offers appear here as soon as they come in." },
+      mine: { title: 'My deliveries', sub: 'Jobs you have accepted and are still carrying', empty: 'You have no active deliveries. Accept a job from Your job offers.' },
       past: { title: 'Past deliveries', sub: 'Delivered and cancelled jobs', empty: 'No past deliveries yet. Finished jobs are kept here.' },
     }[state.courierTab];
   }
@@ -3053,17 +3149,18 @@
 
     return `
       ${renderIconSidebar()}
-      <main class="app-workspace${state.mapSplit ? ' map-split' : ''}">
+      <main class="app-workspace${mapOpen() ? ' map-split' : ''}">
         <div class="fullscreen-map-layer" id="workspace-map"></div>
 
         <section class="tracking-panel">
+          ${mapOpen() ? '<div class="sheet-handle" role="separator" aria-orientation="horizontal" tabindex="0" aria-label="Drag up or down to show more or less of this page" title="Drag to show more or less. Double-click to reset."><span></span></div>' : ''}
           <div class="panel-header">
             <div class="panel-title-wrap">
               <h1 class="panel-title">${section.title}</h1>
               <span class="panel-sub">${section.sub}</span>
             </div>
             <button class="icon-btn-round header-settings" data-action="openSettings" title="Account & settings" aria-label="Account and settings">${ICONS.settings}</button>
-            <button class="icon-btn-round map-toggle ${state.mapSplit ? 'is-on' : ''}" data-action="toggleMapSplit" aria-pressed="${state.mapSplit ? 'true' : 'false'}" aria-label="${state.mapSplit ? 'Hide the map' : 'Show the map'}" title="${state.mapSplit ? 'Hide the map' : 'Show the map (half screen)'}">${ICONS.map}</button>
+            <button class="icon-btn-round map-toggle ${mapOpen() ? 'is-on' : ''}" data-action="toggleMapSplit" aria-pressed="${mapOpen() ? 'true' : 'false'}" aria-label="${mapOpen() ? 'Hide the map' : 'Show the map'}" title="${mapOpen() ? 'Hide the map' : 'Show the map (half screen)'}">${ICONS.map}</button>
           </div>
 
           ${renderNotices()}
@@ -3080,7 +3177,7 @@
               </div>
               <div class="metric-card">
                 <span class="metric-val">${state.available.filter((j) => j.status === 'OPEN').length}</span>
-                <span class="metric-lbl">Available</span>
+                <span class="metric-lbl">Offers</span>
               </div>
             </div>` : ''}
 
@@ -3199,7 +3296,7 @@
   function initWorkspaceMap() {
     const el = document.getElementById('workspace-map');
     if (!el || typeof L === 'undefined') return;
-    if (!state.mapSplit) return; // the map is shown only when asked (the map button splits the screen)
+    if (!mapOpen()) return; // the map button splits the screen; a closed map isn't drawn
 
     const activeJob = getActiveJob();
     const c = state.compose;
@@ -3618,7 +3715,14 @@
       if (e.target.closest && e.target.closest('.addr-suggestion, .addr-clear, .addr-gps')) e.preventDefault();
     });
 
+    root.addEventListener('pointerdown', sheetPointerDown);
+    root.addEventListener('pointermove', sheetPointerMove);
+    root.addEventListener('pointerup', sheetPointerEnd);
+    root.addEventListener('pointercancel', sheetPointerEnd);
+    root.addEventListener('dblclick', (e) => { if (e.target.closest && e.target.closest('.sheet-handle')) sheetReset(); });
+
     root.addEventListener('keydown', (e) => {
+      if (e.target.classList && e.target.classList.contains('sheet-handle') && sheetKey(e)) return;
       if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-key-activate]')) {
         e.preventDefault();
         e.target.click();

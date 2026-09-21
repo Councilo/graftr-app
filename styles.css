@@ -1587,8 +1587,8 @@ path.route-line { stroke: var(--brand); filter: drop-shadow(0 0 1.5px rgba(0, 0,
     height: 100dvh; /* phones: excludes the browser bar that 100vh counts */
   }
 
-  /* Room under the last card so the pill never covers it. */
-  .panel-scroll-content { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+  /* The page never runs underneath the floating pill: the panel keeps --pill-space clear at its
+     bottom edge, so a button is never hidden behind it (the panel's own surface carries on beneath). */
 
   /* Phones and tablets: the map sits ABOVE the form, the form panel below it
      with the larger share since it's the part people type into. */
@@ -1602,7 +1602,7 @@ path.route-line { stroke: var(--brand); filter: drop-shadow(0 0 1.5px rgba(0, 0,
     height: 50%;
     display: none;
   }
-  .map-split .fullscreen-map-layer { display: block; }
+  .map-split .fullscreen-map-layer { display: block; height: var(--sheet-top, 50%); }
 
   .tracking-panel {
     position: absolute;
@@ -1614,14 +1614,16 @@ path.route-line { stroke: var(--brand); filter: drop-shadow(0 0 1.5px rgba(0, 0,
     height: 100%;
     bottom: auto;
     padding-top: env(safe-area-inset-top);
+    padding-bottom: var(--pill-space);
     border-radius: 0;
     border-left: none;
     border-right: none;
     border-bottom: none;
   }
+  /* --sheet-top is where the page's top edge sits; the handle at the top of the page drags it. */
   .map-split .tracking-panel {
-    top: 50%;
-    height: 50%;
+    top: var(--sheet-top, 50%);
+    height: calc(100% - var(--sheet-top, 50%));
     padding-top: 0;
     border-radius: 24px 24px 0 0;
   }
@@ -2047,7 +2049,7 @@ button.inbox-row:hover { background: var(--fill); }
    The app is a centred column that never gets wider than a large phone, so nothing stretches
    across a big screen. Below this width it simply fills the screen as before.
    ========================================================================== */
-:root { --app-col: 480px; }
+:root { --app-col: 480px; --pill-space: calc(max(14px, calc(env(safe-area-inset-bottom) + 6px)) + 76px); } /* the bottom pill: its offset + its height + a gap */
 @media (min-width: 521px) {
   html, body { background: color-mix(in srgb, var(--bg-app) 93%, #000); }          /* the space either side */
   #app { max-width: var(--app-col); margin: 0 auto; box-shadow: 0 0 0 1px var(--line), 0 24px 70px rgba(0, 0, 0, 0.10); }
@@ -2069,3 +2071,13 @@ button.inbox-row:hover { background: var(--fill); }
 .auth-mode-sub { margin: 0 0 18px; font-size: 13.5px; line-height: 1.45; text-align: center; color: var(--muted); }
 .auth-forgot { display: block; margin: 8px 0 0 auto; font-size: 13px; }
 .auth-back { display: block; margin: 14px auto 0; font-size: 13.5px; }
+
+/* The handle at the top of the page when the map is open: drag it up to see more of the page, down to
+   see more of the map. Keyboard: focus it and use the up / down arrow keys. Double-click resets it. */
+.sheet-handle { flex: none; display: none; height: 28px; align-items: center; justify-content: center; cursor: ns-resize; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.map-split .sheet-handle { display: flex; }
+.sheet-handle span { width: 44px; height: 5px; border-radius: 999px; background: var(--line-strong); transition: background 0.15s ease, width 0.15s ease; }
+.sheet-handle:hover span, .sheet-handle:focus-visible span, .is-dragging-sheet .sheet-handle span { background: var(--text); width: 56px; }
+.sheet-handle:focus-visible { outline: 2px solid var(--text); outline-offset: -4px; border-radius: 14px; }
+.map-split .panel-header { padding-top: 0; }
+.is-dragging-sheet, .is-dragging-sheet * { cursor: ns-resize !important; user-select: none; -webkit-user-select: none; }
