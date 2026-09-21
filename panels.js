@@ -441,6 +441,7 @@
       .reduce((sum, j) => sum + Number(j.payment_amount_gbp != null ? j.payment_amount_gbp : j.price_gbp), 0);
     const termsStale = !!(u.terms_version_current && u.terms_version !== u.terms_version_current);
     const needsLocation = courier && !u.location_consent_at;
+    const needsEmail = !!(u.email_verification_required && !u.email_verified);
     const dark = !!(window.VendaruTheme && window.VendaruTheme.get() === 'dark');
     const tile = (attrs, icon, label, badge) => `
       <button type="button" class="acct-tile" ${attrs}>
@@ -461,11 +462,13 @@
             ${chip(courier ? 'Courier' : 'Customer', 'blue')}
             ${delivered ? chip(`${delivered} delivered`, 'green') : ''}
             ${termsStale ? chip('Terms need review', 'amber') : ''}
+            ${needsEmail ? chip('Email not confirmed', 'amber') : ''}
           </div>
         </div>
         <div class="pn-avatar" aria-hidden="true">${esc(initialsOf(u.full_name))}</div>
       </div>
       ${termsStale ? card('Review our updated Terms', 'We have updated the Terms & Privacy Policy. Please confirm you agree.', 'acceptTerms', 'I agree') : ''}
+      ${needsEmail ? card('Confirm your email', `We sent a link to ${u.email}. You need it before you can ${courier ? 'accept' : 'post'} an order.`, 'resendVerification', 'Send again') : ''}
       ${needsLocation ? card('Turn on location sharing', "Customers can't follow your deliveries until you agree.", 'enableLocation', 'Agree') : ''}
       <div class="acct-tiles">
         ${tile('data-pn="openHelpPanel"', 'help', 'Help')}
@@ -529,7 +532,7 @@
     try {
       await withBusy(form.querySelector('[type="submit"]'), () => API('/api/account-profile', { method: 'POST', json: payload }));
       await refreshUser();
-      toast('Profile saved');
+      toast(payload.current_password && u.email_verification_required ? 'Profile saved. We sent a confirmation link to your new email address.' : 'Profile saved');
       current.tab = 'home';
       redraw();
     } catch (err) { setMsg(form, errText(err)); }
@@ -635,6 +638,13 @@
   ACTIONS.openAdmin = () => open('admin');
   ACTIONS.logoutNow = () => { close(); app().logout && app().logout(); };
   async function refreshUser() { if (app().reloadUser) await app().reloadUser(); }
+  ACTIONS.resendVerification = async (el) => {
+    try {
+      const r = await withBusy(el, () => API('/api/email-resend', { method: 'POST', json: {} }));
+      if (r && r.already_verified) { await refreshUser(); redraw(); toast('Your email is already confirmed.'); return; }
+      toast('Sent. Check your inbox, and your spam folder.');
+    } catch (err) { toast(errText(err), 'error'); }
+  };
   ACTIONS.acceptTerms = async (el) => {
     try { await withBusy(el, () => API('/api/account-consent', { method: 'POST', json: { terms: true } })); await refreshUser(); toast('Thanks — recorded.'); redraw(); }
     catch (err) { toast(errText(err), 'error'); }

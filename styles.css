@@ -2063,3 +2063,9 @@ button.inbox-row:hover { background: var(--fill); }
    to, keeps the card clear of the theme button, and still centres the card when there is room. */
 .auth-container { height: 100vh; height: 100dvh; overflow-y: auto; align-items: flex-start; padding: 64px 20px 24px; }
 .auth-glass-box { margin: auto; }
+
+/* Forgotten password: the heading and the small links on the sign-in card. */
+.auth-mode-title { margin: 0 0 6px; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; text-align: center; }
+.auth-mode-sub { margin: 0 0 18px; font-size: 13.5px; line-height: 1.45; text-align: center; color: var(--muted); }
+.auth-forgot { display: block; margin: 8px 0 0 auto; font-size: 13px; }
+.auth-back { display: block; margin: 14px auto 0; font-size: 13.5px; }

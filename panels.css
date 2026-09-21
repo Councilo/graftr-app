@@ -334,3 +334,8 @@ html.call-open { overflow: hidden; }
 @media (min-width: 521px) {
   .pn-sheet:not(.pn-sheet-admin) { max-width: var(--app-col, 480px); }
 }
+
+/* A good-news notice (a link was sent, the password was changed). */
+.notice-ok { background: var(--brand-soft); color: var(--text); border: 1px solid var(--line); }
+html[data-theme="dark"] .notice-ok { background: var(--brand-soft); }
+.link-btn { color: var(--text); }

@@ -61,3 +61,21 @@ The local admin is `admin@example.com` (register it on the sign-up form).
 ## Start order (courier location)
 - A courier who accepts a job shares nothing. They press **Start order** when they set off for the pickup (`/api/jobs-start`, stored as `jobs.started_at`); only from then does their phone send positions (`/api/jobs-location` refuses with 409 before that) and does the customer see them, with a road route to the pickup drawn from the courier's position. Collecting the parcel also counts as starting, and handing a job back clears it.
 - The schema gained `started_at` (`SCHEMA_VERSION` 2026-09-20-c), added automatically on the first request after deploy. Jobs already accepted before this deploy show no courier position until their courier presses Start order.
+
+## Email (Resend): confirming addresses, password resets, order updates
+Vendaru sends email through Resend (resend.com). The code is finished; it switches on when you add the key.
+
+**Set up (about 20 minutes, once)**
+1. Create a Resend account and, under Domains, add `vendaru.com`. Resend shows a few DNS records (SPF, DKIM); add them where the domain's DNS is managed, then press Verify.
+2. Create an API key (Sending access is enough).
+3. In Vercel, Project -> Settings -> Environment Variables, add: `RESEND_API_KEY` (the key), `EMAIL_FROM` (for example `Vendaru <noreply@vendaru.com>`), and optionally `EMAIL_REPLY_TO` (for example `support@vendaru.com`) and `APP_URL` (defaults to https://www.vendaru.com). Redeploy.
+
+**What changes when the key is present**
+- New sign-ups are emailed a confirmation link and must confirm before they can post or accept an order (the banner and Account page offer "Send it again"). Everyone who already had an account is treated as confirmed automatically, so nobody is locked out.
+- "Forgot your password?" on the sign-in screen emails a reset link (one use, one hour). A reset signs out every session started before it.
+- Customers get an email when an order is listed (with the payment reference), accepted, set off for, collected and delivered. These only go to confirmed addresses and only name the town and postcode area.
+- With NO key nothing is sent and nobody is asked to confirm (they could not), so the site keeps working while you set this up. Sending failures never break a sign-up or an order.
+
+**Testing locally.** Without a key the dev server keeps sent emails in memory and shows them at `/__outbox?to=address`. `node tests/email.test.js` covers the whole flow.
+
+**Not included:** sign in with Google or Apple, and marketing email. Support-ticket replies and refund decisions are not emailed yet.

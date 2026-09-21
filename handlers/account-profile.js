@@ -8,6 +8,7 @@ const { sql, ensureSchema } = require('../lib/db');
 const { requireUser, verifyPassword } = require('../lib/auth');
 const { isLimited, record, tooMany } = require('../lib/ratelimit');
 const { sendError } = require('../lib/respond');
+const { sendVerificationEmail } = require('../lib/notify');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_CHARS_RE = /^\+?[0-9 ()-]+$/;
@@ -95,6 +96,11 @@ module.exports = async (req, res) => {
         return;
       }
       throw err;
+    }
+    // A new address is unconfirmed until its owner clicks the link we send there.
+    if (emailChanged) {
+      await sql`UPDATE users SET email_verified_at = NULL WHERE id = ${user.id}`;
+      await sendVerificationEmail({ id: user.id, email: wantedEmail, full_name: fullName });
     }
     // Earlier chat messages carry a copy of the sender's name; keep it in step.
     if (fullName !== user.full_name) {

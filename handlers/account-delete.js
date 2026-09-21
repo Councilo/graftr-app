@@ -57,6 +57,7 @@ module.exports = async (req, res) => {
           password_hash = ${scrambled}, phone = NULL, deleted_at = now(), is_suspended = false, suspended_reason = NULL
       WHERE id = ${user.id}
     `;
+    await sql`DELETE FROM email_tokens WHERE user_id = ${user.id}`;
     await sql`UPDATE messages SET sender_name = 'Deleted user' WHERE sender_id = ${user.id}`;
     await sql`UPDATE support_tickets SET name = 'Deleted user', email = 'deleted@deleted.invalid' WHERE user_id = ${user.id}`;
     res.status(200).json({ success: true });

@@ -3,6 +3,7 @@ const { hashPassword } = require('../lib/auth');
 const { sendError } = require('../lib/respond');
 const { TERMS_VERSION } = require('../lib/legal');
 const { clientIp, hit, tooMany } = require('../lib/ratelimit');
+const { sendVerificationEmail } = require('../lib/notify');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ROLES = new Set(['customer', 'courier']);
@@ -64,13 +65,15 @@ module.exports = async (req, res) => {
 
     const passwordHash = await hashPassword(password);
     const { rows } = await sql`
-      INSERT INTO users (email, full_name, password_hash, role, terms_accepted_at, terms_version, location_consent_at)
+      INSERT INTO users (email, full_name, password_hash, role, terms_accepted_at, terms_version, location_consent_at, email_verified_at)
       VALUES (
         ${email}, ${full_name.trim()}, ${passwordHash}, ${role}, now(), ${TERMS_VERSION},
-        ${role === 'courier' ? new Date().toISOString() : null}
+        ${role === 'courier' ? new Date().toISOString() : null}, NULL
       )
       RETURNING id, email, full_name, role
     `;
+    // The confirmation email. Never allowed to fail the sign-up: they can ask for another from the app.
+    await sendVerificationEmail(rows[0]);
     res.status(201).json(rows[0]);
   } catch (err) {
     sendError(res, err);

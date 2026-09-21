@@ -166,6 +166,7 @@
   <li><strong>Sign-in:</strong> a session token kept in your browser's local storage for about 12 hours (see <a href="/cookies.html">Cookies &amp; Storage</a>). Failed sign-in attempts are counted per account so we can lock out guessing.</li>
   <li><strong>Abuse protection:</strong> short-lived counters keyed by IP address or account (for example how many requests, sign-ins or support messages in a period). They are cleaned up daily.</li>
   <li><strong>Audit log:</strong> when someone at Vendaru takes an action on an account, job, payment or refund, we record who did it, what and when.</li>
+  <li><strong>Emails:</strong> we email you to confirm your address, to reset a password if you ask, and about the progress of your orders (listed, accepted, on the way, collected, delivered). These go through our email provider, Resend, and only ever mention the town and postcode area, never a full address. We do not send marketing emails.</li>
   <li><strong>Hosting logs:</strong> our hosting provider (Vercel) logs standard request data such as IP address, browser type, the page or address requested and the time.</li>
 </ul>
 </section>
@@ -222,6 +223,7 @@
   <thead><tr><th>Service</th><th>What it does for us</th><th>What it receives</th><th>Comes from</th></tr></thead>
   <tbody>
     <tr><td><strong>Vercel</strong></td><td>Hosting, our database (Vercel Postgres), photo storage (Vercel Blob) and server logs</td><td>Everything you send us, plus IP address, browser type and requested address in logs</td><td>Your device and our server. Vercel acts on our behalf (as a processor)</td></tr>
+    <tr><td><strong>Resend</strong> (resend.com)</td><td>Sending our emails: confirming your address, resetting a password, and order updates</td><td>Your email address, your first name and the content of the email (for example the order number and the towns involved)</td></tr>
     <tr><td><strong>OpenStreetMap</strong> (tile.openstreetmap.org)</td><td>The map pictures</td><td>Your IP address, browser type and which map tiles you view, which shows the area you are looking at</td><td>Your device. OpenStreetMap runs this itself (independent controller)</td></tr>
     <tr><td><strong>Google Fonts</strong></td><td>The Inter typeface used on our pages</td><td>Your IP address and browser type</td><td>Your device. Google runs this itself (independent controller)</td></tr>
     <tr><td><strong>Photon</strong> (komoot)</td><td>Address suggestions as you type</td><td>The text you type in an address box, plus the position of the other end of the job to rank results</td><td>Our server, not your device</td></tr>

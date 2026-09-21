@@ -20,9 +20,11 @@
     screen: 'auth', // 'auth' | 'dashboard'
 
     authRole: 'customer',
-    authMode: 'login', // 'login' | 'register'
+    authMode: 'login', // 'login' | 'register' | 'forgot' (ask for a reset link) | 'reset' (choose a new password)
     authFields: freshAuthFields(),
     authError: null,
+    authNotice: null,  // a good-news message on the sign-in screen (link sent, password changed)
+    resetToken: null,  // the token from a reset link, held only in memory
     authBusy: false,
 
     customerTab: 'compose', // 'compose' | 'active' | 'received'
@@ -1035,6 +1037,7 @@
     switchAuthMode(mode) {
       state.authMode = mode;
       state.authError = null;
+      state.authNotice = null;
       render();
     },
     setCustomerTab(tab) {
@@ -1236,6 +1239,60 @@
       } finally {
         state.authBusy = false;
         render();
+      }
+    },
+    // "Forgot your password?": asks for a reset link. The answer is the same whether or not the address has an account.
+    async submitForgot() {
+      const email = state.authFields.email.trim();
+      state.authError = null;
+      state.authNotice = null;
+      if (!email) { state.authError = 'Enter the email address you signed up with'; render(); return; }
+      state.authBusy = true;
+      render();
+      try {
+        await api('/api/password-forgot', { method: 'POST', auth: false, json: { email } });
+        state.authNotice = "If that address has an account, we've sent it a link to choose a new password. It works once, for an hour. Check your spam folder if it doesn't arrive.";
+      } catch (err) {
+        state.authError = err.message;
+      } finally {
+        state.authBusy = false;
+        render();
+      }
+    },
+    // The new password chosen after following the link in the reset email.
+    async submitReset() {
+      const password = state.authFields.password;
+      state.authError = null;
+      if (password.length < 8 || password.length > 72) { state.authError = 'The new password must be 8-72 characters.'; render(); return; }
+      state.authBusy = true;
+      render();
+      try {
+        await api('/api/password-reset', { method: 'POST', auth: false, json: { token: state.resetToken, password } });
+        state.resetToken = null;
+        state.authMode = 'login';
+        state.authFields.password = '';
+        state.authNotice = 'Password changed. Log in with your new password.';
+      } catch (err) {
+        state.authError = err.message + ' You can ask for a new link below.';
+        state.authNotice = null;
+      } finally {
+        state.authBusy = false;
+        render();
+      }
+    },
+    async resendVerification() {
+      try {
+        const r = await api('/api/email-resend', { method: 'POST', json: {} });
+        if (r && r.already_verified) {
+          // Confirmed already (say, from another device): drop the banner rather than promise an email.
+          await reloadUser();
+          render();
+          toast('Your email is already confirmed.');
+          return;
+        }
+        toast('Sent. Check your inbox, and your spam folder.');
+      } catch (err) {
+        toast(err.message, 'error');
       }
     },
     skipLogin(role) {
@@ -2007,7 +2064,10 @@
         </div>`;
     }
     const f = state.authFields;
-    const isRegister = state.authMode === 'register';
+    const mode = state.authMode;
+    const isRegister = mode === 'register';
+    const isLogin = mode === 'login';
+    const recovering = mode === 'forgot' || mode === 'reset';
     return `
       <div class="auth-container">
         ${themeButton('icon-btn-round auth-theme-toggle')}
@@ -2018,6 +2078,9 @@
             <p class="auth-tagline-sub">${state.authRole === 'courier' ? 'Pick the jobs that suit you. Your location is only shared once you start.' : 'Get an instant price, and a local courier collects and delivers it.'}</p>
           </div>
 
+          ${recovering ? `
+            <h2 class="auth-mode-title">${mode === 'reset' ? 'Choose a new password' : 'Reset your password'}</h2>
+            <p class="auth-mode-sub">${mode === 'reset' ? 'Pick something at least 8 characters long. Choosing a new password signs you out on your other devices.' : "Enter the email you signed up with and we'll send you a link to choose a new one."}</p>` : `
           <div class="segmented-tabs" style="margin: 0 0 20px;">
             <button data-action="switchAuthRole" data-arg="customer" class="tab-pill ${state.authRole === 'customer' ? 'is-active' : ''}">Customer</button>
             <button data-action="switchAuthRole" data-arg="courier" class="tab-pill ${state.authRole === 'courier' ? 'is-active' : ''}">Courier</button>
@@ -2026,23 +2089,26 @@
           <div class="segmented-tabs" style="background:var(--fill);margin: 0 0 20px;">
             <button data-action="switchAuthMode" data-arg="login" class="tab-pill ${!isRegister ? 'is-active' : ''}">Log in</button>
             <button data-action="switchAuthMode" data-arg="register" class="tab-pill ${isRegister ? 'is-active' : ''}">Register</button>
-          </div>
+          </div>`}
 
           ${isRegister ? `
             <div class="input-field-group">
               <label class="input-field-label">Full name</label>
-              <input class="modern-input" data-bind="authFields.full_name" value="${escapeHtml(f.full_name)}" placeholder="Your full name" />
+              <input class="modern-input" data-bind="authFields.full_name" autocomplete="name" value="${escapeHtml(f.full_name)}" placeholder="Your full name" />
             </div>` : ''}
 
+          ${mode === 'reset' ? '' : `
           <div class="input-field-group">
-            <label class="input-field-label">Email</label>
-            <input class="modern-input" data-bind="authFields.email" type="email" value="${escapeHtml(f.email)}" placeholder="you@example.com" />
-          </div>
+            <label class="input-field-label" for="auth-email">Email</label>
+            <input id="auth-email" class="modern-input" data-bind="authFields.email" type="email" autocomplete="${isRegister ? 'email' : 'username'}" value="${escapeHtml(f.email)}" placeholder="you@example.com" />
+          </div>`}
 
+          ${mode === 'forgot' ? '' : `
           <div class="input-field-group">
-            <label class="input-field-label">Password</label>
-            <input class="modern-input" data-bind="authFields.password" type="password" value="${escapeHtml(f.password)}" placeholder="At least 8 characters" />
-          </div>
+            <label class="input-field-label" for="auth-password">${mode === 'reset' ? 'New password' : 'Password'}</label>
+            <input id="auth-password" class="modern-input" data-bind="authFields.password" type="password" autocomplete="${isLogin ? 'current-password' : 'new-password'}" value="${escapeHtml(f.password)}" placeholder="At least 8 characters" />
+            ${isLogin ? '<button type="button" class="link-btn auth-forgot" data-action="switchAuthMode" data-arg="forgot">Forgot your password?</button>' : ''}
+          </div>`}
 
           ${isRegister ? `
             <div class="consent-block">
@@ -2052,13 +2118,15 @@
               <label class="consent-row"><input type="checkbox" data-check="location_consent" ${f.location_consent ? 'checked' : ''} /><span>I agree to share my location while I'm on a delivery, as set out in the <a href="/location-policy.html" target="_blank" rel="noopener">Location Tracking Policy</a>.</span></label>` : ''}
             </div>` : ''}
 
+          ${state.authNotice ? `<div class="notice notice-ok" role="status">${escapeHtml(state.authNotice)}</div>` : ''}
           ${state.authError ? `<div class="form-error" role="alert">${escapeHtml(state.authError)}</div>` : ''}
 
-          <button class="btn-primary-pill" data-action="submitAuth" ${state.authBusy ? 'disabled' : ''} style="margin-top:10px;">
-            ${state.authBusy ? 'Please wait…' : (isRegister ? `Create ${state.authRole} account` : 'Log in')}
+          <button class="btn-primary-pill" data-action="${mode === 'forgot' ? 'submitForgot' : (mode === 'reset' ? 'submitReset' : 'submitAuth')}" ${state.authBusy ? 'disabled' : ''} style="margin-top:10px;">
+            ${state.authBusy ? 'Please wait…' : (mode === 'forgot' ? 'Send reset link' : (mode === 'reset' ? 'Save new password' : (isRegister ? `Create ${state.authRole} account` : 'Log in')))}
           </button>
+          ${recovering ? '<button type="button" class="link-btn auth-back" data-action="switchAuthMode" data-arg="login">Back to log in</button>' : ''}
 
-          ${TEST_MODE_SKIP_LOGIN ? `
+          ${TEST_MODE_SKIP_LOGIN && !recovering ? `
             <button class="btn-details" data-action="skipLogin" data-arg="${state.authRole}" style="margin-top:16px;background:transparent;border:1.5px dashed var(--line-strong);color:var(--muted);">
               Skip sign-in — preview as ${state.authRole}
             </button>` : ''}
@@ -2928,6 +2996,9 @@
     if (!testMode && u.terms_version_current && u.terms_version !== u.terms_version_current) {
       out.push(`<div class="notice" role="status">Please confirm you agree to our current <a href="/terms.html" target="_blank" rel="noopener">Terms</a> and <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>. <button type="button" class="link-btn" data-action="acceptTermsNow" ${state.termsBusy ? 'disabled' : ''}>I agree</button></div>`);
     }
+    if (!testMode && u.email_verification_required && !u.email_verified) {
+      out.push(`<div class="notice" role="status">Confirm your email address: we sent a link to <strong>${escapeHtml(u.email)}</strong>. You need it before you can ${u.role === 'courier' ? 'accept' : 'post'} an order. <button type="button" class="link-btn" data-action="resendVerification">Send it again</button></div>`);
+    }
     if (!testMode && u.role === 'courier' && !u.location_consent_at) {
       out.push('<div class="notice" role="status">Location sharing isn\'t agreed yet, so customers can\'t follow your deliveries. <button type="button" class="link-btn" data-action="enableLocation">Agree and turn on</button></div>');
     }
@@ -3476,6 +3547,8 @@
     };
 
     window.addEventListener('hashchange', () => {
+      // A pasted email link in a tab that is already open doesn't reload the page.
+      if (takeEmailLink()) return;
       if (state.screen === 'dashboard' && applyPageFromHash()) render();
     });
 
@@ -3484,6 +3557,7 @@
       if (document.hidden || !state.user || state.screen !== 'dashboard') return;
       lastPollAt = 0;
       pushCourierLocation();
+      if (state.user.email_verification_required && !state.user.email_verified) reloadUser().then(() => render()).catch(() => {});
     });
 
     root.addEventListener('click', (e) => {
@@ -3550,6 +3624,11 @@
         e.target.click();
         return;
       }
+      if (e.key === 'Enter' && e.target.dataset && /^authFields\./.test(e.target.dataset.bind || '') && !state.authBusy) {
+        e.preventDefault();
+        actions[state.authMode === 'forgot' ? 'submitForgot' : (state.authMode === 'reset' ? 'submitReset' : 'submitAuth')]();
+        return;
+      }
       if (e.key === 'Enter' && e.target.dataset && e.target.dataset.bind === 'pastQuery') {
         e.preventDefault();
         e.target.blur(); // closes the phone keyboard; the results are already showing
@@ -3583,7 +3662,50 @@
 
     startSyncPoller();
     startGpsPush();
-    resumeSession();
+    const link = takeEmailLink({ boot: true });
+    if (link && link.kind === 'reset') return;
+    resumeSession().then(() => { if (link) confirmEmail(link.token); });
+  }
+
+  // A link from one of our emails. The token is in the address after the # (so it is never sent to a
+  // server or logged); it is read once and taken out of the address bar. A reset link opens the
+  // "choose a new password" screen at once; a confirm link is returned so the caller can use it
+  // (at boot, once the session is back; otherwise straight away). Returns null when there is none.
+  function takeEmailLink(opts = {}) {
+    const m = location.hash.match(/^#(verify|reset)=([A-Za-z0-9_-]{20,100})$/);
+    if (!m) return null;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* fine */ }
+    const link = { kind: m[1], token: m[2] };
+    if (link.kind === 'reset') {
+      state.authMode = 'reset';
+      state.resetToken = link.token;
+      state.authError = null;
+      state.authNotice = null;
+      state.screen = 'auth';
+      state.booting = false;
+      render();
+    } else if (!opts.boot) {
+      confirmEmail(link.token);
+    }
+    return link;
+  }
+
+  // The "Confirm my email" link was opened. Works whether or not the person is signed in on this device.
+  async function confirmEmail(token) {
+    try {
+      await api('/api/email-verify', { method: 'POST', auth: false, json: { token } });
+      if (state.user) {
+        await reloadUser();
+        render();
+        toast('Thanks, your email is confirmed.');
+      } else {
+        state.authNotice = 'Thanks, your email is confirmed. You can log in.';
+        render();
+      }
+    } catch (err) {
+      if (state.user) toast(err.message, 'error');
+      else { state.authError = err.message; render(); }
+    }
   }
 
   async function resumeSession() {

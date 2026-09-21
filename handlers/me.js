@@ -1,6 +1,7 @@
 const { requireUser } = require('../lib/auth');
 const { sendError } = require('../lib/respond');
 const { TERMS_VERSION } = require('../lib/legal');
+const { verificationRequired } = require('../lib/email');
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
@@ -20,6 +21,10 @@ module.exports = async (req, res) => {
       payment_instructions: process.env.PAYMENT_INSTRUCTIONS
         || 'Payment is arranged with Vendaru support. Contact support@vendaru.com quoting your order reference.',
       terms_version_current: TERMS_VERSION,
+      // Whether the email address has been confirmed, and whether confirming it is currently demanded
+      // (it is once email can be sent) before posting or accepting an order.
+      email_verified: !!user.email_verified_at,
+      email_verification_required: verificationRequired(),
     });
   } catch (err) {
     sendError(res, err);

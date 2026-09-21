@@ -6,6 +6,7 @@
 // can be collected without having been started.
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
+const { notifyCustomer } = require('../lib/notify');
 const { serializeJob } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
@@ -32,7 +33,11 @@ module.exports = async (req, res) => {
 
     await ensureSchema();
 
-    // COALESCE keeps the original start time if the button is pressed twice.
+    // Is this the first press? Only that one tells the customer (COALESCE below keeps the original
+    // start time if the button is pressed twice).
+    const before = await sql`SELECT started_at FROM jobs WHERE id = ${jobId} AND courier_id = ${courier.id} AND status = 'ACCEPTED'`;
+    const firstPress = !!before.rows[0] && !before.rows[0].started_at;
+
     const updated = await sql`
       UPDATE jobs
       SET started_at = COALESCE(started_at, now())
@@ -40,6 +45,7 @@ module.exports = async (req, res) => {
       RETURNING *
     `;
     if (updated.rows.length) {
+      if (firstPress) await notifyCustomer(updated.rows[0], 'orderStarted', { courierName: courier.full_name });
       res.status(200).json(serializeJob(updated.rows[0]));
       return;
     }

@@ -1,5 +1,7 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
+const { refuseUnverified } = require('../lib/email');
+const { notifyCustomer } = require('../lib/notify');
 const { computeQuote, QuoteError, GeocodeServiceError } = require('../lib/geocode');
 const { verifyQuote, sanitizeRoute } = require('../lib/quote-token');
 const { serializeJob } = require('../lib/jobs');
@@ -34,6 +36,7 @@ module.exports = async (req, res) => {
   try {
     const customer = await requireRole(req, res, 'customer');
     if (!customer) return;
+    if (refuseUnverified(res, customer)) return;
 
     const {
       pickup_address, dropoff_address, pickup_window_start, pickup_window_end,
@@ -153,6 +156,7 @@ module.exports = async (req, res) => {
     // Every job has a payment record from the start (UNPAID until an admin
     // records that it was settled), so refunds always have something to act on.
     await createPayment(rows[0].id, customer.id, q.price_gbp);
+    await notifyCustomer(rows[0], 'orderPlaced', { paymentInstructions: process.env.PAYMENT_INSTRUCTIONS });
     res.status(201).json({
       ...serializeJob(rows[0], { forCustomer: true }),
       payment_status: 'UNPAID',

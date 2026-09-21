@@ -233,6 +233,25 @@ window.VENDARU_FAQ = [
     link: { label: "Privacy Policy", href: "/privacy.html" }
   },
   {
+    id: "confirm-email",
+    cat: "account",
+    q: "Why do I need to confirm my email address?",
+    a: "When you sign up we email a link to the address you gave. Clicking it proves the address is yours, so we can reach you about your orders and let you reset your password if you forget it. Until it is confirmed you can look around, but you can't post or accept an order.\n\nDidn't get it? Check your spam folder, then tap Send it again in the banner at the top of the app, or on your Account page. The newest link is the one that works.",
+  },
+  {
+    id: "forgot-password",
+    cat: "account",
+    q: "I forgot my password",
+    a: "On the sign-in screen tap Forgot your password?, enter the email you signed up with and we'll send you a link. It works once and expires after an hour. Choosing a new password signs you out on your other devices.\n\nIf nothing arrives, check your spam folder and that you typed the right address. For safety we reply in the same way whether or not an address has an account.",
+  },
+  {
+    id: "email-updates",
+    cat: "account",
+    q: "What emails will Vendaru send me?",
+    a: "We email you to confirm your address, to reset a password when you ask, and about your orders: when an order is listed (with how to pay), when a courier accepts it, sets off, collects it and delivers it. We don't send marketing emails. Order emails only name the town and postcode area, never a full address, and they are only sent to addresses that have been confirmed.",
+    link: { label: "Privacy Policy", href: "/privacy.html" }
+  },
+  {
     id: "download-data",
     cat: "account",
     q: "How do I download my data?",

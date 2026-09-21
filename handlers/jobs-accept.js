@@ -1,5 +1,7 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
+const { refuseUnverified } = require('../lib/email');
+const { notifyCustomer } = require('../lib/notify');
 const { serializeJob } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
 
@@ -11,6 +13,7 @@ module.exports = async (req, res) => {
   try {
     const courier = await requireRole(req, res, 'courier');
     if (!courier) return;
+    if (refuseUnverified(res, courier)) return;
 
     const body = req.body || {};
     const jobId = Number(body.jobId ?? body.job_id ?? req.query?.jobId ?? req.query?.job_id);
@@ -36,6 +39,7 @@ module.exports = async (req, res) => {
     `;
 
     if (rows.length) {
+      await notifyCustomer(rows[0], 'orderAccepted', { courierName: courier.full_name });
       res.status(200).json(serializeJob(rows[0]));
       return;
     }

@@ -1,5 +1,6 @@
 const { sql, ensureSchema } = require('../lib/db');
 const { requireRole } = require('../lib/auth');
+const { notifyCustomer } = require('../lib/notify');
 const { savePhoto, deletePhoto, UploadError } = require('../lib/upload');
 const { serializeJob } = require('../lib/jobs');
 const { sendError } = require('../lib/respond');
@@ -66,6 +67,7 @@ module.exports = async (req, res) => {
       res.status(409).json({ detail: 'This job changed while the photo was uploading — it was probably cancelled. Nothing was recorded.' });
       return;
     }
+    await notifyCustomer(updated.rows[0], 'orderCollected');
     res.status(200).json(serializeJob(updated.rows[0]));
   } catch (err) {
     sendError(res, err);
