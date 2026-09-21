@@ -2012,7 +2012,11 @@
       <div class="auth-container">
         ${themeButton('icon-btn-round auth-theme-toggle')}
         <div class="auth-glass-box">
-          <div class="auth-logo-header">${brandWordmark()}</div>
+          <div class="auth-logo-header">
+            ${brandWordmark()}
+            <h1 class="auth-tagline">${state.authRole === 'courier' ? 'Deliver parcels near you' : 'Send or receive parcels across the UK'}</h1>
+            <p class="auth-tagline-sub">${state.authRole === 'courier' ? 'Pick the jobs that suit you. Your location is only shared once you start.' : 'Get an instant price, and a local courier collects and delivers it.'}</p>
+          </div>
 
           <div class="segmented-tabs" style="margin: 0 0 20px;">
             <button data-action="switchAuthRole" data-arg="customer" class="tab-pill ${state.authRole === 'customer' ? 'is-active' : ''}">Customer</button>
@@ -3243,7 +3247,7 @@
       if (geometry) {
         const line = L.polyline(geometry, {
           className: 'route-line',
-          color: '#ec4899', // fallback only; the stylesheet sets the real colour
+          color: '#ff97ca', // fallback only; the stylesheet sets the real colour
           weight: 4,
           opacity: leg ? 0.3 : 0.85, // the job's own route steps back while the courier is still on the way to it
         }).addTo(map);
@@ -3266,7 +3270,7 @@
       if (leg) {
         const here = [courierPos[0], courierPos[1]];
         if (leg.geometry) {
-          legLine = L.polyline([here, ...leg.geometry], { className: 'route-line leg-line', color: '#ec4899', weight: 5, opacity: 0.95 }).addTo(map);
+          legLine = L.polyline([here, ...leg.geometry], { className: 'route-line leg-line', color: '#ff97ca', weight: 5, opacity: 0.95 }).addTo(map);
           legLine.bindTooltip(legLabel(leg), { permanent: true, direction: 'center', className: 'route-label' });
           bounds = legLine.getBounds().extend([pickup.lat, pickup.lng]);
         } else {

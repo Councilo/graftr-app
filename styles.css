@@ -66,12 +66,13 @@
   --accent-indigo-light: #e0e7ff;
   --accent-pink: #ffe4e6;
   --accent-pink-text: #e11d48;
-  --brand: #ec4899;                /* pink accent: active nav, steppers, badges */
-  --brand-strong: #db2777;         /* pink behind white text (buttons), dark enough to read */
-  --brand-strong-hover: #be185d;
-  --brand-rgb: 236, 72, 153;
-  --brand-soft: #fce7f3;
-  --brand-text: #be185d;
+  --brand: #ff97ca;                /* the logo pink: buttons, active nav, steppers, the route and its markers */
+  --brand-strong: #ff97ca;         /* the same pink, for fills that carry text or icons */
+  --brand-strong-hover: #ff7ebd;
+  --brand-rgb: 255, 151, 202;
+  --brand-soft: rgba(255, 151, 202, 0.28);
+  --brand-text: #000000;
+  --on-brand: #000000;             /* text and icons on the pink (white on this pink is only 2:1) */
   --accent-green: #dcfce7;
   --accent-green-text: #166534;
   --accent-amber: #fef3c7;
@@ -157,12 +158,13 @@ html[data-theme="dark"] {
   --accent-indigo-light: rgba(99, 102, 241, 0.22);
   --accent-pink: rgba(244, 63, 94, 0.16);
   --accent-pink-text: #fb7185;
-  --brand: #ec4899;
-  --brand-strong: #db2777;
-  --brand-strong-hover: #be185d;
-  --brand-rgb: 236, 72, 153;
-  --brand-soft: rgba(236, 72, 153, 0.18);
-  --brand-text: #f9a8d4;
+  --brand: #ff97ca;
+  --brand-strong: #ff97ca;
+  --brand-strong-hover: #ff7ebd;
+  --brand-rgb: 255, 151, 202;
+  --brand-soft: rgba(255, 151, 202, 0.20);
+  --brand-text: #ffc2e0;
+  --on-brand: #000000;
   --accent-green: rgba(34, 197, 94, 0.16);
   --accent-green-text: #4ade80;
   --accent-amber: rgba(245, 158, 11, 0.16);
@@ -179,7 +181,7 @@ html[data-theme="dark"] {
   --nav-fg: rgba(255, 255, 255, 0.88);
   --nav-hover: rgba(255, 255, 255, 0.12);
   --nav-active-bg: var(--brand);
-  --nav-active-fg: #ffffff;
+  --nav-active-fg: #000000;
 }
 
 html, body {
@@ -1125,7 +1127,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--paper);
   color: var(--text);
 }
-path.route-line { stroke: var(--brand); }
+path.route-line { stroke: var(--brand); filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.5)); }
 
 /* Custom Destination Callout on Map */
 .destination-callout-pill {
@@ -1448,7 +1450,7 @@ path.route-line { stroke: var(--brand); }
   height: 32px;
   border-radius: 50%;
   background: var(--brand);
-  color: #fff;
+  color: var(--on-brand);
   border: 2.5px solid var(--paper);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
   display: flex;
@@ -1722,7 +1724,7 @@ html[data-theme="dark"] #app > article * {
 .ac-step:first-child::before { display: none; }
 .ac-step.done::before, .ac-step.current::before { background: var(--brand); }
 .ac-dot { position: relative; z-index: 1; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--fill); color: var(--muted); border: 2px solid var(--line-strong); }
-.ac-step.done .ac-dot, .ac-step.current .ac-dot { background: var(--brand); border-color: var(--brand); color: #fff; }
+.ac-step.done .ac-dot, .ac-step.current .ac-dot { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
 .ac-step.current .ac-dot { box-shadow: 0 0 0 5px rgba(var(--brand-rgb), 0.22); }
 .ac-dot svg { width: 17px; height: 17px; }
 .ac-label { font-size: 12px; color: var(--text-2); text-align: center; }
@@ -1968,7 +1970,7 @@ button.inbox-row:hover { background: var(--fill); }
 .auth-wordmark { display: block; width: min(190px, 60vw); height: auto; }
 
 /* ==========================================================================
-   Buttons: every filled button is the brand pink with white text, like the pink tab
+   Buttons: every filled button is the logo pink (#FF97CA) with black text, like the pink tab
    pills in the Help panel. Grey and outlined buttons (secondary actions) and red ones
    (cancel, remove, delete) keep their own colours.
    ========================================================================== */
@@ -1977,16 +1979,16 @@ button.inbox-row:hover { background: var(--fill); }
 .tab-pill.is-active,
 .pickup-toggle .tab-pill.is-active {
   background: var(--brand-strong);
-  color: #fff;
+  color: var(--on-brand);
 }
 .btn-primary-pill, .tab-pill.is-active, .pickup-toggle .tab-pill.is-active { box-shadow: 0 4px 12px rgba(var(--brand-rgb), 0.35); }
 .btn-primary-pill:hover:not(:disabled),
 .btn-details:hover { background: var(--brand-strong-hover); }
-.rv-choice.is-on { background: var(--brand-strong); color: #fff; border-color: var(--brand-strong); }
+.rv-choice.is-on { background: var(--brand-strong); color: var(--on-brand); border-color: var(--brand-strong); }
 .rv-switch.is-on { background: var(--brand-strong); }
-.rv-radio.is-on .rv-dot { border-color: var(--brand-strong); }
+.rv-radio.is-on .rv-dot { border-color: var(--text); }
 .rv-radio.is-on .rv-dot::after { background: var(--brand-strong); }
-.map-toggle.is-on, .map-toggle.is-on:hover { background: var(--brand-strong); color: #fff; border-color: var(--brand-strong); }
+.map-toggle.is-on, .map-toggle.is-on:hover { background: var(--brand-strong); color: var(--on-brand); border-color: var(--brand-strong); }
 .nav-icon-btn.is-active { background: var(--nav-active-bg); color: var(--nav-active-fg); box-shadow: 0 6px 18px rgba(var(--brand-rgb), 0.35); }
 
 /* Stepper: the joining line runs behind the dots, so a dot must be opaque. The see-through
@@ -2017,8 +2019,9 @@ button.inbox-row:hover { background: var(--fill); }
 .addr-gps { top: 0; bottom: 0; margin: auto 0; width: 30px; height: 30px; }
 
 /* While live location is on, the button turns pink and pulses. */
-.addr-gps.is-live, .map-btn.is-live { color: var(--brand-strong); }
-.addr-gps.is-live { border-color: var(--brand-strong); animation: liveRing 1.8s ease-out infinite; }
+.addr-gps.is-live, .map-btn.is-live { background: var(--brand); color: var(--on-brand); }
+.map-btn.is-live:hover { background: var(--brand-strong-hover); }
+.addr-gps.is-live { border-color: var(--brand); animation: liveRing 1.8s ease-out infinite; }
 .map-btn-solo.is-live { animation: liveRing 1.8s ease-out infinite; }
 @keyframes liveRing {
   0%   { box-shadow: 0 0 0 0 rgba(var(--brand-rgb), 0.55); }
@@ -2032,7 +2035,7 @@ button.inbox-row:hover { background: var(--fill); }
 /* The small switch above the pickup box. */
 .label-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .live-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 2px 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.live-toggle.is-on { color: var(--brand-strong); }
+.live-toggle.is-on { color: var(--text); }
 .live-toggle-track { position: relative; flex: none; width: 30px; height: 18px; border-radius: 999px; background: var(--line-strong); transition: background 0.15s ease; }
 .live-toggle-track span { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); transition: transform 0.15s ease; }
 .live-toggle.is-on .live-toggle-track { background: var(--brand-strong); }
@@ -2050,3 +2053,13 @@ button.inbox-row:hover { background: var(--fill); }
   #app { max-width: var(--app-col); margin: 0 auto; box-shadow: 0 0 0 1px var(--line), 0 24px 70px rgba(0, 0, 0, 0.10); }
   .auth-theme-toggle { right: calc(50% - var(--app-col) / 2 + 16px); }             /* stay inside the column */
 }
+
+/* What the platform is, straight away, under the wordmark on the sign-in screen. */
+.auth-tagline { margin: 4px 0 0; font-size: 18px; line-height: 1.25; font-weight: 800; letter-spacing: -0.015em; text-align: center; color: var(--text); text-wrap: balance; }
+.auth-tagline-sub { margin: 0; max-width: 260px; font-size: 13.5px; line-height: 1.45; text-align: center; color: var(--muted); text-wrap: balance; }
+
+/* The sign-in card can be taller than a small screen. The page can't scroll (the app fills the
+   window), so the card used to be cut off top and bottom. The container now scrolls when it has
+   to, keeps the card clear of the theme button, and still centres the card when there is room. */
+.auth-container { height: 100vh; height: 100dvh; overflow-y: auto; align-items: flex-start; padding: 64px 20px 24px; }
+.auth-glass-box { margin: auto; }
