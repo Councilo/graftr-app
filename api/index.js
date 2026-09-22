@@ -71,6 +71,7 @@ const HANDLERS = {
   'support-mine': () => require('../handlers/support-mine'),
   'support-reply': () => require('../handlers/support-reply'),
   'track': () => require('../handlers/track'),
+  'walker-route': () => require('../handlers/walker-route'),
 };
 
 // Only ever a plain name: letters, digits and hyphens. Anything else can never

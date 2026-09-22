@@ -556,7 +556,7 @@
         </div>
         <p class="pn-small">${walking
           ? "You'll only be offered walker jobs: a bag collected on foot from a shop, at most a mile to carry, small parcels only. Slower than driving, so it's advertised as such to the customer."
-          : "You'll only be offered ordinary jobs, any size, any distance. Switch to Walker if you're getting about on foot and want short, small-parcel jobs along the way."}</p>
+          : "You'll be offered every open job, any size or distance — short walker jobs too, marked with a walker icon, since a mile is nothing by car or bike. Switch to Walker if you're getting about on foot instead and want only the short, small-parcel jobs."}</p>
       </section>` : ''}
       <section class="pn-sec" id="pn-pw-section">
         <h3>Change password</h3>

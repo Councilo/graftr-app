@@ -112,24 +112,27 @@ function makeJob(custToken, custId, pa, da, q, extra) {
     && new RegExp(`${wj.body.walk_minutes_low} to ${wj.body.walk_minutes_high} minutes`).test(walkerMail.text) && /slower/i.test(walkerMail.text), walkerMail && walkerMail.text);
   ok('the standard order\'s email does not mention walking', standardMail && !/walker|slower/i.test(standardMail.text), standardMail && standardMail.text);
 
-  console.log('\n[marketplace: driver and walker couriers see different jobs]');
+  console.log('\n[marketplace: a driver sees everything, a walker only walker jobs]');
+  const wj2 = await makeJob(cust.token, cust.id, PA, DA_NEAR, Q_NEAR, { delivery_mode: 'walker', walker_ack: true, package_size: 'small' });
   const availDriver = (await call('GET', '/api/jobs-available', driver.token)).body;
   const availWalker = (await call('GET', '/api/jobs-available', walker.token)).body;
-  ok('a driver sees the standard job, not the walker job', availDriver.some((j) => j.id === sj.body.id) && !availDriver.some((j) => j.id === wj.body.id), [availDriver.map((j) => j.id), sj.body.id, wj.body.id]);
-  ok('a walker sees the walker job, not the standard job', availWalker.some((j) => j.id === wj.body.id) && !availWalker.some((j) => j.id === sj.body.id), [availWalker.map((j) => j.id), sj.body.id, wj.body.id]);
+  ok('a driver sees the standard job AND the walker job — driving somewhere a mile off is trivial', availDriver.some((j) => j.id === sj.body.id) && availDriver.some((j) => j.id === wj.body.id), [availDriver.map((j) => j.id), sj.body.id, wj.body.id]);
+  const walkerJobToDriver = availDriver.find((j) => j.id === wj.body.id);
+  ok('and it is flagged as a walker job, for the app\'s walker icon', walkerJobToDriver && walkerJobToDriver.delivery_mode === 'walker', walkerJobToDriver);
+  ok('a walker sees only the walker jobs, not the standard one — no car to drive it', availWalker.some((j) => j.id === wj.body.id) && availWalker.some((j) => j.id === wj2.body.id) && !availWalker.some((j) => j.id === sj.body.id), [availWalker.map((j) => j.id), sj.body.id, wj.body.id]);
   const seenWalkerJob = availWalker.find((j) => j.id === wj.body.id);
   ok('the walker offer is postcode-level, not the street, and never says "hidden"', seenWalkerJob && /Preston PR1 3AA/.test(seenWalkerJob.pickup_address) && !/hidden/i.test(seenWalkerJob.pickup_address + seenWalkerJob.dropoff_address), seenWalkerJob);
   ok('it carries the minute range but not the exact metres', seenWalkerJob && typeof seenWalkerJob.walk_minutes_low === 'number' && seenWalkerJob.walk_distance_m === undefined, seenWalkerJob);
   ok('no stored route is sent for an unaccepted job (the app draws one itself)', seenWalkerJob && seenWalkerJob.route_geometry === null, seenWalkerJob);
 
-  console.log('\n[accept: each mode only takes its own kind of job]');
-  r = await call('POST', '/api/jobs-accept', driver.token, { jobId: wj.body.id });
-  ok('a driver cannot accept a walker job', r.status === 409, r);
+  console.log('\n[accept: a walker is limited to walker jobs; a driver is not limited at all]');
   r = await call('POST', '/api/jobs-accept', walker.token, { jobId: sj.body.id });
   ok('a walker cannot accept a standard job', r.status === 409, r);
-  r = await call('POST', '/api/jobs-accept', walker.token, { jobId: wj.body.id });
-  ok('a walker accepts the walker job', r.status === 200 && r.body.status === 'ACCEPTED', r);
+  r = await call('POST', '/api/jobs-accept', driver.token, { jobId: wj.body.id });
+  ok('a driver CAN accept a walker job — it is just a short trip to them', r.status === 200 && r.body.status === 'ACCEPTED', r);
   ok('the accepted job\'s addresses are now the real ones', r.body.pickup_address === PA && r.body.dropoff_address === DA_NEAR, [r.body.pickup_address, r.body.dropoff_address]);
+  r = await call('POST', '/api/jobs-accept', walker.token, { jobId: wj2.body.id });
+  ok('a walker accepts a walker job as normal', r.status === 200 && r.body.status === 'ACCEPTED', r);
   r = await call('POST', '/api/jobs-accept', driver.token, { jobId: sj.body.id });
   ok('a driver accepts the standard job as normal', r.status === 200 && r.body.status === 'ACCEPTED', r);
 

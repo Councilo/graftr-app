@@ -985,6 +985,30 @@ a { color: inherit; text-decoration: none; }
   font-size: 11px; font-weight: 700; letter-spacing: 0;
 }
 .ac-walker-badge svg { width: 12px; height: 12px; }
+/* How far out of the walker's own route an offer sits — a plain neutral chip (not the brand pink,
+   which is reserved for "this is a walker job" itself) so the two facts don't blur together. */
+.pkg-detour-chip { background: var(--fill); color: var(--text-2); font-weight: 600; }
+
+/* Route mode: the "where are you walking?" bar above a walker's offers. */
+.route-bar {
+  margin-bottom: 4px;
+  padding: 14px 16px;
+  border-radius: var(--radius-xl);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+.route-bar-prompt {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; text-align: left; font: inherit; color: var(--text); font-weight: 700; font-size: 13.5px;
+  cursor: pointer;
+}
+.route-bar-prompt svg { width: 18px; height: 18px; flex: none; color: var(--brand-strong); }
+.route-bar-title { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; margin-bottom: 8px; }
+.route-bar-title svg { width: 17px; height: 17px; flex: none; color: var(--brand-strong); }
+.route-bar-form .modern-input { margin-bottom: 8px; }
+.route-bar-actions { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+.route-bar-active .route-bar-title { margin-bottom: 4px; }
 .step-when {
   margin-top: 3px;
   font-size: 12px;

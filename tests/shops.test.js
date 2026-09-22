@@ -35,6 +35,16 @@ const SHOP_ADDRESS = 'Fishergate, Preston PR1 3AA, UK';
 const NEAR_ADDRESS = 'Lowthian Street, Preston PR1 3AA, UK';
 const FAR_ADDRESS = 'Bamber Bridge, Preston PR5 8AN, UK';
 
+// A bag posted with no ready_at defaults to "now" server-side — fine in the day, but silently refused
+// after 9pm (the walker-hours rule), which used to make this whole suite fail overnight for a reason
+// that has nothing to do with shops. Every bag below that isn't deliberately testing the hours
+// rejection uses this instead: tomorrow at 1pm UTC, always inside 7am-9pm UK time regardless of season.
+function daytimeIso() {
+  const d = new Date(Date.now() + 24 * 3600e3);
+  d.setUTCHours(13, 0, 0, 0);
+  return d.toISOString();
+}
+
 (async () => {
   const owner = await user('customer', 'shopowner');
   const driver = await user('courier', 'shopdriver');
@@ -49,7 +59,7 @@ const FAR_ADDRESS = 'Bamber Bridge, Preston PR5 8AN, UK';
   console.log('[before applying]');
   let r = await call('GET', '/api/shop-profile', owner.token);
   ok('no shop yet', r.status === 200 && r.body.shop === null, r.body);
-  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'X', dropoff_address: NEAR_ADDRESS });
+  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'X', dropoff_address: NEAR_ADDRESS, ready_at: daytimeIso() });
   ok('cannot post a bag with no shop', r.status === 403, r);
   r = await call('GET', '/api/admin-shops', owner.token);
   ok('a non-admin cannot see the shop admin list', r.status === 403, r);
@@ -61,7 +71,7 @@ const FAR_ADDRESS = 'Bamber Bridge, Preston PR5 8AN, UK';
   });
   ok('applying creates a pending shop, geocoded', r.status === 201 && r.body.shop.status === 'pending' && Number.isFinite(r.body.shop.lat) && Number.isFinite(r.body.shop.lng), r.body);
   const shopId = r.body.shop.id;
-  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'X', dropoff_address: NEAR_ADDRESS });
+  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'X', dropoff_address: NEAR_ADDRESS, ready_at: daytimeIso() });
   ok('a pending shop cannot post a bag yet', r.status === 403 && /waiting for approval/i.test(r.body.detail), r);
   r = await call('POST', '/api/shop-profile', owner.token, { name: `Ali's Corner Shop ${stamp}`, address: SHOP_ADDRESS, opening_hours: 'Mon-Sun 7am-9pm' });
   ok('editing while pending updates the same shop, not a second one', r.status === 200 && r.body.shop.id === shopId && r.body.shop.opening_hours === 'Mon-Sun 7am-9pm', r.body);
@@ -73,14 +83,14 @@ const FAR_ADDRESS = 'Bamber Bridge, Preston PR5 8AN, UK';
   ok('admin approves it', r.status === 200 && r.body.status === 'approved', r.body);
 
   console.log('\n[posting a bag]');
-  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'Jane Smith', dropoff_address: NEAR_ADDRESS, notes: 'Flat 2' });
+  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'Jane Smith', dropoff_address: NEAR_ADDRESS, notes: 'Flat 2', ready_at: daytimeIso() });
   ok('an approved shop posts a genuinely short bag', r.status === 201 && r.body.delivery_mode === 'walker' && r.body.shop_id === shopId, r.body);
   const bag = r.body;
   ok('its pickup address is the shop, in full', bag.pickup_address.includes('Fishergate'), bag.pickup_address);
   ok('the shop (as the job\'s own customer) can see the pickup code', /^\d{4}$/.test(bag.pickup_code || ''), bag.pickup_code);
   ok('it carries a minute range like any walker job', typeof bag.walk_minutes_low === 'number' && bag.walk_minutes_high > bag.walk_minutes_low, bag);
 
-  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'Too Far', dropoff_address: FAR_ADDRESS });
+  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'Too Far', dropoff_address: FAR_ADDRESS, ready_at: daytimeIso() });
   ok('a bag over a mile away is refused', r.status === 422, r);
   r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'Night Owl', dropoff_address: NEAR_ADDRESS, ready_at: (() => { const d = new Date(Date.now() + 24 * 3600e3); d.setUTCHours(23, 0, 0, 0); return d.toISOString(); })() });
   ok('a bag ready after dark is refused', r.status === 422 && /7am|9pm/.test(r.body.detail), r);
@@ -88,7 +98,7 @@ const FAR_ADDRESS = 'Bamber Bridge, Preston PR5 8AN, UK';
   console.log('\n[a suspended shop cannot post]');
   r = await call('POST', '/api/admin-shops', admin.token, { shopId, action: 'suspend', reason: 'test suspension' });
   ok('admin suspends it', r.status === 200 && r.body.status === 'suspended', r.body);
-  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'X', dropoff_address: NEAR_ADDRESS });
+  r = await call('POST', '/api/shop-post-bag', owner.token, { recipient_name: 'X', dropoff_address: NEAR_ADDRESS, ready_at: daytimeIso() });
   ok('a suspended shop cannot post', r.status === 403 && /suspended/i.test(r.body.detail), r);
   r = await call('POST', '/api/shop-profile', owner.token, { name: 'New name', address: SHOP_ADDRESS });
   ok('nor edit its way back in', r.status === 403, r);
@@ -97,7 +107,8 @@ const FAR_ADDRESS = 'Bamber Bridge, Preston PR5 8AN, UK';
 
   console.log('\n[marketplace: the shop is shown in full, the customer stays masked]');
   const availDriver = (await call('GET', '/api/jobs-available', driver.token)).body;
-  ok('a driver never sees the bag (it is a walker job)', !availDriver.some((j) => j.id === bag.id), availDriver.map((j) => j.id));
+  const bagToDriver = availDriver.find((j) => j.id === bag.id);
+  ok('a driver sees the bag too, flagged as a walker job for the app\'s icon', bagToDriver && bagToDriver.delivery_mode === 'walker', bagToDriver);
   const availWalker = (await call('GET', '/api/jobs-available', walker.token)).body;
   const seen = availWalker.find((j) => j.id === bag.id);
   ok('a walker sees it', !!seen, availWalker.map((j) => j.id));

@@ -50,6 +50,8 @@
     available: [],
     listError: null,
     listsLoaded: false,
+    walkerRoute: null, // a walker's own declared route (see loadLists), or null if they haven't set one
+    routeForm: { open: false, from: '', to: '', leaves_at: '', busy: false, error: null },
 
     expanded: new Set(),
     pendingPhoto: {}, // jobId -> File
@@ -1024,12 +1026,16 @@
       if (state.user.role === 'customer') {
         state.jobs = await api('/api/jobs-mine');
       } else {
-        const [available, mine] = await Promise.all([
+        const walking = state.user.courier_mode === 'walker';
+        const [available, mine, route] = await Promise.all([
           api('/api/jobs-available'),
           api('/api/jobs-courier-mine'),
+          // Only a walker has one; asking as a driver would just be refused every few seconds for no reason.
+          walking ? api('/api/walker-route').catch(() => ({ route: null })) : Promise.resolve({ route: null }),
         ]);
         state.available = available;
         state.jobs = mine;
+        state.walkerRoute = route.route;
       }
       if (gen !== sessionGen || !state.user) return;
       state.listsLoaded = true;
@@ -1775,6 +1781,58 @@
       } catch (err) {
         toast(err.message, 'error');
         await loadLists();
+      }
+    },
+    // A walker says where they're walking; offers are then ranked and filtered by how much detour
+    // each one would add (server-side, see lib/geo.js), instead of just "everything nearby".
+    toggleRouteForm() {
+      const f = state.routeForm;
+      f.open = !f.open;
+      f.error = null;
+      if (f.open && state.walkerRoute) {
+        // Editing an existing route starts from nothing typed, not stale coordinates re-shown as text —
+        // the addresses that were typed aren't stored, only where they resolved to.
+        f.from = ''; f.to = ''; f.leaves_at = '';
+      }
+      render();
+    },
+    async setWalkerRoute() {
+      const f = state.routeForm;
+      if (!f.from.trim() || !f.to.trim()) {
+        f.error = 'Enter where you\'re walking from and to.';
+        render();
+        return;
+      }
+      f.busy = true;
+      f.error = null;
+      render();
+      try {
+        const leaves = f.leaves_at ? new Date(f.leaves_at) : null;
+        const { route } = await api('/api/walker-route', {
+          method: 'POST',
+          json: {
+            from_address: f.from.trim(), to_address: f.to.trim(),
+            leaves_at: leaves && !Number.isNaN(leaves.getTime()) ? leaves.toISOString() : undefined,
+          },
+        });
+        state.walkerRoute = route;
+        state.routeForm = { open: false, from: '', to: '', leaves_at: '', busy: false, error: null };
+        toast('Route set. Offers are now ranked by how far out of your way they are.');
+        await loadLists();
+      } catch (err) {
+        f.busy = false;
+        f.error = err.message;
+        render();
+      }
+    },
+    async clearWalkerRoute() {
+      if (!confirm('Clear your route? Offers will go back to showing everything nearby.')) return;
+      try {
+        await api('/api/walker-route', { method: 'DELETE' });
+        state.walkerRoute = null;
+        await loadLists();
+      } catch (err) {
+        toast(err.message, 'error');
       }
     },
     async deleteJob(jobId) {
@@ -2807,6 +2865,11 @@
     const walkerChip = job.delivery_mode === 'walker'
       ? `<div class="pkg-pickup-chip pkg-walker-chip">${ICONS.walk}<span>Walker delivery${job.walk_minutes_low != null ? ` · ${job.walk_minutes_low}–${job.walk_minutes_high} min` : ''}</span></div>`
       : '';
+    // Only present once a route is set (handlers/jobs-available.js) — how much extra walking this
+    // offer would add to the walker's own declared route, the thing route mode ranks and filters by.
+    const detourChip = job.detour_minutes != null
+      ? `<div class="pkg-pickup-chip pkg-detour-chip">${job.detour_minutes <= 0 ? 'Right on your route' : `+${job.detour_minutes} min on your route`}</div>`
+      : '';
 
     // The customer's active-deliveries page uses the stepper card, closed until tapped.
     const ac = !isCourier && state.customerTab === 'active' && ['OPEN', 'ACCEPTED', 'COLLECTED'].includes(job.status);
@@ -2826,6 +2889,7 @@
         </div>
         ${moneyChips}
         ${walkerChip}
+        ${detourChip}
         ${pickupChip}`}
 
         ${isExpanded ? `
@@ -3223,6 +3287,46 @@
     }[state.courierTab];
   }
 
+  // A walker's own route: unset (a prompt to add one), the form to set one, or a summary of the one
+  // they've got — shown above their offers, which the server ranks and filters by detour once a route
+  // is active (handlers/jobs-available.js). Setting no route at all still shows every nearby offer,
+  // same as before this existed.
+  function renderWalkerRouteBar() {
+    const f = state.routeForm;
+    if (f.open) {
+      return `
+        <div class="route-bar route-bar-form">
+          <div class="route-bar-title">${ICONS.walk}<span>Where are you walking?</span></div>
+          <input class="modern-input" data-bind="routeForm.from" value="${escapeHtml(f.from)}" placeholder="Walking from…" autocomplete="off" ${f.busy ? 'disabled' : ''} />
+          <input class="modern-input" data-bind="routeForm.to" value="${escapeHtml(f.to)}" placeholder="…to" autocomplete="off" ${f.busy ? 'disabled' : ''} />
+          <input class="modern-input" type="datetime-local" data-bind="routeForm.leaves_at" value="${escapeHtml(f.leaves_at)}" min="${localInputValue(new Date())}" aria-label="Leaving at (optional — leave blank for now)" ${f.busy ? 'disabled' : ''} />
+          <div class="field-hint">Leaving time is optional — leave it blank for right now. Offers near this route, in either direction, will be ranked by how little they add to your walk.</div>
+          ${f.error ? `<div class="form-error">${escapeHtml(f.error)}</div>` : ''}
+          <div class="route-bar-actions">
+            <button type="button" class="btn-primary-pill" data-action="setWalkerRoute" ${f.busy ? 'disabled' : ''} style="flex:1;">${f.busy ? 'Setting…' : 'Set route'}</button>
+            <button type="button" class="link-btn" data-action="toggleRouteForm" ${f.busy ? 'disabled' : ''}>Cancel</button>
+          </div>
+        </div>`;
+    }
+    if (state.walkerRoute) {
+      const until = new Date(state.walkerRoute.expires_at);
+      const untilText = Number.isNaN(until.getTime()) ? '' : until.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return `
+        <div class="route-bar route-bar-active">
+          <div class="route-bar-title">${ICONS.walk}<span>Route set${untilText ? ` · until ${escapeHtml(untilText)}` : ''}</span></div>
+          <div class="field-hint">Offers below are ranked by how far out of your way they'd take you.</div>
+          <div class="route-bar-actions">
+            <button type="button" class="link-btn" data-action="toggleRouteForm">Change</button>
+            <button type="button" class="link-btn" data-action="clearWalkerRoute">Clear route</button>
+          </div>
+        </div>`;
+    }
+    return `
+      <button type="button" class="route-bar route-bar-prompt" data-action="toggleRouteForm">
+        ${ICONS.walk}<span>Where are you walking? Set a route to see offers along the way</span>
+      </button>`;
+  }
+
   function renderDashboard() {
     const isCustomer = state.user.role === 'customer';
     const section = sectionInfo(isCustomer) || { title: 'Vendaru', sub: '', empty: 'Nothing here.' };
@@ -3284,6 +3388,7 @@
             </div>` : ''}
 
           <div class="panel-scroll-content${isPastPage ? ' is-list' : ''}">
+            ${!isCustomer && state.user.courier_mode === 'walker' && state.courierTab === 'available' ? renderWalkerRouteBar() : ''}
             ${isCustomer && state.customerTab === 'compose'
               ? renderComposeForm()
               : isPastPage ? renderPastPage(section)
