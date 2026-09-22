@@ -459,7 +459,7 @@
         <div class="acct-who">
           <h1 class="acct-name">${esc(u.full_name || 'Your account')}</h1>
           <div class="acct-chips">
-            ${chip(courier ? 'Courier' : 'Customer', 'blue')}
+            ${chip(courier ? (u.courier_mode === 'walker' ? 'Walker courier' : 'Courier') : 'Customer', 'blue')}
             ${delivered ? chip(`${delivered} delivered`, 'green') : ''}
             ${termsStale ? chip('Terms need review', 'amber') : ''}
             ${needsEmail ? chip('Email not confirmed', 'amber') : ''}
@@ -540,8 +540,20 @@
 
   function acctSecurity(pane, u, ctx) {
     const courier = u.role === 'courier';
+    const walking = u.courier_mode === 'walker';
     const termsStale = !!(u.terms_version_current && u.terms_version !== u.terms_version_current);
     pane.innerHTML = `
+      ${courier ? `
+      <section class="pn-sec">
+        <h3>Delivery mode</h3>
+        <div class="pn-tabs pn-tabs-pill" role="tablist" aria-label="Driver or bike, or walker delivery">
+          <button type="button" role="tab" class="pn-tab ${walking ? '' : 'is-active'}" aria-selected="${!walking}" data-pn="setCourierMode" data-arg="driver">Driver or bike</button>
+          <button type="button" role="tab" class="pn-tab ${walking ? 'is-active' : ''}" aria-selected="${walking}" data-pn="setCourierMode" data-arg="walker">Walker</button>
+        </div>
+        <p class="pn-small">${walking
+          ? "You'll only be offered walker jobs: a bag collected on foot from a shop, at most a mile to carry, small parcels only. Slower than driving, so it's advertised as such to the customer."
+          : "You'll only be offered ordinary jobs, any size, any distance. Switch to Walker if you're getting about on foot and want short, small-parcel jobs along the way."}</p>
+      </section>` : ''}
       <section class="pn-sec" id="pn-pw-section">
         <h3>Change password</h3>
         <form data-pn-form="password" class="pn-form">
@@ -652,6 +664,15 @@
   ACTIONS.enableLocation = async (el) => {
     try { await withBusy(el, () => API('/api/account-consent', { method: 'POST', json: { location: true } })); await refreshUser(); toast('Location sharing agreed.'); redraw(); }
     catch (err) { toast(errText(err), 'error'); }
+  };
+  ACTIONS.setCourierMode = async (el) => {
+    const mode = el.dataset.arg;
+    try {
+      await withBusy(el, () => API('/api/account-courier-mode', { method: 'POST', json: { mode } }));
+      await refreshUser();
+      toast(mode === 'walker' ? "Switched to walker delivery." : 'Switched to driver or bike delivery.');
+      redraw();
+    } catch (err) { toast(errText(err), 'error'); }
   };
   ACTIONS.exportData = async (el) => {
     try {

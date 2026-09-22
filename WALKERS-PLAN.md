@@ -1,7 +1,15 @@
 # Walkers: the plan
 
-Status: **plan only, nothing built yet.** Written 2026-09-21 as a document to work from. Every number marked
-"default" is a starting point to tune in a pilot, not a fact. Section 12 lists the decisions I need from you.
+Status: written 2026-09-21 as a document to work from. **Phase 1 (below) is built and tested as of 2026-09-22** —
+walker jobs on existing accounts, no shops yet. Every number marked "default" is a starting point to tune in a
+pilot, not a fact. Section 12 lists the decisions I still need from you; Phase 1 went ahead on my own
+recommendation for each (shop-initiated first — moot until Phase 2; customer pays through Vendaru; no commission
+modelled yet; walker-only jobs, drivers can't take them; 07:00–21:00 is NOT yet enforced, see below).
+
+**What Phase 1 actually built, in short:** a courier switches to Walker mode in Account → Security. Only then do
+they see walker jobs, and only walker jobs. A customer gets a "Walker delivery" option on the review screen
+whenever their trip is genuinely under a mile by the real walking route, priced and timed by the server, gated by
+a required acknowledgement. Deviations from this document, and gaps still open, are listed at the end of section 9.
 
 ---
 
@@ -228,13 +236,34 @@ drawn by the app. The exact door is revealed on accept.
 | Phase | What ships | Size | Done when |
 |---|---|---|---|
 | **0. Decisions and paperwork** | Section 12 answered. Insurance enquiry sent. Solicitor briefed. Pilot town chosen. | small | You have written answers. |
-| **1. Walker jobs on existing accounts** | `lib/walking.js`, foot routing verified, `walker_option` on the quote, the acknowledgement, walker price, time range in the UI and emails, auto-cancel, tests. No shops yet: the customer posts, the walker collects from an address. | medium | A trip under 1 mile can be ordered as a walker job, with the honest time range, end to end. |
+| **1. Walker jobs on existing accounts** ✅ **built 2026-09-22** | `lib/walking.js`, foot routing verified, `walker_option` on the quote, the acknowledgement, walker price, time range in the UI and emails, tests. No shops yet: the customer posts, the walker collects from an address. | medium | A trip under 1 mile can be ordered as a walker job, with the honest time range, end to end. Verified in the browser and with 26+14 automated checks (`tests/walking.test.js`, `tests/walkers.test.js`). |
 | **2. Partner shops** | `shops` table, shop sign-up and approval, shop-initiated jobs, pickup code, Ready / Handed over, shop screen. | medium-large | A shop posts a bag, a walker collects it with the code, the customer receives it. |
 | **3. Route mode** | `walker_routes`, `lib/geo.js`, detour ranking, "Where are you walking?" | medium | A walker sees only bags on or near their route, ranked by minutes added. |
 | **4. Polish** | Bag stacking (2 at once) with a combined time, tips, ratings, card payments for the fee, shop-paid invoices. | large | Only after the pilot says it is worth it. |
 
 Phases 1 and 2 are the smallest thing that is a real product. Route mode (3) matters for the economics, so do not skip it,
 but it is safer to build it once real bags are flowing.
+
+**Phase 1 as actually built — deviations from this document, and what's still open:**
+- **Foot routing has no fallback.** Confirmed directly: `routing.openstreetmap.de/routed-foot` genuinely computes
+  walking routes, but `router.project-osrm.org` (used for driving) silently returns the SAME route for a `/foot/`
+  request as for `/driving/` — it ignores the profile rather than erroring. So there is only one real walking
+  source, not two the way driving has. `lib/walking.js` retries once on a dropped connection, then gives up
+  honestly (the walker option disappears from the quote rather than guessing).
+- **"Small" parcel, not 3 kg.** There's no separate weight field in Vendaru yet, so the existing "small" size
+  (fits in a bag, under 5 kg) is the walker cap, not the 3 kg this document first floated. Add a real weight field
+  before tightening it.
+- **Not yet built:** the 07:00–21:00 hours restriction, the shorter (60-minute) auto-cancel window for walker jobs
+  — they use the same 30-minutes-after-the-pickup-window rule as any other job — and the driver map default's
+  "shop is a public place, shown in full" masking rule (moot until Phase 2 adds shops).
+- **Where it shows:** the courier home never says "available" — a walker sees "Your job offers" exactly like a
+  driver does. The customer's review screen only offers Walker delivery when the trip genuinely qualifies (hidden,
+  not greyed out, otherwise). The stepper card, past-orders row and the courier's offer card all carry a small
+  "Walker" badge with the time range.
+- **Not yet updated:** the policy pages (Location Tracking Policy, Privacy, Courier Terms) don't mention walker
+  delivery by name yet. Phase 1 doesn't introduce a new class of person seeing a customer's data (only an existing
+  courier, now sometimes on foot), so the risk is low, but they should be reviewed before this is promoted to
+  customers, and definitely before Phase 2 adds shops as a new party who sees the customer's address.
 
 ## 10. Pilot
 

@@ -293,6 +293,12 @@ window.VENDARU_FAQ = [
     link: { label: "Prohibited items", href: "/prohibited-items.html" }
   },
   {
+    id: "walker-delivery",
+    cat: "ordering",
+    q: "What is walker delivery?",
+    a: "For a short trip, a courier with no car or bike can carry a small parcel to you on foot — at most a mile, as the walking route runs, not as the crow flies. It only appears as an option when your trip genuinely qualifies, and only for a small parcel.\n\nIt's slower than a regular courier, on purpose: you're shown a time range (for example 'about 27 to 40 minutes after it's collected') and asked to confirm you understand before you can choose it. It also usually costs less than a regular courier over that distance.",
+  },
+  {
     id: "contact",
     cat: "account",
     q: "How do I contact Vendaru?",

@@ -24,6 +24,19 @@ module.exports = async (req, res) => {
 
     await ensureSchema();
 
+    // A walker job can only be taken by a courier in walker mode, and the reverse — kept as its own
+    // check (not folded into the UPDATE's WHERE below) purely so the 409 can say why, rather than the
+    // generic "not open" a stranger's already-accepted job gets.
+    const targeted = await sql`SELECT delivery_mode FROM jobs WHERE id = ${jobId}`;
+    if (targeted.rows.length && targeted.rows[0].delivery_mode === 'walker' && courier.courier_mode !== 'walker') {
+      res.status(409).json({ detail: 'This is a walker job — switch to walker mode in your account to accept it.' });
+      return;
+    }
+    if (targeted.rows.length && targeted.rows[0].delivery_mode !== 'walker' && courier.courier_mode === 'walker') {
+      res.status(409).json({ detail: "Walker mode only takes walker jobs — switch back to driver mode for this one." });
+      return;
+    }
+
     // The claim itself is the UPDATE's WHERE clause, not a SELECT beforehand
     // — two couriers hitting Accept on the same job at the same instant are
     // two concurrent UPDATEs against the same row, and Postgres serialises

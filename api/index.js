@@ -19,6 +19,7 @@
 // one that is actually called.
 const HANDLERS = {
   'account-consent': () => require('../handlers/account-consent'),
+  'account-courier-mode': () => require('../handlers/account-courier-mode'),
   'account-delete': () => require('../handlers/account-delete'),
   'account-export': () => require('../handlers/account-export'),
   'account-password': () => require('../handlers/account-password'),

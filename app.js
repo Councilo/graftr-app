@@ -111,6 +111,8 @@
     navigate: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4.5 20.3l.7.7L12 18l6.8 3 .7-.7z"/></svg>`,
     clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>`,
     pin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>`,
+    // A walker delivery: carried on foot, never in a vehicle.
+    walk: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M9.5 22 11 16l-2-2 .5-5 3 2 2 4 3 2"/><path d="M11 16l-4 1"/><path d="M14.5 13l3.5 1 1-4"/></svg>`,
   };
 
   // ---------------- Helpers ----------------
@@ -156,6 +158,7 @@
   const KM_PER_MILE = 1.609344;
   function distanceMiles(km) { return Math.round((Number(km) / KM_PER_MILE) * 10) / 10; }
   function miles(km) { return distanceMiles(km).toFixed(1) + ' mi'; }
+  function milesFromMetres(m) { return distanceMiles(Number(m) / 1000).toFixed(1) + ' mi'; }
 
   // The [lat, lng] a given fraction (0..1) of the way along a route's road
   // geometry, so a marker sits on the road rather than on a straight line.
@@ -523,11 +526,17 @@
   // Real driving directions from the public OSRM servers. Two independent ones speak the same
   // API, and both are demo servers that now and then drop a connection or say they are busy, so
   // they are tried in turn, twice round, before giving up. "No route" is a definitive answer.
-  const ROUTE_SERVERS = ['https://router.project-osrm.org', 'https://routing.openstreetmap.de/routed-car'];
-  async function roadRoute(p, d) {
-    const path = `/route/v1/driving/${p[1]},${p[0]};${d[1]},${d[0]}?overview=full&geometries=geojson`;
+  //
+  // Walking directions (for a walker delivery) are different: only one of those two servers has a
+  // genuine walking profile. router.project-osrm.org answers a /foot/ request, but with the exact
+  // same route it gives for /driving/ — it's a car-only demo that ignores the profile in the URL
+  // rather than erroring, so it must never be asked for one. There is no second real source to fall
+  // back to if the one that works is down.
+  const ROUTE_SERVERS = { driving: ['https://router.project-osrm.org', 'https://routing.openstreetmap.de/routed-car'], foot: ['https://routing.openstreetmap.de/routed-foot'] };
+  async function roadRoute(p, d, profile = 'driving') {
+    const path = `/route/v1/${profile}/${p[1]},${p[0]};${d[1]},${d[0]}?overview=full&geometries=geojson`;
     for (let round = 0; round < 2; round++) {
-      for (const base of ROUTE_SERVERS) {
+      for (const base of ROUTE_SERVERS[profile]) {
         const ctl = typeof AbortController === 'function' ? new AbortController() : null;
         const timer = ctl ? setTimeout(() => ctl.abort(), 10000) : null;
         try {
@@ -612,32 +621,32 @@
   // busy when it was planned, or it is a demo order) the browser fetches it, keeps it for the
   // session and redraws the map. Nothing pretends: until a real route is in hand the map shows the
   // two points and says it is looking, never a straight line that is not a road.
-  const routeCache = new Map(); // "plat,plng,dlat,dlng" -> { status: 'loading'|'done'|'failed', geometry, tries }
+  const routeCache = new Map(); // "profile:plat,plng,dlat,dlng" -> { status: 'loading'|'done'|'failed', geometry, tries }
   let wantedRouteKey = null;    // the route the map on screen is waiting for
-  const routeKey = (p, d) => [p.lat, p.lng, d.lat, d.lng].map((n) => Number(n).toFixed(4)).join(',');
+  const routeKey = (p, d, profile = 'driving') => `${profile}:${[p.lat, p.lng, d.lat, d.lng].map((n) => Number(n).toFixed(4)).join(',')}`;
 
-  function startRouteFetch(key, entry, pickup, dropoff) {
+  function startRouteFetch(key, entry, pickup, dropoff, profile) {
     entry.status = 'loading';
     entry.tries += 1;
-    roadRoute([pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]).then((route) => {
+    roadRoute([pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng], profile).then((route) => {
       if (route) {
         entry.status = 'done';
         entry.geometry = route.geometry;
       } else {
         entry.status = 'failed';
-        if (entry.tries < 6) setTimeout(() => startRouteFetch(key, entry, pickup, dropoff), 15000);
+        if (entry.tries < 6) setTimeout(() => startRouteFetch(key, entry, pickup, dropoff, profile), 15000);
       }
       redrawForRoute(key);
     });
   }
 
-  function routeFor(pickup, dropoff) {
-    const key = routeKey(pickup, dropoff);
+  function routeFor(pickup, dropoff, profile = 'driving') {
+    const key = routeKey(pickup, dropoff, profile);
     let entry = routeCache.get(key);
     if (!entry) {
       entry = { status: 'loading', geometry: null, tries: 0 };
       routeCache.set(key, entry);
-      startRouteFetch(key, entry, pickup, dropoff);
+      startRouteFetch(key, entry, pickup, dropoff, profile);
     }
     return entry;
   }
@@ -1587,11 +1596,27 @@
       if (!PARCEL_SIZES[size]) return;
       o.size = size;
       o.editing = null;
+      // A walker can only carry a small parcel; choosing a bigger one switches back to a courier.
+      if (o.deliveryMode === 'walker' && size !== 'small') { o.deliveryMode = 'standard'; o.walkerAck = false; }
       render();
     },
     togglePin() {
       const o = composeOpts();
       o.pin = !o.pin;
+      render();
+    },
+    // Courier (any size, any distance) or Walker (on foot, at most a mile, small parcel only —
+    // the eligibility and the size cap are both re-checked on the server regardless of this).
+    setDeliveryMode(mode) {
+      const o = composeOpts();
+      if (mode !== 'standard' && mode !== 'walker') return;
+      o.deliveryMode = mode;
+      if (mode === 'walker') { o.size = 'small'; o.editing = null; } else { o.walkerAck = false; }
+      render();
+    },
+    toggleWalkerAck() {
+      const o = composeOpts();
+      o.walkerAck = !o.walkerAck;
       render();
     },
     async submitJob() {
@@ -1619,11 +1644,19 @@
       }
       const o = composeOpts();
       const me = state.user ? state.user.full_name : '';
+      const walkerChosen = o.deliveryMode === 'walker' && quote && quote.walker_option && quote.walker_option.eligible;
+      if (walkerChosen && !o.walkerAck) {
+        state.compose.quoteError = 'Tick the box to confirm you understand walker delivery is slower before posting it.';
+        render();
+        return;
+      }
       state.compose.busy = true;
       render();
       try {
         // The token locks in the exact price and distance the customer was
-        // shown; the server posts that, rather than quoting a second time.
+        // shown; the server posts that, rather than quoting a second time. For a walker order the
+        // server ignores the price/distance/route entirely and works its own out fresh — this is
+        // just what to try to walk the person as, and confirmation that they agreed to the wait.
         const created = await api('/api/jobs-create', {
           method: 'POST',
           json: {
@@ -1639,13 +1672,15 @@
             dropoff_instructions: o.dropoffNotes,
             package_size: o.size,
             pin_confirmation: o.pin,
+            delivery_mode: walkerChosen ? 'walker' : 'standard',
+            walker_ack: walkerChosen ? true : undefined,
           },
         });
         state.compose = {
           pickup_address: '', dropoff_address: '', start: '', scheduled: false, timeError: null,
           quote: null, quoteError: null, busy: false,
           locating: false, locateError: null, locateNote: null, pickupCoords: null, dropoffCoords: null,
-      pickupPlace: null, dropoffPlace: null,
+      pickupPlace: null, dropoffPlace: null, opts: null,
         };
         state.customerTab = 'active';
         state.selectedJobId = created.id;
@@ -2209,6 +2244,7 @@
       c.opts = {
         mode: 'sending', pickupContact: '', dropoffContact: '', pickupHandover: 'kerb', dropoffHandover: 'kerb',
         pickupNotes: '', dropoffNotes: '', size: 'medium', pin: false, editing: null,
+        deliveryMode: 'standard', walkerAck: false,
       };
     }
     return c.opts;
@@ -2327,6 +2363,26 @@
                 </button>`).join('')}
             </div>` : ''}
         </section>
+
+        ${c.quote && c.quote.walker_option && c.quote.walker_option.eligible ? `
+        <h3 class="rv-h">How it's delivered</h3>
+        <section class="rv-card">
+          <div class="rv-sizes" role="radiogroup" aria-label="Courier or walker delivery">
+            <button type="button" role="radio" aria-checked="${o.deliveryMode === 'walker' ? 'false' : 'true'}" class="rv-radio ${o.deliveryMode === 'walker' ? '' : 'is-on'}" data-action="setDeliveryMode" data-arg="standard">
+              <span class="rv-dot" aria-hidden="true"></span>
+              <span class="rv-radio-text"><strong>By courier</strong><small>${money(c.quote.price_gbp)} · driven or cycled to you</small></span>
+            </button>
+            <button type="button" role="radio" aria-checked="${o.deliveryMode === 'walker' ? 'true' : 'false'}" class="rv-radio ${o.deliveryMode === 'walker' ? 'is-on' : ''}" data-action="setDeliveryMode" data-arg="walker">
+              <span class="rv-dot" aria-hidden="true"></span>
+              <span class="rv-radio-text"><strong>Walker delivery — ${money(c.quote.walker_option.price_gbp)}</strong><small>Carried on foot from ${milesFromMetres(c.quote.walker_option.distance_m)} away. Slower than a courier: about ${c.quote.walker_option.minutes.low}–${c.quote.walker_option.minutes.high} minutes after it's collected. Small parcel only.</small></span>
+            </button>
+          </div>
+          ${o.deliveryMode === 'walker' ? `
+          <div class="rv-switch-row rv-walker-ack">
+            <div class="rv-row-text"><small>I understand walker delivery is slower than a courier and I'm happy to wait.</small></div>
+            <button type="button" class="rv-switch ${o.walkerAck ? 'is-on' : ''}" role="switch" aria-checked="${o.walkerAck ? 'true' : 'false'}" aria-label="I understand walker delivery is slower" data-action="toggleWalkerAck"><span></span></button>
+          </div>` : ''}
+        </section>` : ''}
 
         <h3 class="rv-h">Delivery speed</h3>
         <section class="rv-card">
@@ -2504,7 +2560,7 @@
       <div class="ac-head" data-action="toggleExpand" data-arg="${job.id}" role="button" tabindex="0" data-key-activate aria-expanded="${isExpanded ? 'true' : 'false'}" aria-label="Order ${job.id}: ${escapeHtml(title)}. ${isExpanded ? 'Tap to close' : 'Tap to open'}">
         <div class="ac-top">
           <div class="ac-titles">
-            <div class="ac-title">${escapeHtml(title)}</div>
+            <div class="ac-title">${escapeHtml(title)}${job.delivery_mode === 'walker' ? ` <span class="ac-walker-badge">${ICONS.walk}Walker</span>` : ''}</div>
             <div class="ac-sub" data-eta-for="${job.id}">${escapeHtml(arrivalLine(job))}</div>
             <div class="ac-route">${escapeHtml(shortCity(job.pickup_address))} → ${escapeHtml(shortCity(job.dropoff_address))}</div>
           </div>
@@ -2670,7 +2726,7 @@
     if (Number(job.refunded_gbp) > 0) facts.push(`${money(job.refunded_gbp)} refunded`);
     return `
       <div class="past-head">
-        <span class="past-thumb ${cancelled ? 'is-cancelled' : ''}" aria-hidden="true">${ICONS.box}</span>
+        <span class="past-thumb ${cancelled ? 'is-cancelled' : ''}" aria-hidden="true">${job.delivery_mode === 'walker' ? ICONS.walk : ICONS.box}</span>
         <span class="past-text">
           <span class="past-title">${escapeHtml(shortCity(job.pickup_address))} <span class="arrow">→</span> ${escapeHtml(shortCity(job.dropoff_address))}</span>
           ${validDate ? `<span class="past-sub">${escapeHtml(day)} · ${escapeHtml(time)}</span>` : ''}
@@ -2705,6 +2761,11 @@
     const pickupChip = pickup && awaitingPickup && !pickup.asap
       ? `<div class="pkg-pickup-chip">${ICONS.clock}<span>Pickup ${escapeHtml(pickup.text)}</span></div>`
       : '';
+    // A walker job is a different product, on screen every time it's shown: carried on foot, and
+    // slower than a courier — the minutes are whatever was promised at order time, not recalculated.
+    const walkerChip = job.delivery_mode === 'walker'
+      ? `<div class="pkg-pickup-chip pkg-walker-chip">${ICONS.walk}<span>Walker delivery${job.walk_minutes_low != null ? ` · ${job.walk_minutes_low}–${job.walk_minutes_high} min` : ''}</span></div>`
+      : '';
 
     // The customer's active-deliveries page uses the stepper card, closed until tapped.
     const ac = !isCourier && state.customerTab === 'active' && ['OPEN', 'ACCEPTED', 'COLLECTED'].includes(job.status);
@@ -2723,6 +2784,7 @@
           <div class="status-pill ${s.pillClass}">${s.text}</div>
         </div>
         ${moneyChips}
+        ${walkerChip}
         ${pickupChip}`}
 
         ${isExpanded ? `
@@ -3305,6 +3367,10 @@
     let destLabel = null;
     let courierPos = null;
 
+    // A walker job (on foot, at most a mile) is walked, not driven — its own route, and any route
+    // fetched to fill in a missing one, must come from the walking profile, never the driving one.
+    const routeProfile = activeJob && activeJob.delivery_mode === 'walker' ? 'foot' : 'driving';
+
     if (activeJob) {
       pickup = { lat: activeJob.pickup_lat, lng: activeJob.pickup_lng };
       dropoff = { lat: activeJob.dropoff_lat, lng: activeJob.dropoff_lng };
@@ -3324,7 +3390,12 @@
     } else if (c.quote) {
       pickup = { lat: c.quote.pickup_lat, lng: c.quote.pickup_lng };
       dropoff = { lat: c.quote.dropoff_lat, lng: c.quote.dropoff_lng };
-      route = { distance_km: c.quote.distance_km, price_gbp: c.quote.price_gbp, geometry: c.quote.route_geometry };
+      // Walker delivery chosen and this trip qualifies: the map (and the price and time on it) is the
+      // walking option's, not the ordinary one underneath it.
+      const walkerChosen = composeOpts().deliveryMode === 'walker' && c.quote.walker_option && c.quote.walker_option.eligible;
+      route = walkerChosen
+        ? { distance_km: Math.round((c.quote.walker_option.distance_m / 1000) * 100) / 100, price_gbp: c.quote.walker_option.price_gbp, geometry: c.quote.walker_option.geometry }
+        : { distance_km: c.quote.distance_km, price_gbp: c.quote.price_gbp, geometry: c.quote.route_geometry };
       destLabel = c.dropoff_address;
     } else if (c.pickupCoords) {
       pickup = c.pickupCoords;
@@ -3405,8 +3476,8 @@
       let entry = null;
       if (!geometry) {
         // No road route came with this job: fetch it (once, cached) and say so meanwhile.
-        entry = routeFor(pickup, dropoff);
-        wantedRouteKey = routeKey(pickup, dropoff);
+        entry = routeFor(pickup, dropoff, routeProfile);
+        wantedRouteKey = routeKey(pickup, dropoff, routeProfile);
         if (entry.geometry) geometry = entry.geometry;
       }
       let bounds;
@@ -3425,7 +3496,8 @@
         bounds = line.getBounds();
       } else {
         const mid = [(pickup.lat + dropoff.lat) / 2, (pickup.lng + dropoff.lng) / 2];
-        const words = entry && entry.status === 'failed' ? 'Road route unavailable' : 'Finding the road route…';
+        const walking = routeProfile === 'foot';
+        const words = entry && entry.status === 'failed' ? (walking ? 'Walking route unavailable' : 'Road route unavailable') : (walking ? 'Finding the walking route…' : 'Finding the road route…');
         L.marker(mid, {
           interactive: false,
           keyboard: false,

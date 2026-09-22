@@ -8,6 +8,7 @@ const { serializeJob } = require('../lib/jobs');
 const { createPayment } = require('../lib/payments');
 const { sendError } = require('../lib/respond');
 const { parseOrderOptions, newDeliveryPin } = require('../lib/order-options');
+const { walkerEligibility, WalkingServiceError, WALKER_PACKAGE_SIZE } = require('../lib/walking');
 const crypto = require('crypto');
 
 // Addresses are free text people type; a cap keeps a hostile request from
@@ -40,8 +41,9 @@ module.exports = async (req, res) => {
 
     const {
       pickup_address, dropoff_address, pickup_window_start, pickup_window_end,
-      quote_token, route_geometry,
+      quote_token, route_geometry, delivery_mode, walker_ack,
     } = req.body || {};
+    const wantsWalker = delivery_mode === 'walker';
     if (typeof pickup_address !== 'string' || pickup_address.trim().length < 3
       || typeof dropoff_address !== 'string' || dropoff_address.trim().length < 3) {
       res.status(422).json({ detail: 'pickup_address and dropoff_address are required' });
@@ -58,6 +60,17 @@ module.exports = async (req, res) => {
     }
     const opt = parsedOptions.value;
     const deliveryPin = opt.pinConfirmation ? newDeliveryPin() : null;
+
+    if (wantsWalker) {
+      if (walker_ack !== true) {
+        res.status(422).json({ detail: 'Tick the box to confirm you understand walker delivery is slower before posting one.' });
+        return;
+      }
+      if (opt.packageSize !== WALKER_PACKAGE_SIZE) {
+        res.status(422).json({ detail: 'Walker delivery is for a small parcel only.' });
+        return;
+      }
+    }
 
     // A string only: new Date(null) and new Date(true) are valid dates in
     // 1970, so anything else would be accepted as a pickup half a century ago.
@@ -111,6 +124,30 @@ module.exports = async (req, res) => {
       throw err;
     }
 
+    // Walker delivery's own price, distance and route are worked out fresh here, from the pickup and
+    // dropoff coordinates the quote already verified — never from anything the phone said about
+    // distance, price or eligibility, whether or not this came from a quote_token. A quote_token from
+    // an ordinary (car) quote still carries trustworthy coordinates, so this works either way.
+    let walk = null;
+    if (wantsWalker) {
+      try {
+        walk = await walkerEligibility({ lat: q.pickup_lat, lng: q.pickup_lng }, { lat: q.dropoff_lat, lng: q.dropoff_lng });
+      } catch (err) {
+        res.status(502).json({ detail: 'The walking route service is unavailable right now — try again in a moment.' });
+        return;
+      }
+      if (!walk.eligible) {
+        res.status(422).json({ detail: walk.detail || 'This trip is not eligible for walker delivery.' });
+        return;
+      }
+      q = {
+        ...q,
+        distance_km: Math.round((walk.distance_m / 1000) * 100) / 100,
+        price_gbp: walk.price_gbp,
+        route_geometry: walk.geometry,
+      };
+    }
+
     await ensureSchema();
 
     const open = await sql`SELECT count(*) AS n FROM jobs WHERE customer_id = ${customer.id} AND status = 'OPEN'`;
@@ -142,14 +179,17 @@ module.exports = async (req, res) => {
         pickup_window_start, pickup_window_end, distance_km, price_gbp, status,
         route_geometry, tracking_token, quote_ref,
         customer_is_recipient, pickup_contact_name, dropoff_contact_name, pickup_handover, dropoff_handover,
-        pickup_instructions, dropoff_instructions, package_size, delivery_pin
+        pickup_instructions, dropoff_instructions, package_size, delivery_pin,
+        delivery_mode, walk_distance_m, walk_minutes_low, walk_minutes_high, walker_ack_at
       ) VALUES (
         ${customer.id}, ${pickup_address}, ${dropoff_address},
         ${q.pickup_lat}, ${q.pickup_lng}, ${q.dropoff_lat}, ${q.dropoff_lng},
         ${start.toISOString()}, ${end.toISOString()}, ${q.distance_km}, ${q.price_gbp}, 'OPEN',
         ${q.route_geometry ? JSON.stringify(q.route_geometry) : null}, ${trackingToken}, ${quoteRef},
         ${opt.customerIsRecipient}, ${opt.pickupContact}, ${opt.dropoffContact}, ${opt.pickupHandover}, ${opt.dropoffHandover},
-        ${opt.pickupInstructions}, ${opt.dropoffInstructions}, ${opt.packageSize}, ${deliveryPin}
+        ${opt.pickupInstructions}, ${opt.dropoffInstructions}, ${opt.packageSize}, ${deliveryPin},
+        ${wantsWalker ? 'walker' : 'standard'}, ${walk ? walk.distance_m : null}, ${walk ? walk.minutes.low : null},
+        ${walk ? walk.minutes.high : null}, ${wantsWalker ? new Date().toISOString() : null}
       )
       RETURNING *
     `;

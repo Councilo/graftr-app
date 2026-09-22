@@ -1,9 +1,16 @@
 const { requireRole } = require('../lib/auth');
-const { computeQuote, distanceMiles, PRICING, QuoteError, GeocodeServiceError } = require('../lib/geocode');
+const { computeQuote, distanceMiles, haversineKm, PRICING, QuoteError, GeocodeServiceError } = require('../lib/geocode');
 const { signQuote } = require('../lib/quote-token');
 const { verifyPlace } = require('../lib/place-token');
 const { sendError } = require('../lib/respond');
 const { hit, tooMany } = require('../lib/ratelimit');
+const { walkerEligibility, WALKER_PRICING, MAX_WALK_M } = require('../lib/walking');
+
+// A car-distance trip can never be shorter than a walking one, so this only bothers checking the
+// real walking route when the trip is plausibly close — up to 1.35x the mile limit, generous
+// slack for a walking route that has to go the long way round something a car doesn't. Well past
+// that, asking would only spend the walking service's fair use on an answer that's always "too far".
+const WALKER_PREFILTER_KM = (MAX_WALK_M / 1000) * 1.35;
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -32,6 +39,23 @@ module.exports = async (req, res) => {
         pickup: verifyPlace(pickup_place, pickup_address),
         dropoff: verifyPlace(dropoff_place, dropoff_address),
       });
+
+      // Walker delivery, if this trip could plausibly qualify. Its own genuine failure (the walking
+      // route service being unreachable) must not fail the whole quote — a customer can still see the
+      // ordinary price even when the walking option can't be worked out right now.
+      let walkerOption = { eligible: false, reason: 'too_far', detail: 'Walker delivery is only for trips of a mile or less on foot.' };
+      const straightLineKm = haversineKm(q.pickup_lat, q.pickup_lng, q.dropoff_lat, q.dropoff_lng);
+      if (straightLineKm <= WALKER_PREFILTER_KM) {
+        try {
+          walkerOption = await walkerEligibility(
+            { lat: q.pickup_lat, lng: q.pickup_lng },
+            { lat: q.dropoff_lat, lng: q.dropoff_lng },
+          );
+        } catch (err) {
+          walkerOption = { eligible: false, reason: 'unavailable', detail: 'The walking option is unavailable right now.' };
+        }
+      }
+
       res.status(200).json({
         pickup_address,
         dropoff_address,
@@ -54,6 +78,9 @@ module.exports = async (req, res) => {
         // The real road route, when OSRM had one — null falls back to a
         // straight line on the map, same as before this existed.
         route_geometry: q.route_geometry,
+        // A courier with no car or bike walking the bag over, if this trip is short enough. Never
+        // trust this back from the browser: jobs-create works it out again itself.
+        walker_option: { ...walkerOption, pricing: WALKER_PRICING },
       });
     } catch (err) {
       if (err instanceof QuoteError) {

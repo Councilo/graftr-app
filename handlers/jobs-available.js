@@ -20,8 +20,11 @@ module.exports = async (req, res) => {
 
     await ensureSchema();
     await expireStaleJobs();
+    // A walker (no car or bike) only ever sees walker jobs, and a driver only ever sees the rest —
+    // a driver offered a mile-long walking job, or a walker offered a 40-mile drive, helps nobody.
+    const mode = courier.courier_mode === 'walker' ? 'walker' : 'standard';
     const { rows } = await sql`
-      SELECT * FROM jobs WHERE status = 'OPEN' ORDER BY created_at ASC LIMIT 100
+      SELECT * FROM jobs WHERE status = 'OPEN' AND delivery_mode = ${mode} ORDER BY created_at ASC LIMIT 100
     `;
     res.status(200).json(rows.map((row) => publicJobView(serializeJob(row))));
   } catch (err) {
