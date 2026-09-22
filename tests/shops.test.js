@@ -49,6 +49,9 @@ function daytimeIso() {
   const owner = await user('customer', 'shopowner');
   const driver = await user('courier', 'shopdriver');
   const walker = await user('courier', 'shopwalker');
+  // A fresh courier now defaults to walker mode (the low-barrier sign-up path) — driver switched
+  // explicitly here since this fixture needs to behave like an ordinary driver.
+  await call('POST', '/api/account-courier-mode', driver.token, { mode: 'driver' });
   await call('POST', '/api/account-courier-mode', walker.token, { mode: 'walker' });
   // The dev server treats this exact address as an admin (dev-server.js's ADMIN_EMAILS default) —
   // register/login use the literal address, not the tag+stamp pattern the other accounts use.

@@ -63,12 +63,14 @@ function makeJob(custToken, custId, pa, da, q, extra) {
   const cust = await user('customer', 'walkcust');
   const driver = await user('courier', 'walkdriver');
   const walker = await user('courier', 'walkwalker');
+  const meFresh = await call('GET', '/api/me', driver.token);
+  ok('a fresh courier defaults to walker mode — the low-barrier sign-up path for launch', meFresh.body.courier_mode === 'walker', meFresh.body);
+  const sd = await call('POST', '/api/account-courier-mode', driver.token, { mode: 'driver' });
+  ok('a courier switches to driver mode', sd.status === 200 && sd.body.courier_mode === 'driver', sd);
   const sw = await call('POST', '/api/account-courier-mode', walker.token, { mode: 'walker' });
   ok('a courier switches to walker mode', sw.status === 200 && sw.body.courier_mode === 'walker', sw);
   const me = await call('GET', '/api/me', walker.token);
   ok('and /api/me reflects it', me.body.courier_mode === 'walker', me.body);
-  const meDriver = await call('GET', '/api/me', driver.token);
-  ok('a fresh courier defaults to driver mode', meDriver.body.courier_mode === 'driver', meDriver.body);
 
   console.log('\n[quote: the walker option, only when it genuinely qualifies]');
   let r = await call('POST', '/api/jobs-quote', cust.token, { pickup_address: PA, dropoff_address: DA_NEAR });

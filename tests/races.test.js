@@ -46,6 +46,8 @@ function slowUpload(path, token, delayMs) {
   const cust = await user('customer', 'racecust');
   const cour = await user('courier', 'racecour');
   const admin = await adminUser();
+  // A fresh courier defaults to walker mode now; this file's jobs are ordinary long-haul ones.
+  await call('POST', '/api/account-courier-mode', cour.token, { mode: 'driver' });
   const PA = '1 Race Street, Bolton BL1 1AA, UK', DA = '2 Race Road, Leeds LS1 2HT, UK';
   const Q = { pickup_lat: 53.58, pickup_lng: -2.43, dropoff_lat: 53.8, dropoff_lng: -1.55, distance_km: 60, price_gbp: 40 };
   const mk = async () => (await call('POST', '/api/jobs-create', cust.token, { pickup_address: PA, dropoff_address: DA, pickup_window_start: new Date().toISOString(), quote_token: signQuote(cust.id, PA, DA, Q) })).body;

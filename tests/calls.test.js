@@ -35,6 +35,8 @@ const ANSWER = 'v=0\r\no=- 3 4 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\nm=audio 9 UDP
   const cust = await user('customer', 'callcust');
   const cour = await user('courier', 'callcour');
   const other = await user('courier', 'callother');
+  // A fresh courier defaults to walker mode now; this suite's job is an ordinary long-haul one.
+  await call('POST', '/api/account-courier-mode', cour.token, { mode: 'driver' });
   const PA = '1 Call Street, Bolton BL1 1AA, UK', DA = '2 Call Road, Leeds LS1 2HT, UK';
   const Q = { pickup_lat: 53.58, pickup_lng: -2.43, dropoff_lat: 53.8, dropoff_lng: -1.55, distance_km: 60, price_gbp: 40 };
   const mk = async () => (await call('POST', '/api/jobs-create', cust.token, { pickup_address: PA, dropoff_address: DA, pickup_window_start: new Date().toISOString(), quote_token: signQuote(cust.id, PA, DA, Q) })).body;

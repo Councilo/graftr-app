@@ -64,11 +64,15 @@ module.exports = async (req, res) => {
     }
 
     const passwordHash = await hashPassword(password);
+    // Walker is the default for a new courier — no car or bike needed, so it's the way in with the
+    // lowest barrier while driver/bike delivery isn't offered at sign-up (see panels.js's Account ->
+    // Security, which no longer offers a way to switch to it either — the API still accepts it,
+    // /api/account-courier-mode is just not exposed in the UI right now, so this is easy to reopen).
     const { rows } = await sql`
-      INSERT INTO users (email, full_name, password_hash, role, terms_accepted_at, terms_version, location_consent_at, email_verified_at)
+      INSERT INTO users (email, full_name, password_hash, role, terms_accepted_at, terms_version, location_consent_at, email_verified_at, courier_mode)
       VALUES (
         ${email}, ${full_name.trim()}, ${passwordHash}, ${role}, now(), ${TERMS_VERSION},
-        ${role === 'courier' ? new Date().toISOString() : null}, NULL
+        ${role === 'courier' ? new Date().toISOString() : null}, NULL, ${role === 'courier' ? 'walker' : 'driver'}
       )
       RETURNING id, email, full_name, role
     `;

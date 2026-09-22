@@ -32,6 +32,10 @@ async function reg(role, n) {
   const cour2 = await reg('courier', 2);
   ok('login returns token', !!cust.token, cust.raw);
   const [ct, ct2, kt, kt2] = [cust.token, cust2.token, cour.token, cour2.token];
+  // A fresh courier now defaults to walker mode (the low-barrier sign-up path) — switched back to
+  // driver here since this file's jobs are ordinary (standard) ones, not walker jobs.
+  await call('POST', '/api/account-courier-mode', kt, { mode: 'driver' });
+  await call('POST', '/api/account-courier-mode', kt2, { mode: 'driver' });
 
   const now = Date.now();
   const mkBody = () => ({

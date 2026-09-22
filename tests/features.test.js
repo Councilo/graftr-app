@@ -76,6 +76,9 @@ const jobOf = async (u, id) => (await mine(u)).find((j) => j.id === id);
     return { token: l.body.access_token, id: m.body.id, me: m };
   })()) };
   ok('four accounts registered and signed in', [alice, bob, carl, dana].every((u) => u.token && u.id));
+  // A fresh courier defaults to walker mode now; this whole suite's jobs are ordinary long-haul ones.
+  await call('POST', '/api/account-courier-mode', carl.token, { mode: 'driver' });
+  await call('POST', '/api/account-courier-mode', dana.token, { mode: 'driver' });
   ok('/api/me carries payment instructions and the current terms version', !!alice.me.body.payment_instructions && !!alice.me.body.terms_version_current, alice.me.body);
   ok('the admin is flagged is_admin, others are not', admin.me.body.is_admin === true && alice.me.body.is_admin === false, admin.me.body);
 

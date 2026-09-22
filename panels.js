@@ -550,13 +550,9 @@
       ${courier ? `
       <section class="pn-sec">
         <h3>Delivery mode</h3>
-        <div class="pn-tabs pn-tabs-pill" role="tablist" aria-label="Driver or bike, or walker delivery">
-          <button type="button" role="tab" class="pn-tab ${walking ? '' : 'is-active'}" aria-selected="${!walking}" data-pn="setCourierMode" data-arg="driver">Driver or bike</button>
-          <button type="button" role="tab" class="pn-tab ${walking ? 'is-active' : ''}" aria-selected="${walking}" data-pn="setCourierMode" data-arg="walker">Walker</button>
-        </div>
         <p class="pn-small">${walking
-          ? "You'll only be offered walker jobs: a bag collected on foot from a shop, at most a mile to carry, small parcels only. Slower than driving, so it's advertised as such to the customer."
-          : "You'll be offered every open job, any size or distance — short walker jobs too, marked with a walker icon, since a mile is nothing by car or bike. Switch to Walker if you're getting about on foot instead and want only the short, small-parcel jobs."}</p>
+          ? "You're a walker courier: you'll be offered walker jobs, a bag collected on foot from a shop, at most a mile to carry, small parcels only. Slower than driving, so it's advertised as such to the customer. Driver/bike delivery isn't open to new sign-ups yet."
+          : "You're a driver courier: you'll be offered every open job, any size or distance — short walker jobs too, marked with a walker icon, since a mile is nothing by car or bike."}</p>
       </section>` : ''}
       <section class="pn-sec" id="pn-pw-section">
         <h3>Change password</h3>

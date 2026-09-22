@@ -37,6 +37,8 @@ async function photo(token, endpoint, jobId, headers) {
 (async () => {
   const cust = await user('customer', 'optcust');
   const cour = await user('courier', 'optcour');
+  // A fresh courier defaults to walker mode now; this file's orders are ordinary (standard) ones.
+  await call('POST', '/api/account-courier-mode', cour.token, { mode: 'driver' });
   const PA = '12 Option Street, Bolton BL1 1AA, UK', DA = '4 Choice Road, Leeds LS1 2HT, UK';
   const Q = { pickup_lat: 53.58, pickup_lng: -2.43, dropoff_lat: 53.8, dropoff_lng: -1.55, distance_km: 60, price_gbp: 40 };
   const make = (extra) => call('POST', '/api/jobs-create', cust.token, {

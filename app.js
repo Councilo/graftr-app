@@ -114,8 +114,10 @@
     navigate: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4.5 20.3l.7.7L12 18l6.8 3 .7-.7z"/></svg>`,
     clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>`,
     pin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>`,
-    // A walker delivery: carried on foot, never in a vehicle.
-    walk: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M9.5 22 11 16l-2-2 .5-5 3 2 2 4 3 2"/><path d="M11 16l-4 1"/><path d="M14.5 13l3.5 1 1-4"/></svg>`,
+    // A walker delivery: carried on foot, never in a vehicle. The standard pedestrian pictogram
+    // (public domain, adapted from Wikimedia Commons' BSicon WALK.svg) reads clearly even at chip
+    // size, unlike a thin stick-figure — three strokes of different widths, not one, is deliberate.
+    walk: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6.72 22.56 12 13.2V6l1.44-.24V13.68l2.4 5.04L18 22.56" stroke-width="2.88"/><path d="M6.96 11.76 8.88 9.12 10.8 5.76l2.64-.29 1.44.67 2.4 2.02-.48 3.6" stroke-width="2.4"/><path d="M11.76 1.92 11.9 2.5" stroke-width="3.84"/></svg>`,
   };
 
   // ---------------- Helpers ----------------
@@ -2297,7 +2299,7 @@
             ${ICONS.home}
           </button>
           <button class="nav-icon-btn ${(isCustomer ? state.customerTab === 'active' : state.courierTab === 'mine') ? 'is-active' : ''}" data-action="${isCustomer ? 'setCustomerTab' : 'setCourierTab'}" data-arg="${isCustomer ? 'active' : 'mine'}" title="${isCustomer ? 'On the way' : 'My deliveries'}" aria-label="${isCustomer ? 'On the way' : 'My deliveries'}">
-            ${ICONS.truck}
+            ${ICONS.walk}
           </button>
           <button class="nav-icon-btn ${(isCustomer ? state.customerTab === 'received' : state.courierTab === 'past') ? 'is-active' : ''}" data-action="${isCustomer ? 'setCustomerTab' : 'setCourierTab'}" data-arg="${isCustomer ? 'received' : 'past'}" title="${isCustomer ? 'Past orders' : 'Past deliveries'}" aria-label="${isCustomer ? 'Past orders' : 'Past deliveries'}">
             ${ICONS.history}
@@ -2652,7 +2654,7 @@
     const current = { OPEN: 1, ACCEPTED: 2, COLLECTED: 3 }[job.status];
     const steps = labels.map((label, i) => {
       const state_ = i < current ? 'done' : (i === current ? 'current' : 'todo');
-      const icon = state_ === 'done' ? ICONS.check : (state_ === 'current' ? ICONS.truck : '');
+      const icon = state_ === 'done' ? ICONS.check : (state_ === 'current' ? (job.delivery_mode === 'walker' ? ICONS.walk : ICONS.truck) : '');
       return `<li class="ac-step ${state_}" ${state_ === 'current' ? 'aria-current="step"' : ''}><span class="ac-dot">${icon}</span><span class="ac-label">${label}</span></li>`;
     }).join('');
     return `
@@ -3598,7 +3600,7 @@
         html: `
           <div class="courier-live-vehicle-marker">
             <div class="courier-live-ping"></div>
-            <div class="courier-live-icon-wrap">${ICONS.truck}</div>
+            <div class="courier-live-icon-wrap">${activeJob.delivery_mode === 'walker' ? ICONS.walk : ICONS.truck}</div>
           </div>`,
         iconSize: [38, 38],
         iconAnchor: [19, 19],

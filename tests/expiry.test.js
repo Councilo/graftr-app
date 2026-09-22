@@ -19,6 +19,9 @@ async function user(role, email) {
   const cust = await user('customer', `expcust_${s}@example.com`);
   const cour = await user('courier', `expcour_${s}@example.com`);
   const admin = await user('customer', 'admin@example.com');
+  // A fresh courier defaults to walker mode now; this file's marketplace checks need a driver so
+  // standard jobs (and, further down, walker ones too — a driver sees both) show up either way.
+  await call('POST', '/api/account-courier-mode', cour.token, { mode: 'driver' });
   const PA = '1 Old Street, Bolton BL1 1AA, UK', DA = '2 Old Road, Leeds LS1 2HT, UK';
   const Q = { pickup_lat: 53.58, pickup_lng: -2.43, dropoff_lat: 53.8, dropoff_lng: -1.55, distance_km: 60, price_gbp: 40 };
   const start = new Date(Date.now() - 59 * 60000);

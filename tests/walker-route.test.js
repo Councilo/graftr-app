@@ -60,9 +60,11 @@ function daytimeIso() {
   const driver = await user('courier', 'rtdriver');
   const customer2 = await user('customer', 'rtcust2');
 
-  // Switch walker to walker mode
+  // Switch walker to walker mode. A fresh courier defaults to walker mode now, so `driver` is
+  // switched explicitly the other way — section 8 below needs a genuine non-walker courier.
   const sw = await call('POST', '/api/account-courier-mode', walker.token, { mode: 'walker' });
   ok('walker switches to walker mode', sw.status === 200 && sw.body.courier_mode === 'walker', sw);
+  await call('POST', '/api/account-courier-mode', driver.token, { mode: 'driver' });
 
   // Create a shop and approve it so we can post bags
   await call('POST', '/api/register', null, { email: 'admin@example.com', password: 'password123', full_name: 'Admin', role: 'customer', accept_terms: true });

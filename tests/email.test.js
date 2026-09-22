@@ -156,6 +156,8 @@ async function photo(token, endpoint, jobId) {
   console.log('\n[order updates go to the customer]');
   const cust = await signUp('customer', 'mailorder');
   const cour = await signUp('courier', 'mailcour');
+  // A fresh courier defaults to walker mode now; this order is an ordinary long-haul one.
+  await call('POST', '/api/account-courier-mode', cour.token, { mode: 'driver' });
   const PA = '12 Mail Street, Bolton BL1 1AA, UK', DA = '4 Post Road, Leeds LS1 2HT, UK';
   const Q = { pickup_lat: 53.58, pickup_lng: -2.43, dropoff_lat: 53.8, dropoff_lng: -1.55, distance_km: 60, price_gbp: 40 };
   const job = (await call('POST', '/api/jobs-create', cust.token, { pickup_address: PA, dropoff_address: DA, pickup_window_start: new Date().toISOString(), quote_token: signQuote(cust.id, PA, DA, Q) })).body;
