@@ -388,6 +388,8 @@
     logout: svgIcon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>'),
     grid: svgIcon('<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>'),
     back: svgIcon('<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>'),
+    store: svgIcon('<path d="M3 9l1.5-5.5A1 1 0 0 1 5.46 3h13.08a1 1 0 0 1 .96.74L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h4v-6h8v6h4a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/>'),
+    bag: svgIcon('<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>'),
   });
   const initialsOf = (name) => {
     const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
@@ -397,7 +399,7 @@
 
   // The panel opens on a menu: your name and avatar, four big tiles, then a plain list.
   // Every tile and row opens its own screen inside the panel, with a back arrow.
-  const ACCT_TITLES = { profile: 'Personal info', security: 'Password & agreements', data: 'Your data', legal: 'Legal' };
+  const ACCT_TITLES = { profile: 'Personal info', security: 'Password & agreements', data: 'Your data', legal: 'Legal', shop: 'Partner shop' };
   const acctTitle = (screen, u) => (screen === 'payments' ? (u.role === 'courier' ? 'Earnings' : 'Payments') : ACCT_TITLES[screen]);
   const acctGo = (screen) => `data-pn="acctTab" data-arg="${screen}"`;
   const acctRow = (attrs, icon, title, sub) => `
@@ -426,6 +428,7 @@
       if (screen === 'profile') acctProfile(pane, u);
       else if (screen === 'security') acctSecurity(pane, u, ctx);
       else if (screen === 'payments') acctPayments(pane, u);
+      else if (screen === 'shop') acctShop(pane, u);
       else if (screen === 'data') acctData(pane);
       else acctLegal(pane);
     },
@@ -478,6 +481,7 @@
       </div>
       <div class="acct-list">
         ${acctRow('data-pn="toggleTheme"', dark ? 'moon' : 'sun', 'Appearance', dark ? 'Dark mode · tap for light' : 'Light mode · tap for dark')}
+        ${!courier ? acctRow(acctGo('shop'), 'store', 'Partner shop', 'Post bags for a walker to carry') : ''}
         ${acctRow(acctGo('data'), 'download', 'Your data', 'Download it, or delete your account')}
         ${acctRow(acctGo('legal'), 'file', 'Legal', 'Terms, privacy and other policies')}
         ${u.is_admin ? acctRow('data-pn="openAdmin"', 'grid', 'Admin dashboard', 'Refunds, payments and support requests') : ''}
@@ -603,6 +607,118 @@
         <span class="acct-row-text"><strong>${esc(title)}</strong></span>
       </a>`).join('')}</div>`;
   }
+
+  // A customer applying to become a partner shop, and — once approved — posting bags for a walker to
+  // carry and seeing the ones they've already posted. One screen, matching the plan: a shop should be
+  // able to run this behind a counter with one thumb.
+  const shopForm = (shop) => `
+    <form data-pn-form="shopApply" class="pn-form">
+      <label class="pn-label">Shop name<input class="pn-input" name="name" maxlength="100" value="${esc(shop && shop.name || '')}" required /></label>
+      <label class="pn-label">Address <span class="pn-opt">(full address, with postcode)</span><input class="pn-input" name="address" maxlength="300" value="${esc(shop && shop.address || '')}" required /></label>
+      <label class="pn-label">Phone <span class="pn-opt">(optional)</span><input class="pn-input" name="phone" type="tel" maxlength="30" value="${esc(shop && shop.phone || '')}" /></label>
+      <label class="pn-label">Opening hours <span class="pn-opt">(optional, shown to walkers)</span><input class="pn-input" name="opening_hours" maxlength="200" value="${esc(shop && shop.opening_hours || '')}" placeholder="Mon-Sat 8am-8pm, Sun 10am-4pm" /></label>
+      <label class="pn-label">Notes for a walker collecting <span class="pn-opt">(optional)</span><textarea class="pn-input" name="collection_notes" rows="2" maxlength="300" placeholder="Side door on Elm Lane">${esc(shop && shop.collection_notes || '')}</textarea></label>
+      <div class="pn-msg" role="alert"></div>
+      <button type="submit" class="pn-btn pn-btn-primary">${shop ? 'Save details' : 'Apply to become a partner shop'}</button>
+    </form>`;
+
+  async function acctShop(pane, u) {
+    pane.innerHTML = '<p class="pn-empty">Loading…</p>';
+    let shop;
+    try {
+      ({ shop } = await API('/api/shop-profile'));
+    } catch (err) {
+      pane.innerHTML = `<p class="pn-error">${esc(errText(err))}</p>`;
+      return;
+    }
+
+    if (!shop) {
+      pane.innerHTML = `
+        <p class="pn-note">Run a corner shop or mini market? Post a bag here and it goes to a walker nearby to carry it to a customer — no car or bike needed. We'll review your details before you can post one.</p>
+        ${shopForm(null)}`;
+      return;
+    }
+
+    if (shop.status === 'suspended') {
+      pane.innerHTML = `
+        <div class="pn-cards"><div class="pn-card is-hot"><div>${statusChip('SUSPENDED')}</div><div class="pn-small" style="margin-top:6px">${esc(shop.name)}</div></div></div>
+        <p class="pn-note">This shop has been suspended and can't post bags. Contact <a href="mailto:support@vendaru.com">support@vendaru.com</a> to appeal.</p>`;
+      return;
+    }
+
+    if (shop.status === 'pending') {
+      pane.innerHTML = `
+        <div class="pn-cards"><div class="pn-card"><div>${statusChip('PENDING')}</div><div class="pn-small" style="margin-top:6px">${esc(shop.name)}</div></div></div>
+        <p class="pn-note">Thanks — we'll review this and let you know. You can still fix anything below in the meantime.</p>
+        ${shopForm(shop)}`;
+      return;
+    }
+
+    // Approved: post a bag, and see the ones already posted.
+    const bags = ((app().jobs && app().jobs()) || []).filter((j) => j.shop_id === shop.id).sort((x, y) => new Date(y.created_at) - new Date(x.created_at));
+    const active = bags.filter((j) => j.status === 'OPEN' || j.status === 'ACCEPTED' || j.status === 'COLLECTED');
+    const past = bags.filter((j) => j.status === 'DELIVERED' || j.status === 'CANCELLED');
+    pane.innerHTML = `
+      <div class="pn-cards"><div class="pn-card"><div>${statusChip('APPROVED')}</div><div class="pn-small" style="margin-top:6px">${esc(shop.name)}</div></div></div>
+      <details class="pn-sec"><summary class="pn-h">Shop details</summary>${shopForm(shop)}</details>
+      <h3 class="pn-h">Post a bag</h3>
+      <form data-pn-form="shopPostBag" class="pn-form">
+        <label class="pn-label">Who it's for<input class="pn-input" name="recipient_name" maxlength="100" placeholder="Jane Smith" required /></label>
+        <label class="pn-label">Their address<input class="pn-input" name="dropoff_address" maxlength="300" placeholder="12 High St, Preston PR1 3AA" required /></label>
+        <label class="pn-label">Notes <span class="pn-opt">(optional — a flat number, a phone number, anything a walker needs)</span><textarea class="pn-input" name="notes" rows="2" maxlength="300"></textarea></label>
+        <label class="pn-label">Ready by <span class="pn-opt">(leave blank for as soon as possible)</span><input class="pn-input" name="ready_at" type="datetime-local" /></label>
+        <div class="pn-msg" role="alert"></div>
+        <button type="submit" class="pn-btn pn-btn-primary">Post this bag</button>
+      </form>
+      <h3 class="pn-h">Today's bags</h3>
+      ${active.length ? active.map((j) => shopBagCard(j)).join('') : '<p class="pn-empty">No bags out right now.</p>'}
+      ${past.length ? `<h3 class="pn-h">Earlier</h3>${past.slice(0, 10).map((j) => shopBagCard(j)).join('')}` : ''}`;
+  }
+  const shopBagLabel = { OPEN: 'Waiting for a walker', ACCEPTED: 'Walker on the way', COLLECTED: 'On its way', DELIVERED: 'Delivered', CANCELLED: 'Cancelled' };
+  function shopBagCard(j) {
+    return `
+      <article class="pn-item">
+        <div class="pn-row"><div><strong>${esc(j.dropoff_contact_name || 'Bag')}</strong><div class="pn-small">${esc((j.dropoff_address || '').split(',')[0])} · ${esc(when(j.created_at))}</div></div>${statusChip(j.status)}</div>
+        <div class="pn-small">${esc(shopBagLabel[j.status] || nice(j.status))} · ${money(j.price_gbp)}${j.walk_minutes_low != null ? ` · about ${j.walk_minutes_low}-${j.walk_minutes_high} min once collected` : ''}</div>
+        ${j.dropoff_instructions ? `<div class="pn-small">${esc(j.dropoff_instructions)}</div>` : ''}
+        ${j.status === 'ACCEPTED' || j.status === 'COLLECTED' ? `<div class="pn-note" style="margin-top:6px"><strong>Pickup code: ${esc(j.pickup_code || '')}</strong><span class="pn-opt"> — give this to the walker when they arrive</span></div>` : ''}
+        <div class="pn-btnrow" style="margin-top:6px">
+          ${(j.status === 'OPEN' || j.status === 'ACCEPTED') && !j.shop_ready_at ? `<button type="button" class="pn-btn" data-pn="shopReady" data-arg="${j.id}">Mark ready</button>` : ''}
+          ${j.shop_ready_at ? chip('Ready', 'green') : ''}
+          ${j.status !== 'OPEN' && !j.shop_handed_over_at ? `<button type="button" class="pn-btn" data-pn="shopHandover" data-arg="${j.id}">Handed over</button>` : ''}
+          ${j.shop_handed_over_at ? chip('Handed over', 'green') : ''}
+        </div>
+      </article>`;
+  }
+  FORMS.shopApply = async (form) => {
+    const payload = { name: val(form, 'name'), address: val(form, 'address'), phone: val(form, 'phone'), opening_hours: val(form, 'opening_hours'), collection_notes: val(form, 'collection_notes') };
+    try {
+      await withBusy(form.querySelector('[type="submit"]'), () => API('/api/shop-profile', { method: 'POST', json: payload }));
+      toast('Saved.');
+      redraw();
+    } catch (err) { setMsg(form, errText(err)); }
+  };
+  FORMS.shopPostBag = async (form) => {
+    const readyAt = val(form, 'ready_at');
+    const payload = {
+      recipient_name: val(form, 'recipient_name'), dropoff_address: val(form, 'dropoff_address'), notes: val(form, 'notes'),
+      ready_at: readyAt ? new Date(readyAt).toISOString() : undefined,
+    };
+    try {
+      await withBusy(form.querySelector('[type="submit"]'), () => API('/api/shop-post-bag', { method: 'POST', json: payload }));
+      toast('Bag posted.');
+      if (app().refresh) await app().refresh();
+      redraw();
+    } catch (err) { setMsg(form, errText(err)); }
+  };
+  ACTIONS.shopReady = async (el) => {
+    try { await withBusy(el, () => API('/api/shop-ready', { method: 'POST', json: { jobId: Number(el.dataset.arg) } })); if (app().refresh) await app().refresh(); redraw(); }
+    catch (err) { toast(errText(err), 'error'); }
+  };
+  ACTIONS.shopHandover = async (el) => {
+    try { await withBusy(el, () => API('/api/shop-handover', { method: 'POST', json: { jobId: Number(el.dataset.arg) } })); if (app().refresh) await app().refresh(); redraw(); }
+    catch (err) { toast(errText(err), 'error'); }
+  };
 
   // What has been paid, is owed, or was given back — from the orders the app already holds.
   function acctPayments(pane, u) {
@@ -795,7 +911,7 @@
   ACTIONS.helpAbout = (el) => open('help', { tab: 'contact', jobId: el.dataset.arg, category: 'payment' });
 
   // ================================================================ ADMIN
-  const ADMIN_TABS = [['overview', 'Overview'], ['refunds', 'Refunds'], ['payments', 'Payments'], ['tickets', 'Tickets'], ['users', 'Users'], ['audit', 'Audit log']];
+  const ADMIN_TABS = [['overview', 'Overview'], ['refunds', 'Refunds'], ['payments', 'Payments'], ['tickets', 'Tickets'], ['users', 'Users'], ['shops', 'Shops'], ['audit', 'Audit log']];
   PANELS.admin = {
     title: 'Admin dashboard',
     defaultTab: 'overview',
@@ -831,6 +947,7 @@
       if (ctx.tab === 'payments') return await adminPayments(pane, ctx);
       if (ctx.tab === 'tickets') return await (ctx.ticket ? adminTicket(pane, ctx.ticket) : adminTickets(pane, ctx));
       if (ctx.tab === 'users') return await adminUsers(pane, ctx);
+      if (ctx.tab === 'shops') return await adminShops(pane, ctx);
       if (ctx.tab === 'audit') return await adminAudit(pane);
     } catch (err) { paneError(err); }
   }
@@ -842,6 +959,7 @@
       <div class="pn-cards">
         <button type="button" class="pn-card ${n.pending_refunds ? 'is-hot' : ''}" data-pn="adminTab" data-arg="refunds"><div class="pn-card-n">${n.pending_refunds || 0}</div><div>Refund requests waiting</div></button>
         <button type="button" class="pn-card ${n.open_tickets ? 'is-hot' : ''}" data-pn="adminTab" data-arg="tickets"><div class="pn-card-n">${n.open_tickets || 0}</div><div>Open support requests</div></button>
+        <button type="button" class="pn-card ${n.pending_shops ? 'is-hot' : ''}" data-pn="adminTab" data-arg="shops"><div class="pn-card-n">${n.pending_shops || 0}</div><div>Shops awaiting approval</div></button>
         <button type="button" class="pn-card" data-pn="adminTab" data-arg="users"><div class="pn-card-n">${o.suspended_accounts || 0}</div><div>Suspended accounts</div></button>
       </div>
       <h3>Payments</h3>
@@ -988,6 +1106,36 @@
     if (reason.length < 3) return setMsg(form, 'Give a reason.');
     if (!window.confirm('Suspend this account? They will not be able to use Vendaru until you lift it.')) return;
     try { await withBusy(form.querySelector('[type="submit"]'), () => API('/api/admin-users', { method: 'POST', json: { userId: Number(form.dataset.id), action: 'suspend', reason } })); toast('Suspended.'); adminLoad(current); }
+    catch (err) { setMsg(form, errText(err)); }
+  };
+
+  async function adminShops(pane, ctx) {
+    ctx.shopFilter = ctx.shopFilter || 'pending';
+    const rows = await API('/api/admin-shops?status=' + encodeURIComponent(ctx.shopFilter));
+    pane.innerHTML = `
+      <label class="pn-label pn-inline-label">Show <select class="pn-input pn-auto" data-pn-input="shopFilter">${['pending', 'approved', 'suspended', 'all'].map((s) => `<option value="${s}" ${s === ctx.shopFilter ? 'selected' : ''}>${nice(s)}</option>`).join('')}</select></label>
+      ${rows.length ? rows.map((s) => `
+        <article class="pn-item">
+          <div class="pn-row"><div><strong>${esc(s.name)}</strong> ${chip(s.status, s.status === 'approved' ? 'green' : (s.status === 'suspended' ? 'red' : 'amber'))}<div class="pn-small">${esc(s.address)}</div>
+            <div class="pn-small">${esc(s.owner_name)} · ${esc(s.owner_email)}${s.phone ? ` · ${esc(s.phone)}` : ''} · applied ${esc(when(s.created_at))}</div></div></div>
+          ${s.opening_hours ? `<div class="pn-small">Hours: ${esc(s.opening_hours)}</div>` : ''}
+          ${s.collection_notes ? `<div class="pn-small">Collection notes: ${esc(s.collection_notes)}</div>` : ''}
+          <div class="pn-btnrow" style="margin-top:6px">
+            ${s.status !== 'approved' ? `<button type="button" class="pn-btn pn-btn-primary" data-pn="shopAct" data-id="${s.id}" data-arg="approve">Approve</button>` : ''}
+            ${s.status !== 'suspended' ? `<form data-pn-form="shopSuspend" data-id="${s.id}" class="pn-form pn-inline"><input class="pn-input" name="reason" placeholder="Reason (shown to the shop)" maxlength="500" required /><button type="submit" class="pn-btn pn-btn-danger">Suspend</button><div class="pn-msg" role="alert"></div></form>` : ''}
+          </div>
+        </article>`).join('') : '<p class="pn-empty">Nothing here.</p>'}`;
+  }
+  INPUTS.shopFilter = (el) => { current.shopFilter = el.value; adminLoad(current); };
+  ACTIONS.shopAct = async (el) => {
+    try { await withBusy(el, () => API('/api/admin-shops', { method: 'POST', json: { shopId: Number(el.dataset.id), action: el.dataset.arg } })); toast('Done.'); adminLoad(current); }
+    catch (err) { toast(errText(err), 'error'); }
+  };
+  FORMS.shopSuspend = async (form) => {
+    const reason = val(form, 'reason');
+    if (reason.length < 3) return setMsg(form, 'Give a reason.');
+    if (!window.confirm('Suspend this shop? They will not be able to post bags until you approve it again.')) return;
+    try { await withBusy(form.querySelector('[type="submit"]'), () => API('/api/admin-shops', { method: 'POST', json: { shopId: Number(form.dataset.id), action: 'suspend', reason } })); toast('Suspended.'); adminLoad(current); }
     catch (err) { setMsg(form, errText(err)); }
   };
 

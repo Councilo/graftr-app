@@ -60,6 +60,7 @@
     gps: { status: 'idle', sentAt: null }, // courier's location sharing: idle | sharing | denied | consent | error
     termsBusy: false,
     deliveryPins: {}, // jobId -> the PIN a courier is typing to finish a delivery
+    pickupCodes: {}, // jobId -> the code a walker is typing to collect a shop job
     // Phones and tablets: every page is a full page, and this splits the screen 50/50 with the map.
     // Where the page's top edge sits when the map is open (0-1 of the height); null = open just tall enough to fit the page.
     sheetTop: (() => { try { const v = parseFloat(localStorage.getItem('vendaru_sheet_top')); return v > 0 && v < 1 ? v : null; } catch (e) { return null; } })(),
@@ -398,7 +399,11 @@
   // real account never sees a person who doesn't exist.
   function counterparty(job) {
     if (state.user && state.user.role === 'courier') {
-      return { label: 'Customer', name: job.customer_name || 'Customer', role: job.customer_is_recipient ? 'Receiving the parcel' : 'Sender' };
+      // A shop job's "customer" (who is billed) is the shop owner's own account — a walker collecting
+      // is dealing with the shop, not that person by name, so this shows the shop's name instead
+      // (already the first part of the pickup address, the same text the card's own title uses).
+      const name = job.shop_id ? shortCity(job.pickup_address) : job.customer_name;
+      return { label: job.shop_id ? 'Shop' : 'Customer', name: name || 'Customer', role: job.customer_is_recipient ? 'Receiving the parcel' : 'Sender' };
     }
     const name = job.courier_name
       || state.courierNames[job.id]
@@ -1830,6 +1835,7 @@
       return;
     }
     // A delivery the customer protected with a PIN: the courier types what the recipient tells them.
+    // A shop job's pickup, the other way round: the shop reads out the code, the walker types it in.
     const extraHeaders = {};
     if (path === '/api/jobs-deliver') {
       const job = state.jobs.find((j) => j.id === jobId);
@@ -1843,6 +1849,18 @@
         extraHeaders['X-Delivery-Pin'] = pin;
       }
     }
+    if (path === '/api/jobs-pickup') {
+      const job = state.jobs.find((j) => j.id === jobId);
+      if (job && job.pickup_code_required) {
+        const code = String(state.pickupCodes[jobId] || '').trim();
+        if (!/^\d{4}$/.test(code)) {
+          state.uploadError[jobId] = 'Enter the 4-digit code the shop gives you';
+          render();
+          return;
+        }
+        extraHeaders['X-Pickup-Code'] = code;
+      }
+    }
     state.uploadBusy[jobId] = true;
     state.uploadError[jobId] = null;
     render();
@@ -1851,6 +1869,7 @@
       if (file) form.append('photo', await shrinkPhoto(file));
       await api(`${path}?jobId=${jobId}`, { method: 'POST', form, headers: extraHeaders });
       delete state.deliveryPins[jobId];
+      delete state.pickupCodes[jobId];
       delete state.pendingPhoto[jobId];
       await loadLists();
     } catch (err) {
@@ -2888,6 +2907,7 @@
               <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;">
                 ${job.status === 'ACCEPTED' ? 'Step 2: Confirm pickup' : 'Step 3: Complete dropoff'}
               </div>
+              ${job.status === 'ACCEPTED' && job.pickup_code_required ? `<label class="pin-field"><span>Pickup code</span><input class="modern-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" data-bind="pickupCodes.${job.id}" value="${escapeHtml(state.pickupCodes[job.id] || '')}" placeholder="4-digit code from the shop" ${state.uploadBusy[job.id] ? 'disabled' : ''} /></label>` : ''}
               ${job.status === 'COLLECTED' && job.pin_required ? `<label class="pin-field"><span>Delivery PIN</span><input class="modern-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" data-bind="deliveryPins.${job.id}" value="${escapeHtml(state.deliveryPins[job.id] || '')}" placeholder="4-digit PIN from the recipient" ${state.uploadBusy[job.id] ? 'disabled' : ''} /></label>` : ''}
               <input type="file" accept="image/*" data-photo-for="${job.id}" style="font-size:12px;margin-bottom:8px;width:100%;" ${state.uploadBusy[job.id] ? 'disabled' : ''} aria-label="Choose a photo" />
               ${state.pendingPhoto[job.id] ? `<div class="upload-chosen">✓ ${escapeHtml(state.pendingPhoto[job.id].name || 'photo')} ready to send</div>` : ''}

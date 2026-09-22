@@ -19,6 +19,7 @@ module.exports = async (req, res) => {
     const pendingRefunds = await count(sql`SELECT count(*) AS n FROM refund_requests WHERE status = 'PENDING'`);
     const openTickets = await count(sql`SELECT count(*) AS n FROM support_tickets WHERE status IN ('OPEN', 'IN_PROGRESS')`);
     const suspended = await count(sql`SELECT count(*) AS n FROM users WHERE is_suspended = true AND deleted_at IS NULL`);
+    const pendingShops = await count(sql`SELECT count(*) AS n FROM shops WHERE status = 'pending'`);
 
     const payments = await sql`
       SELECT status, count(*) AS n, coalesce(sum(amount_gbp), 0) AS total, coalesce(sum(refunded_gbp), 0) AS refunded
@@ -28,7 +29,7 @@ module.exports = async (req, res) => {
     const users = await sql`SELECT role, count(*) AS n FROM users WHERE deleted_at IS NULL GROUP BY role`;
 
     res.status(200).json({
-      needs_attention: { pending_refunds: pendingRefunds, open_tickets: openTickets },
+      needs_attention: { pending_refunds: pendingRefunds, open_tickets: openTickets, pending_shops: pendingShops },
       suspended_accounts: suspended,
       payments: payments.rows.map((r) => ({ status: r.status, count: Number(r.n), total_gbp: Number(r.total), refunded_gbp: Number(r.refunded) })),
       jobs: Object.fromEntries(jobs.rows.map((r) => [r.status, Number(r.n)])),

@@ -15,7 +15,7 @@ const suites = [
   ['api', false], ['features', false], ['races', false], ['calls', false], ['order-options', false], ['vercel-config', false], ['start-order', false], ['email', false], ['secret', false], ['areas', false], ['walking', false],
   // expiry now creates a couple of real (close-together) walker jobs to prove their shorter grace
   // period, so it needs the same walking-route service as walkers below.
-  ['address-search', true], ['place-quote', true], ['walkers', true], ['expiry', true],
+  ['address-search', true], ['place-quote', true], ['walkers', true], ['expiry', true], ['shops', true],
 ];
 
 let failed = 0;
