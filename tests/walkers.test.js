@@ -42,9 +42,19 @@ const DA_FAR = 'Bamber Bridge, Preston PR5 8AN, UK';
 const Q_NEAR = { pickup_lat: 53.7573, pickup_lng: -2.7048, dropoff_lat: 53.7605, dropoff_lng: -2.7010, distance_km: 1, price_gbp: 5 };
 const Q_FAR = { pickup_lat: 53.7573, pickup_lng: -2.7048, dropoff_lat: 53.7254, dropoff_lng: -2.6432, distance_km: 5, price_gbp: 12 };
 
+// Tomorrow at 13:00 UTC is either 1pm GMT or 2pm BST depending on the time of year — either way,
+// squarely inside the 7am-9pm UK-local window walker delivery runs in, so tests here never fail just
+// because they happened to run in the evening (an earlier version used "1 hour from now", which is
+// exactly the kind of thing that silently breaks after 8pm local and passes everywhere else).
+function daytimeIso() {
+  const d = new Date(Date.now() + 24 * 3600e3);
+  d.setUTCHours(13, 0, 0, 0);
+  return d.toISOString();
+}
+
 function makeJob(custToken, custId, pa, da, q, extra) {
   return call('POST', '/api/jobs-create', custToken, {
-    pickup_address: pa, dropoff_address: da, pickup_window_start: new Date(Date.now() + 3600e3).toISOString(),
+    pickup_address: pa, dropoff_address: da, pickup_window_start: daytimeIso(),
     quote_token: signQuote(custId, pa, da, q), ...extra,
   });
 }

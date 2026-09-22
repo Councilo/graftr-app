@@ -35,17 +35,30 @@ async function user(role, email) {
   // once a minute per server process, so everything that needs to be caught by that one real pass has
   // to already exist before the first call that triggers it — a second call moments later would be a
   // silent no-op, not a second, fresh check.
-  const WPA = 'Fishergate, Preston PR1 3AA, UK', WDA = 'Lowthian Street, Preston PR1 3AA, UK';
-  const WQ = { pickup_lat: 53.7573, pickup_lng: -2.7048, dropoff_lat: 53.7605, dropoff_lng: -2.7010, distance_km: 1, price_gbp: 5 };
-  const mkWalker = async (minutesAgo) => {
-    const t = new Date(Date.now() - minutesAgo * 60000);
-    return (await call('POST', '/api/jobs-create', cust.token, {
-      pickup_address: WPA, dropoff_address: WDA, pickup_window_start: t.toISOString(), pickup_window_end: new Date(t.getTime() + 1000).toISOString(),
-      quote_token: signQuote(cust.id, WPA, WDA, WQ), delivery_mode: 'walker', walker_ack: true, package_size: 'small',
-    })).body;
-  };
-  const staleWalker = await mkWalker(20); // past the walker grace (15 min), inside the standard one (30 min)
-  const freshWalker = await mkWalker(5);  // inside even the walker grace
+  //
+  // These jobs' pickup_window_start has to be both genuinely recent (jobs-create refuses anything
+  // more than an hour in the past) AND within the 7am-9pm UK-local hours walker delivery runs in —
+  // there's no way to satisfy both unless the real clock, right now, is itself safely inside that
+  // window. So this part is skipped outside it, rather than failing for a reason that has nothing to
+  // do with whether the code works.
+  const ukHour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: 'numeric', hour12: false }).format(new Date()));
+  const safeHours = ukHour >= 8 && ukHour < 20;
+  let staleWalker = null, freshWalker = null;
+  if (safeHours) {
+    const WPA = 'Fishergate, Preston PR1 3AA, UK', WDA = 'Lowthian Street, Preston PR1 3AA, UK';
+    const WQ = { pickup_lat: 53.7573, pickup_lng: -2.7048, dropoff_lat: 53.7605, dropoff_lng: -2.7010, distance_km: 1, price_gbp: 5 };
+    const mkWalker = async (minutesAgo) => {
+      const t = new Date(Date.now() - minutesAgo * 60000);
+      return (await call('POST', '/api/jobs-create', cust.token, {
+        pickup_address: WPA, dropoff_address: WDA, pickup_window_start: t.toISOString(), pickup_window_end: new Date(t.getTime() + 1000).toISOString(),
+        quote_token: signQuote(cust.id, WPA, WDA, WQ), delivery_mode: 'walker', walker_ack: true, package_size: 'small',
+      })).body;
+    };
+    staleWalker = await mkWalker(20); // past the walker grace (15 min), inside the standard one (30 min)
+    freshWalker = await mkWalker(5);  // inside even the walker grace
+  } else {
+    console.log(`  skip  walker grace-period checks (it's ${ukHour}:00 UK time; these need to run between 8am and 8pm)`);
+  }
   const staleStandardAt20 = await mk({ pickup_window_start: new Date(Date.now() - 20 * 60000).toISOString(), pickup_window_end: new Date(Date.now() - 20 * 60000 + 1000).toISOString() });
 
   // One poll: the single real pass through expireStaleJobs() that catches everything created above,
@@ -61,9 +74,11 @@ async function user(role, email) {
   ok('the paid stale job is CANCELLED and refunded automatically', b.status === 'CANCELLED' && b.payment_status === 'REFUNDED' && b.refund_status === 'AUTO_APPROVED', b);
   ok('the fresh job is untouched', c.status === 'OPEN' && c.payment_status === 'UNPAID', c);
 
-  const sw = mine.find((j) => j.id === staleWalker.id), fw = mine.find((j) => j.id === freshWalker.id);
-  ok('a walker job past its own 15-minute grace IS expired, even though a standard job at the same 20-minute age is not', sw && sw.status === 'CANCELLED', sw);
-  ok('a walker job still inside its 15-minute grace is untouched', fw && fw.status === 'OPEN', fw);
+  if (safeHours) {
+    const sw = mine.find((j) => j.id === staleWalker.id), fw = mine.find((j) => j.id === freshWalker.id);
+    ok('a walker job past its own 15-minute grace IS expired, even though a standard job at the same 20-minute age is not', sw && sw.status === 'CANCELLED', sw);
+    ok('a walker job still inside its 15-minute grace is untouched', fw && fw.status === 'OPEN', fw);
+  }
 
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
