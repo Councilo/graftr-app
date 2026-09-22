@@ -8,7 +8,7 @@ const { serializeJob } = require('../lib/jobs');
 const { createPayment } = require('../lib/payments');
 const { sendError } = require('../lib/respond');
 const { parseOrderOptions, newDeliveryPin } = require('../lib/order-options');
-const { walkerEligibility, WalkingServiceError, WALKER_PACKAGE_SIZE } = require('../lib/walking');
+const { walkerEligibility, WALKER_PACKAGE_SIZE, withinWalkerHours, WALKER_HOURS_DETAIL } = require('../lib/walking');
 const crypto = require('crypto');
 
 // Addresses are free text people type; a cap keeps a hostile request from
@@ -93,6 +93,13 @@ module.exports = async (req, res) => {
     }
     if (end <= start) {
       res.status(422).json({ detail: 'pickup_window_end must be after pickup_window_start' });
+      return;
+    }
+    // No walking alone after dark: checked against when the parcel is actually collected (the
+    // pickup start, in UK local time — "now" already resolves to the current moment), not against
+    // whatever time zone the server happens to be running in.
+    if (wantsWalker && !withinWalkerHours(start)) {
+      res.status(422).json({ detail: WALKER_HOURS_DETAIL });
       return;
     }
 

@@ -77,6 +77,13 @@ function makeJob(custToken, custId, pa, da, q, extra) {
   r = await makeJob(cust.token, cust.id, PA, DA_FAR, Q_FAR, { delivery_mode: 'walker', walker_ack: true, package_size: 'small' });
   ok('a real quote_token for a >1-mile trip is still refused for walker delivery — the server re-measures, it does not trust the token', r.status === 422, r);
 
+  // Tomorrow at 23:00 UTC is either 23:00 GMT or 00:00 BST depending on the time of year — either
+  // way, well outside the 7am-9pm UK-local window, so this is never a seasonal false pass.
+  const nightUtc = new Date(Date.now() + 24 * 3600e3); nightUtc.setUTCHours(23, 0, 0, 0);
+  r = await makeJob(cust.token, cust.id, PA, DA_NEAR, Q_NEAR, { delivery_mode: 'walker', walker_ack: true, package_size: 'small', pickup_window_start: nightUtc.toISOString() });
+  ok('a genuinely short trip after dark is still refused — the hours check runs whatever the phone claims', r.status === 422 && /7am|9pm/.test(r.body.detail), r);
+  ok('an ordinary (non-walker) order at the same late hour is unaffected', (await makeJob(cust.token, cust.id, PA, DA_NEAR, Q_NEAR, { pickup_window_start: nightUtc.toISOString() })).status === 201);
+
   const wj = await makeJob(cust.token, cust.id, PA, DA_NEAR, Q_NEAR, { delivery_mode: 'walker', walker_ack: true, package_size: 'small' });
   ok('a genuinely short, small, acknowledged order is created', wj.status === 201 && wj.body.delivery_mode === 'walker', wj.body);
   ok('its price and distance are the walking ones, not the signed (car) quote\'s', Math.abs(wj.body.price_gbp - Q_NEAR.price_gbp) > 0.01 || Math.abs(wj.body.distance_km - Q_NEAR.distance_km) > 0.01, [wj.body.price_gbp, wj.body.distance_km, Q_NEAR]);

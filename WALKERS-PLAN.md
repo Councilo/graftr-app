@@ -4,7 +4,7 @@ Status: written 2026-09-21 as a document to work from. **Phase 1 (below) is buil
 walker jobs on existing accounts, no shops yet. Every number marked "default" is a starting point to tune in a
 pilot, not a fact. Section 12 lists the decisions I still need from you; Phase 1 went ahead on my own
 recommendation for each (shop-initiated first — moot until Phase 2; customer pays through Vendaru; no commission
-modelled yet; walker-only jobs, drivers can't take them; 07:00–21:00 is NOT yet enforced, see below).
+modelled yet; walker-only jobs, drivers can't take them; 07:00–21:00 is now enforced, see below).
 
 **What Phase 1 actually built, in short:** a courier switches to Walker mode in Account → Security. Only then do
 they see walker jobs, and only walker jobs. A customer gets a "Walker delivery" option on the review screen
@@ -253,9 +253,11 @@ but it is safer to build it once real bags are flowing.
 - **"Small" parcel, not 3 kg.** There's no separate weight field in Vendaru yet, so the existing "small" size
   (fits in a bag, under 5 kg) is the walker cap, not the 3 kg this document first floated. Add a real weight field
   before tightening it.
-- **Not yet built:** the 07:00–21:00 hours restriction, the shorter (60-minute) auto-cancel window for walker jobs
-  — they use the same 30-minutes-after-the-pickup-window rule as any other job — and the driver map default's
-  "shop is a public place, shown in full" masking rule (moot until Phase 2 adds shops).
+- **Built 2026-09-22:** the 07:00–21:00 hours restriction (checked against the pickup time, in real UK
+  local time — handles BST/GMT), and a shorter walker auto-cancel window (15 minutes after the pickup
+  window ends, not 30). The policy pages now name walker delivery.
+- **Still not built:** the driver map default's "shop is a public place, shown in full" masking rule
+  (moot until Phase 2 adds shops), and everything in Phases 2–4.
 - **Where it shows:** the courier home never says "available" — a walker sees "Your job offers" exactly like a
   driver does. The customer's review screen only offers Walker delivery when the trip genuinely qualifies (hidden,
   not greyed out, otherwise). The stepper card, past-orders row and the courier's offer card all carry a small

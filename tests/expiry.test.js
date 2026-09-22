@@ -27,14 +27,44 @@ async function user(role, email) {
   const paid = await mk();
   const fresh = (await call('POST', '/api/jobs-create', cust.token, { pickup_address: PA, dropoff_address: DA, pickup_window_start: new Date().toISOString(), quote_token: signQuote(cust.id, PA, DA, Q) })).body;
   await call('POST', '/api/admin-payments', admin.token, { jobId: paid.id, action: 'mark_paid' });
+
+  // A walker job's own, shorter grace period (15 min, vs 30 for an ordinary job — see lib/expiry.js
+  // and lib/walking.js). Real, close-together addresses, checked directly against the walking-route
+  // service before use (the same pair tests/walkers.test.js relies on, ~626 m apart, well under the
+  // 1-mile cap). Created BEFORE the marketplace is polled below: expireStaleJobs() only actually runs
+  // once a minute per server process, so everything that needs to be caught by that one real pass has
+  // to already exist before the first call that triggers it — a second call moments later would be a
+  // silent no-op, not a second, fresh check.
+  const WPA = 'Fishergate, Preston PR1 3AA, UK', WDA = 'Lowthian Street, Preston PR1 3AA, UK';
+  const WQ = { pickup_lat: 53.7573, pickup_lng: -2.7048, dropoff_lat: 53.7605, dropoff_lng: -2.7010, distance_km: 1, price_gbp: 5 };
+  const mkWalker = async (minutesAgo) => {
+    const t = new Date(Date.now() - minutesAgo * 60000);
+    return (await call('POST', '/api/jobs-create', cust.token, {
+      pickup_address: WPA, dropoff_address: WDA, pickup_window_start: t.toISOString(), pickup_window_end: new Date(t.getTime() + 1000).toISOString(),
+      quote_token: signQuote(cust.id, WPA, WDA, WQ), delivery_mode: 'walker', walker_ack: true, package_size: 'small',
+    })).body;
+  };
+  const staleWalker = await mkWalker(20); // past the walker grace (15 min), inside the standard one (30 min)
+  const freshWalker = await mkWalker(5);  // inside even the walker grace
+  const staleStandardAt20 = await mk({ pickup_window_start: new Date(Date.now() - 20 * 60000).toISOString(), pickup_window_end: new Date(Date.now() - 20 * 60000 + 1000).toISOString() });
+
+  // One poll: the single real pass through expireStaleJobs() that catches everything created above,
+  // walker and standard alike, in the same query.
   const av = (await call('GET', '/api/jobs-available', cour.token)).body;
   ok('stale jobs are gone from the marketplace', !av.some((j) => j.id === stale.id || j.id === paid.id), av.map((j) => j.id));
   ok('a fresh job is still listed', av.some((j) => j.id === fresh.id));
+  ok('a standard job at 20 minutes old is NOT yet expired (30-minute grace)', av.some((j) => j.id === staleStandardAt20.id), av.map((j) => j.id));
+
   const mine = (await call('GET', '/api/jobs-mine', cust.token)).body;
   const a = mine.find((j) => j.id === stale.id), b = mine.find((j) => j.id === paid.id), c = mine.find((j) => j.id === fresh.id);
   ok('the unpaid stale job is CANCELLED and not charged', a.status === 'CANCELLED' && a.payment_status === 'VOID', a);
   ok('the paid stale job is CANCELLED and refunded automatically', b.status === 'CANCELLED' && b.payment_status === 'REFUNDED' && b.refund_status === 'AUTO_APPROVED', b);
   ok('the fresh job is untouched', c.status === 'OPEN' && c.payment_status === 'UNPAID', c);
+
+  const sw = mine.find((j) => j.id === staleWalker.id), fw = mine.find((j) => j.id === freshWalker.id);
+  ok('a walker job past its own 15-minute grace IS expired, even though a standard job at the same 20-minute age is not', sw && sw.status === 'CANCELLED', sw);
+  ok('a walker job still inside its 15-minute grace is untouched', fw && fw.status === 'OPEN', fw);
+
   console.log(`\n${pass} passed, ${fail} failed`);
   process.exit(fail ? 1 : 0);
 })().catch((e) => { console.error(e); process.exit(2); });

@@ -160,6 +160,21 @@
   function miles(km) { return distanceMiles(km).toFixed(1) + ' mi'; }
   function milesFromMetres(m) { return distanceMiles(Number(m) / 1000).toFixed(1) + ' mi'; }
 
+  // Walker delivery's own hours (7am-9pm UK time by default, but read from the quote rather than
+  // hardcoded here, so this never drifts from the server if the hours are tuned later). UK local
+  // time, not the browser's own zone: Intl converts correctly either way. The server has the final
+  // say on submit regardless — this is a same-page hint, not the actual gate.
+  function withinWalkerHours(date, hours) {
+    if (!hours || Number.isNaN(date.getTime())) return true;
+    const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: 'numeric', hour12: false }).format(date));
+    return hour >= hours.start && hour < hours.end;
+  }
+  // The pickup moment the review screen currently has chosen: "now" this instant, or the
+  // scheduled date/time as the customer typed it (their own browser's read of that wall-clock time).
+  function chosenPickupDate(c) {
+    return c.scheduled && c.start ? new Date(c.start) : new Date();
+  }
+
   // The [lat, lng] a given fraction (0..1) of the way along a route's road
   // geometry, so a marker sits on the road rather than on a straight line.
   function pointAlongRoute(geometry, fraction) {
@@ -1650,6 +1665,11 @@
         render();
         return;
       }
+      if (walkerChosen && quote.walker_option.hours && !withinWalkerHours(new Date(s), quote.walker_option.hours)) {
+        state.compose.quoteError = quote.walker_option.hours.detail;
+        render();
+        return;
+      }
       state.compose.busy = true;
       render();
       try {
@@ -2377,6 +2397,8 @@
               <span class="rv-radio-text"><strong>Walker delivery — ${money(c.quote.walker_option.price_gbp)}</strong><small>Carried on foot from ${milesFromMetres(c.quote.walker_option.distance_m)} away. Slower than a courier: about ${c.quote.walker_option.minutes.low}–${c.quote.walker_option.minutes.high} minutes after it's collected. Small parcel only.</small></span>
             </button>
           </div>
+          ${o.deliveryMode === 'walker' && c.quote.walker_option.hours && !withinWalkerHours(chosenPickupDate(c), c.quote.walker_option.hours)
+            ? `<div class="form-error rv-walker-hours-error">${escapeHtml(c.quote.walker_option.hours.detail)}</div>` : ''}
           ${o.deliveryMode === 'walker' ? `
           <div class="rv-switch-row rv-walker-ack">
             <div class="rv-row-text"><small>I understand walker delivery is slower than a courier and I'm happy to wait.</small></div>

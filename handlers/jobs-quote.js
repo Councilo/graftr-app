@@ -4,7 +4,7 @@ const { signQuote } = require('../lib/quote-token');
 const { verifyPlace } = require('../lib/place-token');
 const { sendError } = require('../lib/respond');
 const { hit, tooMany } = require('../lib/ratelimit');
-const { walkerEligibility, WALKER_PRICING, MAX_WALK_M } = require('../lib/walking');
+const { walkerEligibility, WALKER_PRICING, MAX_WALK_M, WALKER_HOURS_START, WALKER_HOURS_END, WALKER_HOURS_DETAIL } = require('../lib/walking');
 
 // A car-distance trip can never be shorter than a walking one, so this only bothers checking the
 // real walking route when the trip is plausibly close — up to 1.35x the mile limit, generous
@@ -79,8 +79,10 @@ module.exports = async (req, res) => {
         // straight line on the map, same as before this existed.
         route_geometry: q.route_geometry,
         // A courier with no car or bike walking the bag over, if this trip is short enough. Never
-        // trust this back from the browser: jobs-create works it out again itself.
-        walker_option: { ...walkerOption, pricing: WALKER_PRICING },
+        // trust this back from the browser: jobs-create works it out again itself. Eligibility here
+        // is distance only — the pickup time isn't chosen until the review screen, after the quote —
+        // so `hours` is sent separately for the app to check once a time is picked.
+        walker_option: { ...walkerOption, pricing: WALKER_PRICING, hours: { start: WALKER_HOURS_START, end: WALKER_HOURS_END, detail: WALKER_HOURS_DETAIL } },
       });
     } catch (err) {
       if (err instanceof QuoteError) {

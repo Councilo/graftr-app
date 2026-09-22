@@ -12,8 +12,10 @@ const path = require('path');
 const OFFLINE = process.argv.includes('--offline');
 const suites = [
   ['pricing', false], ['compact-address', false], ['route', false], ['quote-token', false], ['pickup-window', false],
-  ['api', false], ['features', false], ['races', false], ['expiry', false], ['calls', false], ['order-options', false], ['vercel-config', false], ['start-order', false], ['email', false], ['secret', false], ['areas', false], ['walking', false],
-  ['address-search', true], ['place-quote', true], ['walkers', true],
+  ['api', false], ['features', false], ['races', false], ['calls', false], ['order-options', false], ['vercel-config', false], ['start-order', false], ['email', false], ['secret', false], ['areas', false], ['walking', false],
+  // expiry now creates a couple of real (close-together) walker jobs to prove their shorter grace
+  // period, so it needs the same walking-route service as walkers below.
+  ['address-search', true], ['place-quote', true], ['walkers', true], ['expiry', true],
 ];
 
 let failed = 0;
